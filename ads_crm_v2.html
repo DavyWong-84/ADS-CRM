@@ -523,7 +523,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (min-width: 768px) { .sticky-filter { top: 70px; padding: 10px 28px; margin: 0 -28px 14px; } }
 
 /* Compact filter row (single-line for mobile) */
-.compact-filter { display: flex; gap: 6px; align-items: center; flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
+.compact-filter { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding-bottom: 2px; }
 .compact-filter::-webkit-scrollbar { display: none; }
 .compact-filter .toggle-group { flex-shrink: 0; }
 .compact-filter .toggle-group .toggle { padding: 7px 11px; font-size: 13px; }
@@ -553,7 +553,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <button class="nav-item" data-page="lead"><span class="nav-icon">➕</span><span>New Lead</span></button>
   <button class="nav-item" data-page="list"><span class="nav-icon">📋</span><span>List</span></button>
   <button class="nav-item" data-page="summary"><span class="nav-icon">📊</span><span>Summary</span></button>
-  <button class="nav-item" data-page="store"><span class="nav-icon">🏢</span><span>Store</span></button>
+  <button class="nav-item" data-page="store"><span class="nav-icon">🏢</span><span>Outlet</span></button>
   <button class="nav-item" data-page="adsspend"><span class="nav-icon">💰</span><span>Ads Spend</span></button>
   <button class="nav-item" data-page="revenue"><span class="nav-icon">📈</span><span>Revenue Outlet</span></button>
   <div class="nav-divider"></div>
@@ -1187,8 +1187,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
   <!-- STORE PAGE -->
   <section class="page" id="page-store">
-    <h1 class="page-title">Store</h1>
-    <p class="page-sub">Per-store analytics · click a store to drill down</p>
+    <h1 class="page-title">Outlet</h1>
+    <p class="page-sub">Per-outlet analytics</p>
 
     <div class="sticky-filter">
       <div class="compact-filter">
@@ -1214,7 +1214,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span class="date-btn-icon">📅</span>
         </button>
         <input type="hidden" id="storeToMonth">
-        <select id="storeSelect" class="cf-select"><option value="all">All stores</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
+        <select id="storeSelect" class="cf-select"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
     </div>
 
@@ -1269,7 +1269,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- REVENUE PAGE -->
   <section class="page" id="page-revenue">
     <h1 class="page-title">Revenue Outlet</h1>
-    <p class="page-sub">Per-store revenue report</p>
+    <p class="page-sub">Per-outlet revenue report</p>
 
     <div class="sticky-filter">
       <div class="compact-filter">
@@ -1536,7 +1536,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <button class="bottom-nav-item" data-page="lead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Lead</span></button>
   <button class="bottom-nav-item" data-page="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg><span>List</span></button>
   <button class="bottom-nav-item" data-page="summary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span>Summary</span></button>
-  <button class="bottom-nav-item" data-page="store"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Store</span></button>
+  <button class="bottom-nav-item" data-page="store"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Outlet</span></button>
   <button class="bottom-nav-item" data-page="adsspend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg><span>Ads</span></button>
   <button class="bottom-nav-item" data-page="revenue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg><span>Revenue</span></button>
 </nav>
@@ -2019,7 +2019,7 @@ function refreshStoreSelect() {
   const sel = document.getElementById('storeSelect');
   if (!sel) return;
   const cur = sel.value || state.storeSelected || 'all';
-  sel.innerHTML = '<option value="all">All stores</option>' + state.locations.map(l => `<option value="${l.id}" ${l.id === cur ? 'selected' : ''}>${l.name}</option>`).join('');
+  sel.innerHTML = '<option value="all">All outlets</option>' + state.locations.map(l => `<option value="${l.id}" ${l.id === cur ? 'selected' : ''}>${l.name}</option>`).join('');
 }
 
 /* MORE SCRIPT CONTINUED IN PART 2 */
@@ -3525,9 +3525,9 @@ function renderStore() {
     const grandShows = storesData.reduce((s, x) => s + x.m.shows, 0);
     const grandSpend = storesData.reduce((s, x) => s + x.m.spend, 0);
 
-    let html = `<div class="section-title"><h3>All Stores · ${periodLabel}</h3></div>
+    let html = `<div class="section-title"><h3>All Outlets · ${periodLabel}</h3></div>
     <div class="table-wrap"><table class="data">
-      <thead><tr><th>Store</th><th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th></tr></thead>
+      <thead><tr><th>Outlet</th><th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th></tr></thead>
       <tbody>
         ${storesData.map(({loc, m}) => `<tr>
           <td style="font-weight:500;">${loc.name}</td>
@@ -3548,9 +3548,9 @@ function renderStore() {
       </tbody>
     </table></div>
 
-    <div class="section-title"><h3>By Platform × Store</h3></div>
+    <div class="section-title"><h3>By Platform × Outlet</h3></div>
     <div class="table-wrap"><table class="data channel-grid-table">
-      <thead><tr><th rowspan="2">Store</th><th class="num channel-group" colspan="3">Meta</th><th class="num channel-group" colspan="3">Google</th><th class="num channel-group" colspan="3">Organic + FU</th></tr>
+      <thead><tr><th rowspan="2">Outlet</th><th class="num channel-group" colspan="3">Meta</th><th class="num channel-group" colspan="3">Google</th><th class="num channel-group" colspan="3">Organic + FU</th></tr>
       <tr><th class="num sub-col group-left" style="font-size:10px;">Appt</th><th class="num sub-col" style="font-size:10px;">Show</th><th class="num sub-col group-right" style="font-size:10px;">Spend</th><th class="num sub-col group-left" style="font-size:10px;">Appt</th><th class="num sub-col" style="font-size:10px;">Show</th><th class="num sub-col group-right" style="font-size:10px;">Spend</th><th class="num sub-col group-left" style="font-size:10px;">Appt</th><th class="num sub-col" style="font-size:10px;">Show</th><th class="num sub-col group-right" style="font-size:10px;">Spend</th></tr></thead>
       <tbody>
         ${storesData.map(({loc, m}) => {
@@ -3585,9 +3585,9 @@ function renderStore() {
       </tbody>
     </table></div>
 
-    <div class="section-title"><h3>Race × Store</h3></div>
+    <div class="section-title"><h3>Race × Outlet</h3></div>
     <div class="table-wrap"><table class="data">
-      <thead><tr><th>Store</th><th class="num">Chinese</th><th class="num">Malay</th><th class="num">Indian</th><th class="num">Foreigner</th><th class="num">Others</th><th class="num">Total Show</th></tr></thead>
+      <thead><tr><th>Outlet</th><th class="num">Chinese</th><th class="num">Malay</th><th class="num">Indian</th><th class="num">Foreigner</th><th class="num">Others</th><th class="num">Total Show</th></tr></thead>
       <tbody>
         ${storesData.map(({loc, m}) => `<tr>
           <td style="font-weight:500;">${loc.name}</td>
@@ -4095,7 +4095,7 @@ function renderRevenueSummary(mArr) {
     <tr>
       <th rowspan="2">Month</th>
       ${state.locations.map(loc => `<th colspan="3" class="num" style="background:var(--purple-bg);color:var(--purple-deep);border-left:1px solid var(--border);">${loc.name}</th>`).join('')}
-      <th colspan="3" class="num" style="background:var(--purple-bg);color:var(--purple-deep);border-left:1px solid var(--border);">All Stores</th>
+      <th colspan="3" class="num" style="background:var(--purple-bg);color:var(--purple-deep);border-left:1px solid var(--border);">All Outlets</th>
     </tr>
     <tr>
       ${state.locations.map(() => `<th class="num" style="font-size:11px;border-left:1px solid var(--border);">Total</th><th class="num" style="font-size:11px;">New</th><th class="num" style="font-size:11px;color:var(--gray);">Old</th>`).join('')}
