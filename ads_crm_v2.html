@@ -323,6 +323,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* Forms */
 .form-grid { display: grid; gap: 14px; }
+@media (min-width: 768px) { .form-grid { max-width: 50%; } .form-grid .step-3 { max-width: none; } }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
 
@@ -350,6 +351,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* Search */
 .list-toolbar { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
+.list-sticky-header { position: sticky; top: 57px; z-index: 40; background: var(--white); padding-top: 12px; padding-bottom: 8px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; border-bottom: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.04); margin-bottom: 14px; }
+@media (min-width: 768px) { .list-sticky-header { top: 70px; margin: 0 -28px 14px; padding-left: 28px; padding-right: 28px; } }
+#leadStepper:not(:empty) { position: sticky; top: 57px; z-index: 40; background: var(--white); padding-top: 8px; padding-bottom: 2px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+@media (min-width: 768px) { #leadStepper:not(:empty) { top: 70px; margin: 0 -28px; padding-left: 28px; padding-right: 28px; } }
 .list-search { position: relative; flex: 1 1 240px; min-width: 180px; }
 .list-search input { padding-left: 40px; width: 100%; }
 .list-search::before { content: ''; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23686b82' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") center no-repeat; pointer-events: none; }
@@ -391,7 +396,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .nav-item.active { color: var(--white); background: var(--purple); border-bottom: none; }
   .nav-item .nav-icon { font-size: 16px; display: inline-flex; }
   .nav-divider { height: 1px; background: var(--border); margin: 10px 4px; }
-  .lead-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .lead-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  /* Master-detail layout for list page */
+  .list-master-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: start; }
+  .list-master { border-right: 1px solid var(--border); padding-right: 20px; }
+  .list-detail { padding-left: 20px; position: sticky; top: 70px; max-height: calc(100vh - 80px); overflow-y: auto; }
+  .list-detail::-webkit-scrollbar { width: 4px; }
+  .list-detail::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .list-detail-empty { display: flex; align-items: center; justify-content: center; min-height: 300px; color: var(--gray); font-size: 14px; }
+  .lead-item.selected { border-color: var(--purple); background: var(--purple-bg); }
+@media (max-width: 767px) {
+  .list-master-detail { display: block; }
+  .list-master { border-right: none; padding-right: 0; }
+  #listDetailPanel { display: none !important; }
+}
   .main { padding: 24px 28px; padding-bottom: 24px; margin-left: 220px; max-width: calc(1400px + 220px); width: auto; margin-right: auto; }
   .topbar { padding: 14px 28px; position: sticky; top: 0; z-index: 50; background: var(--white); }
   .grid-md-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -411,7 +429,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .metric-value { font-size: 18px; }
 }
 .hide-mobile { display: none; }
-@media (min-width: 768px) { .hide-mobile { display: inline; } .hide-desktop { display: none; } }
+@media (min-width: 768px) { .hide-mobile { display: table-cell !important; } .hide-desktop { display: none !important; } }
 
 /* Empty state */
 .empty { text-align: center; padding: 40px 20px; color: var(--gray); }
@@ -541,6 +559,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   #settingsTopGrid { grid-template-columns: 1fr 1fr !important; }
   #settingsBotGrid { grid-template-columns: 1fr 1fr 1fr !important; }
 }
+
+
 </style>
 </head>
 <body>
@@ -549,7 +569,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v1.153</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v1.233</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -565,7 +585,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <button class="nav-item" data-page="lead"><span class="nav-icon">➕</span><span>New Lead</span></button>
   <button class="nav-item" data-page="list"><span class="nav-icon">📋</span><span>List</span></button>
   <button class="nav-item" data-page="summary"><span class="nav-icon">📊</span><span>Summary</span></button>
-  <button class="nav-item" data-page="store"><span class="nav-icon">🏢</span><span>Outlet</span></button>
+  <button class="nav-item" data-page="store"><span class="nav-icon">🏢</span><span>Appt</span></button>
   <button class="nav-item" data-page="adsspend"><span class="nav-icon">💰</span><span>Ads Spend</span></button>
   <button class="nav-item" data-page="revenue"><span class="nav-icon">📈</span><span>Revenue Outlet</span></button>
   <div class="nav-divider"></div>
@@ -642,12 +662,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
       </div>
 
-      <div class="step-card step-3">
+      <!-- After Visit section — shown only when editing an existing lead -->
+      <div class="step-card step-3" id="afterVisitSection" style="display:none;">
         <div class="step-header">
           <span class="step-num">3</span>
           <div>
             <div class="step-title">After Visit</div>
-            <div class="step-sub">Fill after customer arrives (or no-shows)</div>
+            <div class="step-sub">Fill after appointment visit</div>
           </div>
         </div>
         <div class="step-body">
@@ -655,37 +676,39 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <div>
               <label>Show Up Status</label>
               <select id="f_showUp">
-                <option value="">— pending —</option>
+                <option value="">— select —</option>
                 <option value="Show up">Show up</option>
-                <option value="No Show up">No show</option>
+                <option value="No Show up">No Show up</option>
               </select>
             </div>
             <div>
               <label>Race</label>
               <select id="f_race">
                 <option value="">— select —</option>
-                <option>Chinese</option>
-                <option>Malay</option>
-                <option>Indian</option>
-                <option>Foreigner</option>
-                <option>Others</option>
+                <option value="Chinese">Chinese</option>
+                <option value="Malay">Malay</option>
+                <option value="Indian">Indian</option>
+                <option value="Foreigner">Foreigner</option>
+                <option value="Others">Others</option>
               </select>
             </div>
           </div>
           <div class="form-row" style="margin-top:12px;">
             <div>
               <label>Spend (RM)</label>
-              <input type="number" id="f_spend" placeholder="0.00" step="0.01" inputmode="decimal">
+              <input type="number" id="f_spend" placeholder="0" step="0.01" min="0">
             </div>
             <div>
               <label>Remark</label>
-              <input type="text" id="f_remark" placeholder="Optional notes">
+              <input type="text" id="f_remark" placeholder="Notes...">
             </div>
           </div>
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary btn-full" style="font-size:15px;padding:14px;">Save Lead</button>
+      <div style="grid-column:1/-1;margin-top:4px;">
+        <button type="submit" class="btn btn-primary btn-full" style="font-size:15px;padding:14px;">Save Lead</button>
+      </div>
       <div id="lead_lastSaved" class="last-saved-time"></div>
     </form>
   </section>
@@ -694,6 +717,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <section class="page" id="page-list">
     <h1 class="page-title">Lead List</h1>
 
+    <div class="list-sticky-header">
     <div class="list-toolbar">
       <div class="list-search">
         <input type="text" id="searchInput" placeholder="Search name, contact, remark...">
@@ -711,8 +735,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
 
     <div class="filter-tabs" id="listFilters"></div>
-    <div class="lead-list" id="leadList"></div>
-    <div class="pagination" id="listPagination"></div>
+    </div>
+    <div class="list-master-detail">
+      <div class="list-master">
+        <div class="lead-list" id="leadList"></div>
+        <div class="pagination" id="listPagination"></div>
+      </div>
+      <div class="list-detail" id="listDetailPanel" style="display:none;">
+        <div class="list-detail-empty">Click a lead to edit</div>
+      </div>
+    </div>
   </section>
 
   <!-- SUMMARY PAGE -->
@@ -752,8 +784,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
   <!-- STORE PAGE -->
   <section class="page" id="page-store">
-    <h1 class="page-title">Outlet</h1>
-    <p class="page-sub">Per-outlet analytics</p>
+    <h1 class="page-title">Appt Report</h1>
+    <p class="page-sub">Appointment analytics by outlet</p>
 
     <div class="sticky-filter">
       <div class="compact-filter">
@@ -781,6 +813,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="storeToMonth">
         <select id="storeSelect" class="cf-select"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
+    </div>
+
+    <!-- Pill tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+      <button type="button" id="storePill_platform" onclick="switchStoreTab('platform')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--purple);background:var(--purple);color:#fff;font-size:13px;font-weight:600;cursor:pointer;">By Platform</button>
+      <button type="button" id="storePill_race" onclick="switchStoreTab('race')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">By Race</button>
+      <button type="button" id="storePill_weekly" onclick="switchStoreTab('weekly')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Head Count &amp; Weekly</button>
     </div>
 
     <div id="storeContent"></div>
@@ -859,19 +898,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- REVENUE PAGE -->
   <section class="page" id="page-revenue">
     <h1 class="page-title">Revenue Outlet</h1>
-    <p class="page-sub">Per-outlet revenue report</p>
 
     <div class="sticky-filter">
       <div class="compact-filter">
         <select id="revYear" class="cf-select"><option value="2025">2025</option><option value="2026" selected="">2026</option></select>
+        <select id="revOutletSelect" class="cf-select" onchange="renderRevenue()"><option value="all">All Outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
     </div>
 
-    <div class="card">
-      <div class="section-title"><h3>Revenue Report</h3><span class="right">💡 Entry → Revenue to add</span></div>
-      <div id="revenueReportWrap"></div>
-      <div id="revReportHint" style="margin-top:10px;font-size:12px;color:var(--gray);"></div>
-    </div>
+    <div id="revenueReportWrap"></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -1100,7 +1135,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <button class="bottom-nav-item" data-page="lead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Lead</span></button>
   <button class="bottom-nav-item" data-page="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg><span>List</span></button>
   <button class="bottom-nav-item" data-page="summary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span>Summary</span></button>
-  <button class="bottom-nav-item" data-page="store"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Outlet</span></button>
+  <button class="bottom-nav-item" data-page="store"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span>Appt</span></button>
   <button class="bottom-nav-item" data-page="revenue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg><span>Revenue</span></button>
   <button class="bottom-nav-item" data-page="adsspend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg><span>Ads</span></button>
 </nav>
@@ -1189,10 +1224,10 @@ function saveState() {
 
 // ---------- Utilities ----------
 const fmt = {
-  money: n => n == null || isNaN(n) ? '—' : 'RM ' + Number(n).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+  money: n => n == null || isNaN(n) || n === 0 ? '—' : 'RM ' + Number(n).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
   moneyK: n => n == null || isNaN(n) ? '—' : 'RM ' + Math.round(Number(n)).toLocaleString('en-MY'),
-  num: n => n == null || isNaN(n) ? '—' : Number(n).toLocaleString('en-MY'),
-  pct: n => n == null || isNaN(n) || !isFinite(n) ? '—' : (n * 100).toFixed(1) + '%',
+  num: n => n == null || isNaN(n) || n === 0 ? '—' : Number(n).toLocaleString('en-MY'),
+  pct: n => n == null || isNaN(n) || !isFinite(n) || n === 0 ? '—' : (n * 100).toFixed(1) + '%',
   pct2: n => n == null || isNaN(n) || !isFinite(n) ? '—' : (n * 100).toFixed(2) + '%',
   x: n => n == null || isNaN(n) || !isFinite(n) ? '—' : n.toFixed(2) + 'x',
   date: s => s ? s : '—',
@@ -1242,6 +1277,12 @@ function nav(page) {
   });
   window.scrollTo(0, 0);
   renderTopbarToday();
+  // When navigating to lead page fresh (not via editLead), hide After Visit
+  if (page === 'lead' && !window._editingNav) {
+    const avs = document.getElementById('afterVisitSection');
+    if (avs && !currentEditingId) avs.style.display = 'none';
+  }
+  window._editingNav = false;
   if (page === 'list') renderList();
   if (page === 'summary') renderSummary();
   if (page === 'store') renderStore();
@@ -1681,11 +1722,11 @@ function buildResponsiveTable(title, h4Style, metrics, mArr, fmt12) {
     // Mobile: transposed — months in rows, metrics in cols
     // Only show months that have at least one non-zero value
     const activeMonths = mArr.filter((m, mi) => metrics.some(met => (met.values[mi] || 0) !== 0));
-    const thd = `<thead><tr><th style="width:44px;min-width:44px;white-space:nowrap;">Month</th>${metrics.map(met => `<th class="num"${met.bold?' style="font-weight:700;"':''}>${met.label}</th>`).join('')}</tr></thead>`;
+    const thd = `<thead><tr><th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>${metrics.map(met => `<th class="num"${met.bold?' style="font-weight:700;"':''}>${met.label}</th>`).join('')}</tr></thead>`;
     const rows = activeMonths.map(m => {
       const mi = mArr.indexOf(m);
       return `<tr>
-        <td style="font-weight:500;white-space:nowrap;width:44px;min-width:44px;">${fmt12(m)}</td>
+        <td style="font-weight:500;white-space:nowrap;width:36px;min-width:36px;">${fmt12(m)}</td>
         ${metrics.map(met => `<td class="num"${met.bold?' style="font-weight:700;"':''}>${met.formatter(met.values[mi])}</td>`).join('')}
       </tr>`;
     }).join('');
@@ -1946,6 +1987,7 @@ function getLocation(id) { return state.locations.find(l => l.id === id); }
 
 // ---------- Populate selects ----------
 function refreshSelects() {
+  populateRevOutletSelect();
   const chSel = document.getElementById('f_channel');
   // Only show ACTIVE channels in Lead entry page
   const activeChannels = state.channels.filter(c => c.active !== false);
@@ -2267,6 +2309,8 @@ function resetLeadForm() {
   const wasEditing = !!currentEditingId;
   currentEditingId = null;
   renderLeadStepper(null);
+  const avs = document.getElementById('afterVisitSection');
+  if (avs) avs.style.display = 'none';
   if (wasEditing) {
     nav('list');
   }
@@ -2275,11 +2319,37 @@ function resetLeadForm() {
 function editLead(id) {
   const l = state.leads.find(x => x.id === id);
   if (!l) return;
+  
+  // Desktop inline editing in list detail panel
+  const isDesktop = window.innerWidth >= 768;
+  const detailPanel = document.getElementById('listDetailPanel');
+  if (isDesktop && detailPanel && document.getElementById('page-list').classList.contains('active')) {
+    currentEditingId = id;
+    // Highlight selected card
+    document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+    const cards = document.querySelectorAll('.lead-item');
+    cards.forEach(el => { if (el.getAttribute('onclick')?.includes(id)) el.classList.add('selected'); });
+    // Render inline edit form
+    detailPanel.style.display = 'block';
+    renderDetailPanel(l);
+    return;
+  }
+
+  // Mobile: navigate to lead page
   currentEditingId = id;
+  populateLeadForm(l);
+  renderLeadStepper(l);
+  const avs = document.getElementById('afterVisitSection');
+  if (avs) avs.style.display = 'block';
+  window._editingNav = true;
+  nav('lead');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function populateLeadForm(l) {
   document.getElementById('f_contact').value = l.contact || '';
   document.getElementById('f_channel').value = l.channelId || '';
   document.getElementById('f_leadDate').value = l.leadDate || '';
-  // Update lead date button label
   const ldLabel = document.getElementById('f_leadDate_label');
   const ldBtn = document.getElementById('f_leadDate_btn');
   if (ldLabel && ldBtn) {
@@ -2299,9 +2369,136 @@ function editLead(id) {
   document.getElementById('f_race').value = l.race || '';
   document.getElementById('f_spend').value = l.spend || '';
   document.getElementById('f_remark').value = l.remark || '';
-  renderLeadStepper(l);
-  nav('lead');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderDetailPanel(l) {
+  const dp = document.getElementById('listDetailPanel');
+  if (!dp) return;
+  const ch = getChannel(l.channelId);
+  const loc = l.locationId ? getLocation(l.locationId) : null;
+  const steps = [
+    { label: 'Lead', done: !!l.contact },
+    { label: 'Booked', done: !!(l.name && l.apptDate) },
+    { label: 'Show up', done: l.status === 'pending' || l.status === 'done' || l.status === 'noshow' },
+    { label: 'Done', done: l.status === 'done' }
+  ];
+  const check = '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const stepDots = steps.map((s, i) => {
+    const dot = s.done
+      ? `<div style="width:22px;height:22px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;">${check}</div>`
+      : `<div style="width:22px;height:22px;border-radius:50%;background:var(--white);border:2px solid var(--border);"></div>`;
+    const lbl = `<span style="font-size:10px;color:${s.done ? 'var(--purple-deep)' : 'var(--gray)'};font-weight:500;margin-top:2px;">${s.label}</span>`;
+    const line = i < steps.length - 1
+      ? `<div style="flex:1;height:2px;background:${steps[i+1].done ? 'var(--purple)' : 'var(--border)'};margin:0 -4px;margin-bottom:16px;"></div>`
+      : '';
+    return `<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto;z-index:1;">${dot}${lbl}</div>${line}`;
+  }).join('');
+
+  const activeChannels = state.channels.filter(c => c.active !== false);
+  const channelOpts = activeChannels.map(c => `<option value="${c.id}" ${c.id === l.channelId ? 'selected' : ''}>${c.name}</option>`).join('');
+  const locationOpts = state.locations.filter(lo => lo.active !== false).map(lo => `<option value="${lo.id}" ${lo.id === l.locationId ? 'selected' : ''}>${lo.name}</option>`).join('');
+
+  dp.innerHTML = `
+    <div style="background:var(--purple-bg);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size:11px;color:var(--purple);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Editing</div>
+          <div style="font-size:16px;font-weight:600;color:var(--black);margin-top:2px;">${l.name || '(no name)'}</div>
+          <div style="font-size:13px;color:var(--purple-deep);margin-top:2px;">${l.contact || ''} · ${ch?.name || ''}</div>
+        </div>
+        <button type="button" class="btn" style="font-size:13px;padding:6px 14px;border-radius:9px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="closeDetailPanel()">Close</button>
+      </div>
+      <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-top:12px;">
+        ${stepDots}
+      </div>
+    </div>
+    <form id="detailForm" style="display:grid;gap:12px;" onsubmit="event.preventDefault();saveDetailLead();">
+      <div class="step-card step-1">
+        <div class="step-header"><span class="step-num">1</span><div><div class="step-title">Lead Info</div></div></div>
+        <div class="step-body">
+          <div><label>Contact <span style="color:var(--red)">*</span></label><input type="tel" id="df_contact" value="${l.contact || ''}" inputmode="tel"></div>
+          <div class="form-row" style="margin-top:12px;">
+            <div><label>Channel <span style="color:var(--red)">*</span></label><select id="df_channel">${channelOpts}</select></div>
+            <div><label>Lead Date <span style="color:var(--red)">*</span></label><input type="date" id="df_leadDate" value="${l.leadDate || ''}"></div>
+          </div>
+        </div>
+      </div>
+      <div class="step-card step-2">
+        <div class="step-header"><span class="step-num">2</span><div><div class="step-title">Booking</div></div></div>
+        <div class="step-body">
+          <div class="form-row">
+            <div><label>Name</label><input type="text" id="df_name" value="${l.name || ''}" placeholder="Customer name"></div>
+            <div><label>Appt Date</label><input type="date" id="df_apptDate" value="${l.apptDate || ''}"></div>
+          </div>
+          <div style="margin-top:12px;"><label>Location</label><select id="df_location"><option value="">— select store —</option>${locationOpts}</select></div>
+        </div>
+      </div>
+      <div class="step-card step-3">
+        <div class="step-header"><span class="step-num">3</span><div><div class="step-title">After Visit</div></div></div>
+        <div class="step-body">
+          <div class="form-row">
+            <div><label>Show Up</label><select id="df_showUp"><option value="">— select —</option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
+            <div><label>Race</label><select id="df_race"><option value="">— select —</option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
+          </div>
+          <div class="form-row" style="margin-top:12px;">
+            <div><label>Spend (RM)</label><input type="number" id="df_spend" value="${l.spend || ''}" step="0.01" min="0"></div>
+            <div><label>Remark</label><input type="text" id="df_remark" value="${l.remark || ''}" placeholder="Notes..."></div>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" style="font-size:15px;padding:14px;">Save</button>
+      <div id="detail_lastSaved" class="last-saved-time"></div>
+    </form>
+  `;
+}
+
+function saveDetailLead() {
+  const contact = document.getElementById('df_contact').value.trim();
+  const channelId = document.getElementById('df_channel').value;
+  const leadDate = document.getElementById('df_leadDate').value;
+  if (!contact || !channelId || !leadDate) { toast('Please fill contact, channel, lead date'); return; }
+  const name = document.getElementById('df_name').value.trim();
+  const apptDate = document.getElementById('df_apptDate').value;
+  const locationId = document.getElementById('df_location').value;
+  const showUp = document.getElementById('df_showUp').value;
+  const race = document.getElementById('df_race').value;
+  const spend = parseFloat(document.getElementById('df_spend').value) || null;
+  const remark = document.getElementById('df_remark').value.trim();
+  const ch = getChannel(channelId);
+  const loc = locationId ? getLocation(locationId) : null;
+  let status = 'lead';
+  if (name && apptDate) status = 'booked';
+  if (showUp === 'No Show up') status = 'noshow';
+  else if (showUp === 'Show up') { status = 'pending'; if (spend && race) status = 'done'; }
+  const lead = {
+    id: currentEditingId, week: isoWeek(leadDate), leadDate, channelId,
+    channel: ch?.name || '', platform: ch?.platform || '', contact,
+    apptDate: apptDate || null, name, race: race || null,
+    locationId: locationId || null, location: loc?.name || null,
+    spend, showUp: showUp || '', status, remark,
+    updatedAt: new Date().toISOString()
+  };
+  const idx = state.leads.findIndex(x => x.id === currentEditingId);
+  if (idx >= 0) state.leads[idx] = lead;
+  saveState();
+  gsUpsert('Leads', lead);
+  toast('Saved ' + (lead.name || lead.contact));
+  showLastSaved('detail_lastSaved');
+  renderList();
+  // Re-render detail panel with updated data
+  renderDetailPanel(lead);
+  // Re-highlight
+  setTimeout(() => {
+    document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll('.lead-item').forEach(el => { if (el.getAttribute('onclick')?.includes(currentEditingId)) el.classList.add('selected'); });
+  }, 50);
+}
+
+function closeDetailPanel() {
+  const dp = document.getElementById('listDetailPanel');
+  if (dp) { dp.style.display = 'none'; dp.innerHTML = '<div class="list-detail-empty">Click a lead to edit</div>'; }
+  currentEditingId = null;
+  document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
 }
 
 function renderLeadStepper(lead) {
@@ -2313,17 +2510,31 @@ function renderLeadStepper(lead) {
     { key: 'show', label: 'Show up', done: lead.status === 'pending' || lead.status === 'done' || lead.status === 'noshow' },
     { key: 'done', label: 'Done', done: lead.status === 'done' }
   ];
+  const check = '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const stepDots = steps.map((s, i) => {
+    const dot = s.done
+      ? `<div style="width:24px;height:24px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;">${check}</div>`
+      : `<div style="width:24px;height:24px;border-radius:50%;background:var(--white);border:2px solid var(--border);"></div>`;
+    const lbl = `<span style="font-size:11px;color:${s.done ? 'var(--purple-deep)' : 'var(--gray)'};font-weight:500;margin-top:3px;">${s.label}</span>`;
+    const line = i < steps.length - 1
+      ? `<div style="flex:1;height:2px;background:${steps[i+1].done ? 'var(--purple)' : 'var(--border)'};margin:0 -6px;margin-bottom:18px;"></div>`
+      : '';
+    return `<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto;z-index:1;">${dot}${lbl}</div>${line}`;
+  }).join('');
+
   el.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:14px;background:var(--purple-bg);border-radius:12px;border:1px solid var(--purple-subtle);">
-      <div style="flex:1;">
-        <div style="font-size:11px;color:var(--purple-deep);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Editing record</div>
-        <div style="font-size:16px;font-weight:600;color:var(--black);margin-top:2px;">${lead.name || '(no name)'}</div>
-        <div style="font-size:14px;color:var(--gray);margin-top:2px;font-variant-numeric:tabular-nums;">${lead.contact || '—'} · ${lead.channel || '—'}</div>
+    <div style="background:var(--purple-bg);border-radius:12px;padding:14px 16px;margin-bottom:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+        <div>
+          <div style="font-size:11px;color:var(--purple);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Editing</div>
+          <div style="font-size:16px;font-weight:600;color:var(--black);margin-top:2px;">${lead.name || '(no name)'}</div>
+          <div style="font-size:13px;color:var(--purple-deep);margin-top:2px;font-variant-numeric:tabular-nums;">${lead.contact || '—'} · ${lead.channel || '—'}</div>
+        </div>
+        <button type="button" class="btn" style="font-size:13px;padding:6px 14px;border-radius:9px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="cancelEdit()">Cancel</button>
       </div>
-      <button type="button" class="btn btn-gray" onclick="cancelEdit()">Cancel</button>
-    </div>
-    <div style="display:flex;gap:6px;margin-bottom:14px;">
-      ${steps.map(s => `<div style="flex:1;text-align:center;padding:6px;border-radius:8px;background:${s.done ? 'var(--green-subtle)' : 'var(--surface-2)'};color:${s.done ? 'var(--green-dark)' : 'var(--gray)'};font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">${s.done ? '✓' : ''} ${s.label}</div>`).join('')}
+      <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-top:14px;position:relative;">
+        ${stepDots}
+      </div>
     </div>
   `;
 }
@@ -2333,6 +2544,8 @@ function cancelEdit() {
   document.getElementById('leadForm').reset();
   document.getElementById('f_leadDate').value = todayStr();
   renderLeadStepper(null);
+  const avs = document.getElementById('afterVisitSection');
+  if (avs) avs.style.display = 'none';
   nav('list');
 }
 
@@ -3645,7 +3858,62 @@ function calcStoreMetrics(storeId, period) {
   return { appts, shows, noshows, spend, byChannel, byPlatform, race, byMonth };
 }
 
+let _storeTab = 'platform';
+
+function toggleWeekMonth(m) {
+  const rows = document.querySelectorAll(`.wk-row[data-wm="${m}"]`);
+  const gap = document.querySelector(`.wk-gap[data-wm="${m}"]`);
+  const chev = document.querySelector(`.wk-chev[data-wm="${m}"]`);
+  const visible = rows.length > 0 && rows[0].style.display !== 'none';
+  rows.forEach(r => r.style.display = visible ? 'none' : '');
+  if (gap) gap.style.display = visible ? 'none' : '';
+  if (chev) chev.style.transform = visible ? 'rotate(-90deg)' : '';
+}
+
+function switchStoreTab(key) {
+  _storeTab = key;
+  ['platform', 'race', 'weekly'].forEach(k => {
+    const pill = document.getElementById('storePill_' + k);
+    if (pill) {
+      const active = k === key;
+      pill.style.background = active ? 'var(--purple)' : '#fff';
+      pill.style.color = active ? '#fff' : 'var(--gray)';
+      pill.style.borderColor = active ? 'var(--purple)' : 'var(--border)';
+      pill.style.fontWeight = active ? '600' : '500';
+    }
+  });
+  // Race tab always uses year mode — show year selector, hide month/custom toggles
+  const toggleGrp = document.querySelector('#page-store .toggle-group');
+  const yearSel = document.getElementById('storeYear');
+  const monthBtn = document.getElementById('storeMonth_btn');
+  const fromBtn = document.getElementById('storeFromMonth_btn');
+  const toBtn = document.getElementById('storeToMonth_btn');
+  const arrow = document.getElementById('storeCustomArrow');
+  // All 3 tabs use year mode — always show year selector, hide month/custom toggles
+  if (toggleGrp) toggleGrp.style.display = 'none';
+  if (yearSel) { yearSel.style.display = ''; if (!yearSel.value) yearSel.value = String(new Date().getFullYear()); }
+  if (monthBtn) monthBtn.style.display = 'none';
+  if (fromBtn) fromBtn.style.display = 'none';
+  if (toBtn) toBtn.style.display = 'none';
+  if (arrow) arrow.style.display = 'none';
+  renderStore();
+}
+
+
 function renderStore() {
+  // Sync filter UI to current tab (always year mode)
+  const toggleGrp2 = document.querySelector('#page-store .toggle-group');
+  const yearSel2 = document.getElementById('storeYear');
+  const monthBtn2 = document.getElementById('storeMonth_btn');
+  const fromBtn2 = document.getElementById('storeFromMonth_btn');
+  const toBtn2 = document.getElementById('storeToMonth_btn');
+  const arrow2 = document.getElementById('storeCustomArrow');
+  if (toggleGrp2) toggleGrp2.style.display = 'none';
+  if (yearSel2) { yearSel2.style.display = ''; if (!yearSel2.value) yearSel2.value = String(new Date().getFullYear()); }
+  if (monthBtn2) monthBtn2.style.display = 'none';
+  if (fromBtn2) fromBtn2.style.display = 'none';
+  if (toBtn2) toBtn2.style.display = 'none';
+  if (arrow2) arrow2.style.display = 'none';
   refreshStoreSelect();
   const storeId = document.getElementById('storeSelect').value;
   state.storeSelected = storeId;
@@ -3687,159 +3955,531 @@ function renderStore() {
 
   const periodLabel = mode === 'month' ? fmt.monthLabel(period) : mode === 'custom' ? `${fmt.monthLabel(period.split('~')[0])} → ${fmt.monthLabel(period.split('~')[1])}` : period;
 
-  if (storeId === 'all') {
-    const storesData = state.locations.map(loc => ({ loc, m: calcStorePeriod(loc.id) }));
+  {
+    // Always use tab logic — for all outlets or single store
+    const locsToShow = storeId === 'all' ? state.locations : state.locations.filter(l => l.id === storeId);
+    const storesData = locsToShow.map(loc => ({ loc, m: calcStorePeriod(loc.id) }));
     const grandAppts = storesData.reduce((s, x) => s + x.m.appts, 0);
     const grandShows = storesData.reduce((s, x) => s + x.m.shows, 0);
     const grandSpend = storesData.reduce((s, x) => s + x.m.spend, 0);
 
-    let html = `<div class="section-title"><h3>All Outlets · ${periodLabel}</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Outlet</th><th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th></tr></thead>
-      <tbody>
-        ${storesData.map(({loc, m}) => `<tr>
-          <td style="font-weight:500;">${loc.name}</td>
-          <td class="num">${fmt.num(m.appts)}</td>
-          <td class="num">${fmt.num(m.shows)}${m.appts > 0 ? ` <span style="color:var(--gray);font-size:12px;">(${fmt.pct(m.shows / m.appts)})</span>` : ''}</td>
-          <td class="num">${fmt.num(m.noshows)}</td>
-          <td class="num">${fmt.money(m.spend)}</td>
-          <td class="num">${m.shows > 0 ? fmt.money(m.spend / m.shows) : '—'}</td>
-        </tr>`).join('')}
-        <tr class="total-row">
-          <td>TOTAL</td>
-          <td class="num">${fmt.num(grandAppts)}</td>
-          <td class="num">${fmt.num(grandShows)}${grandAppts > 0 ? ` <span style="color:var(--gray);font-size:12px;">(${fmt.pct(grandShows / grandAppts)})</span>` : ''}</td>
-          <td class="num">${fmt.num(storesData.reduce((s,x) => s + x.m.noshows, 0))}</td>
-          <td class="num">${fmt.money(grandSpend)}</td>
-          <td class="num">${grandShows > 0 ? fmt.money(grandSpend / grandShows) : '—'}</td>
-        </tr>
-      </tbody>
-    </table></div>
+    const tab = _storeTab || 'overview';
 
-    <div class="section-title"><h3>By Platform × Outlet</h3></div>
-    <div class="table-wrap"><table class="data channel-grid-table">
-      <thead><tr><th rowspan="2">Outlet</th><th class="num channel-group" colspan="3">Meta</th><th class="num channel-group" colspan="3">Google</th><th class="num channel-group" colspan="3">Organic + FU</th></tr>
-      <tr><th class="num sub-col group-left" style="font-size:10px;">Appt</th><th class="num sub-col" style="font-size:10px;">Show</th><th class="num sub-col group-right" style="font-size:10px;">Spend</th><th class="num sub-col group-left" style="font-size:10px;">Appt</th><th class="num sub-col" style="font-size:10px;">Show</th><th class="num sub-col group-right" style="font-size:10px;">Spend</th><th class="num sub-col group-left" style="font-size:10px;">Appt</th><th class="num sub-col" style="font-size:10px;">Show</th><th class="num sub-col group-right" style="font-size:10px;">Spend</th></tr></thead>
-      <tbody>
-        ${storesData.map(({loc, m}) => {
-          const ofuAppt = m.byPlatform.organic.appts + m.byPlatform.followup.appts;
-          const ofuShow = m.byPlatform.organic.shows + m.byPlatform.followup.shows;
-          const ofuSpend = m.byPlatform.organic.spend + m.byPlatform.followup.spend;
-          return `<tr>
-          <td style="font-weight:500;">${loc.name}</td>
-          <td class="num group-left">${m.byPlatform.meta.appts}</td>
-          <td class="num">${m.byPlatform.meta.shows}</td>
-          <td class="num group-right">${fmt.moneyK(m.byPlatform.meta.spend)}</td>
-          <td class="num group-left">${m.byPlatform.google.appts}</td>
-          <td class="num">${m.byPlatform.google.shows}</td>
-          <td class="num group-right">${fmt.moneyK(m.byPlatform.google.spend)}</td>
-          <td class="num group-left">${ofuAppt}</td>
-          <td class="num">${ofuShow}</td>
-          <td class="num group-right">${fmt.moneyK(ofuSpend)}</td>
+    let html = '';
+    if (tab === 'overview') {
+      const ovYear = document.getElementById('storeYear').value || String(new Date().getFullYear());
+      const ovMonths = Array.from({length:12}, (_, i) => `${ovYear}-${String(i+1).padStart(2,'0')}`);
+      const locFilter = storeId === 'all' ? null : storeId;
+      const ovTitle = locFilter ? `${locsToShow[0]?.name || ''} — Overview ${ovYear}` : `All Outlets — Overview ${ovYear}`;
+
+      let rows = '';
+      let tA=0, tS=0, tN=0, tSp=0;
+      ovMonths.forEach(m => {
+        const mLeadsAll = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
+        // Lead count: all leads by leadDate — locationId filter only applies when outlet is selected AND lead has locationId
+        const leads = 0; // removed
+        const appts = mLeadsAll.length;
+        const shows = mLeadsAll.filter(l => l.status==='pending'||l.status==='done').length;
+        const noshows = mLeadsAll.filter(l => l.status==='noshow').length;
+        const spend = mLeadsAll.filter(l => l.status==='pending'||l.status==='done').reduce((s,l)=>s+(l.spend||0),0);
+        if (appts === 0 && leads === 0) return; // hide months with no data
+        tA+=appts; tS+=shows; tN+=noshows; tSp+=spend;
+        const lapPct = leads > 0 ? fmt.pct(appts/leads) : '—';
+        rows += `<tr>
+          <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(m)}</td>
+          ${!locFilter ? `<td class="num">${state.leads.filter(l=>l.leadDate&&l.leadDate.startsWith(m)).length||'—'}</td>` : ''}
+          <td class="num">${appts||'—'}${(() => { const tL=!locFilter?state.leads.filter(l=>l.leadDate&&l.leadDate.startsWith(m)).length:0; return tL>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(appts/tL)})</span>`:''; })()}</td>
+          <td class="num">${shows||'—'}</td>
+          <td class="num">${noshows||'—'}${appts>0&&noshows>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(noshows/appts)})</span>`:''}</td>
+          <td class="num">${spend>0?fmt.money(spend):'—'}</td>
+          <td class="num">${shows>0?fmt.money(spend/shows):'—'}</td>
         </tr>`;
-        }).join('')}
-        <tr class="total-row">
-          <td>TOTAL</td>
-          <td class="num group-left">${storesData.reduce((s,x) => s + x.m.byPlatform.meta.appts, 0)}</td>
-          <td class="num">${storesData.reduce((s,x) => s + x.m.byPlatform.meta.shows, 0)}</td>
-          <td class="num group-right">${fmt.moneyK(storesData.reduce((s,x) => s + x.m.byPlatform.meta.spend, 0))}</td>
-          <td class="num group-left">${storesData.reduce((s,x) => s + x.m.byPlatform.google.appts, 0)}</td>
-          <td class="num">${storesData.reduce((s,x) => s + x.m.byPlatform.google.shows, 0)}</td>
-          <td class="num group-right">${fmt.moneyK(storesData.reduce((s,x) => s + x.m.byPlatform.google.spend, 0))}</td>
-          <td class="num group-left">${storesData.reduce((s,x) => s + x.m.byPlatform.organic.appts + x.m.byPlatform.followup.appts, 0)}</td>
-          <td class="num">${storesData.reduce((s,x) => s + x.m.byPlatform.organic.shows + x.m.byPlatform.followup.shows, 0)}</td>
-          <td class="num group-right">${fmt.moneyK(storesData.reduce((s,x) => s + x.m.byPlatform.organic.spend + x.m.byPlatform.followup.spend, 0))}</td>
-        </tr>
-      </tbody>
-    </table></div>
+      });
 
-    <div class="section-title"><h3>Race × Outlet</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Outlet</th><th class="num">Chinese</th><th class="num">Malay</th><th class="num">Indian</th><th class="num">Foreigner</th><th class="num">Others</th><th class="num">Total Show</th></tr></thead>
-      <tbody>
-        ${storesData.map(({loc, m}) => `<tr>
-          <td style="font-weight:500;">${loc.name}</td>
-          <td class="num">${m.race.Chinese}</td>
-          <td class="num">${m.race.Malay}</td>
-          <td class="num">${m.race.Indian}</td>
-          <td class="num">${m.race.Foreigner}</td>
-          <td class="num">${m.race.Others}</td>
-          <td class="num">${m.shows}</td>
-        </tr>`).join('')}
-        <tr class="total-row">
-          <td>TOTAL</td>
-          <td class="num">${storesData.reduce((s,x) => s + x.m.race.Chinese, 0)}</td>
-          <td class="num">${storesData.reduce((s,x) => s + x.m.race.Malay, 0)}</td>
-          <td class="num">${storesData.reduce((s,x) => s + x.m.race.Indian, 0)}</td>
-          <td class="num">${storesData.reduce((s,x) => s + x.m.race.Foreigner, 0)}</td>
-          <td class="num">${storesData.reduce((s,x) => s + x.m.race.Others, 0)}</td>
-          <td class="num">${grandShows}</td>
-        </tr>
-      </tbody>
-    </table></div>`;
+      html += `<div class="section-title"><h3>${ovTitle}</h3></div>
+        <div class="table-wrap"><table class="data">
+          <thead><tr>
+            <th style="width:44px;">Month</th>
+            ${!locFilter ? '<th class="num">Lead</th>' : ''}
+            <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th>
+          </tr></thead>
+          <tbody>${rows || '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray);">No data</td></tr>'}</tbody>
+          <tfoot><tr class="total-row">
+            <td>TOTAL</td>
+            ${!locFilter ? `<td class="num">${state.leads.filter(l=>l.leadDate&&l.leadDate.startsWith(ovYear)).length||'—'}</td>` : ''}
+            <td class="num">${tA}${(() => { const tL=!locFilter?state.leads.filter(l=>l.leadDate&&l.leadDate.startsWith(ovYear)).length:0; return tL>0?` <span style="font-size:11px;">(${fmt.pct(tA/tL)})</span>`:''; })()}</td>
+            <td class="num">${tS}</td>
+            <td class="num">${tN}${tA>0&&tN>0?` <span style="font-size:11px;">(${fmt.pct(tN/tA)})</span>`:''}</td>
+            <td class="num">${fmt.money(tSp)}</td>
+            <td class="num">${tS>0?fmt.money(tSp/tS):'—'}</td>
+          </tr></tfoot>
+        </table></div>
+        <div style="font-size:11px;color:var(--gray);margin-top:6px;">* Appt % = Appt ÷ Lead &nbsp;·&nbsp; No Show % = No Show ÷ Appt</div>
+        <div id="chart_ov_appt" style="margin-top:16px;"></div>
+        <div id="chart_ov_sales" style="margin-top:14px;"></div>
+        <div id="chart_ov_rate" style="margin-top:14px;"></div>`;
+
+      // Build chart data across all 12 months (null for empty)
+      const ovChartMonths = ovMonths;
+      const ovLabels = ovChartMonths.map(m => fmt.monthShort(m));
+      const ovLeadData = [], ovApptData = [], ovShowData = [], ovSalesData = [], ovRateData = [];
+      ovChartMonths.forEach(m => {
+        const mLead = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
+        const mL = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
+        const ld = mLead.length, a = mL.length, s = mL.filter(l=>l.status==='pending'||l.status==='done').length;
+        const sp = mL.filter(l=>l.status==='pending'||l.status==='done').reduce((sum,l)=>sum+(l.spend||0),0);
+        ovLeadData.push(ld > 0 ? ld : null);
+        ovApptData.push(a > 0 ? a : null);
+        ovShowData.push(s > 0 ? s : null);
+        ovSalesData.push(sp > 0 ? sp : null);
+        ovRateData.push(a > 0 ? s/a : null);
+      });
+
+      // Lead + Appt + Show chart
+      setTimeout(() => {
+        AdsChart.render('chart_ov_appt', {
+          title: 'Lead → Appt → Show Up',
+          labels: ovLabels,
+          series: [
+            ...(!locFilter ? [{ label:'Lead', color: AdsChart.C.gray, data: ovLeadData }] : []),
+            { label:'Appt', color: AdsChart.C.purple, data: ovApptData },
+            { label:'Show Up', color: AdsChart.C.green, data: ovShowData },
+          ],
+          yFmt: v => v != null ? v.toFixed(0) : '',
+        });
+        // AVG Spend per Show
+        const ovAvgData = ovChartMonths.map(m => {
+          const mL = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && (!locFilter || l.locationId===locFilter));
+          const s = mL.length, sp = mL.reduce((sum,l)=>sum+(l.spend||0),0);
+          return s > 0 ? sp/s : null;
+        });
+        AdsChart.render('chart_ov_sales', {
+          title: 'AVG Spend per Show',
+          labels: ovLabels,
+          series: [{ label:'AVG/Show', color: AdsChart.C.orange, type:'line', data: ovAvgData }],
+          yFmt: v => v != null ? 'RM'+(v).toFixed(0) : '',
+        });
+        document.getElementById('chart_ov_rate').style.display = 'none';
+
+
+      }, 30);
+    }
+
+    if (tab === 'platform') {
+      // Month-by-month platform breakdown — same concept as By Race
+      const platYear = document.getElementById('storeYear').value || String(new Date().getFullYear());
+      const platMonths = Array.from({length:12}, (_, i) => `${platYear}-${String(i+1).padStart(2,'0')}`);
+      const locFilter = storeId === 'all' ? null : storeId;
+      const platTitle = locFilter ? `${locsToShow[0]?.name || ''} — Platform Breakdown ${platYear}` : `All Outlets — Platform Breakdown ${platYear}`;
+
+      // 3 separate tables + charts per platform
+      const buildOnePlatTable = (platLabel, platFilter, chartId, colorDark, colorLight) => {
+        const isMobile = window.innerWidth < 767;
+        let tLead=0, tAppt=0, tShow=0, tNoShow=0, tSp=0;
+        const leadData=[], apptData=[], showData=[];
+        const pData = [];
+        platMonths.forEach(m => {
+          const mLeads = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && platFilter(l));
+          const allAppt = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter) && platFilter(l));
+          const shows = allAppt.filter(l => l.status==='pending'||l.status==='done');
+          const noshows = allAppt.filter(l => l.status==='noshow');
+          const ld = mLeads.length, a = allAppt.length, s = shows.length, ns = noshows.length;
+          const sp = shows.reduce((sum,l)=>sum+(l.spend||0),0);
+          leadData.push(ld > 0 ? ld : null);
+          apptData.push(a > 0 ? a : null);
+          showData.push(s > 0 ? s : null);
+          tLead+=ld; tAppt+=a; tShow+=s; tNoShow+=ns; tSp+=sp;
+          pData.push({m,ld,a,s,ns,sp});
+        });
+        const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
+        const prefix = locFilter ? (locsToShow[0]?.name||'') + ' — ' : 'All Outlets — ';
+        let tbl;
+        if (!isMobile) {
+          const pb = (v, pct) => `${v}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
+          const activeP = pData;
+          const mHdr = activeP.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
+          tbl = `<div class="section-title"><h3>${prefix}${platLabel} ${platYear}</h3></div>
+            <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
+              <thead><tr><th style="width:50px;white-space:nowrap;">Metric</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
+              <tbody>
+                ${!locFilter ? `<tr><td>Lead</td>${activeP.map(d=>`<td class="num">${tc(d.ld)}</td>`).join('')}<td class="num" style="font-weight:700;">${tc(tLead)}</td></tr>` : ''}
+                <tr><td>Appt</td>${activeP.map(d=>`<td class="num">${!locFilter&&d.ld>0&&d.a>0?pb(tc(d.a),fmt.pct(d.a/d.ld)):tc(d.a)}</td>`).join('')}<td class="num" style="font-weight:700;">${!locFilter&&tLead>0?pb(tc(tAppt),fmt.pct(tAppt/tLead)):tc(tAppt)}</td></tr>
+                <tr><td>Show</td>${activeP.map(d=>`<td class="num">${d.a>0&&d.s>0?pb(tc(d.s),fmt.pct(d.s/d.a)):tc(d.s)}</td>`).join('')}<td class="num" style="font-weight:700;">${tAppt>0?pb(tc(tShow),fmt.pct(tShow/tAppt)):tc(tShow)}</td></tr>
+                <tr><td>No Show</td>${activeP.map(d=>`<td class="num">${d.a>0&&d.ns>0?pb(tc(d.ns),fmt.pct(d.ns/d.a)):tc(d.ns)}</td>`).join('')}<td class="num" style="font-weight:700;">${tAppt>0&&tNoShow>0?pb(tc(tNoShow),fmt.pct(tNoShow/tAppt)):tc(tNoShow)}</td></tr>
+                <tr><td style="font-weight:600;">Sales</td>${activeP.map(d=>`<td class="num" style="font-weight:600;">${d.sp>0?fmt.money(d.sp):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(tSp)}</td></tr>
+                <tr><td>AVG/Show</td>${activeP.map(d=>`<td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>`).join('')}<td class="num">${tShow>0?fmt.money(tSp/tShow):'—'}</td></tr>
+              </tbody>
+            </table></div>
+            <div style="font-size:11px;color:var(--gray);margin-top:6px;">* Appt % = Appt ÷ Lead &nbsp;·&nbsp; No Show % = No Show ÷ Appt</div>
+            <div id="${chartId}" style="margin-top:14px;margin-bottom:24px;"></div>`;
+        } else {
+          let rows = '';
+          pData.filter(d => d.ld > 0 || d.a > 0).forEach(d => {
+            rows += `<tr>
+              <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
+              ${!locFilter ? `<td class="num">${tc(d.ld)}</td>` : ''}
+              <td class="num">${tc(d.a)}${!locFilter&&d.ld>0&&d.a>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.a/d.ld)})</span>`:''}</td>
+              <td class="num">${tc(d.s)}</td>
+              <td class="num">${tc(d.ns)}${d.a>0&&d.ns>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.ns/d.a)})</span>`:''}</td>
+              <td class="num">${d.sp>0?fmt.money(d.sp):'—'}</td>
+              <td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>
+            </tr>`;
+          });
+          tbl = `<div class="section-title"><h3>${prefix}${platLabel} ${platYear}</h3></div>
+            <div class="table-wrap"><table class="data">
+              <thead><tr>
+                <th style="width:44px;">Month</th>
+                ${!locFilter ? '<th class="num">Lead</th>' : ''}
+                <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th>
+              </tr></thead>
+              <tbody>${rows||'<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>'}</tbody>
+              <tfoot><tr class="total-row">
+                <td>TOTAL</td>
+                ${!locFilter ? `<td class="num">${tc(tLead)}</td>` : ''}
+                <td class="num">${tc(tAppt)}${!locFilter&&tLead>0?` <span style="font-size:11px;">(${fmt.pct(tAppt/tLead)})</span>`:''}</td>
+                <td class="num">${tc(tShow)}</td>
+                <td class="num">${tc(tNoShow)}${tAppt>0?` <span style="font-size:11px;">(${fmt.pct(tNoShow/tAppt)})</span>`:''}</td>
+                <td class="num">${fmt.money(tSp)}</td>
+                <td class="num">${tShow>0?fmt.money(tSp/tShow):'—'}</td>
+              </tr></tfoot>
+            </table></div>
+            <div style="font-size:11px;color:var(--gray);margin-top:6px;">* Appt % = Appt ÷ Lead &nbsp;·&nbsp; No Show % = No Show ÷ Appt</div>
+            <div id="${chartId}" style="margin-top:14px;margin-bottom:24px;"></div>`;
+        }
+        setTimeout(() => {
+          AdsChart.render(chartId, {
+            title: platLabel + ' — Appt & Show Up',
+            labels: platMonths.map(m => fmt.monthShort(m)),
+            series: [
+              ...(!locFilter ? [{ label:'Lead', color: AdsChart.C.gray, data: leadData }] : []),
+              { label:'Appt', color: colorDark, data: apptData },
+              { label:'Show Up', color: colorLight, data: showData },
+            ],
+            yFmt: v => v != null ? v.toFixed(0) : '',
+          });
+        }, 30);
+        return tbl;
+      };
+
+      // Summary table (all platforms combined) — always shown
+      {
+        const sumTitle = locFilter ? `${locsToShow[0]?.name||''} — All Platforms ${platYear}` : `All Outlets — All Platforms ${platYear}`;
+        const isMobile = window.innerWidth < 767;
+        let sumRows='', sTLd=0,sTA=0,sTS=0,sTN=0,sTSp=0;
+        const sumLeadData=[], sumApptData=[], sumShowData=[];
+        const mData = [];
+        platMonths.forEach(m => {
+          const mLeads = !locFilter ? state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m)) : [];
+          const allAppt = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
+          const shows = allAppt.filter(l => l.status==='pending'||l.status==='done');
+          const ns = allAppt.filter(l => l.status==='noshow');
+          const ld=mLeads.length, a=allAppt.length, s=shows.length, n=ns.length, sp=shows.reduce((sum,l)=>sum+(l.spend||0),0);
+          sumLeadData.push(ld>0?ld:null); sumApptData.push(a>0?a:null); sumShowData.push(s>0?s:null);
+          sTLd+=ld; sTA+=a; sTS+=s; sTN+=n; sTSp+=sp;
+          mData.push({m,ld,a,s,n,sp});
+        });
+        const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
+        const activeM = mData;
+        if (!isMobile) {
+          // Desktop: months as columns, metrics as rows
+          const pb = (v, pct) => `${v}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
+          const mHdr = activeM.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
+          html += `<div class="section-title"><h3>${sumTitle}</h3></div>
+            <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
+              <thead><tr><th style="width:50px;white-space:nowrap;">Metric</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
+              <tbody>
+                ${!locFilter ? `<tr><td>Lead</td>${activeM.map(d=>`<td class="num">${tc(d.ld)}</td>`).join('')}<td class="num" style="font-weight:700;">${tc(sTLd)}</td></tr>` : ''}
+                <tr><td>Appt</td>${activeM.map(d=>`<td class="num">${!locFilter&&d.ld>0&&d.a>0?pb(tc(d.a),fmt.pct(d.a/d.ld)):tc(d.a)}</td>`).join('')}<td class="num" style="font-weight:700;">${!locFilter&&sTLd>0?pb(tc(sTA),fmt.pct(sTA/sTLd)):tc(sTA)}</td></tr>
+                <tr><td>Show</td>${activeM.map(d=>`<td class="num">${sTA>0&&d.a>0?pb(tc(d.s),fmt.pct(d.s/d.a)):tc(d.s)}</td>`).join('')}<td class="num" style="font-weight:700;">${sTA>0?pb(tc(sTS),fmt.pct(sTS/sTA)):tc(sTS)}</td></tr>
+                <tr><td>No Show</td>${activeM.map(d=>`<td class="num">${d.a>0&&d.n>0?pb(tc(d.n),fmt.pct(d.n/d.a)):tc(d.n)}</td>`).join('')}<td class="num" style="font-weight:700;">${sTA>0&&sTN>0?pb(tc(sTN),fmt.pct(sTN/sTA)):tc(sTN)}</td></tr>
+                <tr><td style="font-weight:600;">Sales</td>${activeM.map(d=>`<td class="num" style="font-weight:600;">${d.sp>0?fmt.money(d.sp):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(sTSp)}</td></tr>
+                <tr><td>AVG/Show</td>${activeM.map(d=>`<td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>`).join('')}<td class="num">${sTS>0?fmt.money(sTSp/sTS):'—'}</td></tr>
+              </tbody>
+            </table></div>
+            <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"></div>`;
+        } else {
+          // Mobile: months as rows (original)
+          activeM.forEach(d => {
+            sumRows += `<tr>
+              <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
+              ${!locFilter?`<td class="num">${tc(d.ld)}</td>`:''}
+              <td class="num">${tc(d.a)}${!locFilter&&d.ld>0&&d.a>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.a/d.ld)})</span>`:''}</td>
+              <td class="num">${tc(d.s)}</td>
+              <td class="num">${tc(d.n)}${d.a>0&&d.n>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.n/d.a)})</span>`:''}</td>
+              <td class="num">${d.sp>0?fmt.money(d.sp):'—'}</td>
+              <td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>
+            </tr>`;
+          });
+          html += `<div class="section-title"><h3>${sumTitle}</h3></div>
+            <div class="table-wrap"><table class="data">
+              <thead><tr>
+                <th style="width:44px;">Month</th>
+                ${!locFilter?'<th class="num">Lead</th>':''}
+                <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th>
+              </tr></thead>
+              <tbody>${sumRows||`<tr><td colspan="${!locFilter?7:6}" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>`}</tbody>
+              <tfoot><tr class="total-row">
+                <td>TOTAL</td>
+                ${!locFilter?`<td class="num">${tc(sTLd)}</td>`:''}
+                <td class="num">${tc(sTA)}${!locFilter&&sTLd>0?` <span style="font-size:11px;">(${fmt.pct(sTA/sTLd)})</span>`:''}</td>
+                <td class="num">${tc(sTS)}${sTA>0?` <span style="font-size:11px;">(${fmt.pct(sTS/sTA)})</span>`:''}</td>
+                <td class="num">${tc(sTN)}${sTA>0?` <span style="font-size:11px;">(${fmt.pct(sTN/sTA)})</span>`:''}</td>
+                <td class="num">${fmt.money(sTSp)}</td>
+                <td class="num">${sTS>0?fmt.money(sTSp/sTS):'—'}</td>
+              </tr></tfoot>
+            </table></div>
+            <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"></div>`;
+        }
+        setTimeout(() => {
+          AdsChart.render('chart_plat_all', {
+            title: 'All Platforms — Appt & Show Up',
+            labels: platMonths.map(m => fmt.monthShort(m)),
+            series: [
+              ...(!locFilter ? [{ label:'Lead', color: AdsChart.C.gray, data: sumLeadData }] : []),
+              { label:'Appt', color: AdsChart.C.purple, data: sumApptData },
+              { label:'Show Up', color: AdsChart.C.green, data: sumShowData },
+            ],
+            yFmt: v => v!=null ? v.toFixed(0) : '',
+          });
+        }, 30);
+      }
+
+      html += buildOnePlatTable('Meta', l => l.platform==='meta', 'chart_plat_meta', '#1877F2', '#93c5fd');
+      html += buildOnePlatTable('Google', l => l.platform==='google', 'chart_plat_google', '#CA8A04', '#fde68a');
+      html += buildOnePlatTable('Organic + Follow Up', l => l.platform==='organic'||l.platform==='followup', 'chart_plat_ofu', '#059669', '#6ee7b7');
+    }
+
+    if (tab === 'race') {
+      // Race tab: always 12-month view, outlet filter from storeSelect
+      const raceYear = document.getElementById('storeYear').value || String(new Date().getFullYear());
+      const raceMonths = Array.from({length:12}, (_, i) => `${raceYear}-${String(i+1).padStart(2,'0')}`);
+      const races = ['Chinese','Malay','Indian','Foreigner','Others'];
+      const raceLocs = storeId === 'all' ? state.locations : state.locations.filter(l => l.id === storeId);
+
+      // Build one race table for selected outlet(s)
+      const buildRaceTable = (title, filterFn, chartId) => {
+        const isMobile = window.innerWidth < 767;
+        const races = ['Chinese','Malay','Indian','Foreigner'];
+        let totals = {Chinese:0,Malay:0,Indian:0,Foreigner:0,show:0,spend:0};
+        const raceChartData = {Chinese:[],Malay:[],Indian:[],Foreigner:[]};
+        const chartLabels = [];
+        const mRaceData = [];
+        raceMonths.forEach(m => {
+          const mLeads = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && filterFn(l));
+          const byRace = {
+            Chinese: mLeads.filter(l=>l.race==='Chinese'),
+            Malay:   mLeads.filter(l=>l.race==='Malay'),
+            Indian:  mLeads.filter(l=>l.race==='Indian'),
+            Foreigner: mLeads.filter(l=>l.race==='Foreigner'),
+          };
+          const s = mLeads.length;
+          const sp = mLeads.reduce((sum,l)=>sum+(l.spend||0),0);
+          races.forEach(r => { totals[r]+=byRace[r].length; raceChartData[r].push(byRace[r].length>0?byRace[r].length:null); });
+          totals.show+=s; totals.spend+=sp;
+          chartLabels.push(fmt.monthShort(m));
+          mRaceData.push({m, byRace, s, sp});
+        });
+        const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
+        let tbl;
+        if (!isMobile) {
+          const activeRD = mRaceData;
+          const colW = `style="width:${Math.floor(85/(activeRD.length+1))}%;min-width:auto;"`;
+          const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
+          const mHdr = activeRD.map(d => `<th class="num" ${colW}>${fmt.monthShort(d.m)}</th>`).join('');
+          tbl = `<div class="section-title"><h3>${title}</h3></div>
+            <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
+              <thead><tr><th style="width:50px;white-space:nowrap;">Race</th>${mHdr}<th class="num" ${colW}>TOTAL</th></tr></thead>
+              <tbody>
+                ${races.map(r => `<tr><td>${r}</td>${activeRD.map(d=>`<td class="num">${d.s>0&&d.byRace[r].length>0?pb(d.byRace[r].length,fmt.pct(d.byRace[r].length/d.s)):(d.byRace[r].length||'—')}</td>`).join('')}<td class="num" style="font-weight:700;">${totals.show>0&&totals[r]>0?pb(totals[r],fmt.pct(totals[r]/totals.show)):(totals[r]||'—')}</td></tr>`).join('')}
+                <tr class="total-row"><td style="font-weight:700;">Total</td>${activeRD.map(d=>`<td class="num" style="font-weight:700;">${tc(d.s)}</td>`).join('')}<td class="num" style="font-weight:700;">${tc(totals.show)}</td></tr>
+              </tbody>
+            </table></div>
+            <div id="${chartId}" style="margin-top:14px;margin-bottom:8px;"></div>`;
+        } else {
+          let rows = '';
+          mRaceData.filter(d => d.s > 0).forEach(d => {
+            rows+=`<tr>
+              <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
+              ${races.map(r=>`<td class="num">${d.byRace[r].length||'—'}${d.s>0&&d.byRace[r].length>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.byRace[r].length/d.s)})</span>`:''}</td>`).join('')}
+              <td class="num" style="font-weight:600;">${d.s}</td>
+            </tr>`;
+          });
+          tbl = `<div class="section-title"><h3>${title}</h3></div>
+            <div class="table-wrap"><table class="data">
+              <thead><tr><th style="width:44px;">Month</th>
+                <th class="num">Chinese</th><th class="num">Malay</th><th class="num">Indian</th><th class="num">Foreigner</th><th class="num">Total Show</th>
+              </tr></thead>
+              <tbody>${rows||'<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>'}</tbody>
+              <tfoot><tr class="total-row"><td>TOTAL</td>
+                ${races.map(r=>`<td class="num">${totals[r]}${totals.show>0&&totals[r]>0?` <span style="font-size:11px;">(${fmt.pct(totals[r]/totals.show)})</span>`:''}</td>`).join('')}
+                <td class="num">${totals.show}</td>
+              </tr></tfoot>
+            </table></div>
+            <div id="${chartId}" style="margin-top:14px;margin-bottom:8px;"></div>`;
+        }
+        // AVG Spend by Race
+        const avgRaceData={Chinese:[],Malay:[],Indian:[],Foreigner:[]};
+        let avgTotals={Chinese:{sp:0,cnt:0},Malay:{sp:0,cnt:0},Indian:{sp:0,cnt:0},Foreigner:{sp:0,cnt:0}};
+        const mAvgData = [];
+        raceMonths.forEach(m => {
+          const mShows = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && filterFn(l));
+          const byR = {};
+          races.forEach(r => {
+            const rL = mShows.filter(l => r==='Others'?!['Chinese','Malay','Indian','Foreigner'].includes(l.race):l.race===r);
+            byR[r] = { cnt:rL.length, sp:rL.reduce((s,l)=>s+(l.spend||0),0) };
+            avgTotals[r].sp+=byR[r].sp; avgTotals[r].cnt+=byR[r].cnt;
+            avgRaceData[r].push(byR[r].cnt>0?byR[r].sp/byR[r].cnt:null);
+          });
+          mAvgData.push({m, byR, hasData: mShows.length > 0});
+        });
+        let avgTbl;
+        if (!isMobile) {
+          const activeAvg = mAvgData;
+          const mHdr2 = activeAvg.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
+          avgTbl = `<div class="section-title" style="margin-top:20px;"><h3>AVG Spend by Race</h3></div>
+            <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
+              <thead><tr><th style="width:50px;white-space:nowrap;">Race</th>${mHdr2}<th class="num">AVG</th></tr></thead>
+              <tbody>
+                ${races.map(r => `<tr><td>${r}</td>${activeAvg.map(d=>`<td class="num">${d.byR[r].cnt>0?fmt.money(d.byR[r].sp/d.byR[r].cnt):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${avgTotals[r].cnt>0?fmt.money(avgTotals[r].sp/avgTotals[r].cnt):'—'}</td></tr>`).join('')}
+              </tbody>
+            </table></div>
+            <div id="${chartId}_avg" style="margin-top:14px;margin-bottom:8px;"></div>`;
+        } else {
+          let avgRows2 = '';
+          mAvgData.filter(d => d.hasData).forEach(d => {
+            avgRows2+=`<tr>
+              <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
+              ${races.map(r=>`<td class="num">${d.byR[r].cnt>0?fmt.money(d.byR[r].sp/d.byR[r].cnt):'—'}</td>`).join('')}
+            </tr>`;
+          });
+          avgTbl = `<div class="section-title" style="margin-top:20px;"><h3>AVG Spend by Race</h3></div>
+            <div class="table-wrap"><table class="data">
+              <thead><tr>
+                <th style="width:44px;">Month</th>
+                ${races.map(r=>`<th class="num">${r}</th>`).join('')}
+              </tr></thead>
+              <tbody>${avgRows2||'<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>'}</tbody>
+              <tfoot><tr class="total-row">
+                <td>AVG</td>
+                ${races.map(r=>`<td class="num">${avgTotals[r].cnt>0?fmt.money(avgTotals[r].sp/avgTotals[r].cnt):'—'}</td>`).join('')}
+              </tr></tfoot>
+            </table></div>
+            <div id="${chartId}_avg" style="margin-top:14px;margin-bottom:8px;"></div>`;
+        }
+
+        setTimeout(() => {
+          const colors = ['#1877F2','#CA8A04','#7132f5','#10B981','#94a3b8'];
+          AdsChart.render(chartId, {
+            title: 'Race — Show Up Trend',
+            labels: raceMonths.map(m => fmt.monthShort(m)),
+            series: races.map((r,i) => ({ label:r, color:colors[i], data:raceChartData[r] })),
+            yFmt: v => v!=null ? v.toFixed(0) : '',
+          });
+          const raceColors = ['#1877F2','#CA8A04','#7132f5','#10B981','#94a3b8'];
+          AdsChart.render(chartId+'_avg', {
+            title: 'AVG Spend per Show by Race — Trend',
+            labels: raceMonths.map(m => fmt.monthShort(m)),
+            series: races.map((r,i) => ({ label:r, color:raceColors[i], type:'line', data:avgRaceData[r] })),
+            yFmt: v => v!=null ? 'RM'+v.toFixed(0) : '',
+          });
+        }, 30);
+        return tbl + avgTbl;
+      };
+
+      // All = all outlets, single = filter by outlet
+      const raceLoc = storeId === 'all' ? null : state.locations.find(l => l.id === storeId);
+      const raceTitle = raceLoc ? `${raceLoc.name} — Race Breakdown ${raceYear}` : `All Outlets — Race Breakdown ${raceYear}`;
+      const raceFilter = raceLoc ? (l => l.locationId === storeId) : (l => true);
+      html += buildRaceTable(raceTitle, raceFilter, 'chart_race_main');
+    }
+
+    if (tab === 'weekly') {
+      const wYear = document.getElementById('storeYear').value || String(new Date().getFullYear());
+      const wMonths = Array.from({length:12}, (_, i) => `${wYear}-${String(i+1).padStart(2,'0')}`);
+      const locFilter = storeId === 'all' ? null : storeId;
+      const wTitle = locFilter ? `${locsToShow[0]?.name || ''} — Weekly Report ${wYear}` : `Weekly Report ${wYear}`;
+      const showLeadCols = !locFilter;
+
+      let rows = '';
+      let gMeta=0, gGoogle=0, gOfu=0, gTotal=0, gAppt=0, gShow=0, gSpend=0;
+      const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
+      const colSpan = showLeadCols ? 8 : 4;
+      
+      wMonths.forEach((m, mi) => {
+        const leadsAll = state.leads.filter(l => l.leadDate && sw(l.leadDate, m));
+        const apptsM = state.leads.filter(l => l.apptDate && sw(l.apptDate, m) && l.name && (!locFilter || l.locationId === locFilter));
+        const weeks = {};
+        if (showLeadCols) {
+          leadsAll.forEach(l => {
+            const w = isoWeek(l.leadDate);
+            weeks[w] = weeks[w] || { week: w, meta:0, google:0, ofu:0, total:0, appt:0, show:0, spend:0 };
+            weeks[w].total++;
+            if (l.platform === 'meta') weeks[w].meta++;
+            else if (l.platform === 'google') weeks[w].google++;
+            else weeks[w].ofu++;
+          });
+        }
+        apptsM.forEach(l => {
+          const w = isoWeek(l.apptDate);
+          weeks[w] = weeks[w] || { week: w, meta:0, google:0, ofu:0, total:0, appt:0, show:0, spend:0 };
+          weeks[w].appt++;
+          if (l.status === 'pending' || l.status === 'done') weeks[w].show++;
+          if (l.spend) weeks[w].spend += l.spend;
+        });
+        const sorted = Object.values(weeks).sort((a,b) => a.week - b.week);
+        if (sorted.length === 0) return;
+        let mMeta=0, mGoogle=0, mOfu=0, mTotal=0, mAppt=0, mShow=0, mSpend=0;
+        sorted.forEach(w => {
+          rows += `<tr class="wk-row" data-wm="${m}"><td style="text-align:center;width:36px;min-width:36px;">W${w.week}</td>${showLeadCols ? `<td class="num">${tc(w.meta)}</td><td class="num">${tc(w.google)}</td><td class="num">${tc(w.ofu)}</td><td class="num" style="font-weight:600;">${tc(w.total)}</td>` : ''}<td class="num">${tc(w.appt)}</td><td class="num">${tc(w.show)}</td><td class="num" style="font-weight:600;">${w.spend > 0 ? fmt.money(w.spend) : '—'}</td></tr>`;
+          mMeta+=w.meta; mGoogle+=w.google; mOfu+=w.ofu; mTotal+=w.total; mAppt+=w.appt; mShow+=w.show; mSpend+=w.spend;
+        });
+        rows += `<tr class="total-row wk-month" onclick="toggleWeekMonth('${m}')" style="cursor:pointer;"><td style="text-align:center;font-weight:700;width:36px;min-width:36px;"><span class="wk-chev" data-wm="${m}" style="display:inline-block;transition:transform 0.2s;font-size:10px;margin-right:2px;">▼</span>${fmt.monthShort(m)}</td>${showLeadCols ? `<td class="num">${tc(mMeta)}</td><td class="num">${tc(mGoogle)}</td><td class="num">${tc(mOfu)}</td><td class="num" style="font-weight:700;">${tc(mTotal)}</td>` : ''}<td class="num">${tc(mAppt)}</td><td class="num">${tc(mShow)}</td><td class="num" style="font-weight:700;">${mSpend > 0 ? fmt.money(mSpend) : '—'}</td></tr>`;
+        gMeta+=mMeta; gGoogle+=mGoogle; gOfu+=mOfu; gTotal+=mTotal; gAppt+=mAppt; gShow+=mShow; gSpend+=mSpend;
+        if (mi < wMonths.length - 1 && sorted.length > 0) rows += `<tr class="wk-gap" data-wm="${m}"><td colspan="${colSpan}" style="padding:4px;"></td></tr>`;
+      });
+
+      if (gTotal > 0 || gAppt > 0) {
+        rows += `<tr style="border-top:2px solid var(--purple);background:var(--purple-bg);"><td style="text-align:center;font-weight:700;color:var(--purple);width:36px;min-width:36px;">TOTAL</td>${showLeadCols ? `<td class="num" style="font-weight:700;">${tc(gMeta)}</td><td class="num" style="font-weight:700;">${tc(gGoogle)}</td><td class="num" style="font-weight:700;">${tc(gOfu)}</td><td class="num" style="font-weight:700;">${tc(gTotal)}</td>` : ''}<td class="num" style="font-weight:700;">${tc(gAppt)}</td><td class="num" style="font-weight:700;">${tc(gShow)}</td><td class="num" style="font-weight:700;">${gSpend > 0 ? fmt.money(gSpend) : '—'}</td></tr>`;
+      }
+
+      html += `<div id="chart_weekly_leads" style="margin-bottom:20px;"></div>
+        <div class="section-title"><h3>${wTitle}</h3></div>
+        <div class="table-wrap"><table class="data">
+          <thead><tr><th style="text-align:center;width:36px;min-width:36px;">Wk</th>${showLeadCols ? '<th class="num">Meta</th><th class="num">Google</th><th class="num">OFU</th><th class="num" style="font-weight:700;">Total</th>' : ''}<th class="num">Appt</th><th class="num">Show</th><th class="num" style="font-weight:700;">Sales</th></tr></thead>
+          <tbody>${rows || `<tr><td colspan="${colSpan}" style="text-align:center;padding:20px;color:var(--gray);">No data</td></tr>`}</tbody>
+        </table></div>`;
+
+      // Render leads chart after DOM update
+      setTimeout(() => {
+        const chartLabels = wMonths.map(m => fmt.monthShort(m));
+        const metaData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m) && l.platform === 'meta').length; return c || null; });
+        const googleData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m) && l.platform === 'google').length; return c || null; });
+        const ofuData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m) && (l.platform === 'organic' || l.platform === 'followup')).length; return c || null; });
+        const totalData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m)).length; return c || null; });
+        AdsChart.render('chart_weekly_leads', {
+          title: 'Monthly Leads — ' + wYear,
+          labels: chartLabels,
+          series: [
+            { label: 'Meta', color: '#1877F2', data: metaData },
+            { label: 'Google', color: '#CA8A04', data: googleData },
+            { label: 'OFU', color: '#10B981', data: ofuData },
+            { label: 'Total', color: '#7132f5', type: 'line', data: totalData },
+          ],
+          yFmt: v => v != null ? v.toFixed(0) : '',
+        });
+      }, 30);
+    }
 
     container.innerHTML = html;
-    return;
-  }
 
-  // Single store view
-  const store = state.locations.find(l => l.id === storeId);
-  if (!store) { container.innerHTML = '<div class="empty">Store not found</div>'; return; }
-  const m = calcStorePeriod(storeId);
-
-  let html = `<div class="section-title"><h3>${store.name} · ${periodLabel}</h3></div>
-  <div class="table-wrap"><table class="data">
-    <thead><tr><th>Metric</th><th class="num">Value</th></tr></thead>
-    <tbody>
-      <tr><td style="font-weight:500;">Appointments</td><td class="num">${fmt.num(m.appts)}</td></tr>
-      <tr><td style="font-weight:500;">Show Ups</td><td class="num">${fmt.num(m.shows)}${m.appts > 0 ? ` <span style="color:var(--gray);font-size:12px;">(${fmt.pct(m.shows / m.appts)})</span>` : ''}</td></tr>
-      <tr><td style="font-weight:500;">No Shows</td><td class="num">${fmt.num(m.noshows)}${m.appts > 0 ? ` <span style="color:var(--gray);font-size:12px;">(${fmt.pct(m.noshows / m.appts)})</span>` : ''}</td></tr>
-      <tr><td style="font-weight:500;">Total Sales</td><td class="num">${fmt.money(m.spend)}</td></tr>
-      <tr><td style="font-weight:500;">AVG per Show Up</td><td class="num">${m.shows > 0 ? fmt.money(m.spend / m.shows) : '—'}</td></tr>
-    </tbody>
-  </table></div>
-
-  <div class="section-title"><h3>Platform Breakdown</h3></div>
-  <div class="table-wrap"><table class="data">
-    <thead><tr><th>Platform</th><th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Spend</th><th class="num">AVG Spend</th><th class="num">%</th></tr></thead>
-    <tbody>
-      <tr><td style="font-weight:500;">Meta</td><td class="num">${m.byPlatform.meta.appts}</td><td class="num">${m.byPlatform.meta.shows}</td><td class="num">${m.byPlatform.meta.noshows}</td><td class="num">${fmt.money(m.byPlatform.meta.spend)}</td><td class="num">${m.byPlatform.meta.shows > 0 ? fmt.money(m.byPlatform.meta.spend / m.byPlatform.meta.shows) : '—'}</td><td class="num">${m.spend > 0 ? fmt.pct(m.byPlatform.meta.spend / m.spend) : '—'}</td></tr>
-      <tr><td style="font-weight:500;">Google</td><td class="num">${m.byPlatform.google.appts}</td><td class="num">${m.byPlatform.google.shows}</td><td class="num">${m.byPlatform.google.noshows}</td><td class="num">${fmt.money(m.byPlatform.google.spend)}</td><td class="num">${m.byPlatform.google.shows > 0 ? fmt.money(m.byPlatform.google.spend / m.byPlatform.google.shows) : '—'}</td><td class="num">${m.spend > 0 ? fmt.pct(m.byPlatform.google.spend / m.spend) : '—'}</td></tr>
-      <tr><td style="font-weight:500;">Organic</td><td class="num">${m.byPlatform.organic.appts}</td><td class="num">${m.byPlatform.organic.shows}</td><td class="num">${m.byPlatform.organic.noshows}</td><td class="num">${fmt.money(m.byPlatform.organic.spend)}</td><td class="num">${m.byPlatform.organic.shows > 0 ? fmt.money(m.byPlatform.organic.spend / m.byPlatform.organic.shows) : '—'}</td><td class="num">${m.spend > 0 ? fmt.pct(m.byPlatform.organic.spend / m.spend) : '—'}</td></tr>
-      <tr><td style="font-weight:500;">Follow Up</td><td class="num">${m.byPlatform.followup.appts}</td><td class="num">${m.byPlatform.followup.shows}</td><td class="num">${m.byPlatform.followup.noshows}</td><td class="num">${fmt.money(m.byPlatform.followup.spend)}</td><td class="num">${m.byPlatform.followup.shows > 0 ? fmt.money(m.byPlatform.followup.spend / m.byPlatform.followup.shows) : '—'}</td><td class="num">${m.spend > 0 ? fmt.pct(m.byPlatform.followup.spend / m.spend) : '—'}</td></tr>
-      <tr class="total-row"><td>TOTAL</td><td class="num">${m.appts}</td><td class="num">${m.shows}</td><td class="num">${m.noshows}</td><td class="num">${fmt.money(m.spend)}</td><td class="num">${m.shows > 0 ? fmt.money(m.spend / m.shows) : '—'}</td><td class="num">100%</td></tr>
-    </tbody>
-  </table></div>
-
-  <div class="section-title"><h3>Race Breakdown</h3></div>
-  <div class="table-wrap"><table class="data">
-    <thead><tr><th>Race</th><th class="num">Show ups</th><th class="num">% of Total</th></tr></thead>
-    <tbody>
-      ${Object.entries(m.race).filter(([r, c]) => c > 0).map(([r, c]) => `<tr><td style="font-weight:500;">${r}</td><td class="num">${c}</td><td class="num">${m.shows > 0 ? fmt.pct(c / m.shows) : '—'}</td></tr>`).join('')}
-      ${m.shows === 0 ? '<tr><td colspan="3" style="text-align:center;color:var(--gray);padding:20px;">No show-up data</td></tr>' : `<tr class="total-row"><td>TOTAL</td><td class="num">${m.shows}</td><td class="num">100%</td></tr>`}
-    </tbody>
-  </table></div>`;
-
-  if (mode === 'year' || mode === 'custom') {
-    const mArr = Object.keys(m.byMonth).sort();
-    if (mArr.length > 0) {
-      html += `<div class="section-title"><h3>Monthly Trend</h3></div>
-        <div class="table-wrap"><table class="data">
-          <thead><tr><th>Month</th><th class="num">Appt</th><th class="num">Show</th><th class="num">No show</th><th class="num">Spend</th><th class="num">AVG</th></tr></thead>
-          <tbody>
-            ${mArr.map(mo => {
-              const mm = m.byMonth[mo];
-              return `<tr style="cursor:pointer;" onclick="openStorePage('${storeId}','${mo}')"><td style="font-weight:500;color:var(--purple-deep);">${fmt.monthLabel(mo)} →</td><td class="num">${mm.appts}</td><td class="num">${mm.shows}</td><td class="num">${mm.noshows}</td><td class="num">${fmt.money(mm.spend)}</td><td class="num">${mm.shows > 0 ? fmt.money(mm.spend / mm.shows) : '—'}</td></tr>`;
-            }).join('')}
-            <tr class="total-row"><td>TOTAL</td><td class="num">${m.appts}</td><td class="num">${m.shows}</td><td class="num">${m.noshows}</td><td class="num">${fmt.money(m.spend)}</td><td class="num">${m.shows > 0 ? fmt.money(m.spend / m.shows) : '—'}</td></tr>
-          </tbody>
-        </table></div>`;
+    // Default: collapse all months except current
+    if (tab === 'weekly') {
+      const curMonth = new Date().toISOString().substring(0, 7);
+      const yr = document.getElementById('storeYear').value || String(new Date().getFullYear());
+      const allM = Array.from({length:12}, (_, i) => `${yr}-${String(i+1).padStart(2,'0')}`);
+      allM.forEach(m => { if (m !== curMonth) toggleWeekMonth(m); });
     }
   }
-
-  container.innerHTML = html;
-  // Apply collapsible
-  // Store sections always expanded, no collapsible wrapping
 }
 
 // ---------- Ads Spend ----------
@@ -3921,7 +4561,7 @@ function renderAdsSpend() {
         state.adsSpend.filter(a=>a.month===m).forEach(a=>{const ch=getChannel(a.channelId);if(!ch)return;if(ch.platform==='meta')metaT+=a.amount;if(ch.platform==='google')googleT+=a.amount;});
         const total=metaT+googleT; const days=daysOf(m);
         metaVals.push(metaT); googleVals.push(googleT); totalVals.push(total); avgVals.push(total/days);
-        gMeta+=metaT; gGoogle+=googleT; gDays+=days;
+        if (total > 0) { gMeta+=metaT; gGoogle+=googleT; gDays+=days; } else { gMeta+=metaT; gGoogle+=googleT; }
       });
       const gTotal=gMeta+gGoogle;
       let html;
@@ -3936,7 +4576,7 @@ function renderAdsSpend() {
           </tbody>`;
       } else {
         // Mobile: month on left
-        html = `<thead><tr><th style="width:44px;min-width:44px;">Month</th><th class="num">Meta</th><th class="num">Google</th><th class="num">Total</th><th class="num">Avg/d</th></tr></thead><tbody>`;
+        html = `<thead><tr><th style="width:36px;min-width:36px;">Month</th><th class="num">Meta</th><th class="num">Google</th><th class="num">Total</th><th class="num">Avg/d</th></tr></thead><tbody>`;
         activeM.forEach((m,i) => { html += `<tr><td style="font-weight:500;white-space:nowrap;">${fmt.monthShort(m)}</td><td class="num">${fmt.money(metaVals[i])}</td><td class="num">${fmt.money(googleVals[i])}</td><td class="num">${fmt.money(totalVals[i])}</td><td class="num">${fmt.money(avgVals[i])}</td></tr>`; });
         html += `<tr class="total-row"><td>TOTAL</td><td class="num">${fmt.money(gMeta)}</td><td class="num">${fmt.money(gGoogle)}</td><td class="num">${fmt.money(gTotal)}</td><td class="num">${fmt.money(gDays>0?gTotal/gDays:0)}</td></tr></tbody>`;
       }
@@ -3957,7 +4597,7 @@ function renderAdsSpend() {
         let rowTotal=0;
         state.adsSpend.filter(a=>a.month===m).forEach(a=>{if(!filterChs.find(c=>c.id===a.channelId))return;spends[a.channelId]=(spends[a.channelId]||0)+a.amount;grandByCh[a.channelId]=(grandByCh[a.channelId]||0)+a.amount;rowTotal+=a.amount;});
         grandTotal+=rowTotal;
-        const days=daysOf(m); totalDays+=days;
+        const days=daysOf(m); if (rowTotal > 0) totalDays+=days;
         html+=`<tr><td style="font-weight:500;">${fmt.monthShort(m)}</td>${showChCols?filterChs.map(c=>`<td class="num">${spends[c.id]>0?fmt.money(spends[c.id]):'—'}</td>`).join(''):''}<td class="num">${fmt.money(rowTotal)}</td><td class="num">${fmt.money(days>0?rowTotal/days:0)}</td></tr>`;
       });
       html+=`<tr class="total-row"><td>TOTAL</td>${showChCols?filterChs.map(c=>`<td class="num">${grandByCh[c.id]>0?fmt.money(grandByCh[c.id]):'—'}</td>`).join(''):''}<td class="num">${fmt.money(grandTotal)}</td><td class="num">${fmt.money(totalDays>0?grandTotal/totalDays:0)}</td></tr></tbody>`;
@@ -4068,7 +4708,7 @@ function renderAdsSpendSection(key) {
     } else {
       // Mobile: months as rows, fee names as cols
       const nameHdr = feeNames.map(n => `<th class="num" style="font-size:11px;">${n}</th>`).join('');
-      html = `<div class="table-wrap"><table class="data"><thead><tr><th style="width:44px;min-width:44px;">Month</th>${nameHdr}<th class="num">Total</th></tr></thead><tbody>`;
+      html = `<div class="table-wrap"><table class="data"><thead><tr><th style="width:36px;min-width:36px;">Month</th>${nameHdr}<th class="num">Total</th></tr></thead><tbody>`;
       activeMonths.forEach(m => {
         const mTotal = filteredFees.filter(f=>f.month===m).reduce((s,f)=>s+(f.amount||0),0);
         html += `<tr><td style="font-weight:500;white-space:nowrap;">${fmt.monthShort(m)}</td>`;
@@ -4326,7 +4966,7 @@ function renderAdsCostEntry() {
 
   tableEl.innerHTML = `<div class="table-wrap"><table class="data">
       <thead><tr>
-        <th>Month</th>
+        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
         <th class="num">Amount (RM)</th>
       </tr></thead>
       <tbody>${rows}</tbody>
@@ -4667,86 +5307,368 @@ function toggleFeeMonth(m) {
 
 // ---------- Revenue ----------
 function renderRevenue() {
-  const year = document.getElementById('revYear').value || '2026';
-  const months = new Set();
-  state.revenue.forEach(r => { if (sw(r.month, year)) months.add(r.month); });
-  state.leads.forEach(l => { if (l.apptDate && sw(l.apptDate, year)) months.add(l.apptDate.substring(0,7)); });
-  const mArr = [...months].sort();
-
+  populateRevOutletSelect();
+  const year = document.getElementById('revYear').value || String(new Date().getFullYear());
+  const outletSel = document.getElementById('revOutletSelect');
+  const outletId = outletSel ? outletSel.value : 'all';
+  // Always show 12 months
+  const mArr = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
   const wrap = document.getElementById('revenueReportWrap');
+  if (!wrap) return;
 
-  if (mArr.length === 0) {
-    wrap.innerHTML = '<div style="text-align:center;padding:30px;color:var(--gray);">No data</div>';
-  } else if (state.revMode === 'summary') {
-    wrap.innerHTML = '<div class="table-wrap"><table class="data" id="revenueReport"></table></div>';
+  if (outletId === 'all') {
     renderRevenueSummary(mArr);
   } else {
-    wrap.innerHTML = '<div id="revenueReport"></div>';
-    renderRevenueDetail(mArr);
-  }
-
-  const hintEl = document.getElementById('revReportHint');
-  if (hintEl) {
-    hintEl.innerHTML = state.revMode === 'summary'
-      ? '💡 Switch to <strong>Detail</strong> view to edit individual store data · Click any cell to enter/edit'
-      : '* Cust Spend = ads customer spend from lead records (auto-calculated, for reference only)';
+    renderRevenueOutlet(mArr, outletId);
   }
 }
 
-function renderRevenueSummary(mArr) {
-  // Horizontal layout: Months as rows, stores as columns (Total / New for each)
-  let html = `<thead>
-    <tr>
-      <th rowspan="2">Month</th>
-      ${state.locations.map(loc => `<th colspan="3" class="num" style="background:var(--purple-bg);color:var(--purple-deep);border-left:1px solid var(--border);">${loc.name}</th>`).join('')}
-      <th colspan="3" class="num" style="background:var(--purple-bg);color:var(--purple-deep);border-left:1px solid var(--border);">All Outlets</th>
-    </tr>
-    <tr>
-      ${state.locations.map(() => `<th class="num" style="font-size:11px;border-left:1px solid var(--border);">Total</th><th class="num" style="font-size:11px;">New</th><th class="num" style="font-size:11px;color:var(--gray);">Old</th>`).join('')}
-      <th class="num" style="font-size:11px;border-left:1px solid var(--border);">Total</th><th class="num" style="font-size:11px;">New</th><th class="num" style="font-size:11px;color:var(--gray);">Old</th>
-    </tr>
-  </thead><tbody>`;
+function setRevOutlet(locId) {
+  const sel = document.getElementById('revOutletSelect');
+  if (sel) { sel.value = locId; }
+  renderRevenue();
+}
 
-  const yearTot = { total: 0, new: 0 };
-  const storeTot = {};
-  state.locations.forEach(l => storeTot[l.id] = { total: 0, new: 0 });
+function renderRevenueOutlet(mArr, locId) {
+  const wrap = document.getElementById('revenueReportWrap');
+  const loc = state.locations.find(l => l.id === locId);
+  const locName = loc ? loc.name : locId;
+  const year = mArr[0].split('-')[0];
 
-  mArr.forEach(m => {
-    let monthTotal = 0, monthNew = 0;
-    let cells = '';
-    state.locations.forEach(loc => {
-      const r = state.revenue.find(x => x.month === m && x.locationId === loc.id);
-      const t = r?.total || 0;
-      const n = r?.newCustomer || 0;
-      monthTotal += t; monthNew += n;
-      storeTot[loc.id].total += t;
-      storeTot[loc.id].new += n;
-      cells += `<td class="num" style="border-left:1px solid var(--border-light);cursor:pointer;" onclick="editRevRow('${m}','${loc.id}')">${r ? fmt.moneyK(t) : '<span style="color:var(--silver);">+</span>'}</td>`;
-      cells += `<td class="num" style="color:var(--green-dark);">${r ? fmt.moneyK(n) : '—'}</td>`;
-      cells += `<td class="num" style="color:var(--gray);font-size:12px;">${r ? fmt.moneyK(t - n) : '—'}</td>`;
+  // compute totals
+  let yearTotal = 0, yearNew = 0;
+  const activeMonths = mArr.filter(m => state.revenue.some(r => r.month === m && r.locationId === locId));
+
+  // Both desktop and mobile: only show months with data
+  const showMonths = activeMonths;
+
+  // Year total card
+  activeMonths.forEach(m => {
+    const r = state.revenue.find(x => x.month === m && x.locationId === locId);
+    if (r) { yearTotal += r.total||0; yearNew += r.newCustomer||0; }
+  });
+  const yearOld = yearTotal - yearNew;
+  const newPct = yearTotal > 0 ? (yearNew/yearTotal*100).toFixed(1) : '0.0';
+  const oldPct = yearTotal > 0 ? (yearOld/yearTotal*100).toFixed(1) : '0.0';
+
+  const isMobile = window.innerWidth < 767;
+
+  let html = `<div class="card" style="margin-bottom:14px;">
+    <div style="margin-bottom:12px;">
+      <button onclick="setRevOutlet('all')" style="font-size:12px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-weight:600;">← All Outlets</button>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:var(--black);">${locName}</div>
+        <div style="font-size:12px;color:var(--gray);">${activeMonths.length} months of data</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
+        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">${fmt.money(yearTotal)}</div>
+        <div style="font-size:12px;color:var(--green-dark);">● New: ${fmt.money(yearNew)} · ${newPct}%</div>
+        <div style="font-size:12px;color:var(--gray);">● Old: ${fmt.money(yearOld)} · ${oldPct}%</div>
+      </div>
+    </div>`;
+
+  // Build per-month data
+  const oMData = [];
+  showMonths.forEach(m => {
+    const r = state.revenue.find(x => x.month === m && x.locationId === locId);
+    const t = r?.total || 0;
+    const n = r?.newCustomer || 0;
+    const o = t - n;
+    const adsNew = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+    oMData.push({m, t, n, o, adsNew, isEmpty: !r || (t === 0 && n === 0)});
+  });
+  const adsNewYr = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(year) && l.locationId === locId && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+
+  if (!isMobile) {
+    const pb = (val, pct) => `${val}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
+    const mHdr = oMData.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
+    html += `<div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
+      <thead><tr><th style="width:50px;white-space:nowrap;">Metric</th>${mHdr}</tr></thead>
+      <tbody>
+        <tr><td style="white-space:nowrap;">Total Sales</td>${oMData.map(d=>`<td class="num">${d.t>0?fmt.money(d.t):'—'}</td>`).join('')}</tr>
+        <tr><td style="color:var(--green-dark);white-space:nowrap;">New Cust</td>${oMData.map(d=>`<td class="num" style="color:var(--green-dark);">${d.t>0?pb(fmt.money(d.n),(d.n/d.t*100).toFixed(1)+'%'):'—'}</td>`).join('')}</tr>
+        <tr><td style="color:var(--gray);white-space:nowrap;">Old Cust</td>${oMData.map(d=>`<td class="num" style="color:var(--gray);">${d.t>0?pb(fmt.money(d.o),(d.o/d.t*100).toFixed(1)+'%'):'—'}</td>`).join('')}</tr>
+        <tr><td style="color:var(--meta-color);white-space:nowrap;">Ads New</td>${oMData.map(d=>`<td class="num" style="color:var(--meta-color);">${d.adsNew>0?pb(fmt.money(d.adsNew),(d.t>0?(d.adsNew/d.t*100).toFixed(1)+'%':'—')):'—'}</td>`).join('')}</tr>
+      </tbody>
+      <tfoot><tr class="total-row">
+        <td style="white-space:nowrap;">TOTAL</td>
+        <td class="num" colspan="${oMData.length}">
+          <div style="display:flex;justify-content:space-around;text-align:center;">
+            <div>Total<br><strong>${fmt.money(yearTotal)}</strong></div>
+            <div style="color:var(--green-dark);">New<br><strong>${fmt.money(yearNew)}</strong><br><span style="font-size:11px;">${newPct}%</span></div>
+            <div style="color:var(--gray);">Old<br><strong>${fmt.money(yearOld)}</strong><br><span style="font-size:11px;">${oldPct}%</span></div>
+            <div style="color:var(--meta-color);">Ads<br><strong>${fmt.money(adsNewYr)}</strong><br><span style="font-size:11px;">${yearTotal>0?(adsNewYr/yearTotal*100).toFixed(1)+'%':'—'}</span></div>
+          </div>
+        </td>
+      </tr></tfoot>
+    </table></div>`;
+  } else {
+    html += `<div class="table-wrap"><table class="data" style="vertical-align:top;">
+      <thead><tr>
+        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
+        <th class="num">Total Sales</th>
+        <th class="num">New Customer</th>
+        <th class="num hide-mobile">Old Customer</th>
+        <th class="num" style="color:var(--meta-color);">Ads New Sales</th>
+      </tr></thead><tbody>`;
+    oMData.forEach(d => {
+      const nPct = d.t > 0 ? (d.n/d.t*100).toFixed(1)+'%' : '—';
+      const oPct = d.t > 0 ? (d.o/d.t*100).toFixed(1)+'%' : '—';
+      const adsPct = d.t > 0 ? (d.adsNew/d.t*100).toFixed(1)+'%' : '—';
+      html += `<tr style="${d.isEmpty?'color:var(--silver);':''}vertical-align:top;">
+        <td style="font-weight:${d.isEmpty?'400':'600'};width:36px;min-width:36px;white-space:nowrap;vertical-align:middle;">${fmt.monthShort(d.m)}</td>
+        <td class="num" style="vertical-align:middle;">${d.isEmpty ? '—' : fmt.money(d.t)}</td>
+        <td class="num" style="color:var(--green-dark);vertical-align:top;">${d.isEmpty ? '—' : `<div>${fmt.money(d.n)}</div><div style="font-size:11px;color:var(--gray);">${nPct}</div>`}</td>
+        <td class="num hide-mobile" style="color:var(--gray);vertical-align:top;">${d.isEmpty ? '—' : `<div>${fmt.money(d.o)}</div><div style="font-size:11px;">${oPct}</div>`}</td>
+        <td class="num" style="color:var(--meta-color);vertical-align:top;">${d.adsNew > 0 ? `<div>${fmt.money(d.adsNew)}</div><div style="font-size:11px;color:var(--gray);">${adsPct}</div>` : '—'}</td>
+      </tr>`;
     });
-    yearTot.total += monthTotal; yearTot.new += monthNew;
-    html += `<tr><td style="font-weight:500;">${fmt.monthLabel(m)}</td>${cells}
-      <td class="num" style="border-left:1px solid var(--border);">${fmt.moneyK(monthTotal)}</td>
-      <td class="num" style="color:var(--green-dark);">${fmt.moneyK(monthNew)}</td>
-      <td class="num" style="color:var(--gray);">${fmt.moneyK(monthTotal - monthNew)}</td>
-    </tr>`;
+    html += `<tr class="total-row" style="vertical-align:middle;">
+      <td style="width:36px;min-width:36px;">TOTAL</td>
+      <td class="num" style="vertical-align:middle;">${fmt.money(yearTotal)}</td>
+      <td class="num" style="color:var(--green-dark);vertical-align:middle;">${fmt.money(yearNew)}</td>
+      <td class="num hide-mobile" style="vertical-align:middle;">${fmt.money(yearOld)}</td>
+      <td class="num" style="color:var(--meta-color);vertical-align:middle;">${fmt.money(adsNewYr)}</td>
+    </tr></tbody></table></div>`;
+  }
+
+  html += `<div id="chart_rev_outlet" style="margin-top:16px;"></div>
+  </div>`;
+  wrap.innerHTML = html;
+
+  // Draw outlet revenue chart — Total Sales + Ads New Sales
+  setTimeout(() => {
+    const labels = mArr.map(m => fmt.monthShort(m));
+    const totalVals = mArr.map(m => {
+      const r = state.revenue.find(x => x.month === m && x.locationId === locId);
+      return r && r.total ? r.total : null;
+    });
+    const adsVals = mArr.map(m => {
+      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+      return v > 0 ? v : null;
+    });
+    AdsChart.render('chart_rev_outlet', {
+      title: locName + ' — Revenue',
+      labels,
+      series: [
+        { label: 'Total Sales', color: AdsChart.C.purple, data: totalVals },
+        { label: 'Ads New Sales', color: AdsChart.C.meta, data: adsVals },
+      ],
+      yFmt: v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0),
+    });
+
+    // Add New / Old chart below
+    const newVals2 = mArr.map(m => {
+      const r = state.revenue.find(x => x.month === m && x.locationId === locId);
+      return r && r.newCustomer ? r.newCustomer : null;
+    });
+    const oldVals2 = mArr.map(m => {
+      const r = state.revenue.find(x => x.month === m && x.locationId === locId);
+      return r && r.total ? Math.max(0, r.total - (r.newCustomer||0)) : null;
+    });
+    const el = document.getElementById('chart_rev_outlet');
+    if (el) {
+      const div2 = document.createElement('div');
+      div2.id = 'chart_rev_outlet2';
+      div2.style.marginTop = '12px';
+      el.parentNode.insertBefore(div2, el.nextSibling);
+      AdsChart.render('chart_rev_outlet2', {
+        title: locName + ' — New vs Old Customer',
+        labels,
+        series: [
+          { label: 'New Customer', color: AdsChart.C.green, data: newVals2 },
+          { label: 'Old Customer', color: AdsChart.C.purple2, data: oldVals2 },
+        ],
+        yFmt: v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0),
+      });
+    }
+  }, 30);
+}
+
+function renderRevenueSummary(mArr) {
+  const wrap = document.getElementById('revenueReportWrap');
+  const isMobile = window.innerWidth < 767;
+  const locs = state.locations.filter(l => l.active !== false);
+  // On mobile only show active months
+  const year = mArr[0].split('-')[0];
+  const activeM = isMobile ? mArr.filter(m => state.revenue.some(r => r.month === m)) : mArr;
+
+  // Compute year totals for summary card
+  let grandTotal = 0, grandNew = 0;
+  const storeSummary = {};
+  locs.forEach(l => storeSummary[l.id] = { name: l.name, total: 0, new: 0 });
+  const activeMonths = mArr.filter(m => state.revenue.some(r => r.month === m));
+  mArr.forEach(m => {
+    locs.forEach(loc => {
+      const r = state.revenue.find(x => x.month === m && x.locationId === loc.id);
+      if (r) { storeSummary[loc.id].total += r.total||0; storeSummary[loc.id].new += r.newCustomer||0; grandTotal += r.total||0; grandNew += r.newCustomer||0; }
+    });
+  });
+  const grandOld = grandTotal - grandNew;
+  const gNewPct = grandTotal > 0 ? (grandNew/grandTotal*100).toFixed(1) : '0.0';
+  const gOldPct = grandTotal > 0 ? (grandOld/grandTotal*100).toFixed(1) : '0.0';
+
+  // Summary card
+  let html = `<div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
+        <div style="font-size:12px;color:var(--gray);">${activeMonths.length} months · ${locs.length} outlets</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
+        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">${fmt.money(grandTotal)}</div>
+        <div style="font-size:12px;color:var(--green-dark);">● New: ${fmt.money(grandNew)} · ${gNewPct}%</div>
+        <div style="font-size:12px;color:var(--gray);">● Old: ${fmt.money(grandOld)} · ${gOldPct}%</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      ${locs.map(loc => {
+        const s = storeSummary[loc.id];
+        const pct = grandTotal > 0 ? (s.total/grandTotal*100).toFixed(0) : 0;
+        return `<div onclick="setRevOutlet('${loc.id}')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">${loc.name} ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">${fmt.moneyK(s.total)}</div>
+          <div style="font-size:11px;color:var(--gray);">${pct}% of total</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  // No table — just card + chart
+  const showMonths = activeM;
+  if (false) {  // placeholder to keep variable
+
+  // Table removed — chart only
+
+  } // end placeholder
+  // All Outlets combined table
+  const allM12 = mArr;
+  let allYearTotal = 0, allYearNew = 0, allYearAds = 0;
+  const allMData = [];
+  allM12.forEach(m => {
+    const mTotal = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s + (r?.total||0); }, 0);
+    const mNew = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s + (r?.newCustomer||0); }, 0);
+    const mAds = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+    allYearTotal += mTotal; allYearNew += mNew; allYearAds += mAds;
+    allMData.push({m, mTotal, mNew, mAds});
   });
 
-  // Store totals row
-  html += `<tr class="total-row"><td>YEAR TOTAL</td>`;
-  state.locations.forEach(loc => {
-    const s = storeTot[loc.id];
-    html += `<td class="num" style="border-left:1px solid var(--border);">${fmt.moneyK(s.total)}</td>`;
-    html += `<td class="num">${fmt.moneyK(s.new)}</td>`;
-    html += `<td class="num">${fmt.moneyK(s.total - s.new)}</td>`;
-  });
-  html += `<td class="num" style="border-left:1px solid var(--border);">${fmt.moneyK(yearTot.total)}</td>`;
-  html += `<td class="num">${fmt.moneyK(yearTot.new)}</td>`;
-  html += `<td class="num">${fmt.moneyK(yearTot.total - yearTot.new)}</td>`;
-  html += `</tr></tbody>`;
+  if (!isMobile) {
+    // Desktop: months as columns, TOTAL as bottom row
+    const mHdr = allMData.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
+    const pb = (val, pct) => `${val}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
+    html += `<div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
+      <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
+        <thead><tr><th style="width:50px;white-space:nowrap;">Metric</th>${mHdr}</tr></thead>
+        <tbody>
+          <tr><td style="white-space:nowrap;">Total Sales</td>${allMData.map(d=>`<td class="num">${d.mTotal>0?fmt.money(d.mTotal):'—'}</td>`).join('')}</tr>
+          <tr><td style="color:var(--green-dark);white-space:nowrap;">New Cust</td>${allMData.map(d=>`<td class="num" style="color:var(--green-dark);">${d.mTotal>0?pb(fmt.money(d.mNew),(d.mNew/d.mTotal*100).toFixed(1)+'%'):'—'}</td>`).join('')}</tr>
+          <tr><td style="color:var(--meta-color);white-space:nowrap;">Ads New</td>${allMData.map(d=>`<td class="num" style="color:var(--meta-color);">${d.mAds>0?pb(fmt.money(d.mAds),(d.mTotal>0?(d.mAds/d.mTotal*100).toFixed(1)+'%':'—')):'—'}</td>`).join('')}</tr>
+        </tbody>
+        <tfoot><tr class="total-row">
+          <td style="white-space:nowrap;">TOTAL</td>
+          <td class="num" style="font-weight:700;" colspan="${allMData.length}">
+            <div style="display:flex;justify-content:space-around;text-align:center;">
+              <div>Total<br><strong>${fmt.money(allYearTotal)}</strong></div>
+              <div style="color:var(--green-dark);">New<br><strong>${fmt.money(allYearNew)}</strong><br><span style="font-size:11px;">${allYearTotal>0?(allYearNew/allYearTotal*100).toFixed(1)+'%':'—'}</span></div>
+              <div style="color:var(--meta-color);">Ads<br><strong>${fmt.money(allYearAds)}</strong><br><span style="font-size:11px;">${allYearTotal>0?(allYearAds/allYearTotal*100).toFixed(1)+'%':'—'}</span></div>
+            </div>
+          </td>
+        </tr></tfoot>
+      </table></div>
+    </div>`;
+  } else {
+    // Mobile: months as rows
+    let tableRows = '';
+    allMData.forEach(d => {
+      const nPct = d.mTotal > 0 ? (d.mNew/d.mTotal*100).toFixed(1)+'%' : '—';
+      const aPct = d.mTotal > 0 ? (d.mAds/d.mTotal*100).toFixed(1)+'%' : '—';
+      const empty = d.mTotal === 0;
+      tableRows += `<tr style="${empty?'color:var(--silver);':''}">
+        <td style="font-weight:${empty?'400':'600'};width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
+        <td class="num">${empty ? '—' : fmt.money(d.mTotal)}</td>
+        <td class="num" style="color:var(--green-dark);vertical-align:top;">${empty ? '—' : `<div>${fmt.money(d.mNew)}</div><div style="font-size:11px;color:var(--gray);">${nPct}</div>`}</td>
+        <td class="num" style="color:var(--meta-color);vertical-align:top;">${empty || d.mAds===0 ? '—' : `<div>${fmt.money(d.mAds)}</div><div style="font-size:11px;color:var(--gray);">${aPct}</div>`}</td>
+      </tr>`;
+    });
+    html += `<div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
+      <div class="table-wrap"><table class="data">
+        <thead><tr>
+          <th style="width:36px;min-width:36px;">Month</th>
+          <th class="num">Total Sales</th>
+          <th class="num">New Customer</th>
+          <th class="num" style="color:var(--meta-color);">Ads New Sales</th>
+        </tr></thead>
+        <tbody>${tableRows}</tbody>
+        <tfoot><tr class="total-row" style="vertical-align:middle;">
+          <td>TOTAL</td>
+          <td class="num">${fmt.money(allYearTotal)}</td>
+          <td class="num" style="color:var(--green-dark);">${fmt.money(allYearNew)}</td>
+          <td class="num" style="color:var(--meta-color);">${fmt.money(allYearAds)}</td>
+        </tr></tfoot>
+      </table></div>
+    </div>`;
+  }
 
-  document.getElementById('revenueReport').innerHTML = html;
+  html += `<div id="chart_rev_all" style="margin-top:14px;"></div></div>`;
+
+  wrap.innerHTML = html;
+
+  // Draw all-outlets charts
+  setTimeout(() => {
+    const labels = mArr.map(m => fmt.monthShort(m));
+    const yFmt = v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0);
+
+    const totalData = mArr.map(m => {
+      const t = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s+(r?.total||0); }, 0);
+      return t > 0 ? t : null;
+    });
+    const adsData = mArr.map(m => {
+      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+      return v > 0 ? v : null;
+    });
+    AdsChart.render('chart_rev_all', {
+      title: 'All Outlets — Revenue',
+      labels,
+      series: [
+        { label: 'Total Sales', color: AdsChart.C.purple, data: totalData },
+        { label: 'Ads New Sales', color: AdsChart.C.meta, data: adsData },
+      ],
+      yFmt,
+    });
+
+    // New vs Old chart below
+    const newData = mArr.map(m => {
+      const v = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s+(r?.newCustomer||0); }, 0);
+      return v > 0 ? v : null;
+    });
+    const oldData = mArr.map((m, i) => {
+      const t = totalData[i]; const n = newData[i];
+      return t != null ? Math.max(0, (t||0) - (n||0)) : null;
+    });
+    const el = document.getElementById('chart_rev_all');
+    if (el) {
+      const div2 = document.createElement('div');
+      div2.id = 'chart_rev_all2';
+      div2.style.marginTop = '12px';
+      el.parentNode.insertBefore(div2, el.nextSibling);
+      AdsChart.render('chart_rev_all2', {
+        title: 'All Outlets — New vs Old Customer',
+        labels,
+        series: [
+          { label: 'New Customer', color: AdsChart.C.green, data: newData },
+          { label: 'Old Customer', color: AdsChart.C.purple2, data: oldData },
+        ],
+        yFmt,
+      });
+    }
+  }, 30);
 }
 
 function renderRevenueDetail(mArr) {
@@ -4877,6 +5799,15 @@ function deleteRev(id) {
 }
 
 document.getElementById('revYear').addEventListener('change', e => { state.revYear = e.target.value; renderRevenue(); });
+
+function populateRevOutletSelect() {
+  const sel = document.getElementById('revOutletSelect');
+  if (!sel) return;
+  const cur = sel.value;
+  sel.innerHTML = '<option value="all">All Outlets</option>' +
+    state.locations.filter(l => l.active !== false).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+  if (cur && sel.querySelector(`option[value="${cur}"]`)) sel.value = cur;
+}
 
 document.getElementById('revenueForm')?.addEventListener('submit', e => { e.preventDefault(); });
 
@@ -5481,6 +6412,20 @@ init();
 
 <!-- Chart tooltip -->
 <div id="chartTooltip" style="display:none;position:fixed;background:#1e1b2e;color:#fff;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;pointer-events:none;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.25);white-space:nowrap;line-height:1.6;"></div>
+
+<script>
+// Auto-scroll input into view when keyboard appears (mobile)
+(function() {
+  const fix = e => {
+    const el = e.target;
+    if (!['INPUT','TEXTAREA','SELECT'].includes(el.tagName)) return;
+    setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 320);
+  };
+  document.addEventListener('focusin', fix, true);
+})();
+</script>
 
 
 </body></html>
