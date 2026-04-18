@@ -533,8 +533,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* Inputs compact */
 .inline-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: end; }
-@media (max-width: 640px) { .inline-form { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 767px) { .inline-form { grid-template-columns: 1fr; } }
+@media (max-width: 767px) { .inline-form button[type=submit] { width: 100%; } }
 
+
+@media (min-width: 767px) {
+  #settingsTopGrid { grid-template-columns: 1fr 1fr !important; }
+  #settingsBotGrid { grid-template-columns: 1fr 1fr 1fr !important; }
+}
 </style>
 </head>
 <body>
@@ -543,11 +549,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v1.141</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v1.153</span>
   </div>
-  <button class="topbar-menu-btn hide-desktop" onclick="openTopMenu()" aria-label="Menu">
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-  </button>
+  <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
+    <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+    </button>
+    <button onclick="nav('settings')" aria-label="Settings" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+  </div>
 </header>
 
 <nav class="nav" id="navDesktop">
@@ -867,50 +878,58 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <section class="page" id="page-entry">
     <h1 class="page-title">Data Entry</h1>
 
-    <!-- Pill tabs -->
-    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
-      <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--purple);background:var(--purple);color:#fff;font-size:13px;font-weight:600;cursor:pointer;">Ads Cost</button>
-      <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
+    <!-- Mobile: pill tabs (hidden on desktop) -->
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
+      <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
+      <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
     </div>
 
-    <!-- Ads Cost panel -->
-    <div id="as_entryBody" style="display:block;">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
-        <select id="as_entryChannel" style="min-width:150px;flex:1;max-width:260px;"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
-        <button type="button" id="as_entryYearBtn" onclick="openYearPicker('as_entryYear', this)" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--black);">2026</button>
-        <input type="hidden" id="as_entryYear" value="2026">
-        <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);margin-left:4px;"></span>
-      </div>
-      <div style="font-size:12px;color:var(--gray);margin-bottom:10px;">💡 直接在格子里输入金额，离开格子自动保存</div>
-      <div id="as_entryTable"></div>
-    </div>
+    <!-- Desktop: 3-column grid | Mobile: single panel via tabs -->
+    <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:start;">
 
-    <!-- 3rd Party Fee panel -->
-    <div id="fee_entryBody" style="display:none;">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
-        <select id="fee_entryName" style="min-width:150px;flex:1;max-width:260px;"><option value="">— select fee name —</option><option value="Chia FB">Chia FB</option><option value="Google">Google</option><option value="Simply 5">Simply 5</option><option value="XHS">XHS</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
-        <button type="button" id="fee_entryYearBtn" onclick="openYearPicker('fee_entryYear', this)" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--black);">2026</button>
-        <input type="hidden" id="fee_entryYear" value="2026">
-        <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);margin-left:4px;"></span>
+      <!-- Revenue panel (col 1) -->
+      <div id="rv_entryBody" class="card" style="padding:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+          <select id="rv_entryOutlet" style="min-width:0;flex:1;font-size:13px;"><option value="">— select outlet —</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
+          <button type="button" id="rv_entryYearBtn" onclick="openYearPicker('rv_entryYear', this)" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--black);">2026</button>
+          <input type="hidden" id="rv_entryYear" value="2026">
+        </div>
+        <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
+        <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
+        <div id="rv_entryTable"></div>
       </div>
-      <div id="fee_entryCustomRow" style="display:none;"></div>
-      <input type="hidden" id="fee_entryCustomName">
-      <input type="hidden" id="fee_entryCustomPlatform" value="other">
-      <div style="font-size:12px;color:var(--gray);margin-bottom:10px;">💡 选 Name + Year，在格子里输入金额，离开格子自动保存</div>
-      <div id="fee_entryTable"></div>
-    </div>
 
-    <!-- Revenue panel -->
-    <div id="rv_entryBody" style="display:none;">
-      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
-        <select id="rv_entryOutlet" style="min-width:150px;flex:1;max-width:260px;"><option value="">— select outlet —</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
-        <button type="button" id="rv_entryYearBtn" onclick="openYearPicker('rv_entryYear', this)" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--black);">2026</button>
-        <input type="hidden" id="rv_entryYear" value="2026">
-        <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);margin-left:4px;"></span>
+      <!-- Ads Cost panel (col 2) -->
+      <div id="as_entryBody" class="card" style="padding:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+          <select id="as_entryChannel" style="min-width:0;flex:1;font-size:13px;"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
+          <button type="button" id="as_entryYearBtn" onclick="openYearPicker('as_entryYear', this)" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--black);">2026</button>
+          <input type="hidden" id="as_entryYear" value="2026">
+        </div>
+        <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
+        <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
+        <div id="as_entryTable"></div>
       </div>
-      <div style="font-size:12px;color:var(--gray);margin-bottom:10px;">💡 直接在格子里输入，离开格子自动保存 · Old = Total − New (auto)</div>
-      <div id="rv_entryTable"></div>
+
+      <!-- 3rd Party Fee panel (col 3) -->
+      <div id="fee_entryBody" class="card" style="padding:16px;">
+        <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+          <select id="fee_entryName" style="min-width:0;flex:1;font-size:13px;"><option value="">— select fee name —</option><option value="Chia FB">Chia FB</option><option value="Google">Google</option><option value="Simply 5">Simply 5</option><option value="XHS">XHS</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
+          <button type="button" id="fee_entryYearBtn" onclick="openYearPicker('fee_entryYear', this)" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--black);">2026</button>
+          <input type="hidden" id="fee_entryYear" value="2026">
+        </div>
+        <div id="fee_entryCustomRow" style="display:none;"></div>
+        <input type="hidden" id="fee_entryCustomName">
+        <input type="hidden" id="fee_entryCustomPlatform" value="other">
+        <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
+        <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
+        <div id="fee_entryTable"></div>
+      </div>
+
     </div>
   </section>
 
@@ -919,44 +938,60 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <h1 class="page-title">Settings</h1>
     <p class="page-sub">Manage channels, stores &amp; deploy</p>
 
-    <div class="card">
-      <div class="section-title"><h3>🚀 Push App to GitHub</h3><span class="right">Deploy current page</span></div>
-      <div style="font-size:13px;color:var(--gray);margin-bottom:14px;line-height:1.5;">
-        点一下就把当前网页的 HTML 推送到 GitHub，自动覆盖 <strong>ads_crm_v2.html</strong>。<br>
-        推送后等 1-2 分钟 → Ctrl+Shift+R 强制刷新即可看到新版。
-      </div>
-      
-      <div class="form-grid">
-        <div>
-          <label>GitHub Personal Access Token</label>
-          <input type="password" id="gh_token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
-          <div style="font-size:11px;color:var(--gray);margin-top:4px;">Stored in this browser only · Must have <strong>repo</strong> scope</div>
+    <!-- Desktop: 2-col top row (GitHub + Google Sheet), 3-col bottom row -->
+    <div style="display:grid;grid-template-columns:1fr;gap:14px;align-items:start;" id="settingsTopGrid">
+
+      <!-- GitHub Deploy -->
+      <div class="card">
+        <div class="section-title"><h3>🚀 Push to GitHub</h3></div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.5;">
+          推送后等 1-2 分钟 → Ctrl+Shift+R 刷新。
         </div>
-        <div class="form-row">
+        <div style="display:flex;flex-direction:column;gap:8px;">
           <div>
-            <label>Owner / Username</label>
-            <input type="text" id="gh_owner" placeholder="DavyWong-84">
+            <label style="font-size:12px;">Token</label>
+            <input type="password" id="gh_token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" style="font-size:13px;">
+            <div style="font-size:11px;color:var(--gray);margin-top:2px;">Stored in browser only · <strong>repo</strong> scope</div>
           </div>
-          <div>
-            <label>Repo name</label>
-            <input type="text" id="gh_repo" placeholder="ADS-CRM">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div><label style="font-size:12px;">Owner</label><input type="text" id="gh_owner" placeholder="DavyWong-84" style="font-size:13px;"></div>
+            <div><label style="font-size:12px;">Repo</label><input type="text" id="gh_repo" placeholder="ADS-CRM" style="font-size:13px;"></div>
           </div>
+          <div><label style="font-size:12px;">Branch</label><input type="text" id="gh_branch" value="main" style="font-size:13px;"><input type="hidden" id="gh_path" value="data.json"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="pushHTMLToGitHub()">🚀 Push</button>
+            <button class="btn btn-ghost" onclick="saveGitHubConfig()">💾 Save</button>
+          </div>
+          <div id="html_deploy_log" style="font-size:12px;color:var(--gray);min-height:16px;"><span style="color:var(--gray);">📖 Reading current HTML...</span></div>
+          <div id="gh_log" style="display:none;"></div>
         </div>
-        <div>
-          <label>Branch</label>
-          <input type="text" id="gh_branch" value="main">
-          <input type="hidden" id="gh_path" value="data.json">
-        </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="pushHTMLToGitHub()">🚀 Push to GitHub</button>
-          <button class="btn btn-ghost" onclick="saveGitHubConfig()">💾 Save config</button>
-        </div>
-        <div id="html_deploy_log" style="font-size:12px;color:var(--gray);margin-top:8px;min-height:18px;"><span style="color:var(--gray);">📖 Reading current HTML...</span></div>
-        <div id="gh_log" style="display:none;"></div>
       </div>
+
+      <!-- Google Sheet Sync -->
+      <div class="card">
+        <div class="section-title"><h3>📊 Google Sheet Sync</h3></div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.5;">
+          CRM 操作<strong>自动推送</strong>到 Sheet。Pull 需手动确认。
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div>
+            <label style="font-size:12px;">Apps Script URL</label>
+            <input type="text" id="gs_url" placeholder="https://script.google.com/macros/s/xxxxx/exec" autocomplete="off" style="font-size:12px;">
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="gsPushAll()">⬆️ Push All</button>
+            <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull</button>
+            <button class="btn btn-ghost" onclick="gsTest()">🔗 Test</button>
+          </div>
+          <div id="gs_log" style="font-size:12px;color:var(--gray);min-height:16px;"></div>
+        </div>
+      </div>
+
     </div>
 
-    <div class="settings-grid">
+    <!-- Bottom row: Channels + Stores + Backup -->
+    <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px;align-items:start;" id="settingsBotGrid">
+
       <div class="card">
         <div class="section-title"><h3>Channels</h3></div>
         <div id="channelsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
@@ -1050,29 +1085,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <button type="submit" class="btn btn-outline">Add</button>
         </form>
       </div>
-    </div>
 
-    <div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>💾 Backup</h3></div>
-      <button class="btn btn-gray btn-full" onclick="exportAllData()">Export All Data (JSON backup)</button>
-    </div>
+      <div class="card">
+        <div class="section-title"><h3>💾 Backup</h3></div>
+        <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Export all data as JSON for backup or migration.</p>
+        <button class="btn btn-gray btn-full" onclick="exportAllData()">Export All Data</button>
+      </div>
 
-    <div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>📊 Google Sheet Sync</h3><span class="right">Auto push · Manual pull</span></div>
-      <div style="font-size:13px;color:var(--gray);margin-bottom:14px;line-height:1.5;">
-        CRM 操作会<strong>自动推送</strong>到 Google Sheet。<br>
-        从 Sheet 拉取数据需要手动点 Pull 并确认。
-      </div>
-      <div>
-        <label>Apps Script URL</label>
-        <input type="text" id="gs_url" placeholder="https://script.google.com/macros/s/xxxxx/exec" autocomplete="off">
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
-        <button class="btn btn-primary" onclick="gsPushAll()">⬆️ Push All to Sheet</button>
-        <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull from Sheet</button>
-        <button class="btn btn-ghost" onclick="gsTest()">🔗 Test Connection</button>
-      </div>
-      <div id="gs_log" style="font-size:12px;color:var(--gray);margin-top:8px;min-height:18px;"></div>
     </div>
   </section>
 </main>
@@ -1914,7 +1933,7 @@ function renderFunnelTab() {
 }
 
 function renderEntry() {
-  switchEntryTab(_entryTab || 'as');
+  switchEntryTab(_entryTab || 'rv');
 }
 
 function setEntryTab(tab) {
@@ -1970,25 +1989,43 @@ function refreshSelects() {
 }
 
 // ---------- Entry pill tabs ----------
-let _entryTab = 'as';
+let _entryTab = 'rv';
 
 function switchEntryTab(key) {
   _entryTab = key;
-  ['as', 'fee', 'rv'].forEach(k => {
-    const body = document.getElementById(k + '_entryBody');
-    const pill = document.getElementById('entryPill_' + k);
-    const active = k === key;
-    if (body) body.style.display = active ? 'block' : 'none';
-    if (pill) {
-      pill.style.background = active ? 'var(--purple)' : '#fff';
-      pill.style.color = active ? '#fff' : 'var(--gray)';
-      pill.style.borderColor = active ? 'var(--purple)' : 'var(--border)';
-      pill.style.fontWeight = active ? '600' : '500';
-    }
-  });
-  if (key === 'as' && typeof renderAdsCostEntry === 'function') renderAdsCostEntry();
-  if (key === 'fee' && typeof renderFeeEntry === 'function') renderFeeEntry();
-  if (key === 'rv' && typeof renderRevenueEntry === 'function') renderRevenueEntry();
+  const isDesktop = window.innerWidth >= 767;
+  if (isDesktop) {
+    // Desktop: all 3 panels always visible, pills hidden
+    document.getElementById('entryPillBar').style.display = 'none';
+    document.getElementById('entryDesktopGrid').style.gridTemplateColumns = '1fr 1fr 1fr';
+    ['as', 'fee', 'rv'].forEach(k => {
+      const body = document.getElementById(k + '_entryBody');
+      if (body) { body.style.display = 'block'; body.style.flex = ''; }
+    });
+    // Render all 3
+    if (typeof renderAdsCostEntry === 'function') renderAdsCostEntry();
+    if (typeof renderFeeEntry === 'function') renderFeeEntry();
+    if (typeof renderRevenueEntry === 'function') renderRevenueEntry();
+  } else {
+    // Mobile: pill tab switching
+    document.getElementById('entryPillBar').style.display = 'flex';
+    document.getElementById('entryDesktopGrid').style.gridTemplateColumns = '1fr';
+    ['as', 'fee', 'rv'].forEach(k => {
+      const body = document.getElementById(k + '_entryBody');
+      const pill = document.getElementById('entryPill_' + k);
+      const active = k === key;
+      if (body) body.style.display = active ? 'block' : 'none';
+      if (pill) {
+        pill.style.background = active ? 'var(--purple)' : '#fff';
+        pill.style.color = active ? '#fff' : 'var(--gray)';
+        pill.style.borderColor = active ? 'var(--purple)' : 'var(--border)';
+        pill.style.fontWeight = active ? '600' : '500';
+      }
+    });
+    if (key === 'as' && typeof renderAdsCostEntry === 'function') renderAdsCostEntry();
+    if (key === 'fee' && typeof renderFeeEntry === 'function') renderFeeEntry();
+    if (key === 'rv' && typeof renderRevenueEntry === 'function') renderRevenueEntry();
+  }
 }
 
 // Keep toggleEntryCard as no-op for any lingering calls
@@ -4226,6 +4263,20 @@ function setAsEntryPref(pref) {
   try { localStorage.setItem('ads_crm_as_entry_pref', JSON.stringify(pref)); } catch {}
 }
 
+// Entry: which months to show — filled months + current month + 2 ahead (max 12)
+function entryVisibleMonths(year, hasDataFn) {
+  const curYear = new Date().getFullYear();
+  const curMonth = new Date().getMonth() + 1; // 1-12
+  const all = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
+  const yr = parseInt(year);
+  if (yr < curYear) return all.filter(m => hasDataFn(m)); // past year: only filled
+  if (yr > curYear) return all.slice(0, 3); // future year: show first 3
+  // Current year: filled + up to curMonth + 2
+  const cutoff = Math.min(curMonth + 2, 12);
+  return all.filter((m, i) => hasDataFn(m) || (i + 1) <= cutoff);
+}
+
+
 function renderAdsCostEntry() {
   const chSel = document.getElementById('as_entryChannel');
   const yrSel = document.getElementById('as_entryYear');
@@ -4256,7 +4307,7 @@ function renderAdsCostEntry() {
     return;
   }
 
-  const months = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
+  const months = entryVisibleMonths(year, m => state.adsSpend.some(a => a.month === m && a.channelId === channelId));
   let yearTotal = 0;
   const rows = months.map(m => {
     const rec = state.adsSpend.find(a => a.month === m && a.channelId === channelId);
@@ -4265,30 +4316,25 @@ function renderAdsCostEntry() {
     const isEmpty = val == null || val === 0;
     const bg = isEmpty ? 'var(--bg-muted, #f8f6fc)' : '#fff';
     const displayVal = val != null ? val : '';
-    return `<tr>
-      <td style="font-weight:500;color:var(--purple-deep);padding:8px 12px;border-bottom:1px solid var(--border);">${fmt.monthLabel(m)}</td>
-      <td style="padding:6px 8px;border-bottom:1px solid var(--border);background:${bg};">
-        <input type="number" class="as-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:14px;text-align:right;background:transparent;">
+    return `<tr style="${bg !== '#fff' ? 'background:'+bg+';' : ''}">
+      <td><strong>${fmt.monthLabel(m)}</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
       </td>
     </tr>`;
   }).join('');
 
-  tableEl.innerHTML = `
-    <table style="width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
-      <thead>
-        <tr style="background:var(--purple-bg, #f3efff);">
-          <th style="text-align:left;padding:10px 12px;font-size:12px;color:var(--purple-deep);font-weight:600;">Month</th>
-          <th style="text-align:right;padding:10px 12px;font-size:12px;color:var(--purple-deep);font-weight:600;">Amount (RM)</th>
-        </tr>
-      </thead>
+  tableEl.innerHTML = `<div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th>Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
-      <tfoot>
-        <tr style="background:var(--purple-bg, #f3efff);">
-          <td style="padding:10px 12px;font-weight:700;color:var(--purple-deep);">TOTAL ${year}</td>
-          <td style="padding:10px 12px;font-weight:700;color:var(--purple-deep);text-align:right;">${fmt.money(yearTotal)}</td>
-        </tr>
-      </tfoot>
-    </table>`;
+      <tfoot><tr class="total-row">
+        <td>TOTAL ${year}</td>
+        <td class="num">${fmt.money(yearTotal)}</td>
+      </tr></tfoot>
+    </table></div>`;
 
   // Bind blur handlers
   tableEl.querySelectorAll('.as-cell').forEach(input => {
@@ -4406,7 +4452,7 @@ function renderFeeEntry() {
     return;
   }
 
-  const months = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
+  const months = entryVisibleMonths(year, m => state.thirdPartyFees.some(f => f.month === m && f.name === name));
   let yearTotal = 0;
   const rows = months.map(m => {
     const rec = state.thirdPartyFees.find(f => f.month === m && f.name === name);
@@ -4415,10 +4461,10 @@ function renderFeeEntry() {
     const isEmpty = val == null || val === 0;
     const bg = isEmpty ? 'var(--bg-muted, #f8f6fc)' : '#fff';
     const displayVal = val != null ? val : '';
-    return `<tr>
-      <td style="font-weight:500;color:var(--purple-deep);padding:8px 12px;border-bottom:1px solid var(--border);">${fmt.monthLabel(m)}</td>
-      <td style="padding:6px 8px;border-bottom:1px solid var(--border);background:${bg};">
-        <input type="number" class="fee-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:14px;text-align:right;background:transparent;">
+    return `<tr style="${bg !== '#fff' ? 'background:'+bg+';' : ''}">
+      <td><strong>${fmt.monthLabel(m)}</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="fee-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
       </td>
     </tr>`;
   }).join('');
@@ -4427,21 +4473,17 @@ function renderFeeEntry() {
 
   tableEl.innerHTML = `
     <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Name: <strong style="color:var(--purple-deep);">${name}</strong>${platformBadge}</div>
-    <table style="width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
-      <thead>
-        <tr style="background:var(--purple-bg, #f3efff);">
-          <th style="text-align:left;padding:10px 12px;font-size:12px;color:var(--purple-deep);font-weight:600;">Month</th>
-          <th style="text-align:right;padding:10px 12px;font-size:12px;color:var(--purple-deep);font-weight:600;">Amount (RM)</th>
-        </tr>
-      </thead>
+    <div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th>Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
-      <tfoot>
-        <tr style="background:var(--purple-bg, #f3efff);">
-          <td style="padding:10px 12px;font-weight:700;color:var(--purple-deep);">TOTAL ${year}</td>
-          <td style="padding:10px 12px;font-weight:700;color:var(--purple-deep);text-align:right;">${fmt.money(yearTotal)}</td>
-        </tr>
-      </tfoot>
-    </table>`;
+      <tfoot><tr class="total-row">
+        <td>TOTAL ${year}</td>
+        <td class="num">${fmt.money(yearTotal)}</td>
+      </tr></tfoot>
+    </table></div>`;
 
   tableEl.querySelectorAll('.fee-cell').forEach(input => {
     input.addEventListener('blur', onFeeCellBlur);
@@ -4895,19 +4937,19 @@ function renderRevenueEntry() {
 
   // 12-month table
   const tableWrap = document.getElementById('rv_entryTable');
-  let html = `<div class="table-wrap"><table class="data"><thead>
-    <tr>
-      <th style="width:110px;">Month</th>
+  let html = `<div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th>Month</th>
       <th class="num">Total (RM)</th>
       <th class="num">New (RM)</th>
       <th class="num" style="color:var(--gray);">Old (auto)</th>
-    </tr>
-  </thead><tbody>`;
+    </tr></thead><tbody>`;
 
   let yearTotal = 0, yearNew = 0, yearOld = 0;
-  for (let m = 1; m <= 12; m++) {
-    const mKey = `${year}-${String(m).padStart(2,'0')}`;
-    const mLabel = new Date(parseInt(year), m-1, 1).toLocaleString('en-US', { month: 'short' });
+  const rvMonths = entryVisibleMonths(year, m => state.revenue.some(r => r.month === m && r.locationId === outletId));
+  for (const mKey of rvMonths) {
+    const [_y, _m] = mKey.split('-').map(Number);
+    const mLabel = new Date(_y, _m-1, 1).toLocaleString('en-US', { month: 'short' });
     const rec = state.revenue.find(r => r.month === mKey && r.locationId === outletId);
     const total = rec?.total;
     const newC = rec?.newCustomer;
@@ -4917,22 +4959,21 @@ function renderRevenueEntry() {
     if (old != null) yearOld += old;
     const filled = rec && (total > 0 || newC > 0);
     const rowBg = filled ? '' : 'background:rgba(0,0,0,0.02);';
+    const inStyle = 'width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;';
     html += `<tr style="${rowBg}">
       <td><strong>${mLabel} ${year}</strong></td>
-      <td class="num"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="${mKey}" data-field="total" value="${total ?? ''}" placeholder="0.00" style="width:100%;text-align:right;border:1px solid var(--border-light);padding:6px 8px;border-radius:4px;font-size:13px;"></td>
-      <td class="num"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="${mKey}" data-field="newCustomer" value="${newC ?? ''}" placeholder="0.00" style="width:100%;text-align:right;border:1px solid var(--border-light);padding:6px 8px;border-radius:4px;font-size:13px;"></td>
-      <td class="num" data-old-for="${mKey}" style="color:var(--gray);">${old != null ? fmt.money(old) : '—'}</td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="${mKey}" data-field="total" value="${total ?? ''}" placeholder="0.00" style="${inStyle}"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="${mKey}" data-field="newCustomer" value="${newC ?? ''}" placeholder="0.00" style="${inStyle}"></td>
+      <td class="num" style="color:var(--gray);" data-old-for="${mKey}">${old != null ? fmt.money(old) : '—'}</td>
     </tr>`;
   }
 
-  html += `<tr style="background:var(--purple-bg);font-weight:600;color:var(--purple-deep);">
-    <td>${year} TOTAL</td>
+  html += `</tbody><tfoot><tr class="total-row">
+    <td>TOTAL ${year}</td>
     <td class="num">${fmt.money(yearTotal)}</td>
     <td class="num">${fmt.money(yearNew)}</td>
     <td class="num">${fmt.money(yearOld)}</td>
-  </tr>`;
-
-  html += '</tbody></table></div>';
+  </tr></tfoot></table></div>`;
   tableWrap.innerHTML = html;
 
   // Wire up auto-save on blur
