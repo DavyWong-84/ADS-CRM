@@ -543,7 +543,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v1.111</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v1.119</span>
   </div>
   <button class="topbar-menu-btn hide-desktop" onclick="openTopMenu()" aria-label="Menu">
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
@@ -778,8 +778,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- ADS SPEND PAGE -->
   <section class="page" id="page-adsspend">
     <h1 class="page-title">Ads Spend</h1>
-    <p class="page-sub">Ad cost · Funnel · Fees</p>
 
+    <!-- Filter bar -->
     <div class="sticky-filter">
       <div class="compact-filter">
         <select id="adsYear" class="cf-select"><option value="2025">2025</option><option value="2026" selected="">2026</option></select>
@@ -794,29 +794,48 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
     </div>
 
+    <!-- Pill tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+      <button type="button" id="adsPill_cost" onclick="switchAdsTab('cost')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--purple);background:var(--purple);color:#fff;font-size:13px;font-weight:600;cursor:pointer;">Ads Cost</button>
+      <button type="button" id="adsPill_roas" onclick="switchAdsTab('roas')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Sales &amp; ROAS</button>
+      <button type="button" id="adsPill_funnel" onclick="switchAdsTab('funnel')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Funnel</button>
+      <button type="button" id="adsPill_cpl" onclick="switchAdsTab('cpl')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">CPL / CPA / CPS</button>
+      <button type="button" id="adsPill_fees" onclick="switchAdsTab('fees')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fees</button>
+    </div>
+
     <div id="adsspend_content">
-      <div class="section-title"><h3>Ads Cost Report</h3><span class="right">💡 Entry → Ads Cost to add</span></div>
-      <div class="table-wrap">
-        <table class="data" id="adsSpendReport"></table>
+      <!-- Ads Cost panel -->
+      <div id="adsPanel_cost" style="display:block;">
+        <div class="table-wrap">
+          <table class="data" id="adsSpendReport"></table>
+        </div>
       </div>
 
-      <div class="section-title"><h3>Sales &amp; ROAS</h3><span class="right">Revenue ÷ Ads Cost</span></div>
-      <div id="salesWrap"></div>
-      <div id="adsCostWrap"></div>
-      <div id="roasWrap"></div>
+      <!-- Sales & ROAS panel -->
+      <div id="adsPanel_roas" style="display:none;">
+        <div id="salesWrap"></div>
+        <div id="adsCostWrap"></div>
+        <div id="roasWrap"></div>
+      </div>
 
-      <div class="section-title"><h3>Conversion Funnel</h3><span class="right">Leads → Appt → Show-up</span></div>
-      <div id="funnelLeadsWrap"></div>
-      <div id="funnelVisitsWrap"></div>
-      <div id="funnelRatesWrap"></div>
+      <!-- Funnel panel -->
+      <div id="adsPanel_funnel" style="display:none;">
+        <div id="funnelLeadsWrap"></div>
+        <div id="funnelVisitsWrap"></div>
+        <div id="funnelRatesWrap"></div>
+      </div>
 
-      <div class="section-title"><h3>Cost Efficiency · CPL / CPA / CPS</h3><span class="right">Ads Cost ÷ Leads / Appt / Shows</span></div>
-      <div id="cplTableWrap"></div>
-      <div id="cpaTableWrap"></div>
-      <div id="cpsTableWrap"></div>
+      <!-- CPL/CPA/CPS panel -->
+      <div id="adsPanel_cpl" style="display:none;">
+        <div id="cplTableWrap"></div>
+        <div id="cpaTableWrap"></div>
+        <div id="cpsTableWrap"></div>
+      </div>
 
-      <div class="section-title"><h3>3rd Party Fees</h3><span class="right">Not included in ROAS · Entry → Fees to add</span></div>
-      <div id="feesTable"></div>
+      <!-- 3rd Party Fees panel -->
+      <div id="adsPanel_fees" style="display:none;">
+        <div id="feesTable"></div>
+      </div>
     </div>
   </section>
 
@@ -841,106 +860,51 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- ENTRY PAGE (centralized data entry) -->
   <section class="page" id="page-entry">
     <h1 class="page-title">Data Entry</h1>
-    <p class="page-sub">Enter ads cost, fees, and revenue</p>
 
-    <div class="entry-grid">
-      <div class="card">
-        <div class="section-title"><h3>Add Ads Cost</h3></div>
-        <form id="adsSpendForm" class="form-grid">
-        <div class="form-row">
-          <div>
-            <label>Month</label>
-            <button type="button" class="date-btn empty" id="as_month_btn" onclick="openMonthPicker('as_month')">
-              <span id="as_month_label">Select month</span>
-              <span class="date-btn-icon">📅</span>
-            </button>
-            <input type="hidden" id="as_month">
-          </div>
-          <div>
-            <label>Channel</label>
-            <select id="as_channel"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option></select>
-          </div>
-        </div>
-        <div>
-          <label>Amount (RM)</label>
-          <input type="number" id="as_amount" step="0.01" placeholder="0.00" inputmode="decimal">
-        </div>
-        <div id="as_preview"></div>
-        <button type="submit" class="btn btn-primary btn-full">Save</button>
-        <div id="as_lastSaved" class="last-saved-time"></div>
-      </form>
+    <!-- Pill tabs -->
+    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+      <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--purple);background:var(--purple);color:#fff;font-size:13px;font-weight:600;cursor:pointer;">Ads Cost</button>
+      <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
+      <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
     </div>
 
-      <div class="card">
-        <div class="section-title"><h3>Add 3rd Party Fee</h3></div>
-        <form id="feesForm" class="form-grid">
-          <div class="form-row">
-            <div>
-              <label>Month</label>
-              <button type="button" class="date-btn empty" id="fee_month_btn" onclick="openMonthPicker('fee_month')">
-                <span id="fee_month_label">Select month</span>
-                <span class="date-btn-icon">📅</span>
-              </button>
-              <input type="hidden" id="fee_month">
-            </div>
-            <div>
-              <label>Platform</label>
-              <select id="fee_platform">
-                <option value="meta">Meta</option>
-                <option value="google">Google</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div>
-              <label>Name</label>
-              <input type="text" id="fee_name" placeholder="e.g. Simply 5 Mgmt">
-            </div>
-            <div>
-              <label>Amount (RM)</label>
-              <input type="number" id="fee_amount" step="0.01" placeholder="0.00" inputmode="decimal">
-            </div>
-          </div>
-          <div id="fee_preview"></div>
-          <button type="submit" class="btn btn-primary btn-full">Add Fee</button>
-          <div id="fee_lastSaved" class="last-saved-time"></div>
-        </form>
+    <!-- Ads Cost panel -->
+    <div id="as_entryBody" style="display:block;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+        <select id="as_entryChannel" style="min-width:150px;flex:1;max-width:260px;"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
+        <button type="button" id="as_entryYearBtn" onclick="openYearPicker('as_entryYear', this)" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--black);">2026</button>
+        <input type="hidden" id="as_entryYear" value="2026">
+        <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);margin-left:4px;"></span>
       </div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:10px;">💡 直接在格子里输入金额，离开格子自动保存</div>
+      <div id="as_entryTable"></div>
+    </div>
 
-      <div class="card">
-        <div class="section-title"><h3>Add Revenue</h3></div>
-        <form id="revenueForm" class="form-grid">
-          <div class="form-row">
-            <div>
-              <label>Month</label>
-              <button type="button" class="date-btn empty" id="rv_month_btn" onclick="openMonthPicker('rv_month')">
-                <span id="rv_month_label">Select month</span>
-                <span class="date-btn-icon">📅</span>
-              </button>
-              <input type="hidden" id="rv_month">
-            </div>
-            <div>
-              <label>Location</label>
-              <select id="rv_location"><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div>
-              <label>Total Revenue (RM)</label>
-              <input type="number" id="rv_total" step="0.01" placeholder="0.00" inputmode="decimal">
-            </div>
-            <div>
-              <label>New Customer Revenue (RM)</label>
-              <input type="number" id="rv_new" step="0.01" placeholder="0.00" inputmode="decimal">
-            </div>
-          </div>
-          <div style="font-size:12px;color:var(--gray);">Old Customer Revenue = Total − New (auto)</div>
-          <div id="rv_preview"></div>
-          <button type="submit" class="btn btn-primary btn-full">Save</button>
-          <div id="rv_lastSaved" class="last-saved-time"></div>
-        </form>
+    <!-- 3rd Party Fee panel -->
+    <div id="fee_entryBody" style="display:none;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;">
+        <select id="fee_entryName" style="min-width:150px;flex:1;max-width:260px;"><option value="">— select fee name —</option><option value="Google Mgmt">Google Mgmt</option><option value="Simply 5 Mgmt">Simply 5 Mgmt</option><option value="XHS">XHS</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
+        <button type="button" id="fee_entryYearBtn" onclick="openYearPicker('fee_entryYear', this)" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--black);">2026</button>
+        <input type="hidden" id="fee_entryYear" value="2026">
+        <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);margin-left:4px;"></span>
       </div>
+      <div id="fee_entryCustomRow" style="display:none;"></div>
+      <input type="hidden" id="fee_entryCustomName">
+      <input type="hidden" id="fee_entryCustomPlatform" value="other">
+      <div style="font-size:12px;color:var(--gray);margin-bottom:10px;">💡 选 Name + Year，在格子里输入金额，离开格子自动保存</div>
+      <div id="fee_entryTable"></div>
+    </div>
+
+    <!-- Revenue panel -->
+    <div id="rv_entryBody" style="display:none;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+        <select id="rv_entryOutlet" style="min-width:150px;flex:1;max-width:260px;"><option value="">— select outlet —</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
+        <button type="button" id="rv_entryYearBtn" onclick="openYearPicker('rv_entryYear', this)" style="padding:7px 14px;border:1.5px solid var(--border);border-radius:20px;background:#fff;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;color:var(--black);">2026</button>
+        <input type="hidden" id="rv_entryYear" value="2026">
+        <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);margin-left:4px;"></span>
+      </div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:10px;">💡 直接在格子里输入，离开格子自动保存 · Old = Total − New (auto)</div>
+      <div id="rv_entryTable"></div>
     </div>
   </section>
 
@@ -1509,27 +1473,11 @@ function renderFunnelTab() {
 }
 
 function renderEntry() {
-  setEntryTab(state.entryTab || 'ads');
-  // Set defaults for month pickers on Entry page
-  const curMonth = todayStr().substring(0, 7);
-  ['as_month', 'fee_month', 'rv_month'].forEach(id => {
-    const input = document.getElementById(id);
-    if (input && !input.value) {
-      input.value = curMonth;
-      const lbl = document.getElementById(id + '_label');
-      const btn = document.getElementById(id + '_btn');
-      if (lbl && btn) { lbl.textContent = fmt.monthLabel(curMonth); btn.classList.remove('empty'); }
-    }
-  });
-  // Update previews
-  if (typeof updateAdsSpendPreview === 'function') updateAdsSpendPreview();
-  if (typeof updateFeePreview === 'function') updateFeePreview();
-  if (typeof updateRevPreview === 'function') updateRevPreview();
+  switchEntryTab(_entryTab || 'as');
 }
 
 function setEntryTab(tab) {
-  // Entry tabs removed - all 3 forms now displayed simultaneously in grid
-  state.entryTab = tab;
+  switchEntryTab(tab);
 }
 
 // ---------- Channels/Locations helpers ----------
@@ -1546,10 +1494,140 @@ function refreshSelects() {
     activeChannels.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
   document.getElementById('f_location').innerHTML = '<option value="">— select store —</option>' +
     activeLocations.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
-  const asCh = document.getElementById('as_channel');
-  asCh.innerHTML = activeChannels.filter(c => c.platform === 'meta' || c.platform === 'google').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-  const rvLoc = document.getElementById('rv_location');
-  rvLoc.innerHTML = activeLocations.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+
+  // Data Entry: Ads Cost channel dropdown (Meta/Google only)
+  const asCh = document.getElementById('as_entryChannel');
+  if (asCh) {
+    const adCh = activeChannels.filter(c => c.platform === 'meta' || c.platform === 'google');
+    const curVal = asCh.value;
+    asCh.innerHTML = (adCh.length === 0 ? '<option value="">— no channels yet —</option>' : adCh.map(c => `<option value="${c.id}">${c.name}</option>`).join('')) +
+      '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option>';
+    // Restore previous selection if still valid
+    if (curVal && adCh.some(c => c.id === curVal)) asCh.value = curVal;
+  }
+
+  // Data Entry: 3rd Party Fees Name dropdown (historical fee names only + add new)
+  const feeName = document.getElementById('fee_entryName');
+  if (feeName) {
+    const existingFeeNames = [...new Set(state.thirdPartyFees.map(f => f.name))].sort();
+    const curVal = feeName.value;
+    feeName.innerHTML = '<option value="">— select fee name —</option>' +
+      existingFeeNames.map(n => `<option value="${n}">${n}</option>`).join('') +
+      '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option>';
+    if (curVal && (existingFeeNames.includes(curVal))) feeName.value = curVal;
+  }
+
+  // Data Entry: Revenue outlet dropdown (active locations + Add outlet)
+  const rvOutlet = document.getElementById('rv_entryOutlet');
+  if (rvOutlet) {
+    const curVal = rvOutlet.value;
+    rvOutlet.innerHTML = '<option value="">— select outlet —</option>' +
+      activeLocations.map(l => `<option value="${l.id}">${l.name}</option>`).join('') +
+      '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option>';
+    if (curVal && activeLocations.some(l => l.id === curVal)) rvOutlet.value = curVal;
+  }
+}
+
+// ---------- Entry pill tabs ----------
+let _entryTab = 'as';
+
+function switchEntryTab(key) {
+  _entryTab = key;
+  ['as', 'fee', 'rv'].forEach(k => {
+    const body = document.getElementById(k + '_entryBody');
+    const pill = document.getElementById('entryPill_' + k);
+    const active = k === key;
+    if (body) body.style.display = active ? 'block' : 'none';
+    if (pill) {
+      pill.style.background = active ? 'var(--purple)' : '#fff';
+      pill.style.color = active ? '#fff' : 'var(--gray)';
+      pill.style.borderColor = active ? 'var(--purple)' : 'var(--border)';
+      pill.style.fontWeight = active ? '600' : '500';
+    }
+  });
+  if (key === 'as' && typeof renderAdsCostEntry === 'function') renderAdsCostEntry();
+  if (key === 'fee' && typeof renderFeeEntry === 'function') renderFeeEntry();
+  if (key === 'rv' && typeof renderRevenueEntry === 'function') renderRevenueEntry();
+}
+
+// Keep toggleEntryCard as no-op for any lingering calls
+function toggleEntryCard(key) { switchEntryTab(key); }
+
+// ---------- Year Picker popup ----------
+let _ypTarget = null; // hidden input id
+let _ypBtn = null;    // anchor button
+
+function openYearPicker(inputId, anchorEl) {
+  // Close if already open for same target
+  const existing = document.getElementById('_yearPickerPopup');
+  if (existing) {
+    existing.remove();
+    if (_ypTarget === inputId) { _ypTarget = null; return; }
+  }
+  _ypTarget = inputId;
+  _ypBtn = anchorEl;
+
+  // Build year list: from data range + ±2 of current year
+  const curY = new Date().getFullYear();
+  const dataYears = new Set();
+  state.leads.forEach(l => { if (l.leadDate) dataYears.add(parseInt(l.leadDate.substring(0,4))); });
+  state.adsSpend.forEach(a => { if (a.month) dataYears.add(parseInt(a.month.substring(0,4))); });
+  state.revenue.forEach(r => { if (r.month) dataYears.add(parseInt(r.month.substring(0,4))); });
+  for (let y = curY - 1; y <= curY + 2; y++) dataYears.add(y);
+  const years = [...dataYears].sort((a,b) => b - a); // newest first
+
+  const curVal = document.getElementById(inputId)?.value;
+
+  const popup = document.createElement('div');
+  popup.id = '_yearPickerPopup';
+  popup.style.cssText = 'position:fixed;z-index:9999;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.15);padding:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;min-width:180px;';
+
+  years.forEach(y => {
+    const ys = String(y);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = ys;
+    btn.style.cssText = `padding:8px 4px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:${ys === curVal ? '700' : '400'};background:${ys === curVal ? 'var(--purple)' : 'transparent'};color:${ys === curVal ? '#fff' : 'var(--black)'};`;
+    btn.onmouseenter = () => { if (ys !== curVal) btn.style.background = 'var(--purple-bg)'; };
+    btn.onmouseleave = () => { if (ys !== curVal) btn.style.background = 'transparent'; };
+    btn.onclick = () => { selectYear(inputId, ys); popup.remove(); _ypTarget = null; };
+    popup.appendChild(btn);
+  });
+
+  document.body.appendChild(popup);
+
+  // Position below anchor
+  const rect = anchorEl.getBoundingClientRect();
+  const pw = popup.offsetWidth || 180;
+  let left = rect.left;
+  if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+  popup.style.left = left + 'px';
+  popup.style.top = (rect.bottom + 4 + window.scrollY) + 'px';
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', function handler(e) {
+      if (!popup.contains(e.target) && e.target !== anchorEl) {
+        popup.remove();
+        _ypTarget = null;
+        document.removeEventListener('click', handler);
+      }
+    });
+  }, 0);
+}
+
+function selectYear(inputId, year) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  inp.value = year;
+  // Update button label
+  const btnId = inputId.replace('Year', 'YearBtn');
+  const btn = document.getElementById(btnId);
+  if (btn) btn.textContent = year;
+  // Save pref and trigger render
+  if (inputId === 'as_entryYear') { setAsEntryPref({ channelId: document.getElementById('as_entryChannel')?.value, year }); renderAdsCostEntry(); }
+  else if (inputId === 'fee_entryYear') { setFeeEntryPref({ name: document.getElementById('fee_entryName')?.value, year }); renderFeeEntry(); }
+  else if (inputId === 'rv_entryYear') renderRevenueEntry();
 }
 
 function refreshYearSelects() {
@@ -1558,11 +1636,22 @@ function refreshYearSelects() {
   state.leads.forEach(l => { if (l.leadDate) years.add(l.leadDate.substring(0,4)); });
   if (years.size === 0) years.add(String(new Date().getFullYear()));
   const yArr = [...years].sort();
+  const latestYear = yArr[yArr.length - 1];
+  // Regular <select> year elements
   ['summaryYear', 'storeYear', 'adsYear', 'revYear'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    const cur = el.value || state[id] || yArr[yArr.length - 1];
+    const cur = el.value || state[id] || latestYear;
     el.innerHTML = yArr.map(y => `<option value="${y}" ${y === cur ? 'selected' : ''}>${y}</option>`).join('');
+  });
+  // Entry year pickers (hidden inputs + buttons) — init default value
+  ['as_entryYear', 'fee_entryYear', 'rv_entryYear'].forEach(id => {
+    const inp = document.getElementById(id);
+    if (!inp || inp.value) return; // skip if already set
+    inp.value = latestYear;
+    const btnId = id.replace('Year', 'YearBtn');
+    const btn = document.getElementById(btnId);
+    if (btn) btn.textContent = latestYear;
   });
   // Month select for summary (months in current year)
   refreshSummaryMonthSelect();
@@ -3273,6 +3362,27 @@ function renderStore() {
 }
 
 // ---------- Ads Spend ----------
+// ---------- Ads Spend pill tabs ----------
+let _adsTab = 'cost';
+
+function switchAdsTab(key) {
+  _adsTab = key;
+  ['cost', 'roas', 'funnel', 'cpl', 'fees'].forEach(k => {
+    const panel = document.getElementById('adsPanel_' + k);
+    const pill = document.getElementById('adsPill_' + k);
+    const active = k === key;
+    if (panel) panel.style.display = active ? 'block' : 'none';
+    if (pill) {
+      pill.style.background = active ? 'var(--purple)' : '#fff';
+      pill.style.color = active ? '#fff' : 'var(--gray)';
+      pill.style.borderColor = active ? 'var(--purple)' : 'var(--border)';
+      pill.style.fontWeight = active ? '600' : '500';
+    }
+  });
+  // Re-render only the active section for performance
+  renderAdsSpendSection(key);
+}
+
 function setAdsTab(tab, subChannel) {
   state.adsTab = tab;
   state.adsSubChannel = (subChannel === '' || subChannel === 'undefined' || subChannel === 'all') ? null : (subChannel || null);
@@ -3290,6 +3400,20 @@ function setAdsTab(tab, subChannel) {
 }
 
 function renderAdsSpend() {
+  // Sync pill visual state
+  const currentAdsTab = _adsTab || 'cost';
+  ['cost', 'roas', 'funnel', 'cpl', 'fees'].forEach(k => {
+    const pill = document.getElementById('adsPill_' + k);
+    const panel = document.getElementById('adsPanel_' + k);
+    if (pill) {
+      const active = k === currentAdsTab;
+      pill.style.background = active ? 'var(--purple)' : '#fff';
+      pill.style.color = active ? '#fff' : 'var(--gray)';
+      pill.style.borderColor = active ? 'var(--purple)' : 'var(--border)';
+      pill.style.fontWeight = active ? '600' : '500';
+    }
+    if (panel) panel.style.display = k === currentAdsTab ? 'block' : 'none';
+  });
   const year = document.getElementById('adsYear').value || String(new Date().getFullYear());
   const tab = state.adsTab || 'all';
   const subCh = state.adsSubChannel || null;
@@ -3352,18 +3476,29 @@ function renderAdsSpend() {
     document.getElementById('adsSpendReport').innerHTML = html;
   }
 
-  // --- Fees ---
-  if (tab === 'ofu') {
-    document.getElementById('feesTable').innerHTML = '';
-    const feesSec = document.getElementById('feesTable').previousElementSibling;
-    if (feesSec) feesSec.style.display = 'none';
-  } else {
-    const feesSec = document.getElementById('feesTable').previousElementSibling;
-    if (feesSec) feesSec.style.display = '';
+  // Render the currently active section
+  renderAdsSpendSection(_adsTab || 'cost');
+}
+
+function renderAdsSpendSection(key) {
+  // key = 'cost' | 'roas' | 'funnel' | 'cpl' | 'fees'
+  // Each section renders into its panel div
+  const year = document.getElementById('adsYear').value || String(new Date().getFullYear());
+  const tab = state.adsTab || 'all';
+  const subCh = state.adsSubChannel || null;
+
+  if (key === 'roas' || key === 'funnel' || key === 'cpl') {
+    renderFunnelTab();
+  }
+
+  if (key === 'fees') {
+    const feesTable = document.getElementById('feesTable');
+    if (!feesTable) return;
     const feesByMonth = {};
     state.thirdPartyFees.filter(f => sw(f.month, year)).forEach(f => {
       if (tab === 'meta' && f.platform !== 'meta') return;
       if (tab === 'google' && f.platform !== 'google') return;
+      if (tab === 'ofu') return;
       feesByMonth[f.month] = feesByMonth[f.month] || [];
       feesByMonth[f.month].push(f);
     });
@@ -3403,28 +3538,11 @@ function renderAdsSpend() {
         </div>`;
       });
     }
-    document.getElementById('feesTable').innerHTML = feesHtml;
+    feesTable.innerHTML = feesHtml;
   }
 
-  // Set entry form defaults
-  if (!document.getElementById('as_month').value) {
-    const m = todayStr().substring(0,7);
-    document.getElementById('as_month').value = m;
-    const lbl = document.getElementById('as_month_label');
-    const btn = document.getElementById('as_month_btn');
-    if (lbl && btn) { lbl.textContent = fmt.monthLabel(m); btn.classList.remove('empty'); }
-  }
-  if (!document.getElementById('fee_month').value) {
-    const m = todayStr().substring(0,7);
-    document.getElementById('fee_month').value = m;
-    const lbl = document.getElementById('fee_month_label');
-    const btn = document.getElementById('fee_month_btn');
-    if (lbl && btn) { lbl.textContent = fmt.monthLabel(m); btn.classList.remove('empty'); }
-  }
-  
-  renderFunnelTab();
+  // Fix subheader colspan for sticky first col
   setTimeout(() => {
-    // 拆 subheader colspan 让第一列 sticky 生效
     document.querySelectorAll('#adsspend_content tr.subheader td[colspan]').forEach(td => {
       const cols = parseInt(td.getAttribute('colspan')) || 1;
       td.removeAttribute('colspan');
@@ -3434,34 +3552,10 @@ function renderAdsSpend() {
         td.parentElement.appendChild(empty);
       }
     });
-    wrapCollapsibleInContainer('adsspend_content');
   }, 10);
 }
 
 document.getElementById('adsYear').addEventListener('change', e => { state.adsYear = e.target.value; renderAdsSpend(); });
-
-document.getElementById('adsSpendForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const month = document.getElementById('as_month').value;
-  const channelId = document.getElementById('as_channel').value;
-  const amount = parseFloat(document.getElementById('as_amount').value);
-  if (!month || !channelId || isNaN(amount)) { toast('Fill all fields'); return; }
-  // Update existing or add
-  const existing = state.adsSpend.find(a => a.month === month && a.channelId === channelId);
-  if (existing) { existing.amount = amount; gsUpsert('AdsSpend', existing); }
-  else {
-    const ch = getChannel(channelId);
-    const rec = { id: uid('AS'), month, channelId, channelName: ch?.name, platform: ch?.platform, amount };
-    state.adsSpend.push(rec);
-    gsUpsert('AdsSpend', rec);
-  }
-  saveState();
-  document.getElementById('adsSpendForm').reset();
-  document.getElementById('as_preview').innerHTML = '';
-  toast('Ad spend saved');
-  showLastSaved('as_lastSaved');
-  renderAdsSpend();
-});
 
 function showLastSaved(elId) {
   const el = document.getElementById(elId);
@@ -3477,81 +3571,431 @@ function showLastSaved(elId) {
   setTimeout(() => { if (el) el.style.color = 'var(--gray)'; }, 2000);
 }
 
-function updateAdsSpendPreview() {
-  const month = document.getElementById('as_month').value;
-  const channelId = document.getElementById('as_channel').value;
-  const panel = document.getElementById('as_preview');
-  if (!month || !channelId) { panel.innerHTML = ''; return; }
-  const existing = state.adsSpend.find(a => a.month === month && a.channelId === channelId);
-  const ch = getChannel(channelId);
-  if (existing) {
-    panel.innerHTML = `<div class="preview-panel">
-      <div class="preview-panel-title">Existing entry — will be overwritten</div>
-      <div class="preview-item"><span>${ch?.name || channelId} · ${fmt.monthLabel(month)}</span><strong>${fmt.money(existing.amount)}</strong></div>
+// ---------- Quick Add Channel (from Data Entry) ----------
+function openAddFeeNameModal() {
+  const html = `
+    <div class="modal-header"><h3 style="margin:0;">Add Fee Name</h3></div>
+    <div class="modal-body" style="padding:16px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Fee Name</label>
+        <input type="text" id="quickFee_name" placeholder="e.g. TikTok Mgmt" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+        <div style="font-size:11px;color:var(--gray);margin-top:4px;">输入后会自动出现在下拉选项里</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="btn" onclick="closeModal()" style="flex:1;">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitQuickFeeName()" style="flex:1;">Add</button>
+      </div>
     </div>`;
-    if (!document.getElementById('as_amount').value) {
-      document.getElementById('as_amount').value = existing.amount;
-    }
-  } else {
-    // Show same-month other channel spend
-    const sameMonth = state.adsSpend.filter(a => a.month === month);
-    if (sameMonth.length > 0) {
-      panel.innerHTML = `<div class="preview-panel">
-        <div class="preview-panel-title">Already entered for ${fmt.monthLabel(month)}</div>
-        ${sameMonth.map(a => { const c = getChannel(a.channelId); return `<div class="preview-item"><span>${c?.name || a.channelId}</span><strong>${fmt.money(a.amount)}</strong></div>`; }).join('')}
-      </div>`;
-    } else {
-      panel.innerHTML = `<div class="preview-panel"><div class="preview-panel-title">No entries yet for ${fmt.monthLabel(month)}</div></div>`;
-    }
-  }
+  showModal(html);
+  setTimeout(() => { const el = document.getElementById('quickFee_name'); if (el) el.focus(); }, 50);
+  // Reset select back to empty
+  const sel = document.getElementById('fee_entryName');
+  if (sel) sel.value = '';
 }
 
-document.getElementById('as_month').addEventListener('change', updateAdsSpendPreview);
-document.getElementById('as_channel').addEventListener('change', updateAdsSpendPreview);
-
-document.getElementById('feesForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const month = document.getElementById('fee_month').value;
-  const name = document.getElementById('fee_name').value.trim();
-  const platform = document.getElementById('fee_platform').value;
-  const amount = parseFloat(document.getElementById('fee_amount').value);
-  if (!month || !name || isNaN(amount)) { toast('Fill all fields'); return; }
-  if (editingFeeId) {
-    const f = state.thirdPartyFees.find(x => x.id === editingFeeId);
-    if (f) { f.month = month; f.name = name; f.platform = platform; f.amount = amount; gsUpsert('ThirdPartyFees', f); }
-    editingFeeId = null;
-    toast('Fee updated');
-  } else {
-    const rec = { id: uid('TPF'), month, name, platform, amount };
-    state.thirdPartyFees.push(rec);
-    gsUpsert('ThirdPartyFees', rec);
-    toast('Fee added');
+function submitQuickFeeName() {
+  const name = document.getElementById('quickFee_name')?.value.trim();
+  if (!name) { toast('请输入费用名称'); return; }
+  closeModal();
+  // Add a placeholder record so name appears in dropdown (with amount 0)
+  // Actually just update the select directly and render
+  const sel = document.getElementById('fee_entryName');
+  if (sel) {
+    // Add option if not exists
+    if (!sel.querySelector(`option[value="${name}"]`)) {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      // Insert before the __add_new__ option
+      const addNewOpt = sel.querySelector('option[value="__add_new__"]');
+      sel.insertBefore(opt, addNewOpt);
+    }
+    sel.value = name;
   }
-  saveState();
-  document.getElementById('feesForm').reset();
-  document.getElementById('fee_preview').innerHTML = '';
-  showLastSaved('fee_lastSaved');
-  renderAdsSpend();
-});
+  renderFeeEntry();
+}
 
-function updateFeePreview() {
-  const month = document.getElementById('fee_month').value;
-  const panel = document.getElementById('fee_preview');
-  if (!month) { panel.innerHTML = ''; return; }
-  const items = state.thirdPartyFees.filter(f => f.month === month);
-  if (items.length === 0) {
-    panel.innerHTML = `<div class="preview-panel"><div class="preview-panel-title">No fees yet for ${fmt.monthLabel(month)}</div></div>`;
+function openAddOutletModal(targetSelectId) {
+  const html = `
+    <div class="modal-header"><h3 style="margin:0;">Add New Outlet</h3></div>
+    <div class="modal-body" style="padding:16px;">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Outlet Name</label>
+        <input type="text" id="quickLoc_name" placeholder="e.g. Bangsar" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="btn" onclick="closeModal()" style="flex:1;">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitQuickOutlet('${targetSelectId}')" style="flex:1;">Add</button>
+      </div>
+    </div>`;
+  showModal(html);
+  setTimeout(() => { const el = document.getElementById('quickLoc_name'); if (el) el.focus(); }, 50);
+  const sel = document.getElementById(targetSelectId);
+  if (sel && sel.options.length > 0) sel.selectedIndex = 0;
+}
+
+function submitQuickOutlet(targetSelectId) {
+  const name = document.getElementById('quickLoc_name').value.trim();
+  if (!name) { toast('Enter outlet name'); return; }
+  if (state.locations.some(l => l.name.toLowerCase() === name.toLowerCase() && l.active !== false)) {
+    toast('Outlet already exists'); return;
+  }
+  const newLoc = { id: uid('st'), name, addedMonth: todayStr().substring(0,7), active: true };
+  state.locations.push(newLoc);
+  saveState();
+  refreshSelects();
+  if (typeof renderSettings === 'function') renderSettings();
+  closeModal();
+  // Auto-select new outlet in target
+  if (targetSelectId === 'rv_entryOutlet') {
+    const sel = document.getElementById('rv_entryOutlet');
+    if (sel) { sel.value = newLoc.id; renderRevenueEntry(); }
+  }
+  toast('Outlet added ✓');
+}
+
+function openAddChannelModal(targetSelectId) {
+  const html = `
+    <div class="modal-header"><h3 style="margin:0;">Add New Channel</h3></div>
+    <div class="modal-body" style="padding:16px;">
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Channel Name</label>
+        <input type="text" id="quickCh_name" placeholder="e.g. TikTok Ads" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Platform</label>
+        <select id="quickCh_platform" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+          <option value="meta">Meta</option>
+          <option value="google">Google</option>
+          <option value="organic">Organic</option>
+          <option value="followup">Follow Up</option>
+        </select>
+        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">Meta/Google 会计入广告花费 ROAS，Organic/Follow Up 不计入</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button type="button" class="btn" onclick="closeModal()" style="flex:1;">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitQuickChannel('${targetSelectId}')" style="flex:1;">Add</button>
+      </div>
+    </div>`;
+  showModal(html);
+  setTimeout(() => { const el = document.getElementById('quickCh_name'); if (el) el.focus(); }, 50);
+  // Reset target select back to first option (so user sees nothing selected while modal open)
+  const sel = document.getElementById(targetSelectId);
+  if (sel && sel.options.length > 0) sel.selectedIndex = 0;
+}
+
+function submitQuickChannel(targetSelectId) {
+  const name = document.getElementById('quickCh_name').value.trim();
+  const platform = document.getElementById('quickCh_platform').value;
+  if (!name) { toast('Enter channel name'); return; }
+  // Check duplicate
+  if (state.channels.some(c => c.name.toLowerCase() === name.toLowerCase() && c.active !== false)) {
+    toast('Channel already exists'); return;
+  }
+  const newCh = { id: uid('ch'), name, platform, addedMonth: todayStr().substring(0,7), active: true };
+  state.channels.push(newCh);
+  saveState();
+  refreshSelects();
+  if (typeof renderSettings === 'function') renderSettings();
+  closeModal();
+  // Auto-select new channel in target
+  if (targetSelectId === 'as_entryChannel') {
+    const sel = document.getElementById('as_entryChannel');
+    if (sel) { sel.value = newCh.id; if (typeof renderAdsCostEntry === 'function') renderAdsCostEntry(); }
+  } else if (targetSelectId === 'fee_entryName') {
+    const sel = document.getElementById('fee_entryName');
+    if (sel) { sel.value = newCh.name; if (typeof renderFeeEntry === 'function') renderFeeEntry(); }
+  }
+  toast('Channel added ✓');
+}
+
+// ---------- Ads Cost Entry (Channel × Month grid) ----------
+function getAsEntryPref() {
+  try {
+    const raw = localStorage.getItem('ads_crm_as_entry_pref');
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+function setAsEntryPref(pref) {
+  try { localStorage.setItem('ads_crm_as_entry_pref', JSON.stringify(pref)); } catch {}
+}
+
+function renderAdsCostEntry() {
+  const chSel = document.getElementById('as_entryChannel');
+  const yrSel = document.getElementById('as_entryYear');
+  const tableEl = document.getElementById('as_entryTable');
+  if (!chSel || !yrSel || !tableEl) return;
+
+  // Apply saved prefs only when no valid selection exists (first render)
+  const pref = getAsEntryPref();
+  if (!chSel.value && pref.channelId && chSel.querySelector(`option[value="${pref.channelId}"]`)) {
+    chSel.value = pref.channelId;
+  }
+  if (!yrSel.value && pref.year) {
+    yrSel.value = pref.year;
+    const btn = document.getElementById('as_entryYearBtn');
+    if (btn) btn.textContent = pref.year;
+  }
+
+  const channelId = chSel.value;
+  const year = yrSel.value;
+
+  // If no channel selected, or only __add_new__ option, show prompt
+  if (!channelId || channelId === '__add_new__' || channelId === '') {
+    tableEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Channel 开始填金额</div>';
     return;
   }
-  const total = items.reduce((s, f) => s + f.amount, 0);
-  panel.innerHTML = `<div class="preview-panel">
-    <div class="preview-panel-title">Already entered for ${fmt.monthLabel(month)}</div>
-    ${items.map(f => `<div class="preview-item"><span>${f.name} · ${f.platform}</span><strong>${fmt.money(f.amount)}</strong></div>`).join('')}
-    <div class="preview-item" style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;"><span style="font-weight:500;">Total</span><strong style="color:var(--purple-deep);">${fmt.money(total)}</strong></div>
-  </div>`;
+  if (!year) {
+    tableEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选 Year</div>';
+    return;
+  }
+
+  const months = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
+  let yearTotal = 0;
+  const rows = months.map(m => {
+    const rec = state.adsSpend.find(a => a.month === m && a.channelId === channelId);
+    const val = rec ? rec.amount : null;
+    if (val != null) yearTotal += val;
+    const isEmpty = val == null || val === 0;
+    const bg = isEmpty ? 'var(--bg-muted, #f8f6fc)' : '#fff';
+    const displayVal = val != null ? val : '';
+    return `<tr>
+      <td style="font-weight:500;color:var(--purple-deep);padding:8px 12px;border-bottom:1px solid var(--border);">${fmt.monthLabel(m)}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid var(--border);background:${bg};">
+        <input type="number" class="as-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:14px;text-align:right;background:transparent;">
+      </td>
+    </tr>`;
+  }).join('');
+
+  tableEl.innerHTML = `
+    <table style="width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+      <thead>
+        <tr style="background:var(--purple-bg, #f3efff);">
+          <th style="text-align:left;padding:10px 12px;font-size:12px;color:var(--purple-deep);font-weight:600;">Month</th>
+          <th style="text-align:right;padding:10px 12px;font-size:12px;color:var(--purple-deep);font-weight:600;">Amount (RM)</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr style="background:var(--purple-bg, #f3efff);">
+          <td style="padding:10px 12px;font-weight:700;color:var(--purple-deep);">TOTAL ${year}</td>
+          <td style="padding:10px 12px;font-weight:700;color:var(--purple-deep);text-align:right;">${fmt.money(yearTotal)}</td>
+        </tr>
+      </tfoot>
+    </table>`;
+
+  // Bind blur handlers
+  tableEl.querySelectorAll('.as-cell').forEach(input => {
+    input.addEventListener('blur', onAsCellBlur);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); }});
+  });
+
+  // Save prefs
+  setAsEntryPref({ channelId, year });
 }
 
-document.getElementById('fee_month').addEventListener('change', updateFeePreview);
+function onAsCellBlur(e) {
+  const input = e.target;
+  const month = input.dataset.month;
+  const channelId = document.getElementById('as_entryChannel').value;
+  if (!channelId || channelId === '__add_new__') return;
+  const raw = input.value.trim();
+  const val = raw === '' ? null : parseFloat(raw);
+  if (raw !== '' && isNaN(val)) { toast('Invalid number'); return; }
+
+  const existing = state.adsSpend.find(a => a.month === month && a.channelId === channelId);
+  if (val == null || val === 0) {
+    // Delete if exists
+    if (existing) {
+      state.adsSpend = state.adsSpend.filter(a => a.id !== existing.id);
+      gsDelete('AdsSpend', existing.id);
+    }
+  } else {
+    if (existing) {
+      existing.amount = val;
+      gsUpsert('AdsSpend', existing);
+    } else {
+      const ch = getChannel(channelId);
+      const rec = { id: uid('AS'), month, channelId, channelName: ch?.name, platform: ch?.platform, amount: val };
+      state.adsSpend.push(rec);
+      gsUpsert('AdsSpend', rec);
+    }
+  }
+  saveState();
+  showLastSaved('as_entryLastSaved');
+  renderAdsCostEntry();
+  // Restore focus to next cell (same column, next row) for fast entry
+  setTimeout(() => {
+    const cells = [...document.querySelectorAll('.as-cell')];
+    const idx = cells.findIndex(c => c.dataset.month === month);
+    if (idx >= 0 && idx < cells.length - 1) cells[idx + 1].focus();
+  }, 10);
+}
+
+// Channel & Year change listeners
+document.getElementById('as_entryChannel').addEventListener('change', e => {
+  if (e.target.value === '__add_new__') {
+    openAddChannelModal('as_entryChannel');
+    return;
+  }
+  renderAdsCostEntry();
+});
+document.getElementById('as_entryYear').addEventListener('change', renderAdsCostEntry);
+
+
+// ---------- 3rd Party Fees Entry (Name × Month grid) ----------
+function getFeeEntryPref() {
+  try {
+    const raw = localStorage.getItem('ads_crm_fee_entry_pref');
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+function setFeeEntryPref(pref) {
+  try { localStorage.setItem('ads_crm_fee_entry_pref', JSON.stringify(pref)); } catch {}
+}
+
+// Infer platform from fee name (based on history or channel)
+function inferFeePlatform(name) {
+  // 1) Check if any existing fee with this name has a platform
+  const existing = state.thirdPartyFees.find(f => f.name === name);
+  if (existing && existing.platform) return existing.platform;
+  // 2) Check channels
+  const ch = state.channels.find(c => c.name === name);
+  if (ch) return ch.platform;
+  return 'other';
+}
+
+function renderFeeEntry() {
+  const nameSel = document.getElementById('fee_entryName');
+  const yrSel = document.getElementById('fee_entryYear');
+  const customRow = document.getElementById('fee_entryCustomRow');
+  const customName = document.getElementById('fee_entryCustomName');
+  const customPlat = document.getElementById('fee_entryCustomPlatform');
+  const tableEl = document.getElementById('fee_entryTable');
+  if (!nameSel || !yrSel || !tableEl) return;
+
+  // Apply saved prefs only when no valid selection exists (first render)
+  const pref = getFeeEntryPref();
+  if (!nameSel.value && pref.name && nameSel.querySelector(`option[value="${pref.name}"]`)) {
+    nameSel.value = pref.name;
+  }
+  if (!yrSel.value && pref.year) {
+    yrSel.value = pref.year;
+    const btn = document.getElementById('fee_entryYearBtn');
+    if (btn) btn.textContent = pref.year;
+  }
+
+  const selVal = nameSel.value;
+  const year = yrSel.value;
+
+  const name = (selVal && selVal !== '__add_new__') ? selVal : '';
+  const platform = name ? inferFeePlatform(name) : 'other';
+
+  if (!name) {
+    tableEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div>';
+    return;
+  }
+  if (!year) {
+    tableEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选 Year</div>';
+    return;
+  }
+
+  const months = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
+  let yearTotal = 0;
+  const rows = months.map(m => {
+    const rec = state.thirdPartyFees.find(f => f.month === m && f.name === name);
+    const val = rec ? rec.amount : null;
+    if (val != null) yearTotal += val;
+    const isEmpty = val == null || val === 0;
+    const bg = isEmpty ? 'var(--bg-muted, #f8f6fc)' : '#fff';
+    const displayVal = val != null ? val : '';
+    return `<tr>
+      <td style="font-weight:500;color:var(--purple-deep);padding:8px 12px;border-bottom:1px solid var(--border);">${fmt.monthLabel(m)}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid var(--border);background:${bg};">
+        <input type="number" class="fee-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:14px;text-align:right;background:transparent;">
+      </td>
+    </tr>`;
+  }).join('');
+
+  const platformBadge = `<span class="badge badge-${platform === 'meta' ? 'booked' : platform === 'google' ? 'pending' : 'lead'}" style="margin-left:8px;">${platform}</span>`;
+
+  tableEl.innerHTML = `
+    <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Name: <strong style="color:var(--purple-deep);">${name}</strong>${platformBadge}</div>
+    <table style="width:100%;border-collapse:collapse;border:1px solid var(--border);border-radius:8px;overflow:hidden;">
+      <thead>
+        <tr style="background:var(--purple-bg, #f3efff);">
+          <th style="text-align:left;padding:10px 12px;font-size:12px;color:var(--purple-deep);font-weight:600;">Month</th>
+          <th style="text-align:right;padding:10px 12px;font-size:12px;color:var(--purple-deep);font-weight:600;">Amount (RM)</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+      <tfoot>
+        <tr style="background:var(--purple-bg, #f3efff);">
+          <td style="padding:10px 12px;font-weight:700;color:var(--purple-deep);">TOTAL ${year}</td>
+          <td style="padding:10px 12px;font-weight:700;color:var(--purple-deep);text-align:right;">${fmt.money(yearTotal)}</td>
+        </tr>
+      </tfoot>
+    </table>`;
+
+  tableEl.querySelectorAll('.fee-cell').forEach(input => {
+    input.addEventListener('blur', onFeeCellBlur);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); }});
+  });
+
+  setFeeEntryPref({ name: selVal, year });
+}
+
+function onFeeCellBlur(e) {
+  const input = e.target;
+  const month = input.dataset.month;
+  const nameSel = document.getElementById('fee_entryName');
+
+  const name = (nameSel.value && nameSel.value !== '__add_new__') ? nameSel.value : '';
+  const platform = name ? inferFeePlatform(name) : 'other';
+  if (!name) return;
+
+  const raw = input.value.trim();
+  const val = raw === '' ? null : parseFloat(raw);
+  if (raw !== '' && isNaN(val)) { toast('Invalid number'); return; }
+
+  const existing = state.thirdPartyFees.find(f => f.month === month && f.name === name);
+  if (val == null || val === 0) {
+    if (existing) {
+      state.thirdPartyFees = state.thirdPartyFees.filter(f => f.id !== existing.id);
+      gsDelete('ThirdPartyFees', existing.id);
+    }
+  } else {
+    if (existing) {
+      existing.amount = val;
+      existing.platform = platform;
+      gsUpsert('ThirdPartyFees', existing);
+    } else {
+      const rec = { id: uid('TPF'), month, name, platform, amount: val };
+      state.thirdPartyFees.push(rec);
+      gsUpsert('ThirdPartyFees', rec);
+    }
+  }
+  saveState();
+  showLastSaved('fee_entryLastSaved');
+  // Refresh fee name dropdown in case a new name was just introduced via Custom
+  refreshSelects();
+  renderFeeEntry();
+  setTimeout(() => {
+    const cells = [...document.querySelectorAll('.fee-cell')];
+    const idx = cells.findIndex(c => c.dataset.month === month);
+    if (idx >= 0 && idx < cells.length - 1) cells[idx + 1].focus();
+  }, 10);
+}
+
+// Name select change
+document.getElementById('fee_entryName').addEventListener('change', e => {
+  if (e.target.value === '__add_new__') {
+    openAddFeeNameModal();
+    return;
+  }
+  renderFeeEntry();
+});
+document.getElementById('fee_entryYear').addEventListener('change', renderFeeEntry);
 
 function deleteFee(id) {
   const f = state.thirdPartyFees.find(x => x.id === id);
@@ -3693,13 +4137,6 @@ function renderRevenue() {
     renderRevenueDetail(mArr);
   }
 
-  if (!document.getElementById('rv_month').value) {
-    const m = todayStr().substring(0,7);
-    document.getElementById('rv_month').value = m;
-    const lbl = document.getElementById('rv_month_label');
-    const btn = document.getElementById('rv_month_btn');
-    if (lbl && btn) { lbl.textContent = fmt.monthLabel(m); btn.classList.remove('empty'); }
-  }
   const hintEl = document.getElementById('revReportHint');
   if (hintEl) {
     hintEl.innerHTML = state.revMode === 'summary'
@@ -3893,73 +4330,185 @@ function deleteRev(id) {
 
 document.getElementById('revYear').addEventListener('change', e => { state.revYear = e.target.value; renderRevenue(); });
 
-document.getElementById('revenueForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const month = document.getElementById('rv_month').value;
-  const locationId = document.getElementById('rv_location').value;
-  const total = parseFloat(document.getElementById('rv_total').value);
-  const newC = parseFloat(document.getElementById('rv_new').value);
-  if (!month || !locationId || isNaN(total) || isNaN(newC)) { toast('Fill all fields'); return; }
-  const existing = state.revenue.find(r => r.month === month && r.locationId === locationId);
-  if (existing) { existing.total = total; existing.newCustomer = newC; gsUpsert('Revenue', existing); }
-  else { const rec = { id: uid('REV'), month, locationId, total, newCustomer: newC }; state.revenue.push(rec); gsUpsert('Revenue', rec); }
-  saveState();
-  document.getElementById('revenueForm').reset();
-  document.getElementById('rv_preview').innerHTML = '';
-  toast('Revenue saved');
-  showLastSaved('rv_lastSaved');
-  renderRevenue();
-});
+document.getElementById('revenueForm')?.addEventListener('submit', e => { e.preventDefault(); });
 
-function updateRevPreview() {
-  const month = document.getElementById('rv_month').value;
-  const locationId = document.getElementById('rv_location').value;
-  const panel = document.getElementById('rv_preview');
-  if (!month || !locationId) { panel.innerHTML = ''; return; }
-  const existing = state.revenue.find(r => r.month === month && r.locationId === locationId);
-  const loc = getLocation(locationId);
-  const monthOtherStores = state.revenue.filter(r => r.month === month && r.locationId !== locationId && r.locationId !== 'all');
-  const legacyAll = state.revenue.find(r => r.month === month && r.locationId === 'all');
+// ---------- New Revenue Entry (outlet + year → 12-month table) ----------
+const RV_ENTRY_KEY = 'ads_crm_rv_entry_pref';
 
-  let html = '<div class="preview-panel">';
-  if (existing) {
-    html += `<div class="preview-panel-title">Existing entry — will be overwritten</div>
-      <div class="preview-item"><span>${loc?.name || ''} · ${fmt.monthLabel(month)}</span><strong>${fmt.money(existing.total)}</strong></div>
-      <div class="preview-item"><span>New customer</span><strong>${fmt.money(existing.newCustomer)}</strong></div>`;
-    if (!document.getElementById('rv_total').value) document.getElementById('rv_total').value = existing.total;
-    if (!document.getElementById('rv_new').value) document.getElementById('rv_new').value = existing.newCustomer;
-  } else {
-    html += `<div class="preview-panel-title">Existing for ${fmt.monthLabel(month)}</div>`;
-    if (monthOtherStores.length === 0 && !legacyAll) {
-      html += '<div class="preview-item"><span style="color:var(--silver);">No entries yet</span></div>';
-    } else {
-      monthOtherStores.forEach(r => {
-        const l = getLocation(r.locationId);
-        html += `<div class="preview-item"><span>${l?.name || r.locationId}</span><strong>${fmt.money(r.total)} / new ${fmt.money(r.newCustomer)}</strong></div>`;
-      });
-      if (legacyAll) {
-        html += `<div class="preview-item" style="color:var(--amber);"><span>Legacy (all stores combined)</span><strong>${fmt.money(legacyAll.total)}</strong></div>`;
-      }
-    }
-  }
-  html += '</div>';
-  panel.innerHTML = html;
+function getRvEntryPref() {
+  try {
+    const s = localStorage.getItem(RV_ENTRY_KEY);
+    if (s) return JSON.parse(s);
+  } catch {}
+  return { outletId: state.locations[0]?.id, year: String(new Date().getFullYear()) };
 }
 
-document.getElementById('rv_month').addEventListener('change', updateRevPreview);
-document.getElementById('rv_location').addEventListener('change', updateRevPreview);
+function setRvEntryPref(pref) {
+  try { localStorage.setItem(RV_ENTRY_KEY, JSON.stringify(pref)); } catch {}
+}
 
+function renderRevenueEntry() {
+  // Outlet select
+  const outletSel = document.getElementById('rv_entryOutlet');
+  const pref = getRvEntryPref();
+  // Apply pref only if no current selection
+  if (!outletSel.value && pref.outletId && outletSel.querySelector(`option[value="${pref.outletId}"]`)) {
+    outletSel.value = pref.outletId;
+  }
+  // Bind change once (use onchange to avoid duplicate)
+  outletSel.onchange = () => {
+    if (outletSel.value === '__add_new__') {
+      openAddOutletModal('rv_entryOutlet');
+      return;
+    }
+    const p = getRvEntryPref();
+    p.outletId = outletSel.value;
+    setRvEntryPref(p);
+    renderRevenueEntry();
+  };
+
+  const outletId = outletSel.value || pref.outletId || state.locations[0]?.id;
+
+  // Year from hidden input (set by year picker)
+  const yearInp = document.getElementById('rv_entryYear');
+  if (!yearInp.value && pref.year) {
+    yearInp.value = pref.year;
+    const btn = document.getElementById('rv_entryYearBtn');
+    if (btn) btn.textContent = pref.year;
+  }
+  const year = yearInp.value || pref.year || String(new Date().getFullYear());
+  // Keep pref in sync
+  if (year !== pref.year || outletId !== pref.outletId) {
+    pref.year = year; pref.outletId = outletId; setRvEntryPref(pref);
+  }
+
+  if (!outletId || outletId === '__add_new__') {
+    document.getElementById('rv_entryTable').innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Outlet 开始填金额</div>';
+    return;
+  }
+
+  // 12-month table
+  const tableWrap = document.getElementById('rv_entryTable');
+  let html = `<div class="table-wrap"><table class="data"><thead>
+    <tr>
+      <th style="width:110px;">Month</th>
+      <th class="num">Total (RM)</th>
+      <th class="num">New (RM)</th>
+      <th class="num" style="color:var(--gray);">Old (auto)</th>
+    </tr>
+  </thead><tbody>`;
+
+  let yearTotal = 0, yearNew = 0, yearOld = 0;
+  for (let m = 1; m <= 12; m++) {
+    const mKey = `${year}-${String(m).padStart(2,'0')}`;
+    const mLabel = new Date(parseInt(year), m-1, 1).toLocaleString('en-US', { month: 'short' });
+    const rec = state.revenue.find(r => r.month === mKey && r.locationId === outletId);
+    const total = rec?.total;
+    const newC = rec?.newCustomer;
+    const old = (total != null && newC != null) ? (total - newC) : null;
+    if (total != null) yearTotal += total;
+    if (newC != null) yearNew += newC;
+    if (old != null) yearOld += old;
+    const filled = rec && (total > 0 || newC > 0);
+    const rowBg = filled ? '' : 'background:rgba(0,0,0,0.02);';
+    html += `<tr style="${rowBg}">
+      <td><strong>${mLabel} ${year}</strong></td>
+      <td class="num"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="${mKey}" data-field="total" value="${total ?? ''}" placeholder="0.00" style="width:100%;text-align:right;border:1px solid var(--border-light);padding:6px 8px;border-radius:4px;font-size:13px;"></td>
+      <td class="num"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="${mKey}" data-field="newCustomer" value="${newC ?? ''}" placeholder="0.00" style="width:100%;text-align:right;border:1px solid var(--border-light);padding:6px 8px;border-radius:4px;font-size:13px;"></td>
+      <td class="num" data-old-for="${mKey}" style="color:var(--gray);">${old != null ? fmt.money(old) : '—'}</td>
+    </tr>`;
+  }
+
+  html += `<tr style="background:var(--purple-bg);font-weight:600;color:var(--purple-deep);">
+    <td>${year} TOTAL</td>
+    <td class="num">${fmt.money(yearTotal)}</td>
+    <td class="num">${fmt.money(yearNew)}</td>
+    <td class="num">${fmt.money(yearOld)}</td>
+  </tr>`;
+
+  html += '</tbody></table></div>';
+  tableWrap.innerHTML = html;
+
+  // Wire up auto-save on blur
+  tableWrap.querySelectorAll('input.rv-cell').forEach(input => {
+    input.addEventListener('blur', onRvCellBlur);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    });
+  });
+}
+
+function selectRvEntryOutlet(outletId) {
+  const pref = getRvEntryPref();
+  pref.outletId = outletId;
+  setRvEntryPref(pref);
+  const sel = document.getElementById('rv_entryOutlet');
+  if (sel && sel.querySelector(`option[value="${outletId}"]`)) sel.value = outletId;
+  renderRevenueEntry();
+}
+
+function onRvCellBlur(e) {
+  const input = e.target;
+  const month = input.dataset.month;
+  const field = input.dataset.field;
+  const pref = getRvEntryPref();
+  const outletId = pref.outletId;
+  const val = input.value.trim();
+  const num = val === '' ? 0 : parseFloat(val);
+  if (isNaN(num)) { toast('Invalid number'); input.focus(); return; }
+
+  let rec = state.revenue.find(r => r.month === month && r.locationId === outletId);
+  const before = rec ? { total: rec.total, newCustomer: rec.newCustomer } : null;
+
+  if (val === '' && !rec) return; // nothing to save
+
+  if (!rec) {
+    rec = { id: uid('REV'), month, locationId: outletId, total: 0, newCustomer: 0 };
+    state.revenue.push(rec);
+  }
+  rec[field] = num;
+
+  // skip save if unchanged
+  if (before && before[field] === num) return;
+
+  saveState();
+  gsUpsert('Revenue', rec);
+
+  // Update Old column in this row
+  const oldCell = document.querySelector(`[data-old-for="${month}"]`);
+  if (oldCell) {
+    const oldVal = (rec.total || 0) - (rec.newCustomer || 0);
+    oldCell.textContent = fmt.money(oldVal);
+  }
+
+  // Update last saved timestamp
+  const ts = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  const savedEl = document.getElementById('rv_entryLastSaved');
+  if (savedEl) savedEl.innerHTML = `✓ Saved ${ts}`;
+  toast('Saved ✓');
+
+  // Re-render table to update year totals (keeping focus)
+  const activeMonth = document.activeElement?.dataset?.month;
+  const activeField = document.activeElement?.dataset?.field;
+  renderRevenueEntry();
+  if (activeMonth && activeField) {
+    const next = document.querySelector(`.rv-cell[data-month="${activeMonth}"][data-field="${activeField}"]`);
+    if (next) next.focus();
+  }
+}
+
+// Keep editRevRow for backwards-compat (clicked from Revenue Outlet cell)
 function editRevRow(month, locationId) {
-  const r = state.revenue.find(x => x.month === month && x.locationId === locationId);
-  document.getElementById('rv_month').value = month;
-  const lbl = document.getElementById('rv_month_label');
-  const btn = document.getElementById('rv_month_btn');
-  if (lbl && btn) { lbl.textContent = fmt.monthLabel(month); btn.classList.remove('empty'); }
-  document.getElementById('rv_location').value = locationId;
-  document.getElementById('rv_total').value = r?.total || '';
-  document.getElementById('rv_new').value = r?.newCustomer || '';
-  updateRevPreview();
-  document.getElementById('revenueForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Switch to Data Entry page with correct outlet/year
+  const pref = getRvEntryPref();
+  pref.outletId = locationId;
+  pref.year = month.substring(0, 4);
+  setRvEntryPref(pref);
+  nav('entry');
+  setTimeout(() => {
+    const input = document.querySelector(`.rv-cell[data-month="${month}"][data-field="total"]`);
+    if (input) { input.focus(); input.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  }, 100);
 }
 
 // ---------- Settings ----------
