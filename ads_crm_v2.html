@@ -446,18 +446,22 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 #alertsBackdrop.open .alerts-modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
   width: calc(100% - 32px);
   max-width: 580px;
   max-height: 78vh;
+  height: fit-content;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 24px 60px rgba(16,17,20,0.28);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  animation: modalIn 0.2s ease;
 }
 .alerts-header {
   padding: 16px 18px;
@@ -531,12 +535,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 #globalSearchBackdrop.open .gs-modal {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
   width: calc(100% - 32px);
   max-width: 580px;
   max-height: 72vh;
+  height: fit-content;
   background: var(--white);
   border-radius: 16px;
   box-shadow: 0 24px 60px rgba(16,17,20,0.28), 0 0 0 1px rgba(16,17,20,0.04);
@@ -1135,7 +1142,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.79</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.80</span>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <!-- Global search (all devices) -->
