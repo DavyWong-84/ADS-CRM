@@ -778,7 +778,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.35</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.36</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -850,13 +850,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty">
+        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
           <div style="text-align:center;color:var(--gray);padding:40px 20px;">
             <div style="font-size:32px;margin-bottom:8px;">👤</div>
             <div style="font-size:14px;">Select a lead to edit<br>or click <strong>+ New Lead</strong></div>
           </div>
         </div>
-        <div id="contactFormWrap" style="display:none;">
+        <div id="contactFormWrap" style="display: block;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -870,7 +870,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               <div class="step-body">
                 <div>
                   <label>Contact <span style="color:var(--red)">*</span></label>
-                  <input type="tel" id="f_contact" placeholder="e.g. 60172472207" inputmode="tel" autocomplete="off">
+                  <input type="tel" id="f_contact" placeholder="e.g. 60172472207" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
                 </div>
                 <div class="form-row" style="margin-top:12px;">
                   <div>
@@ -913,7 +913,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label">Select date</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate">
+                    <input type="hidden" id="f_apptDate" value="">
                   </div>
                 </div>
               </div>
