@@ -778,7 +778,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.36</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.39</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -850,13 +850,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
+        <div class="contact-form-empty" id="contactFormEmpty">
           <div style="text-align:center;color:var(--gray);padding:40px 20px;">
             <div style="font-size:32px;margin-bottom:8px;">👤</div>
             <div style="font-size:14px;">Select a lead to edit<br>or click <strong>+ New Lead</strong></div>
           </div>
         </div>
-        <div id="contactFormWrap" style="display: block;">
+        <div id="contactFormWrap" style="display:none;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -864,13 +864,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <span class="step-num">1</span>
                 <div>
                   <div class="step-title">Lead Info</div>
-                  <div class="step-sub">Required · fill when customer first contacts you</div>
                 </div>
               </div>
               <div class="step-body">
                 <div>
                   <label>Contact <span style="color:var(--red)">*</span></label>
-                  <input type="tel" id="f_contact" placeholder="e.g. 60172472207" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
+                  <input type="tel" id="f_contact" inputmode="numeric" pattern="[0-9]*" autocomplete="off">
                 </div>
                 <div class="form-row" style="margin-top:12px;">
                   <div>
@@ -894,13 +893,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <span class="step-num">2</span>
                 <div>
                   <div class="step-title">Booking</div>
-                  <div class="step-sub">Fill when customer books appointment</div>
                 </div>
               </div>
               <div class="step-body">
                 <div>
                   <label>Name</label>
-                  <input type="text" id="f_name" placeholder="Customer name">
+                  <input type="text" id="f_name">
                 </div>
                 <div class="form-row" style="margin-top:12px;">
                   <div>
@@ -913,7 +911,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label">Select date</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate" value="">
+                    <input type="hidden" id="f_apptDate">
                   </div>
                 </div>
               </div>
@@ -924,7 +922,6 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <span class="step-num">3</span>
                 <div>
                   <div class="step-title">After Visit</div>
-                  <div class="step-sub">Fill after appointment visit</div>
                 </div>
               </div>
               <div class="step-body">
@@ -950,7 +947,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   </div>
                   <div>
                     <label>Spend (RM)</label>
-                    <input type="number" id="f_spend" placeholder="0" step="0.01" min="0">
+                    <input type="number" id="f_spend" step="0.01" min="0">
                   </div>
                 </div>
                 <input type="hidden" id="f_remark" value="">
@@ -3296,7 +3293,11 @@ function renderList() {
     const aOver = a.status === 'booked' && a.apptDate && a.apptDate < today ? 1 : 0;
     const bOver = b.status === 'booked' && b.apptDate && b.apptDate < today ? 1 : 0;
     if (aOver !== bOver) return bOver - aOver;
-    return (b.leadDate || '').localeCompare(a.leadDate || '');
+    // Primary: lead date descending (newest day first)
+    const dateCompare = (b.leadDate || '').localeCompare(a.leadDate || '');
+    if (dateCompare !== 0) return dateCompare;
+    // Secondary: id descending (newer leads have bigger id, so newest first)
+    return (b.id || '').localeCompare(a.id || '');
   });
 
   // sub text removed (was showing record count)
@@ -3322,6 +3323,16 @@ function renderList() {
       ).join('');
       // Lead = same layout as booked, but more compact (no appt date, no amount)
       if (l.status === 'lead') {
+        // Parse creation time from id (format: L-{base36_timestamp}...)
+        let timeStr = '';
+        if (l.id && l.id.startsWith('L-')) {
+          const tsPart = l.id.slice(2, 10);
+          const ts = parseInt(tsPart, 36);
+          if (!isNaN(ts) && ts > 1e12) {
+            const d = new Date(ts);
+            timeStr = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+          }
+        }
         return `<div class="lead-item lc-lead lead-compact-v2${selected ? ' selected' : ''}" onclick="editLead('${l.id}')">
           <div class="lc-head">
             <div class="lc-name">${l.name || l.contact || '(no contact)'}</div>
@@ -3331,7 +3342,7 @@ function renderList() {
             </div>
           </div>
           <div class="lc-foot">
-            <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
+            <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong>${timeStr ? ` <span style="color:var(--silver);font-weight:400;">${timeStr}</span>` : ''}</span>
             ${l.channelName ? `<span class="lc-channel">${l.channelName}</span>` : ''}
           </div>
         </div>`;
