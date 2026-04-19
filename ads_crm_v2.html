@@ -737,7 +737,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.21</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.22</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -3377,8 +3377,13 @@ function onSearchInputChange(value) {
   state.listPage = 1;
   renderList();
 }
-document.getElementById('searchInput').addEventListener('input', e => onSearchInputChange(e.target.value));
-document.getElementById('searchInputDesktop').addEventListener('input', e => onSearchInputChange(e.target.value));
+['searchInput', 'searchInputDesktop'].forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', e => onSearchInputChange(e.target.value));
+  el.addEventListener('keyup', e => onSearchInputChange(e.target.value));
+  el.addEventListener('change', e => onSearchInputChange(e.target.value));
+});
 // ESC closes the search modal
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
