@@ -633,7 +633,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.04</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.05</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -6796,15 +6796,11 @@ async function gsPushAll() {
 
 // Silent auto-pull on app open. No confirm, no page reload, no toast on failure.
 async function gsPullSilent() {
-  console.log('[Auto-pull] START');
   const url = getGsUrl();
-  if (!url) { console.log('[Auto-pull] no URL configured, skip'); return; }
-  console.log('[Auto-pull] URL:', url);
-  console.log('[Auto-pull] BEFORE — state.leads:', state.leads.length, 'ads:', state.adsSpend.length, 'rev:', state.revenue.length, 'fees:', state.thirdPartyFees.length);
+  if (!url) return; // No URL configured — skip silently
   try {
     const r = await fetch(url + '?action=pull');
     const d = await r.json();
-    console.log('[Auto-pull] RESPONSE success:', d.success, 'Leads:', (d.data?.Leads||[]).length, 'Ads:', (d.data?.AdsSpend||[]).length, 'Rev:', (d.data?.Revenue||[]).length, 'Fees:', (d.data?.ThirdPartyFees||[]).length);
     if (!d.success) { console.warn('[Auto-pull] failed:', d.error); return; }
     const sheetLeads = d.data.Leads || [];
     const sheetAds = d.data.AdsSpend || [];
@@ -6828,20 +6824,63 @@ async function gsPullSilent() {
       return;
     }
 
-    const toNum = v => { if (v == null || v === '') return 0; const n = Number(v); return isNaN(n) ? 0 : n; };
-    const toDateStr = v => {
+    const toNum = v => {
+      if (v == null || v === '') return 0;
+      if (typeof v === 'number') return v;
+      const n = parseFloat(String(v).replace(/,/g, ''));
+      return isNaN(n) ? 0 : n;
+    };
+    const toMonthStr = v => {
       if (!v) return '';
-      if (typeof v === 'string') return v.length >= 10 ? v.substring(0,10) : v;
-      if (v instanceof Date) return v.toISOString().substring(0,10);
+      if (typeof v === 'string') {
+        if (/^\d{4}-\d{2}(-\d{2})?$/.test(v)) return v.substring(0, 7);
+        const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):/);
+        if (m) {
+          let y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]), h = parseInt(m[4]);
+          if (h >= 16) {
+            d += 1;
+            const dim = new Date(y, mo, 0).getDate();
+            if (d > dim) { d = 1; mo += 1; if (mo > 12) { mo = 1; y += 1; } }
+          }
+          return `${y}-${String(mo).padStart(2,'0')}`;
+        }
+        return v;
+      }
+      if (v instanceof Date || (typeof v === 'object' && v.getFullYear)) {
+        return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}`;
+      }
       return String(v);
     };
-    const toMonthStr = v => { const s = toDateStr(v); return s.length >= 7 ? s.substring(0,7) : s; };
+    const toDateStr = v => {
+      if (!v) return '';
+      if (typeof v === 'string') {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v.substring(0, 10);
+        const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):/);
+        if (m) {
+          let y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]), h = parseInt(m[4]);
+          if (h >= 16) {
+            d += 1;
+            const dim = new Date(y, mo, 0).getDate();
+            if (d > dim) { d = 1; mo += 1; if (mo > 12) { mo = 1; y += 1; } }
+          }
+          return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        }
+        return v;
+      }
+      if (v instanceof Date || (typeof v === 'object' && v.getFullYear)) {
+        return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
+      }
+      return String(v);
+    };
 
+    // Lookup map for deriving location name from locationId (Sheet doesn't store locationName)
+    const locMap = {};
+    (state.locations || []).forEach(loc => { locMap[loc.id] = loc.name; });
     const normalizedLeads = sheetLeads.map(l => ({
       id: l.id || '', contact: l.contact || '', channelId: l.channelId || '',
       channelName: l.channelName || '', platform: l.platform || '',
       leadDate: toDateStr(l.leadDate), name: l.name || '', apptDate: toDateStr(l.apptDate),
-      locationId: l.locationId || '', location: l.locationName || l.location || '',
+      locationId: l.locationId || '', location: locMap[l.locationId] || l.locationName || l.location || '',
       showUp: l.showUp || '', race: l.race || '', spend: toNum(l.spend),
       status: l.status || '', remark: l.remark || ''
     }));
@@ -6857,7 +6896,6 @@ async function gsPullSilent() {
       id: f.id || '', month: toMonthStr(f.month),
       name: f.name || '', platform: f.platform || '', amount: toNum(f.amount)
     }));
-    console.log('[Auto-pull] AFTER NORMALIZE — leads:', normalizedLeads.length, 'ads:', normalizedAds.length, 'rev:', normalizedRev.length, 'fees:', normalizedFees.length);
 
     // Auto-backup before overwrite
     try {
@@ -6871,21 +6909,17 @@ async function gsPullSilent() {
     state.adsSpend = normalizedAds;
     state.revenue = normalizedRev;
     state.thirdPartyFees = normalizedFees;
-    console.log('[Auto-pull] AFTER STATE ASSIGN — state.leads:', state.leads.length);
     saveState();
-    console.log('[Auto-pull] AFTER saveState — state.leads:', state.leads.length);
-    console.log('[Auto-pull] ✅ Synced:', normalizedLeads.length, 'leads');
     if (typeof toast === 'function') toast('✅ Synced from Sheet (' + normalizedLeads.length + ' leads)');
-    // CRITICAL: refresh select dropdowns (year, month, store, channel) based on new data
+    // Refresh select dropdowns (year, month, store, channel) based on new data
     try {
       if (typeof refreshSelects === 'function') refreshSelects();
       if (typeof refreshYearSelects === 'function') refreshYearSelects();
     } catch (e) { console.warn('[Auto-pull] refresh selects failed:', e); }
-    // Re-render: use specific render functions based on current page (safer than nav())
+    // Re-render current page
     try {
       const activePage = document.querySelector('.page.active');
       const pageId = activePage?.id || '';
-      console.log('[Auto-pull] re-rendering page:', pageId);
       if (pageId === 'page-contact' && typeof renderList === 'function') renderList();
       else if (pageId === 'page-summary' && typeof renderSummary === 'function') renderSummary();
       else if (pageId === 'page-store' && typeof renderStore === 'function') renderStore();
@@ -6893,7 +6927,6 @@ async function gsPullSilent() {
       else if (pageId === 'page-revenue' && typeof renderRevenue === 'function') renderRevenue();
       else if (pageId === 'page-entry' && typeof renderEntry === 'function') renderEntry();
       if (typeof renderTopbarToday === 'function') renderTopbarToday();
-      console.log('[Auto-pull] AFTER RENDER — state.leads:', state.leads.length);
     } catch (e) { console.warn('[Auto-pull] re-render failed:', e); }
   } catch (e) {
     console.warn('[Auto-pull] error:', e.message);
@@ -7016,6 +7049,9 @@ async function gsPull() {
       platform: f.platform || '',
       amount: toNum(f.amount)
     }));
+    // Lookup map for deriving location name from locationId (Sheet doesn't store locationName)
+    const locMapManual = {};
+    (state.locations || []).forEach(loc => { locMapManual[loc.id] = loc.name; });
     // Normalize Leads: spend must be number; dates must be YYYY-MM-DD
     const normalizedLeads = sheetLeads.map(l => ({
       id: l.id || '',
@@ -7027,7 +7063,7 @@ async function gsPull() {
       name: l.name || '',
       apptDate: toDateStr(l.apptDate),
       locationId: l.locationId || '',
-      location: l.locationName || l.location || '',
+      location: locMapManual[l.locationId] || l.locationName || l.location || '',
       showUp: l.showUp || '',
       race: l.race || '',
       spend: toNum(l.spend),
@@ -7092,10 +7128,10 @@ function gsLeadForSheet(l) {
     name: l.name || '',
     apptDate: l.apptDate || '',
     locationId: l.locationId || '',
-    locationName: l.location || '',
     showUp: l.showUp || '',
     race: l.race || '',
     spend: l.spend != null ? l.spend : 0,
+    remark: l.remark || '',
     status: l.status || ''
   };
 }
