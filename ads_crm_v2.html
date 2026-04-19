@@ -1044,7 +1044,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.74</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.75</span>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <!-- Global search (all devices) -->
@@ -7148,10 +7148,9 @@ function renderRevenueEntry() {
       <th>Month</th>
       <th class="num">Total (RM)</th>
       <th class="num">New (RM)</th>
-      <th class="num" style="color:var(--gray);">Old (auto)</th>
     </tr></thead><tbody>`;
 
-  let yearTotal = 0, yearNew = 0, yearOld = 0;
+  let yearTotal = 0, yearNew = 0;
   const rvMonths = entryVisibleMonths(year, m => state.revenue.some(r => r.month === m && r.locationId === outletId));
   for (const mKey of rvMonths) {
     const [_y, _m] = mKey.split('-').map(Number);
@@ -7159,10 +7158,8 @@ function renderRevenueEntry() {
     const rec = state.revenue.find(r => r.month === mKey && r.locationId === outletId);
     const total = rec?.total;
     const newC = rec?.newCustomer;
-    const old = (total != null && newC != null) ? (total - newC) : null;
     if (total != null) yearTotal += total;
     if (newC != null) yearNew += newC;
-    if (old != null) yearOld += old;
     const filled = rec && (total > 0 || newC > 0);
     const rowBg = filled ? '' : 'background:rgba(0,0,0,0.02);';
     const inStyle = 'width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;';
@@ -7170,7 +7167,6 @@ function renderRevenueEntry() {
       <td><strong>${mLabel} ${year}</strong></td>
       <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="${mKey}" data-field="total" value="${total ?? ''}" placeholder="0.00" style="${inStyle}"></td>
       <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="${mKey}" data-field="newCustomer" value="${newC ?? ''}" placeholder="0.00" style="${inStyle}"></td>
-      <td class="num" style="color:var(--gray);" data-old-for="${mKey}">${old != null ? fmt.money(old) : '—'}</td>
     </tr>`;
   }
 
@@ -7178,7 +7174,6 @@ function renderRevenueEntry() {
     <td>TOTAL ${year}</td>
     <td class="num">${fmt.money(yearTotal)}</td>
     <td class="num">${fmt.money(yearNew)}</td>
-    <td class="num">${fmt.money(yearOld)}</td>
   </tr></tfoot></table></div>`;
   tableWrap.innerHTML = html;
 
