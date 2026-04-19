@@ -750,7 +750,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.28</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.29</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -7097,7 +7097,7 @@ async function gsPullSilent() {
     // skip that table to prevent accidental data loss (checked at state assignment below)
 
     // Safety: reject unexpected lead columns (same check as manual Pull)
-    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark']);
+    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags']);
     const suspiciousLead = sheetLeads.find(l => {
       const keys = Object.keys(l);
       return keys.some(k => !EXPECTED_LEAD_KEYS.has(k)) || keys.length !== new Set(keys).size;
@@ -7273,7 +7273,7 @@ async function gsPull() {
     // --- Safety check 1: reject if Sheet data looks corrupted ---
     // Detect duplicate/unexpected columns by checking if any lead has unusual keys
     // Allow both current fields and legacy 'remark' (for backward compatibility with older Sheet data)
-    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark']);
+    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags']);
     const suspiciousLead = sheetLeads.find(l => {
       const keys = Object.keys(l);
       // Any unknown key, or any duplicate-looking key pattern
