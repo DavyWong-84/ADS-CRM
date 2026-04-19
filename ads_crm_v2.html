@@ -363,13 +363,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* Legacy class aliases (backward compat — kept minimal) */
 .lead-row-1, .lead-row-2, .lead-meta { display: none; }
 
-/* Lead flag stars (red / yellow / green) — click to toggle */
-.lc-flags { display: inline-flex; gap: 3px; margin-left: 6px; }
-.lc-flag { cursor: pointer; width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s; color: #d4d4d8; }
+/* Lead flag stars (yellow / red / green) — click to toggle */
+.lc-flags { display: inline-flex; gap: 4px; margin-left: 6px; }
+.lc-flag { cursor: pointer; width: 22px; height: 22px; font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s; color: #d4d4d8; }
 .lc-flag:hover { transform: scale(1.2); }
-.lc-flag.active[data-flag="red"] { color: #ef4444; }
-.lc-flag.active[data-flag="yellow"] { color: #eab308; }
-.lc-flag.active[data-flag="green"] { color: #10b981; }
+.lc-flag:not(.active) { animation: starPulse 1.6s ease-in-out infinite; }
+.lc-flag.active[data-flag="yellow"] { color: #eab308; animation: none; }
+.lc-flag.active[data-flag="red"] { color: #ef4444; animation: none; }
+.lc-flag.active[data-flag="green"] { color: #10b981; animation: none; }
+@keyframes starPulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
 
 /* Pagination */
 .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; flex-wrap: wrap; }
@@ -745,7 +750,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.24</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.26</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -3248,9 +3253,9 @@ function renderList() {
   if (state.listSearch) {
     const q = state.listSearch.toLowerCase();
     list = list.filter(l =>
-      (l.name || '').toLowerCase().includes(q) ||
-      (l.contact || '').includes(q) ||
-      (l.remark || '').toLowerCase().includes(q)
+      String(l.name || '').toLowerCase().includes(q) ||
+      String(l.contact || '').includes(q) ||
+      String(l.remark || '').toLowerCase().includes(q)
     );
   }
   const today = todayStr();
@@ -3282,7 +3287,7 @@ function renderList() {
       const selected = l.id === currentEditingId ? ' selected' : '';
       const statusLabel = l.status === 'noshow' ? 'No show' : (l.status.charAt(0).toUpperCase() + l.status.slice(1));
       const flags = l.flags || {};
-      const starHTML = ['red', 'yellow', 'green'].map(c =>
+      const starHTML = ['yellow', 'red', 'green'].map(c =>
         `<span class="lc-flag ${flags[c] ? 'active' : ''}" data-flag="${c}" onclick="toggleLeadFlag(event, '${l.id}', '${c}')" title="${c}">★</span>`
       ).join('');
       // Lead = compact card (contact + leadDate + tag only)
@@ -7157,7 +7162,7 @@ async function gsPullSilent() {
     const flagsMap = {};
     (state.leads || []).forEach(l => { if (l.flags && l.id) flagsMap[l.id] = l.flags; });
     const normalizedLeads = sheetLeads.map(l => ({
-      id: l.id || '', contact: l.contact || '', channelId: l.channelId || '',
+      id: l.id || '', contact: String(l.contact || ''), channelId: l.channelId || '',
       channelName: l.channelName || '', platform: l.platform || '',
       leadDate: toDateStr(l.leadDate), name: l.name || '', apptDate: toDateStr(l.apptDate),
       locationId: l.locationId || '', location: locMap[l.locationId] || l.locationName || l.location || '',
@@ -7350,7 +7355,7 @@ async function gsPull() {
     // Normalize Leads: spend must be number; dates must be YYYY-MM-DD
     const normalizedLeads = sheetLeads.map(l => ({
       id: l.id || '',
-      contact: l.contact || '',
+      contact: String(l.contact || ''),
       channelId: l.channelId || '',
       channelName: l.channelName || '',
       platform: l.platform || '',
