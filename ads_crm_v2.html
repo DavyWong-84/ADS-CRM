@@ -633,7 +633,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.0</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.01</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -1077,7 +1077,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div class="card">
         <div class="section-title"><h3>📊 Google Sheet Sync</h3></div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.5;">
-          CRM → Sheet: 自动推送。Sheet → CRM: 手动 Pull。
+          CRM → Sheet: 自动推送。Sheet → CRM: 打开 App 自动 Pull（也可手动）。
         </div>
         <div style="display:flex;flex-direction:column;gap:8px;">
           <div>
@@ -1216,7 +1216,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.0'; // bump this to force reload of preloaded data
+const DATA_VERSION = '2.01'; // bump this to force reload of preloaded data
 
 // ---------- State ----------
 let state = {
@@ -6794,6 +6794,95 @@ async function gsPushAll() {
   } catch (e) { gsLog('❌ Push failed: ' + e.message, true); }
 }
 
+// Silent auto-pull on app open. No confirm, no page reload, no toast on failure.
+async function gsPullSilent() {
+  const url = getGsUrl();
+  if (!url) return; // No URL configured — skip silently
+  try {
+    const r = await fetch(url + '?action=pull');
+    const d = await r.json();
+    if (!d.success) { console.warn('[Auto-pull] failed:', d.error); return; }
+    const sheetLeads = d.data.Leads || [];
+    const sheetAds = d.data.AdsSpend || [];
+    const sheetRev = d.data.Revenue || [];
+    const sheetFees = d.data.ThirdPartyFees || [];
+
+    // Safety: skip if Sheet is totally empty (protects against broken Apps Script returning empty)
+    if (sheetLeads.length === 0 && sheetAds.length === 0 && sheetRev.length === 0 && sheetFees.length === 0) {
+      console.warn('[Auto-pull] Sheet returned empty data — skipping to protect local data');
+      return;
+    }
+
+    // Safety: reject unexpected lead columns (same check as manual Pull)
+    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark']);
+    const suspiciousLead = sheetLeads.find(l => {
+      const keys = Object.keys(l);
+      return keys.some(k => !EXPECTED_LEAD_KEYS.has(k)) || keys.length !== new Set(keys).size;
+    });
+    if (suspiciousLead) {
+      console.warn('[Auto-pull] BLOCKED: suspicious lead columns:', Object.keys(suspiciousLead));
+      return;
+    }
+
+    const toNum = v => { if (v == null || v === '') return 0; const n = Number(v); return isNaN(n) ? 0 : n; };
+    const toDateStr = v => {
+      if (!v) return '';
+      if (typeof v === 'string') return v.length >= 10 ? v.substring(0,10) : v;
+      if (v instanceof Date) return v.toISOString().substring(0,10);
+      return String(v);
+    };
+    const toMonthStr = v => { const s = toDateStr(v); return s.length >= 7 ? s.substring(0,7) : s; };
+
+    const normalizedLeads = sheetLeads.map(l => ({
+      id: l.id || '', contact: l.contact || '', channelId: l.channelId || '',
+      channelName: l.channelName || '', platform: l.platform || '',
+      leadDate: toDateStr(l.leadDate), name: l.name || '', apptDate: toDateStr(l.apptDate),
+      locationId: l.locationId || '', location: l.locationName || l.location || '',
+      showUp: l.showUp || '', race: l.race || '', spend: toNum(l.spend),
+      status: l.status || '', remark: l.remark || ''
+    }));
+    const normalizedAds = sheetAds.map(a => ({
+      id: a.id || '', month: toMonthStr(a.month),
+      channelId: a.channelId || '', amount: toNum(a.amount)
+    }));
+    const normalizedRev = sheetRev.map(r => ({
+      id: r.id || '', month: toMonthStr(r.month),
+      locationId: r.locationId || '', total: toNum(r.total), newCustomer: toNum(r.newCustomer)
+    }));
+    const normalizedFees = sheetFees.map(f => ({
+      id: f.id || '', month: toMonthStr(f.month),
+      name: f.name || '', platform: f.platform || '', amount: toNum(f.amount)
+    }));
+
+    // Auto-backup before overwrite
+    try {
+      localStorage.setItem('ads_crm_pre_pull_backup', JSON.stringify({
+        ts: Date.now(), leads: state.leads, adsSpend: state.adsSpend,
+        revenue: state.revenue, thirdPartyFees: state.thirdPartyFees
+      }));
+    } catch (e) {}
+
+    state.leads = normalizedLeads;
+    state.adsSpend = normalizedAds;
+    state.revenue = normalizedRev;
+    state.thirdPartyFees = normalizedFees;
+    saveState();
+    const counts = `${normalizedLeads.length} leads, ${normalizedAds.length} ads, ${normalizedRev.length} rev, ${normalizedFees.length} fees`;
+    console.log('[Auto-pull] ✅ Synced:', counts);
+    if (typeof toast === 'function') toast('✅ Synced from Sheet');
+    // Re-render current active page silently (no full reload)
+    try {
+      const activePage = document.querySelector('.page.active');
+      if (activePage && activePage.id && activePage.id.startsWith('page-')) {
+        const pageName = activePage.id.substring(5); // strip "page-"
+        if (typeof nav === 'function') nav(pageName);
+      }
+    } catch (e) { console.warn('[Auto-pull] re-render failed:', e); }
+  } catch (e) {
+    console.warn('[Auto-pull] error:', e.message);
+  }
+}
+
 async function gsPull() {
   const url = getGsUrl();
   if (!url) { gsLog('Please enter Apps Script URL', true); return; }
@@ -7040,6 +7129,8 @@ function init() {
   nav('contact');
   setTimeout(fixContactPanelTop, 200);
   window.addEventListener('resize', fixContactPanelTop);
+  // Auto-pull from Sheet (silent, 800ms delay to let UI render first)
+  setTimeout(() => { try { gsPullSilent(); } catch (e) { console.warn(e); } }, 800);
 }
 
 // Start app directly (no password lock)
