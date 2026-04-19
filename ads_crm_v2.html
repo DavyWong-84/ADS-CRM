@@ -633,7 +633,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.03</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.04</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -6876,6 +6876,11 @@ async function gsPullSilent() {
     console.log('[Auto-pull] AFTER saveState — state.leads:', state.leads.length);
     console.log('[Auto-pull] ✅ Synced:', normalizedLeads.length, 'leads');
     if (typeof toast === 'function') toast('✅ Synced from Sheet (' + normalizedLeads.length + ' leads)');
+    // CRITICAL: refresh select dropdowns (year, month, store, channel) based on new data
+    try {
+      if (typeof refreshSelects === 'function') refreshSelects();
+      if (typeof refreshYearSelects === 'function') refreshYearSelects();
+    } catch (e) { console.warn('[Auto-pull] refresh selects failed:', e); }
     // Re-render: use specific render functions based on current page (safer than nav())
     try {
       const activePage = document.querySelector('.page.active');
