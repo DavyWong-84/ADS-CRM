@@ -63,6 +63,7 @@ html, body {
   background: var(--surface);
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
+  overscroll-behavior-y: none;
 }
 button { font-family: inherit; cursor: pointer; border: none; background: none; font-size: inherit; color: inherit; }
 input, select, textarea { font-family: inherit; font-size: 15px; outline: none; border: 1px solid var(--border); background: var(--white); padding: 11px 13px; border-radius: 10px; width: 100%; color: var(--black); transition: border-color 0.15s, box-shadow 0.15s; }
@@ -746,9 +747,49 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .preview-item { display: flex; justify-content: space-between; padding: 3px 0; color: var(--gray); }
 .preview-item strong { color: var(--black); font-weight: 500; }
 
-/* Sticky summary filter */
-.sticky-filter { position: sticky; top: 57px; z-index: 40; background: var(--white); padding: 10px 16px; margin: 0 -16px 14px; border-bottom: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
-@media (min-width: 768px) { .sticky-filter { top: 70px; padding: 10px 28px; margin: 0 -28px 14px; } }
+/* Sticky summary filter (legacy - used by other pages) */
+.sticky-filter { position: sticky; top: 54px; z-index: 40; background: var(--white); padding: 10px 16px; margin: 0 -16px 14px; border-bottom: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
+@media (min-width: 768px) { .sticky-filter { top: 60px; padding: 10px 28px; margin: 0 -28px 14px; } }
+
+/* Unified page header — fixed to viewport for rock-solid no-jitter behavior */
+.unified-header {
+  position: fixed;
+  top: 54px; /* mobile topbar height */
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: var(--white);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  margin: 0;
+}
+@media (min-width: 768px) {
+  .unified-header {
+    top: 60px; /* desktop topbar height */
+    left: 220px; /* desktop sidebar width */
+    padding: 16px 28px;
+  }
+}
+.unified-header .compact-filter { margin-top: 10px; }
+/* Spacer to prevent content from hiding under the fixed header */
+.unified-header-spacer {
+  height: 105px; /* mobile: title + filters + padding */
+}
+@media (min-width: 768px) {
+  .unified-header-spacer {
+    height: 115px;
+  }
+}
+/* Single-row variant (title only, no filter) */
+.unified-header-spacer-single {
+  height: 60px;
+}
+@media (min-width: 768px) {
+  .unified-header-spacer-single {
+    height: 70px;
+  }
+}
 
 /* Compact filter row (single-line for mobile) */
 .compact-filter { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding-bottom: 2px; }
@@ -760,6 +801,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* Inputs compact */
 .inline-form { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: end; }
+/* Settings form: stacked one field per row */
+.settings-form { display: flex; flex-direction: column; gap: 10px; }
+.settings-form label { font-size: 12px; margin-bottom: 4px; }
+.settings-form input, .settings-form select { font-size: 13px; }
 @media (max-width: 767px) { .inline-form { grid-template-columns: 1fr; } }
 @media (max-width: 767px) { .inline-form button[type=submit] { width: 100%; } }
 
@@ -767,6 +812,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (min-width: 767px) {
   #settingsTopGrid { grid-template-columns: 1fr 1fr !important; }
   #settingsBotGrid { grid-template-columns: 1fr 1fr 1fr !important; }
+}
+/* Settings 2-col wrap: mobile stacked | desktop left+right */
+.settings-wrap { display: flex; flex-direction: column; gap: 14px; }
+.settings-col-left, .settings-col-right { display: flex; flex-direction: column; gap: 14px; }
+@media (min-width: 768px) {
+  .settings-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
 }
 
 
@@ -778,7 +829,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.43</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.58</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -804,21 +855,34 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 <main class="main">
   <!-- CONTACT PAGE (merged Lead + List) -->
   <section class="page" id="page-contact">
-    <!-- Standard page header (matches Dashboard/Appt/Ads Spend structure) -->
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
-      <h1 class="page-title" style="margin:0;">Contact</h1>
-      <div class="contact-top-actions" style="display:flex;gap:8px;align-items:center;">
-        <button type="button" id="searchIconBtn" onclick="openSearchModal()" title="Search" aria-label="Search" style="background:var(--white);border:1px solid var(--border);width:34px;height:34px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);transition:all 0.15s;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-        </button>
-        <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
+    <!-- Unified sticky header: page title + actions + filters in one white bar -->
+    <div class="unified-header">
+      <!-- Row 1: page title + actions -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+        <h1 class="page-title" style="margin:0;">Contact</h1>
+        <div class="contact-top-actions" style="display:flex;gap:8px;align-items:center;">
+          <button type="button" id="searchIconBtn" onclick="openSearchModal()" title="Search" aria-label="Search" style="background:var(--white);border:1px solid var(--border);width:34px;height:34px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);transition:all 0.15s;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          </button>
+          <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
+        </div>
       </div>
-    </div>
-
-    <!-- Filter bar: quick chips (left) + channel dropdown + desktop search -->
-    <div class="sticky-filter">
+      <!-- Row 2: filters (Month/Year toggle + date picker + channel + search) -->
       <div class="compact-filter" style="flex-wrap:wrap;gap:8px;">
-        <div class="quick-chips" id="listQuickChips" style="display:flex;gap:6px;flex-wrap:wrap;"><button class="quick-chip " onclick="setListQuickPeriod('all')">All</button><button class="quick-chip active" onclick="setListQuickPeriod('today')">Today</button><button class="quick-chip " onclick="setListQuickPeriod('yesterday')">Yday</button><button class="quick-chip " onclick="setListQuickPeriod('month')">Month</button><button class="quick-chip " onclick="setListQuickPeriod('year')">Year</button></div>
+        <div class="toggle-group">
+          <button class="toggle active" data-mode="month" onclick="setListMode('month')">Month</button>
+          <button class="toggle" data-mode="year" onclick="setListMode('year')">Year</button>
+        </div>
+        <button type="button" class="date-btn cf-select" id="listMonth_btn" onclick="openMonthPicker('listMonth')">
+          <span id="listMonth_label">Apr 2026</span>
+          <span class="date-btn-icon">📅</span>
+        </button>
+        <input type="hidden" id="listMonth" value="2026-04">
+        <button type="button" class="date-btn cf-select" id="listYearBtn" style="display:none;" onclick="openYearPicker('listYear', this)">
+          <span id="listYear_label">2026</span>
+          <span class="date-btn-icon">📅</span>
+        </button>
+        <input type="hidden" id="listYear" value="2026">
         <select id="listChannelFilter" class="cf-select" onchange="setListChannelFilter(this.value)" style="min-width:130px;"><option value="">All channels</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
         <div class="list-search desktop-search" style="position:relative;flex:1 1 180px;min-width:160px;">
           <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -826,6 +890,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
       </div>
     </div>
+    <div class="unified-header-spacer"></div>
 
     <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
     <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
@@ -985,15 +1050,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
   <!-- DASHBOARD PAGE (was Summary) -->
   <section class="page" id="page-summary">
-    <h1 class="page-title">Dashboard</h1>
-
-    <div class="sticky-filter">
+    <div class="unified-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+        <h1 class="page-title" style="margin:0;">Dashboard</h1>
+      </div>
       <div class="compact-filter">
         <div class="toggle-group">
           <button class="toggle active" data-mode="single" onclick="setSummaryMode('single')">Month</button>
           <button class="toggle" data-mode="multi" onclick="setSummaryMode('multi')">Year</button>
         </div>
         <select id="summaryYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
+        <button type="button" class="date-btn cf-select" id="summaryYearBtn" style="display:none;" onclick="openYearPicker('summaryYear', this)">
+          <span id="summaryYear_label">2026</span>
+          <span class="date-btn-icon">📅</span>
+        </button>
         <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">Apr 2026</span>
           <span class="date-btn-icon">📅</span>
@@ -1001,16 +1071,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="summaryMonth" value="2026-04">
       </div>
     </div>
+    <div class="unified-header-spacer"></div>
 
     <div id="summaryContent"></div>
   </section>
 
   <!-- STORE PAGE -->
   <section class="page" id="page-store">
-    <h1 class="page-title">Appt Report</h1>
-    <p class="page-sub">Appointment analytics by outlet</p>
-
-    <div class="sticky-filter">
+    <div class="unified-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+        <h1 class="page-title" style="margin:0;">Appt Report</h1>
+      </div>
       <div class="compact-filter">
         <div class="toggle-group">
           <button class="toggle active" data-mode="month" onclick="setStoreMode('month')">Month</button>
@@ -1018,6 +1089,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <button class="toggle" data-mode="custom" onclick="setStoreMode('custom')">Custom</button>
         </div>
         <select id="storeYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
+        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="display:none;" onclick="openYearPicker('storeYear', this)">
+          <span id="storeYear_label">2026</span>
+          <span class="date-btn-icon">📅</span>
+        </button>
         <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')">
           <span id="storeMonth_label">Apr 2026</span>
           <span class="date-btn-icon">📅</span>
@@ -1037,6 +1112,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <select id="storeSelect" class="cf-select"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
     </div>
+    <div class="unified-header-spacer"></div>
 
     <!-- Pill tabs -->
     <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
@@ -1050,12 +1126,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
   <!-- ADS SPEND PAGE -->
   <section class="page" id="page-adsspend">
-    <h1 class="page-title">Ads Spend</h1>
-
-    <!-- Filter bar -->
-    <div class="sticky-filter">
+    <div class="unified-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+        <h1 class="page-title" style="margin:0;">Ads Spend</h1>
+      </div>
       <div class="compact-filter">
-        <select id="adsYear" class="cf-select"><option value="2026" selected="">2026</option></select>
+        <select id="adsYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
+        <button type="button" class="date-btn cf-select" id="adsYearBtn" onclick="openYearPicker('adsYear', this)">
+          <span id="adsYear_label">2026</span>
+          <span class="date-btn-icon">📅</span>
+        </button>
         <select id="adsPlatformSelect" class="cf-select" onchange="setAdsTab(this.value)">
           <option value="all">All channels</option>
           <option value="meta">Meta</option>
@@ -1066,6 +1146,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </select>
       </div>
     </div>
+    <div class="unified-header-spacer"></div>
 
     <!-- Pill tabs -->
     <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
@@ -1125,25 +1206,30 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
   <!-- REVENUE PAGE -->
   <section class="page" id="page-revenue">
-    <h1 class="page-title">Revenue Outlet</h1>
-
-    <div class="sticky-filter">
+    <div class="unified-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+        <h1 class="page-title" style="margin:0;">Revenue Outlet</h1>
+      </div>
       <div class="compact-filter">
-        <select id="revYear" class="cf-select"><option value="2026" selected="">2026</option></select>
+        <select id="revYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
+        <button type="button" class="date-btn cf-select" id="revYearBtn" onclick="openYearPicker('revYear', this)">
+          <span id="revYear_label">2026</span>
+          <span class="date-btn-icon">📅</span>
+        </button>
         <select id="revOutletSelect" class="cf-select" onchange="renderRevenue()"><option value="all">All Outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
     </div>
+    <div class="unified-header-spacer"></div>
 
     <div id="revenueReportWrap"></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
   <section class="page" id="page-entry">
-    <h1 class="page-title">Data Entry</h1>
-    <p class="page-sub">Monthly data entry — revenue, ads cost &amp; 3rd party fees</p>
-
-    <!-- Shared filter bar (year applies to all 3 panels) -->
-    <div class="sticky-filter">
+    <div class="unified-header">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+        <h1 class="page-title" style="margin:0;">Data Entry</h1>
+      </div>
       <div class="compact-filter">
         <button type="button" class="date-btn cf-select" id="entrySharedYearBtn" onclick="openYearPicker('entrySharedYear', this)" style="min-width:110px;">
           <span id="entrySharedYearLabel">2026</span>
@@ -1152,6 +1238,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="entrySharedYear" value="2026">
       </div>
     </div>
+    <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
     <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
@@ -1207,66 +1294,19 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
   <!-- SETTINGS PAGE -->
   <section class="page active" id="page-settings">
-    <h1 class="page-title">Settings</h1>
-    <p class="page-sub">Manage channels, stores &amp; deploy</p>
-
-    <!-- Desktop: 2-col top row (GitHub + Google Sheet), 3-col bottom row -->
-    <div style="display:grid;grid-template-columns:1fr;gap:14px;align-items:start;" id="settingsTopGrid">
-
-      <!-- GitHub Deploy -->
-      <div class="card">
-        <div class="section-title"><h3>🚀 Push to GitHub</h3></div>
-        <div style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.5;">
-          推送后等 1-2 分钟 → Ctrl+Shift+R 刷新。
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div>
-            <label style="font-size:12px;">Token</label>
-            <input type="password" id="gh_token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" style="font-size:13px;">
-            <div style="font-size:11px;color:var(--gray);margin-top:2px;">Stored in browser only · <strong>repo</strong> scope</div>
-          </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-            <div><label style="font-size:12px;">Owner</label><input type="text" id="gh_owner" placeholder="DavyWong-84" style="font-size:13px;"></div>
-            <div><label style="font-size:12px;">Repo</label><input type="text" id="gh_repo" placeholder="ADS-CRM" style="font-size:13px;"></div>
-          </div>
-          <div><label style="font-size:12px;">Branch</label><input type="text" id="gh_branch" value="main" style="font-size:13px;"><input type="hidden" id="gh_path" value="data.json"></div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="pushHTMLToGitHub()">🚀 Push</button>
-            <button class="btn btn-ghost" onclick="saveGitHubConfig()">💾 Save</button>
-          </div>
-          <div id="html_deploy_log" style="font-size:12px;color:var(--gray);min-height:16px;"><span style="color:var(--gray);">📖 Reading current HTML...</span></div>
-          <div id="gh_log" style="display:none;"></div>
-        </div>
-      </div>
-
-      <!-- Google Sheet Sync -->
-      <div class="card">
-        <div class="section-title"><h3>📊 Google Sheet Sync</h3></div>
-        <div style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.5;">
-          CRM → Sheet: 自动推送。Sheet → CRM: 打开 App 自动 Pull（也可手动）。
-        </div>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <div>
-            <label style="font-size:12px;">Apps Script URL</label>
-            <input type="text" id="gs_url" placeholder="https://script.google.com/macros/s/xxxxx/exec" autocomplete="off" style="font-size:12px;">
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-primary" onclick="gsPushAll()">⬆️ Push All</button>
-            <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull</button>
-            <button class="btn btn-ghost" onclick="gsTest()">🔗 Test</button>
-          </div>
-          <div id="gs_log" style="font-size:12px;color:var(--gray);min-height:16px;"></div>
-        </div>
-      </div>
-
+    <div class="unified-header unified-header-single">
+      <h1 class="page-title" style="margin:0;">Settings</h1>
     </div>
+    <div class="unified-header-spacer unified-header-spacer-single"></div>
 
-    <!-- Bottom row: Channels + Stores + Backup -->
-    <div style="display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px;align-items:start;" id="settingsBotGrid">
-
-      <div class="card">
-        <div class="section-title"><h3>Channels</h3></div>
-        <div id="channelsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
+    <!-- Desktop: 2 columns (left: Channels+Stores, right: GitHub+GSheet+Backup) -->
+    <!-- Mobile: all cards stacked in order -->
+    <div class="settings-wrap">
+      <div class="settings-col-left">
+        <!-- Channels -->
+        <div class="card">
+          <div class="section-title"><h3>Channels</h3></div>
+          <div id="channelsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div><strong>Simply 5</strong> <span style="color:var(--gray);font-size:12px;">· meta · from 2026-01</span></div>
       <div>
         <select class="status-select" data-ch-id="ch-simply5" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
@@ -1307,25 +1347,26 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </select>
       </div>
     </div></div>
-        <form id="channelForm" class="inline-form" style="margin-top:14px;">
-          <div><label>Name</label><input type="text" id="ch_name" placeholder="e.g. TikTok"></div>
-          <div><label>Platform</label>
-            <select id="ch_platform">
-              <option value="meta">Meta</option>
-              <option value="google">Google</option>
-              <option value="organic">Organic</option>
-              <option value="followup">Follow Up</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div><label>Active from</label><input type="month" id="ch_added"></div>
-          <button type="submit" class="btn btn-outline">Add</button>
-        </form>
-      </div>
+          <form id="channelForm" class="settings-form" style="margin-top:14px;">
+            <div><label>Name</label><input type="text" id="ch_name" placeholder="e.g. TikTok"></div>
+            <div><label>Platform</label>
+              <select id="ch_platform">
+                <option value="meta">Meta</option>
+                <option value="google">Google</option>
+                <option value="organic">Organic</option>
+                <option value="followup">Follow Up</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div><label>Active from</label><input type="month" id="ch_added"></div>
+            <button type="submit" class="btn btn-outline btn-full">Add</button>
+          </form>
+        </div>
 
-      <div class="card">
-        <div class="section-title"><h3>Stores</h3></div>
-        <div id="locationsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
+        <!-- Stores -->
+        <div class="card">
+          <div class="section-title"><h3>Stores</h3></div>
+          <div id="locationsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div><strong>Sunway</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
       <div>
         <select class="status-select" data-loc-id="st-sunway" onchange="changeLocationStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
@@ -1350,25 +1391,71 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </select>
       </div>
     </div></div>
-        <form id="locationForm" class="inline-form" style="margin-top:14px;">
-          <div><label>Name</label><input type="text" id="loc_name" placeholder="e.g. Puchong"></div>
-          <div><label>Active from</label><input type="month" id="loc_added"></div>
-          <div></div>
-          <button type="submit" class="btn btn-outline">Add</button>
-        </form>
-      </div>
-
-      <div class="card">
-        <div class="section-title"><h3>💾 Backup</h3></div>
-        <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Export all data as JSON for backup or migration.</p>
-        <button class="btn btn-gray btn-full" onclick="exportAllData()">Export All Data</button>
-        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
-          <div class="section-title"><h3>🔄 Clear Cache &amp; Reload</h3></div>
-          <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Clear browser cache and reload preloaded data. Use when data is missing or outdated.</p>
-          <button class="btn btn-full" style="background:var(--red);color:#fff;border-color:var(--red);" onclick="clearCacheReload()">Clear Cache &amp; Reload</button>
+          <form id="locationForm" class="settings-form" style="margin-top:14px;">
+            <div><label>Name</label><input type="text" id="loc_name" placeholder="e.g. Puchong"></div>
+            <div><label>Active from</label><input type="month" id="loc_added"></div>
+            <button type="submit" class="btn btn-outline btn-full">Add</button>
+          </form>
         </div>
       </div>
 
+      <div class="settings-col-right">
+        <!-- GitHub Deploy -->
+        <div class="card">
+          <div class="section-title"><h3>🚀 Push to GitHub</h3></div>
+          <div style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.5;">
+            推送后等 1-2 分钟 → Ctrl+Shift+R 刷新。
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div>
+              <label style="font-size:12px;">Token</label>
+              <input type="password" id="gh_token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" style="font-size:13px;">
+              <div style="font-size:11px;color:var(--gray);margin-top:2px;">Stored in browser only · <strong>repo</strong> scope</div>
+            </div>
+            <div><label style="font-size:12px;">Owner</label><input type="text" id="gh_owner" placeholder="DavyWong-84" style="font-size:13px;"></div>
+            <div><label style="font-size:12px;">Repo</label><input type="text" id="gh_repo" placeholder="ADS-CRM" style="font-size:13px;"></div>
+            <div><label style="font-size:12px;">Branch</label><input type="text" id="gh_branch" value="main" style="font-size:13px;"><input type="hidden" id="gh_path" value="data.json"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="pushHTMLToGitHub()">🚀 Push</button>
+              <button class="btn btn-ghost" onclick="saveGitHubConfig()">💾 Save</button>
+            </div>
+            <div id="html_deploy_log" style="font-size:12px;color:var(--gray);min-height:16px;"><span style="color:var(--gray);">📖 Reading current HTML...</span></div>
+            <div id="gh_log" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- Google Sheet Sync -->
+        <div class="card">
+          <div class="section-title"><h3>📊 Google Sheet Sync</h3></div>
+          <div style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.5;">
+            CRM → Sheet: 自动推送。Sheet → CRM: 打开 App 自动 Pull（也可手动）。
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div>
+              <label style="font-size:12px;">Apps Script URL</label>
+              <input type="text" id="gs_url" placeholder="https://script.google.com/macros/s/xxxxx/exec" autocomplete="off" style="font-size:12px;">
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="gsPushAll()">⬆️ Push All</button>
+              <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull</button>
+              <button class="btn btn-ghost" onclick="gsTest()">🔗 Test</button>
+            </div>
+            <div id="gs_log" style="font-size:12px;color:var(--gray);min-height:16px;"></div>
+          </div>
+        </div>
+
+        <!-- Backup -->
+        <div class="card">
+          <div class="section-title"><h3>💾 Backup</h3></div>
+          <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Export all data as JSON for backup or migration.</p>
+          <button class="btn btn-gray btn-full" onclick="exportAllData()">Export All Data</button>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+            <div class="section-title"><h3>🔄 Clear Cache &amp; Reload</h3></div>
+            <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Clear browser cache and reload preloaded data. Use when data is missing or outdated.</p>
+            <button class="btn btn-full" style="background:var(--red);color:#fff;border-color:var(--red);" onclick="clearCacheReload()">Clear Cache &amp; Reload</button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -1407,6 +1494,9 @@ let state = {
   listSearch: '',
   listPeriod: 'today',
   listChannelId: '',
+  listMode: 'month',
+  listMonth: new Date().toISOString().substring(0, 7),
+  listYear: String(new Date().getFullYear()),
   summaryMode: 'single',
   summaryYear: String(new Date().getFullYear()),
   summaryMonth: new Date().toISOString().substring(0, 7),
@@ -2392,76 +2482,67 @@ let _ypTarget = null; // hidden input id
 let _ypBtn = null;    // anchor button
 
 function openYearPicker(inputId, anchorEl) {
-  // Close if already open for same target
-  const existing = document.getElementById('_yearPickerPopup');
-  if (existing) {
-    existing.remove();
-    if (_ypTarget === inputId) { _ypTarget = null; return; }
-  }
-  _ypTarget = inputId;
-  _ypBtn = anchorEl;
-
-  // Build year list: from data range + ±2 of current year
+  // Build year list: from data range + current year range
   const curY = new Date().getFullYear();
   const dataYears = new Set();
   state.leads.forEach(l => { if (l.leadDate) dataYears.add(parseInt(l.leadDate.substring(0,4))); });
   state.adsSpend.forEach(a => { if (a.month) dataYears.add(parseInt(a.month.substring(0,4))); });
   state.revenue.forEach(r => { if (r.month) dataYears.add(parseInt(r.month.substring(0,4))); });
   for (let y = curY - 1; y <= curY + 2; y++) dataYears.add(y);
-  const years = [...dataYears].sort((a,b) => b - a); // newest first
+  const years = [...dataYears].sort((a,b) => a - b); // ascending for grid
 
   const curVal = document.getElementById(inputId)?.value;
+  const thisYear = String(curY);
 
-  const popup = document.createElement('div');
-  popup.id = '_yearPickerPopup';
-  popup.style.cssText = 'position:fixed;z-index:9999;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.15);padding:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;min-width:180px;';
-
+  // Build 3-col grid of years (like month picker)
+  let gridHtml = '';
   years.forEach(y => {
     const ys = String(y);
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = ys;
-    btn.style.cssText = `padding:8px 4px;border-radius:6px;border:none;cursor:pointer;font-size:13px;font-weight:${ys === curVal ? '700' : '400'};background:${ys === curVal ? 'var(--purple)' : 'transparent'};color:${ys === curVal ? '#fff' : 'var(--black)'};`;
-    btn.onmouseenter = () => { if (ys !== curVal) btn.style.background = 'var(--purple-bg)'; };
-    btn.onmouseleave = () => { if (ys !== curVal) btn.style.background = 'transparent'; };
-    btn.onclick = () => { selectYear(inputId, ys); popup.remove(); _ypTarget = null; };
-    popup.appendChild(btn);
+    const cls = [];
+    if (ys === curVal) cls.push('selected');
+    if (ys === thisYear) cls.push('today');
+    gridHtml += `<div class="mp-cell ${cls.join(' ')}" onclick="__selectYearFromPicker('${inputId}', '${ys}')">${ys}</div>`;
   });
 
-  document.body.appendChild(popup);
+  const html = `
+    <div class="dp-header">
+      <div class="dp-title">Select year</div>
+      <button type="button" class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mp-grid">${gridHtml}</div>
+    <div class="dp-footer">
+      <button type="button" class="btn btn-ghost" onclick="__selectYearFromPicker('${inputId}', '')">Clear</button>
+      <button type="button" class="btn btn-outline" onclick="__selectYearFromPicker('${inputId}', '${thisYear}')">This year</button>
+    </div>
+  `;
+  showModal(html, { className: 'dp-modal' });
+}
 
-  // Position below anchor
-  const rect = anchorEl.getBoundingClientRect();
-  const pw = popup.offsetWidth || 180;
-  let left = rect.left;
-  if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
-  popup.style.left = left + 'px';
-  popup.style.top = (rect.bottom + 4 + window.scrollY) + 'px';
-
-  // Close on outside click
-  setTimeout(() => {
-    document.addEventListener('click', function handler(e) {
-      if (!popup.contains(e.target) && e.target !== anchorEl) {
-        popup.remove();
-        _ypTarget = null;
-        document.removeEventListener('click', handler);
-      }
-    });
-  }, 0);
+function __selectYearFromPicker(inputId, ys) {
+  selectYear(inputId, ys);
+  closeModal();
 }
 
 function selectYear(inputId, year) {
   const inp = document.getElementById(inputId);
   if (!inp) return;
   inp.value = year;
-  // Update button label
+  // Update button label (for button-style pickers)
   const btnId = inputId.replace('Year', 'YearBtn');
   const btn = document.getElementById(btnId);
   if (btn) btn.textContent = year;
+  // Update year-label span (for new-style main page pickers)
+  const lblSpan = document.getElementById(inputId + '_label');
+  if (lblSpan) lblSpan.textContent = year || '—';
   // Save pref and trigger render
   if (inputId === 'as_entryYear') { setAsEntryPref({ channelId: document.getElementById('as_entryChannel')?.value, year }); renderAdsCostEntry(); }
   else if (inputId === 'fee_entryYear') { setFeeEntryPref({ name: document.getElementById('fee_entryName')?.value, year }); renderFeeEntry(); }
   else if (inputId === 'rv_entryYear') renderRevenueEntry();
+  // Main page selects
+  else if (inputId === 'summaryYear') { state.summaryYear = year; saveState(); if (typeof renderDashboard === 'function') renderDashboard(); else if (typeof renderSummary === 'function') renderSummary(); }
+  else if (inputId === 'storeYear') { state.storeYear = year; saveState(); if (typeof renderStore === 'function') renderStore(); }
+  else if (inputId === 'adsYear') { state.adsYear = year; saveState(); if (typeof renderAdsSpend === 'function') renderAdsSpend(); }
+  else if (inputId === 'revYear') { state.revYear = year; saveState(); if (typeof renderRevenue === 'function') renderRevenue(); }
   else if (inputId === 'entrySharedYear') {
     // Update the shared label span (not just textContent on the wrapper button)
     const lbl = document.getElementById('entrySharedYearLabel');
@@ -2488,12 +2569,16 @@ function refreshYearSelects() {
   if (years.size === 0) years.add(String(new Date().getFullYear()));
   const yArr = [...years].sort();
   const latestYear = yArr[yArr.length - 1];
-  // Regular <select> year elements
+  // Regular <select> year elements + their button labels
   ['summaryYear', 'storeYear', 'adsYear', 'revYear'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     const cur = el.value || state[id] || latestYear;
     el.innerHTML = yArr.map(y => `<option value="${y}" ${y === cur ? 'selected' : ''}>${y}</option>`).join('');
+    el.value = cur;
+    // Update corresponding button label
+    const lbl = document.getElementById(id + '_label');
+    if (lbl) lbl.textContent = cur;
   });
   // Entry year pickers (hidden inputs + buttons) — init default value
   ['as_entryYear', 'fee_entryYear', 'rv_entryYear', 'entrySharedYear'].forEach(id => {
@@ -3237,8 +3322,9 @@ function applyMonth(mStr) {
 // Resolve a quick-period key ('today', 'yesterday', 'month', 'year', '') to a match function against leadDate.
 // Returns null if value is empty (no filter).
 function resolveQuickPeriod(key) {
+  // Legacy function retained for backward compat — new filter uses setListMode
   if (!key || key === 'all') return null;
-  const today = todayStr(); // YYYY-MM-DD
+  const today = todayStr();
   if (key === 'today') return (d) => d === today;
   if (key === 'yesterday') {
     const y = new Date(); y.setDate(y.getDate() - 1);
@@ -3253,27 +3339,36 @@ function resolveQuickPeriod(key) {
     const y = today.substring(0, 4);
     return (d) => typeof d === 'string' && d.startsWith(y);
   }
-  // Fallback: treat as YYYY-MM or YYYY prefix (backward compat)
   return (d) => typeof d === 'string' && d.startsWith(key);
 }
 
-function renderQuickChips() {
-  const wrap = document.getElementById('listQuickChips');
-  if (!wrap) return;
-  const chips = [
-    { key: 'all', label: 'All' },
-    { key: 'today', label: 'Today' },
-    { key: 'yesterday', label: 'Yday' },
-    { key: 'month', label: 'Month' },
-    { key: 'year', label: 'Year' }
-  ];
-  const cur = state.listPeriod || 'all';
-  wrap.innerHTML = chips.map(c =>
-    `<button class="quick-chip ${c.key === cur ? 'active' : ''}" onclick="setListQuickPeriod('${c.key}')">${c.label}</button>`
-  ).join('');
+// New: mode-based filter (Month/Year toggle)
+function resolveListFilter() {
+  const mode = state.listMode || 'month';
+  if (mode === 'month') {
+    const m = state.listMonth || todayStr().substring(0, 7);
+    return (d) => typeof d === 'string' && d.startsWith(m);
+  }
+  if (mode === 'year') {
+    const y = state.listYear || todayStr().substring(0, 4);
+    return (d) => typeof d === 'string' && d.startsWith(y);
+  }
+  return null;
+}
+
+function setListMode(mode) {
+  state.listMode = mode;
+  state.listPage = 1;
+  // Show/hide correct button
+  document.querySelectorAll('#page-contact .toggle-group .toggle').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  document.getElementById('listMonth_btn').style.display = mode === 'month' ? '' : 'none';
+  document.getElementById('listYearBtn').style.display = mode === 'year' ? '' : 'none';
+  saveState();
+  renderList();
 }
 
 function setListQuickPeriod(key) {
+  // Legacy — kept for backward compat, not used by new UI
   state.listPeriod = (key === 'all') ? '' : key;
   state.listPage = 1;
   saveState();
@@ -3281,8 +3376,22 @@ function setListQuickPeriod(key) {
 }
 
 function renderList() {
-  renderQuickChips();
   updateSearchActiveBar();
+  // Sync Month/Year toggle + picker labels
+  const mode = state.listMode || 'month';
+  document.querySelectorAll('#page-contact .toggle-group .toggle').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  const mBtn = document.getElementById('listMonth_btn');
+  const yBtn = document.getElementById('listYearBtn');
+  if (mBtn) mBtn.style.display = mode === 'month' ? '' : 'none';
+  if (yBtn) yBtn.style.display = mode === 'year' ? '' : 'none';
+  // Sync picker labels
+  const currentMonth = state.listMonth || todayStr().substring(0, 7);
+  const currentYear = state.listYear || todayStr().substring(0, 4);
+  const mInp = document.getElementById('listMonth'); if (mInp) mInp.value = currentMonth;
+  const yInp = document.getElementById('listYear'); if (yInp) yInp.value = currentYear;
+  const mLbl = document.getElementById('listMonth_label'); if (mLbl) mLbl.textContent = fmt.monthLabel ? fmt.monthLabel(currentMonth) : currentMonth;
+  const yLbl = document.getElementById('listYear_label'); if (yLbl) yLbl.textContent = currentYear;
+
   // Populate channel filter (only active channels)
   const chSel = document.getElementById('listChannelFilter');
   if (chSel) {
@@ -3291,9 +3400,9 @@ function renderList() {
       activeChannels.map(c => `<option value="${c.id}" ${c.id === state.listChannelId ? 'selected' : ''}>${c.name}</option>`).join('');
   }
 
-  // Filter tab counts — respect period + channel filter
+  // Filter by Month/Year + channel
   let filteredLeads = state.leads.slice();
-  const periodMatch = resolveQuickPeriod(state.listPeriod);
+  const periodMatch = resolveListFilter();
   if (periodMatch) {
     filteredLeads = filteredLeads.filter(l => periodMatch(l.leadDate));
   }
@@ -3652,11 +3761,17 @@ function setSummaryMode(mode) {
   state.summaryMode = mode;
   document.querySelectorAll('#page-summary .toggle').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
   document.getElementById('summaryMonth_btn').style.display = mode === 'single' ? '' : 'none';
-  document.getElementById('summaryYear').style.display = mode === 'multi' ? '' : 'none';
+  document.getElementById('summaryYearBtn').style.display = mode === 'multi' ? '' : 'none';
   renderSummary();
 }
 
 function renderSummary() {
+  // Sync button visibility based on current mode
+  const mode = state.summaryMode || 'single';
+  const mBtn = document.getElementById('summaryMonth_btn');
+  const yBtn = document.getElementById('summaryYearBtn');
+  if (mBtn) mBtn.style.display = mode === 'single' ? '' : 'none';
+  if (yBtn) yBtn.style.display = mode === 'multi' ? '' : 'none';
   if (state.summaryMode === 'multi') renderDashboardYear();
   else renderDashboardMonth();
 }
@@ -3806,6 +3921,17 @@ function renderDashboardYear() {
   const cps = adsCost > 0 && shows > 0 ? adsCost / shows : null;
   const newCustPctY = rev > 0 ? (newRev/rev*100).toFixed(1) : '0.0';
 
+  // Yearly Meta/Google ROAS (sum sales / sum cost)
+  let yMetaSales=0, yGoogleSales=0, yMetaCost=0, yGoogleCost=0;
+  allMonths.forEach(m => {
+    yMetaSales += m.spendByPlatform?.meta || 0;
+    yGoogleSales += m.spendByPlatform?.google || 0;
+    yMetaCost += m.costByPlatform?.meta || 0;
+    yGoogleCost += m.costByPlatform?.google || 0;
+  });
+  const yMetaROAS = yMetaCost > 0 ? yMetaSales / yMetaCost : null;
+  const yGoogleROAS = yGoogleCost > 0 ? yGoogleSales / yGoogleCost : null;
+
   const revData = mArr.map(m2 => locs.reduce((s,loc) => { const r = state.revenue.find(x=>x.month===m2&&x.locationId===loc.id); return s+(r?.total||0); }, 0));
 
   document.getElementById('summaryContent').innerHTML = `
@@ -3822,7 +3948,7 @@ function renderDashboardYear() {
         <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">${fmt.moneyK(adsCost)}</div><div class="dash-kpi-sub">${costPct}% of rev</div>
       </div>
       <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
-        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">${roas != null ? roas.toFixed(2)+'x' : '—'}</div><div class="dash-kpi-sub">&nbsp;</div>
+        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">${roas != null ? roas.toFixed(2)+'x' : '—'}</div><div class="dash-kpi-sub">Meta ${yMetaROAS!=null?yMetaROAS.toFixed(1)+'x':'—'} · G ${yGoogleROAS!=null?yGoogleROAS.toFixed(1)+'x':'—'}</div>
       </div>
       <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
         <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">${avgShow != null ? fmt.money(avgShow) : '—'}</div><div class="dash-kpi-sub">${fmt.num(shows)||'—'} shows</div>
@@ -4513,7 +4639,7 @@ function setStoreMode(mode) {
   state.storeMode = mode;
   document.querySelectorAll('#page-store .toggle').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
   document.getElementById('storeMonth_btn').style.display = mode === 'month' ? '' : 'none';
-  document.getElementById('storeYear').style.display = mode === 'year' ? '' : 'none';
+  document.getElementById('storeYearBtn').style.display = mode === 'year' ? '' : 'none';
   document.getElementById('storeFromMonth_btn').style.display = mode === 'custom' ? '' : 'none';
   document.getElementById('storeCustomArrow').style.display = mode === 'custom' ? '' : 'none';
   document.getElementById('storeToMonth_btn').style.display = mode === 'custom' ? '' : 'none';
@@ -4558,6 +4684,7 @@ function openStorePage(storeId, monthOrYear) {
     if (sEl) sEl.value = state.storeSelected;
     document.querySelectorAll('#page-store .toggle').forEach(t => t.classList.toggle('active', t.dataset.mode === state.storeMode));
     document.getElementById('storeMonth_btn').style.display = state.storeMode === 'month' ? '' : 'none';
+    document.getElementById('storeYearBtn').style.display = state.storeMode === 'year' ? '' : 'none';
     document.getElementById('storeFromMonth_btn').style.display = state.storeMode === 'custom' ? '' : 'none';
     document.getElementById('storeCustomArrow').style.display = state.storeMode === 'custom' ? '' : 'none';
     document.getElementById('storeToMonth_btn').style.display = state.storeMode === 'custom' ? '' : 'none';
@@ -4671,19 +4798,26 @@ function switchStoreTab(key) {
 
 
 function renderStore() {
-  // Sync filter UI to current tab (always year mode)
+  // Appt page is always year mode — hide toggle, show year button
   const toggleGrp2 = document.querySelector('#page-store .toggle-group');
   const yearSel2 = document.getElementById('storeYear');
+  const yearBtn2 = document.getElementById('storeYearBtn');
   const monthBtn2 = document.getElementById('storeMonth_btn');
   const fromBtn2 = document.getElementById('storeFromMonth_btn');
   const toBtn2 = document.getElementById('storeToMonth_btn');
   const arrow2 = document.getElementById('storeCustomArrow');
   if (toggleGrp2) toggleGrp2.style.display = 'none';
-  if (yearSel2) { yearSel2.style.display = ''; if (!yearSel2.value) yearSel2.value = String(new Date().getFullYear()); }
+  if (yearSel2) yearSel2.style.display = 'none';
+  if (yearBtn2) { yearBtn2.style.display = ''; }
   if (monthBtn2) monthBtn2.style.display = 'none';
   if (fromBtn2) fromBtn2.style.display = 'none';
   if (toBtn2) toBtn2.style.display = 'none';
   if (arrow2) arrow2.style.display = 'none';
+  // Ensure year value + label
+  if (!state.storeYear) state.storeYear = String(new Date().getFullYear());
+  if (yearSel2 && !yearSel2.value) yearSel2.value = state.storeYear;
+  const yLbl = document.getElementById('storeYear_label');
+  if (yLbl) yLbl.textContent = state.storeYear;
   refreshStoreSelect();
   const storeId = document.getElementById('storeSelect').value;
   state.storeSelected = storeId;
@@ -7608,6 +7742,11 @@ function init() {
   if (storeToEl) storeToEl.addEventListener('change', e => { state.storeCustomTo = e.target.value; renderStore(); });
   const storeSelectEl = document.getElementById('storeSelect');
   if (storeSelectEl) storeSelectEl.addEventListener('change', e => { state.storeSelected = e.target.value; renderStore(); });
+  // Contact page month/year picker bindings
+  const listMonthEl = document.getElementById('listMonth');
+  if (listMonthEl) listMonthEl.addEventListener('change', e => { state.listMonth = e.target.value; state.listPage = 1; saveState(); renderList(); });
+  const listYearEl = document.getElementById('listYear');
+  if (listYearEl) listYearEl.addEventListener('change', e => { state.listYear = e.target.value; state.listPage = 1; saveState(); renderList(); });
   // Default to Contact page
   nav('contact');
   setTimeout(fixContactPanelTop, 200);
