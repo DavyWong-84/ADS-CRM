@@ -333,18 +333,28 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* Mobile list */
 .lead-list { display: flex; flex-direction: column; gap: 10px; }
-.lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px; transition: all 0.15s; cursor: pointer; }
+.lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; transition: all 0.15s; cursor: pointer; border-left: 3px solid var(--border); }
 .lead-item:hover { border-color: var(--purple); box-shadow: var(--shadow-sm); }
-.lead-item.today-appt { border-left: 3px solid var(--amber); }
-.lead-item.overdue { border-left: 3px solid var(--red); background: rgba(212,21,59,0.02); }
-.lead-row-1 { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
-.lead-name { font-weight: 600; font-size: 15px; }
-.lead-name.tabnum { font-variant-numeric: tabular-nums; font-weight: 500; }
-.lead-name.empty { color: var(--silver); font-weight: 400; font-style: italic; }
-.lead-row-2 { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--gray); gap: 8px; flex-wrap: wrap; }
-.lead-contact { font-variant-numeric: tabular-nums; }
-.lead-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 12px; margin-top: 6px; color: var(--gray); }
-.lead-meta span { display: inline-flex; align-items: center; gap: 3px; }
+.lead-item.today-appt { border-left-color: var(--amber) !important; }
+.lead-item.overdue { border-left-color: var(--red) !important; background: rgba(212,21,59,0.02); }
+.lead-item.lc-lead { border-left-color: #AFA9EC; }
+.lead-item.lc-booked { border-left-color: #85B7EB; }
+.lead-item.lc-done { border-left-color: #5DCAA5; }
+.lead-item.lc-noshow { border-left-color: #F09595; }
+.lead-item .lc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
+.lead-item .lc-name { font-weight: 600; font-size: 15px; min-height: 20px; flex: 1; }
+.lead-item .lc-name.empty::before { content: '—'; color: var(--silver); font-weight: 400; }
+.lead-item .lc-body { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--gray); gap: 8px; margin-bottom: 6px; }
+.lead-item .lc-contact { font-variant-numeric: tabular-nums; color: #374151; }
+.lead-item .lc-amt { color: var(--purple); font-weight: 500; font-size: 14px; min-width: 60px; text-align: right; }
+.lead-item .lc-amt.empty { color: transparent; }
+.lead-item .lc-foot { display: flex; gap: 12px; font-size: 11px; color: var(--gray); padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.04); flex-wrap: wrap; }
+.lead-item .lc-foot strong { color: #374151; font-weight: 500; }
+.lead-item .lc-foot .muted { opacity: 0.45; }
+.lead-item .lc-foot .lc-channel { margin-left: auto; color: var(--silver); }
+
+/* Legacy class aliases (backward compat — kept minimal) */
+.lead-row-1, .lead-row-2, .lead-meta { display: none; }
 
 /* Pagination */
 .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; flex-wrap: wrap; }
@@ -652,7 +662,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.11</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.12</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -714,7 +724,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
 
     <!-- Status tabs (All / Lead / Booked / Pending / Done / No show) -->
-    <div class="filter-tabs" id="listFilters" style="margin-bottom:14px;"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('pending')">Pending<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
+    <div class="filter-tabs" id="listFilters" style="margin-bottom:14px;"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
@@ -1008,7 +1018,68 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
     </div>
 
-    <div id="revenueReportWrap"></div>
+    <div id="revenueReportWrap"><div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
+        <div style="font-size:12px;color:var(--gray);">0 months · 3 outlets</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
+        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">—</div>
+        <div style="font-size:12px;color:var(--green-dark);">● New: — · 0.0%</div>
+        <div style="font-size:12px;color:var(--gray);">● Old: — · 0.0%</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div onclick="setRevOutlet('st-sunway')" style="flex: 1 1 0%; min-width: 80px; background: var(--purple-bg); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: box-shadow 0.15s; box-shadow: none;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Sunway ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-cheras')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Cheras ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-eco')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">ECO ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div>
+    </div>
+  </div><div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
+      <div class="table-wrap"><table class="data data-t">
+        <thead><tr><th>Metric</th><th class="num">Jan</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Apr</th><th class="num">May</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Aug</th><th class="num">Sep</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Dec</th><th class="num">TOTAL</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--green-dark);">New Cust</td>
+            <td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td>
+            <td class="num" style="color:var(--green-dark);font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--gray);">Old Cust</td>
+            <td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td>
+            <td class="num" style="color:var(--gray);font-weight:700;">—<br><span style="font-size:11px;">(0.0%)</span></td>
+          </tr>
+          <tr>
+            <td style="color:var(--meta-color);">Ads New</td>
+            <td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td>
+            <td class="num" style="color:var(--meta-color);font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(—%)</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">Total Sales</td>
+            <td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td>
+            <td class="num" style="font-weight:700;">—</td>
+          </tr>
+        </tbody>
+      </table></div>
+    </div><div id="chart_rev_all" style="margin-top:14px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1245 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1245" height="260" fill="white"></rect>
+      <text x="623" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="#7132f5">All Outlets — Revenue</text><line x1="58" y1="218.0" x2="1231" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1231" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1231" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1231" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1231" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1231" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1231" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1231" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1231" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1231" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1231" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1231" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="106.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="204.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="302.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="400.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="497.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="595.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="693.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="791.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="888.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="986.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1084.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1182.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="556.5" y="20" width="11" height="11" fill="#7132f5" rx="2"></rect><text x="572.5" y="29" font-size="10" fill="#334155">Total Sales</text><rect x="644.5" y="20" width="11" height="11" fill="#1877F2" rx="2"></rect><text x="660.5" y="29" font-size="10" fill="#334155">Ads New Sales</text>
+    </svg></div></div><div id="chart_rev_all2" style="margin-top: 12px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1245 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1245" height="260" fill="white"></rect>
+      <text x="623" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="#7132f5">All Outlets — New vs Old Customer</text><line x1="58" y1="218.0" x2="1231" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1231" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1231" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1231" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1231" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1231" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1231" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1231" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1231" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1231" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1231" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1231" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="106.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="204.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="302.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="400.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="497.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="595.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="693.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="791.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="888.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="986.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1084.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1182.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="556.5" y="20" width="11" height="11" fill="#10B981" rx="2"></rect><text x="572.5" y="29" font-size="10" fill="#334155">New Customer</text><rect x="644.5" y="20" width="11" height="11" fill="#a78bfa" rx="2"></rect><text x="660.5" y="29" font-size="10" fill="#334155">Old Customer</text>
+    </svg></div></div></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -1424,6 +1495,13 @@ const fmt = {
     const [y, m] = s.split('-');
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     return months[+m - 1] + ' ' + y;
+  },
+  monthDay: s => {
+    if (!s) return '';
+    const parts = s.split('-');
+    if (parts.length < 3) return s;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[+parts[1] - 1]} ${+parts[2]}`;
   },
   monthShort: s => {
     if (!s) return '';
@@ -1975,7 +2053,7 @@ function renderFunnelTab() {
     const leadFilter = subCh ? (l => l.channelId === subCh) : (l => platFilter.includes(l.platform));
     const byLead = getLeadsInMonth(m, 'leadDate').filter(leadFilter);
     const byAppt = getLeadsInMonth(m, 'apptDate').filter(l => l.name && l.apptDate && leadFilter(l));
-    const shows = byAppt.filter(l => l.status === 'pending' || l.status === 'done');
+    const shows = byAppt.filter(l => l.status === 'done');
     const noshows = byAppt.filter(l => l.status === 'noshow');
     let cost = 0;
     if (tab !== 'ofu') {
@@ -2503,8 +2581,7 @@ function saveLead(base) {
   if (name && apptDate) status = 'booked';
   if (showUp === 'No Show up') status = 'noshow';
   else if (showUp === 'Show up') {
-    status = 'pending';
-    if (spend && race) status = 'done';
+    status = (spend && race) ? 'done' : 'booked';
   }
 
   const lead = {
@@ -2682,7 +2759,7 @@ function renderDetailPanel(l) {
   const steps = [
     { label: 'Lead', done: !!l.contact },
     { label: 'Booked', done: !!(l.name && l.apptDate) },
-    { label: 'Show up', done: l.status === 'pending' || l.status === 'done' || l.status === 'noshow' },
+    { label: 'Show up', done: l.status === 'done' || l.status === 'noshow' },
     { label: 'Done', done: l.status === 'done' }
   ];
   const check = '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -2770,7 +2847,7 @@ function saveDetailLead() {
   let status = 'lead';
   if (name && apptDate) status = 'booked';
   if (showUp === 'No Show up') status = 'noshow';
-  else if (showUp === 'Show up') { status = 'pending'; if (spend && race) status = 'done'; }
+  else if (showUp === 'Show up') { status = (spend && race) ? 'done' : 'booked'; }
   const lead = {
     id: currentEditingId, week: isoWeek(leadDate), leadDate, channelId,
     channel: ch?.name || '', channelName: ch?.name || '', platform: ch?.platform || '', contact,
@@ -2808,7 +2885,7 @@ function renderLeadStepper(lead) {
   const steps = [
     { key: 'lead', label: 'Lead', done: !!lead.contact },
     { key: 'booked', label: 'Booked', done: !!(lead.name && lead.apptDate) },
-    { key: 'show', label: 'Show up', done: lead.status === 'pending' || lead.status === 'done' || lead.status === 'noshow' },
+    { key: 'show', label: 'Show up', done: lead.status === 'done' || lead.status === 'noshow' },
     { key: 'done', label: 'Done', done: lead.status === 'done' }
   ];
   const check = '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -3202,11 +3279,11 @@ function renderList() {
   if (state.listChannelId) {
     filteredLeads = filteredLeads.filter(l => l.channelId === state.listChannelId);
   }
-  const counts = { all: filteredLeads.length, lead: 0, booked: 0, pending: 0, done: 0, noshow: 0 };
+  const counts = { all: filteredLeads.length, lead: 0, booked: 0, done: 0, noshow: 0 };
   filteredLeads.forEach(l => { if (counts[l.status] !== undefined) counts[l.status]++; });
   const filters = [
     { id: 'all', label: 'All' }, { id: 'lead', label: 'Lead' },
-    { id: 'booked', label: 'Booked' }, { id: 'pending', label: 'Pending' },
+    { id: 'booked', label: 'Booked' },
     { id: 'done', label: 'Done' }, { id: 'noshow', label: 'No show' }
   ];
   document.getElementById('listFilters').innerHTML = filters.map(f =>
@@ -3226,8 +3303,8 @@ function renderList() {
   }
   const today = todayStr();
   list.sort((a, b) => {
-    const aToday = a.apptDate === today && (a.status === 'booked' || a.status === 'pending') ? 1 : 0;
-    const bToday = b.apptDate === today && (b.status === 'booked' || b.status === 'pending') ? 1 : 0;
+    const aToday = a.apptDate === today && (a.status === 'booked') ? 1 : 0;
+    const bToday = b.apptDate === today && (b.status === 'booked') ? 1 : 0;
     if (aToday !== bToday) return bToday - aToday;
     const aOver = a.status === 'booked' && a.apptDate && a.apptDate < today ? 1 : 0;
     const bOver = b.status === 'booked' && b.apptDate && b.apptDate < today ? 1 : 0;
@@ -3247,32 +3324,29 @@ function renderList() {
   } else {
     document.getElementById('leadList').innerHTML = slice.map(l => {
       const today = todayStr();
-      const isToday = l.apptDate === today && (l.status === 'booked' || l.status === 'pending');
+      const isToday = l.apptDate === today && (l.status === 'booked');
       const isOverdue = l.status === 'booked' && l.apptDate && l.apptDate < today;
       const cls = isToday ? 'today-appt' : (isOverdue ? 'overdue' : '');
-      const hasName = l.name && l.name.trim();
       const selected = l.id === currentEditingId ? ' selected' : '';
-      if (hasName) {
-        return `<div class="lead-item ${cls}${selected}" onclick="editLead('${l.id}')">
-          <div class="lead-row-1">
-            <div class="lead-name">${l.name}</div>
-            <span class="badge badge-${l.status}">${l.status}</span>
-          </div>
-          <div class="lead-row-2">
-            <span class="lead-contact">${l.contact || ''}</span>
-            <span>${l.channel || ''}</span>
-            ${l.apptDate ? `<span>→ ${fmt.date(l.apptDate)}</span>` : ''}
-            ${l.spend ? `<span style="color:var(--green-dark);font-weight:500;">${fmt.money(l.spend)}</span>` : ''}
-          </div>
-        </div>`;
-      } else {
-        return `<div class="lead-item ${cls}${selected}" onclick="editLead('${l.id}')" style="padding:10px 14px;">
-          <div class="lead-row-1">
-            <div class="lead-name tabnum">${l.contact || '(no data)'}</div>
-            <span class="badge badge-${l.status}">${l.status}</span>
-          </div>
-        </div>`;
-      }
+      const isLead = l.status === 'lead';
+      const showAmt = l.status === 'done' && l.spend;
+      const statusLabel = l.status === 'noshow' ? 'No show' : (l.status.charAt(0).toUpperCase() + l.status.slice(1));
+      // Fixed-position card template — all fields reserve slots even when empty (empty → subtle placeholder)
+      return `<div class="lead-item lc-${l.status} ${cls}${selected}" onclick="editLead('${l.id}')">
+        <div class="lc-head">
+          <div class="lc-name${l.name ? '' : ' empty'}">${l.name || (isLead ? '' : '—')}</div>
+          <span class="badge badge-${l.status}">${statusLabel}</span>
+        </div>
+        <div class="lc-body">
+          <span class="lc-contact">${l.contact || ''}</span>
+          ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : '<span class="lc-amt empty"></span>'}
+        </div>
+        <div class="lc-foot">
+          <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
+          <span class="${l.apptDate ? '' : 'muted'}">Appt: <strong>${l.apptDate ? fmt.monthDay(l.apptDate) : '—'}</strong></span>
+          ${l.channel ? `<span class="lc-channel">${l.channel}</span>` : ''}
+        </div>
+      </div>`;
     }).join('');
   }
 
@@ -3380,7 +3454,7 @@ function calcMonthMetrics(month) {
 
   // Appts / Show ups (by appt date)
   const appts = byApptDate.filter(l => l.name && l.apptDate);
-  const showUps = appts.filter(l => l.status === 'pending' || l.status === 'done');
+  const showUps = appts.filter(l => l.status === 'done');
   const noShows = appts.filter(l => l.status === 'noshow');
 
   const apptsByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
@@ -3444,7 +3518,7 @@ function calcMonthMetrics(month) {
   appts.forEach(l => {
     if (l.locationId && stores[l.locationId]) {
       stores[l.locationId].appts++;
-      if (l.status === 'pending' || l.status === 'done') stores[l.locationId].shows++;
+      if (l.status === 'done') stores[l.locationId].shows++;
       if (l.status === 'noshow') stores[l.locationId].noshows++;
       if (l.spend) stores[l.locationId].spend += l.spend;
     }
@@ -4094,7 +4168,7 @@ function weeklyBreakdown(month) {
     const w = isoWeek(l.apptDate);
     weeks[w] = weeks[w] || { week: w, leads: 0, meta: 0, google: 0, ofu: 0, appts: 0, shows: 0, spend: 0 };
     weeks[w].appts++;
-    if (l.status === 'pending' || l.status === 'done') weeks[w].shows++;
+    if (l.status === 'done') weeks[w].shows++;
     if (l.spend) weeks[w].spend += l.spend;
   });
   const sorted = Object.values(weeks).sort((a, b) => a.week - b.week);
@@ -4421,7 +4495,7 @@ function calcStoreMetrics(storeId, period) {
   // For store page, we count by appt date since that's when store sees the customer
 
   const appts = leadsInPeriod.length;
-  const shows = leadsInPeriod.filter(l => l.status === 'pending' || l.status === 'done').length;
+  const shows = leadsInPeriod.filter(l => l.status === 'done').length;
   const noshows = leadsInPeriod.filter(l => l.status === 'noshow').length;
   const spend = leadsInPeriod.reduce((s, l) => s + (l.spend || 0), 0);
 
@@ -4433,7 +4507,7 @@ function calcStoreMetrics(storeId, period) {
       byChannel[c.id] = {
         name: c.name, platform: c.platform,
         appts: chList.length,
-        shows: chList.filter(l => l.status === 'pending' || l.status === 'done').length,
+        shows: chList.filter(l => l.status === 'done').length,
         noshows: chList.filter(l => l.status === 'noshow').length,
         spend: chList.reduce((s, l) => s + (l.spend || 0), 0)
       };
@@ -4445,7 +4519,7 @@ function calcStoreMetrics(storeId, period) {
   leadsInPeriod.forEach(l => {
     if (byPlatform[l.platform]) {
       byPlatform[l.platform].appts++;
-      if (l.status === 'pending' || l.status === 'done') byPlatform[l.platform].shows++;
+      if (l.status === 'done') byPlatform[l.platform].shows++;
       if (l.status === 'noshow') byPlatform[l.platform].noshows++;
       byPlatform[l.platform].spend += (l.spend || 0);
     }
@@ -4453,7 +4527,7 @@ function calcStoreMetrics(storeId, period) {
 
   // Race breakdown
   const race = { Chinese: 0, Malay: 0, Indian: 0, Foreigner: 0, Others: 0 };
-  leadsInPeriod.filter(l => l.status === 'pending' || l.status === 'done').forEach(l => {
+  leadsInPeriod.filter(l => l.status === 'done').forEach(l => {
     if (l.race && race[l.race] !== undefined) race[l.race]++;
   });
 
@@ -4464,7 +4538,7 @@ function calcStoreMetrics(storeId, period) {
       const m = l.apptDate.substring(0, 7);
       byMonth[m] = byMonth[m] || { appts: 0, shows: 0, noshows: 0, spend: 0 };
       byMonth[m].appts++;
-      if (l.status === 'pending' || l.status === 'done') byMonth[m].shows++;
+      if (l.status === 'done') byMonth[m].shows++;
       if (l.status === 'noshow') byMonth[m].noshows++;
       byMonth[m].spend += (l.spend || 0);
     });
@@ -4594,9 +4668,9 @@ function renderStore() {
         // Lead count: all leads by leadDate — locationId filter only applies when outlet is selected AND lead has locationId
         const leads = 0; // removed
         const appts = mLeadsAll.length;
-        const shows = mLeadsAll.filter(l => l.status==='pending'||l.status==='done').length;
+        const shows = mLeadsAll.filter(l => l.status==='done').length;
         const noshows = mLeadsAll.filter(l => l.status==='noshow').length;
-        const spend = mLeadsAll.filter(l => l.status==='pending'||l.status==='done').reduce((s,l)=>s+(l.spend||0),0);
+        const spend = mLeadsAll.filter(l => l.status==='done').reduce((s,l)=>s+(l.spend||0),0);
         if (appts === 0 && leads === 0) return; // hide months with no data
         tA+=appts; tS+=shows; tN+=noshows; tSp+=spend;
         const lapPct = leads > 0 ? fmt.pct(appts/leads) : '—';
@@ -4641,8 +4715,8 @@ function renderStore() {
       ovChartMonths.forEach(m => {
         const mLead = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
         const mL = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
-        const ld = mLead.length, a = mL.length, s = mL.filter(l=>l.status==='pending'||l.status==='done').length;
-        const sp = mL.filter(l=>l.status==='pending'||l.status==='done').reduce((sum,l)=>sum+(l.spend||0),0);
+        const ld = mLead.length, a = mL.length, s = mL.filter(l=>l.status==='done').length;
+        const sp = mL.filter(l=>l.status==='done').reduce((sum,l)=>sum+(l.spend||0),0);
         ovLeadData.push(ld > 0 ? ld : null);
         ovApptData.push(a > 0 ? a : null);
         ovShowData.push(s > 0 ? s : null);
@@ -4664,7 +4738,7 @@ function renderStore() {
         });
         // AVG Spend per Show
         const ovAvgData = ovChartMonths.map(m => {
-          const mL = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && (!locFilter || l.locationId===locFilter));
+          const mL = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && (!locFilter || l.locationId===locFilter));
           const s = mL.length, sp = mL.reduce((sum,l)=>sum+(l.spend||0),0);
           return s > 0 ? sp/s : null;
         });
@@ -4696,7 +4770,7 @@ function renderStore() {
         platMonths.forEach(m => {
           const mLeads = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && platFilter(l));
           const allAppt = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter) && platFilter(l));
-          const shows = allAppt.filter(l => l.status==='pending'||l.status==='done');
+          const shows = allAppt.filter(l => l.status==='done');
           const noshows = allAppt.filter(l => l.status==='noshow');
           const ld = mLeads.length, a = allAppt.length, s = shows.length, ns = noshows.length;
           const sp = shows.reduce((sum,l)=>sum+(l.spend||0),0);
@@ -4786,7 +4860,7 @@ function renderStore() {
         platMonths.forEach(m => {
           const mLeads = !locFilter ? state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m)) : [];
           const allAppt = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
-          const shows = allAppt.filter(l => l.status==='pending'||l.status==='done');
+          const shows = allAppt.filter(l => l.status==='done');
           const ns = allAppt.filter(l => l.status==='noshow');
           const ld=mLeads.length, a=allAppt.length, s=shows.length, n=ns.length, sp=shows.reduce((sum,l)=>sum+(l.spend||0),0);
           sumLeadData.push(ld>0?ld:null); sumApptData.push(a>0?a:null); sumShowData.push(s>0?s:null);
@@ -4880,7 +4954,7 @@ function renderStore() {
         const chartLabels = [];
         const mRaceData = [];
         raceMonths.forEach(m => {
-          const mLeads = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && filterFn(l));
+          const mLeads = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && filterFn(l));
           const byRace = {
             Chinese: mLeads.filter(l=>l.race==='Chinese'),
             Malay:   mLeads.filter(l=>l.race==='Malay'),
@@ -4936,7 +5010,7 @@ function renderStore() {
         let avgTotals={Chinese:{sp:0,cnt:0},Malay:{sp:0,cnt:0},Indian:{sp:0,cnt:0},Foreigner:{sp:0,cnt:0}};
         const mAvgData = [];
         raceMonths.forEach(m => {
-          const mShows = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && filterFn(l));
+          const mShows = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && filterFn(l));
           const byR = {};
           races.forEach(r => {
             const rL = mShows.filter(l => r==='Others'?!['Chinese','Malay','Indian','Foreigner'].includes(l.race):l.race===r);
@@ -5037,7 +5111,7 @@ function renderStore() {
           const w = isoWeek(l.apptDate);
           weeks[w] = weeks[w] || { week: w, meta:0, google:0, ofu:0, total:0, appt:0, show:0, spend:0 };
           weeks[w].appt++;
-          if (l.status === 'pending' || l.status === 'done') weeks[w].show++;
+          if (l.status === 'done') weeks[w].show++;
           if (l.spend) weeks[w].spend += l.spend;
         });
         const sorted = Object.values(weeks).sort((a,b) => a.week - b.week);
@@ -5233,7 +5307,7 @@ function renderAdsSpend() {
       const lf = subCh2 ? (l => l.channelId === subCh2) : (l => platFilter2.includes(l.platform));
       const byLead = getLeadsInMonth(m, 'leadDate').filter(lf);
       const byAppt = getLeadsInMonth(m, 'apptDate').filter(l => l.name && l.apptDate && lf(l));
-      const shows = byAppt.filter(l => l.status === 'pending' || l.status === 'done');
+      const shows = byAppt.filter(l => l.status === 'done');
       let cost = 0;
       if (tab2 !== 'ofu') {
         state.adsSpend.filter(a => a.month === m).forEach(a => {
@@ -6075,10 +6149,10 @@ function renderRevenueOutlet(mArr, locId) {
     const t = r?.total || 0;
     const n = r?.newCustomer || 0;
     const o = t - n;
-    const adsNew = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+    const adsNew = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
     oMData.push({m, t, n, o, adsNew, isEmpty: !r || (t === 0 && n === 0)});
   });
-  const adsNewYr = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(year) && l.locationId === locId && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+  const adsNewYr = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(year) && l.locationId === locId && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
 
   if (!isMobile) {
     const pb = (val, pct) => `${val}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
@@ -6151,7 +6225,7 @@ function renderRevenueOutlet(mArr, locId) {
       return r && r.total ? r.total : null;
     });
     const adsVals = mArr.map(m => {
-      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
       return v > 0 ? v : null;
     });
     AdsChart.render('chart_rev_outlet', {
@@ -6257,7 +6331,7 @@ function renderRevenueSummary(mArr) {
     const mTotal = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s + (r?.total||0); }, 0);
     const mNew = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s + (r?.newCustomer||0); }, 0);
     const mOld = mTotal - mNew;
-    const mAds = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+    const mAds = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
     allYearTotal += mTotal; allYearNew += mNew; allYearAds += mAds;
     allMData.push({m, mTotal, mNew, mOld, mAds});
   });
@@ -6346,7 +6420,7 @@ function renderRevenueSummary(mArr) {
       return t > 0 ? t : null;
     });
     const adsData = mArr.map(m => {
-      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
       return v > 0 ? v : null;
     });
     AdsChart.render('chart_rev_all', {
