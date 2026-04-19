@@ -778,7 +778,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.41</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.42</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -839,13 +839,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 62.8px; max-height: 728.2px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 63px; max-height: 848px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 62.8px; height: 728.2px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 63px; height: 848px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -1179,7 +1179,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
-          <select id="as_entryChannel" style="width:100%;font-size:13px;"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
+          <select id="as_entryChannel" style="width:100%;font-size:13px;"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
@@ -1298,6 +1298,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <option value="inactive">○ Inactive</option>
         </select>
       </div>
+    </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
+      <div><strong>Chia FB</strong> <span style="color:var(--gray);font-size:12px;">· meta · from 2026-01</span></div>
+      <div>
+        <select class="status-select" data-ch-id="ch-chia" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(100, 116, 139, 0.1);color:var(--gray);cursor:pointer;">
+          <option value="active">● Active</option>
+          <option value="inactive" selected="">○ Inactive</option>
+        </select>
+      </div>
     </div></div>
         <form id="channelForm" class="inline-form" style="margin-top:14px;">
           <div><label>Name</label><input type="text" id="ch_name" placeholder="e.g. TikTok"></div>
@@ -1380,7 +1388,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
    Ads CRM v2.0 — Application Logic
    ============================================================ */
 
-const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
+const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
 const DATA_VERSION = '2.01'; // bump this to force reload of preloaded data
 
@@ -1447,6 +1455,17 @@ function loadState() {
     });
   }
   saveState();
+}
+
+// Auto-heal: ensure ch-chia exists (inactive) so historical data stays linked
+function ensureLegacyChannels() {
+  if (!state.channels.some(c => c.id === 'ch-chia')) {
+    state.channels.push({
+      id: 'ch-chia', name: 'Chia FB', platform: 'meta',
+      addedMonth: '2026-01', active: false
+    });
+    saveState();
+  }
 }
 
 function saveState() {
@@ -2274,12 +2293,17 @@ function refreshSelects() {
   document.getElementById('f_location').innerHTML = '<option value="">— select store —</option>' +
     activeLocations.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
 
-  // Data Entry: Ads Cost channel dropdown (Meta/Google only)
+  // Data Entry: Ads Cost channel dropdown (Meta/Google, both active + inactive with marker)
   const asCh = document.getElementById('as_entryChannel');
   if (asCh) {
-    const adCh = activeChannels.filter(c => c.platform === 'meta' || c.platform === 'google');
+    // Include ALL Meta/Google channels (active + inactive) so historical data stays editable
+    const adCh = state.channels.filter(c => c.platform === 'meta' || c.platform === 'google');
     const curVal = asCh.value;
-    asCh.innerHTML = (adCh.length === 0 ? '<option value="">— no channels yet —</option>' : adCh.map(c => `<option value="${c.id}">${c.name}</option>`).join('')) +
+    asCh.innerHTML = (adCh.length === 0 ? '<option value="">— no channels yet —</option>' :
+      adCh.map(c => {
+        const label = c.active === false ? `${c.name} (inactive)` : c.name;
+        return `<option value="${c.id}">${label}</option>`;
+      }).join('')) +
       '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option>';
     // Restore previous selection if still valid
     if (curVal && adCh.some(c => c.id === curVal)) asCh.value = curVal;
@@ -7547,6 +7571,7 @@ async function gsDelete(sheetName, id) {
 // ---------- Init ----------
 function init() {
   loadState();
+  ensureLegacyChannels();
   refreshSelects();
   refreshYearSelects();
   // Init lead date to today (button label)
