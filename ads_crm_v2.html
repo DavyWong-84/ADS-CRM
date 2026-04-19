@@ -365,20 +365,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* Lead flag stars (yellow / red / green) — click to toggle */
 .lc-flags { display: inline-flex; gap: 4px; margin-left: 6px; }
-.lc-flag { cursor: pointer; width: 22px; height: 22px; font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s; }
+.lc-flag { cursor: pointer; width: 22px; height: 22px; font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s, color 0.15s; }
 .lc-flag:hover { transform: scale(1.2); }
-/* Unlit stars show a pastel version of their own color + pulse animation */
-.lc-flag:not(.active)[data-flag="yellow"] { color: #fde68a; animation: starPulse 1.6s ease-in-out infinite; }
-.lc-flag:not(.active)[data-flag="red"]    { color: #fca5a5; animation: starPulse 1.6s ease-in-out infinite; }
-.lc-flag:not(.active)[data-flag="green"]  { color: #6ee7b7; animation: starPulse 1.6s ease-in-out infinite; }
-/* Lit stars show saturated color, no pulse */
+/* Unlit stars = very light pastel of their own color */
+.lc-flag:not(.active)[data-flag="yellow"] { color: #fef3c7; }
+.lc-flag:not(.active)[data-flag="red"]    { color: #fee2e2; }
+.lc-flag:not(.active)[data-flag="green"]  { color: #d1fae5; }
+/* Lit stars = saturated color */
 .lc-flag.active[data-flag="yellow"] { color: #eab308; }
 .lc-flag.active[data-flag="red"]    { color: #ef4444; }
 .lc-flag.active[data-flag="green"]  { color: #10b981; }
-@keyframes starPulse {
-  0%, 100% { opacity: 0.45; }
-  50% { opacity: 1; }
-}
 
 /* Pagination */
 .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 16px; flex-wrap: wrap; }
@@ -7167,11 +7163,23 @@ async function gsPullSilent() {
     const flagsMap = {};
     (state.leads || []).forEach(l => { if (l.flags && l.id) flagsMap[l.id] = l.flags; });
     // Parse flags: prefer Sheet value (synced across devices); fallback to local
+    // Handles multiple formats: JSON string, Sheets-display format {key=value}, or plain object
     const parseFlags = (sheetFlags, localFlags) => {
-      if (sheetFlags && typeof sheetFlags === 'string') {
-        try { return JSON.parse(sheetFlags); } catch (e) {}
-      }
       if (sheetFlags && typeof sheetFlags === 'object') return sheetFlags;
+      if (sheetFlags && typeof sheetFlags === 'string') {
+        // Try standard JSON first
+        try { return JSON.parse(sheetFlags); } catch (e) {}
+        // Fallback: parse Google Sheets display format like "{yellow=true, red=false}"
+        const match = sheetFlags.match(/\w+=\w+/g);
+        if (match) {
+          const obj = {};
+          match.forEach(pair => {
+            const [k, v] = pair.split('=');
+            obj[k.trim()] = v.trim() === 'true';
+          });
+          return obj;
+        }
+      }
       return localFlags || {};
     };
     const normalizedLeads = sheetLeads.map(l => ({
@@ -7366,11 +7374,21 @@ async function gsPull() {
     const flagsMapManual = {};
     (state.leads || []).forEach(l => { if (l.flags && l.id) flagsMapManual[l.id] = l.flags; });
     // Parse flags: prefer Sheet value; fallback to local
+    // Handles multiple formats: JSON string, Sheets-display format {key=value}, or plain object
     const parseFlagsManual = (sheetFlags, localFlags) => {
+      if (sheetFlags && typeof sheetFlags === 'object') return sheetFlags;
       if (sheetFlags && typeof sheetFlags === 'string') {
         try { return JSON.parse(sheetFlags); } catch (e) {}
+        const match = sheetFlags.match(/\w+=\w+/g);
+        if (match) {
+          const obj = {};
+          match.forEach(pair => {
+            const [k, v] = pair.split('=');
+            obj[k.trim()] = v.trim() === 'true';
+          });
+          return obj;
+        }
       }
-      if (sheetFlags && typeof sheetFlags === 'object') return sheetFlags;
       return localFlags || {};
     };
     // Normalize Leads: spend must be number; dates must be YYYY-MM-DD
