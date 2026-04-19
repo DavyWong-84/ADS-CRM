@@ -432,6 +432,200 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* Quick period chips (today/yesterday/month/year) */
 .quick-chip { padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; cursor: pointer; }
 .quick-chip:hover { border-color: var(--purple-light, #b99afa); color: var(--purple); }
+
+/* Global Search Modal — centered */
+#globalSearchBackdrop.open {
+  display: block !important;
+  position: fixed;
+  inset: 0;
+  background: rgba(16,17,20,0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 10000;
+  animation: fadein 0.15s ease;
+}
+#globalSearchBackdrop.open .gs-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 32px);
+  max-width: 580px;
+  max-height: 72vh;
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(16,17,20,0.28), 0 0 0 1px rgba(16,17,20,0.04);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.2s ease;
+}
+@media (max-width: 767px) {
+  #globalSearchBackdrop.open .gs-modal {
+    width: calc(100% - 24px);
+    max-height: 80vh;
+  }
+}
+.gs-modal {
+  /* Styling moved to #globalSearchBackdrop.open .gs-modal for transform-based centering */
+}
+.gs-search-wrap {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.gs-search-wrap svg:first-child { color: var(--gray); flex-shrink: 0; }
+.gs-search-wrap input,
+.gs-search-wrap input:focus,
+.gs-search-wrap input:active {
+  flex: 1;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  font-size: 15px;
+  padding: 0 !important;
+  background: transparent !important;
+  font-family: inherit;
+  color: var(--black);
+  font-weight: 500;
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+.gs-search-wrap input::placeholder { color: #9ca0a8; font-weight: 400; }
+.gs-kbd {
+  padding: 3px 8px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--gray);
+  font-family: inherit;
+  font-weight: 500;
+  box-shadow: 0 1px 0 var(--border);
+}
+.gs-close {
+  background: transparent;
+  border: 0;
+  color: var(--gray);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.gs-close:hover { background: var(--surface-2); color: var(--black); }
+.gs-results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 0 8px;
+  min-height: 60px;
+}
+.gs-section-label {
+  padding: 12px 18px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #a0a3ab;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.gs-item {
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.1s;
+}
+.gs-item:hover { background: #f7f5ff; }
+.gs-item.active {
+  background: var(--purple-bg);
+  border-left-color: var(--purple);
+}
+.gs-item-icon {
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-radius: 9px;
+  border: 1px solid var(--border);
+}
+.gs-item.active .gs-item-icon {
+  background: #fff;
+  border-color: var(--purple-light, #b99afa);
+}
+.gs-item-content { flex: 1; min-width: 0; }
+.gs-item-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.1px;
+}
+.gs-item-sub {
+  font-size: 12px;
+  color: var(--gray);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+.gs-item-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--gray);
+  font-weight: 600;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.gs-item.active .gs-item-badge {
+  background: var(--purple);
+  color: #fff;
+}
+.gs-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--gray);
+  font-size: 14px;
+}
+.gs-empty-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+  opacity: 0.5;
+}
+.gs-empty-title { font-weight: 600; color: var(--black); margin-bottom: 4px; font-size: 15px; }
+.gs-empty-sub { font-size: 12px; color: var(--gray); }
+.gs-footer {
+  padding: 10px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--gray);
+  flex-shrink: 0;
+  background: #fafafa;
+}
+.gs-footer-hint { display: flex; align-items: center; gap: 6px; }
+@media (max-width: 767px) { .gs-footer { display: none; } }
 .quick-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
 
 /* Search icon button (top-right) */
@@ -851,7 +1045,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.68</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.73</span>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <!-- Global search (all devices) -->
@@ -1496,13 +1690,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 <!-- Global Quick Switcher / Search Modal -->
 <div class="modal-backdrop" id="globalSearchBackdrop" onclick="if(event.target===this) closeGlobalSearch()">
-  <div class="modal" style="max-width:520px;padding:0;overflow:hidden;">
-    <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gray)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-      <input type="text" id="globalSearchInput" autocomplete="off" placeholder="Search leads, channels, stores, pages..." style="flex:1;border:none;outline:none;font-size:15px;padding:0;background:transparent;">
-      <button type="button" onclick="closeGlobalSearch()" style="background:transparent;border:0;color:var(--gray);cursor:pointer;font-size:20px;line-height:1;padding:2px 6px;">✕</button>
+  <div class="gs-modal">
+    <div class="gs-search-wrap">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <input type="text" id="globalSearchInput" autocomplete="off" placeholder="Search leads, channels, pages...">
+      <kbd class="gs-kbd desktop-only-hint">ESC</kbd>
+      <button type="button" onclick="closeGlobalSearch()" class="gs-close" aria-label="Close">✕</button>
     </div>
-    <div id="globalSearchResults" style="max-height:60vh;overflow-y:auto;padding:8px 0;"></div>
+    <div id="globalSearchResults" class="gs-results"></div>
+    <div class="gs-footer">
+      <div class="gs-footer-hint"><kbd class="gs-kbd">↑↓</kbd> Navigate</div>
+      <div class="gs-footer-hint"><kbd class="gs-kbd">↵</kbd> Open</div>
+      <div class="gs-footer-hint"><kbd class="gs-kbd">ESC</kbd> Close</div>
+      <div style="margin-left:auto;">⌘K / Ctrl+K</div>
+    </div>
   </div>
 </div>
 
@@ -6410,7 +6611,7 @@ function renderRevenueOutlet(mArr, locId) {
 
   const isMobile = window.innerWidth < 767;
 
-  let html = `<div class="card" style="margin-bottom:14px;">
+  let html = `<div class="card" id="revStore-${locId}" style="margin-bottom:14px;">
     <div style="margin-bottom:12px;">
       <button onclick="setRevOutlet('all')" style="font-size:12px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-weight:600;">← All Outlets</button>
     </div>
@@ -7810,6 +8011,19 @@ function renderGlobalSearchResults(query) {
   const wrap = document.getElementById('globalSearchResults');
   if (!wrap) return;
 
+  // Empty query: just show hint to avoid rendering huge list
+  if (!q) {
+    wrap.innerHTML = `
+      <div class="gs-empty">
+        <div style="font-size:32px;margin-bottom:8px;">🔍</div>
+        <div style="font-size:14px;color:var(--black);font-weight:500;margin-bottom:4px;">Type to search</div>
+        <div style="font-size:12px;color:var(--gray);">Leads · Channels · Pages · Sections</div>
+      </div>
+    `;
+    _gsResults = [];
+    return;
+  }
+
   const results = [];
 
   // Pages + sub-sections
@@ -7839,7 +8053,8 @@ function renderGlobalSearchResults(query) {
     { label: 'Revenue Outlet', icon: '📈', nav: 'revenue' },
     ...state.locations.filter(s => s.active !== false).map(s => ({
       label: 'Revenue · ' + s.name, icon: '📈', nav: 'revenue', aliases: s.name.toLowerCase() + ' store outlet',
-      scrollTo: 'revStore-' + s.id
+      scrollTo: 'revStore-' + s.id,
+      revOutletId: s.id
     })),
     // Data Entry
     { label: 'Data Entry', icon: '✍️', nav: 'entry' },
@@ -7856,7 +8071,7 @@ function renderGlobalSearchResults(query) {
   ];
   pages.forEach(p => {
     const haystack = (p.label + ' ' + (p.aliases || '')).toLowerCase();
-    if (!q || haystack.includes(q)) {
+    if (haystack.includes(q)) {
       results.push({ type: 'page', label: p.label, sub: (p.tab || p.scrollTo) ? 'Section' : 'Page', icon: p.icon, action: () => {
         closeGlobalSearch();
         nav(p.nav);
@@ -7867,12 +8082,18 @@ function renderGlobalSearchResults(query) {
             else if (p.nav === 'entry' && typeof switchEntryTab === 'function') switchEntryTab(p.tab);
           }, 100);
         }
+        // Revenue: switch outlet to detail view (scrollTo anchor is in detail)
+        if (p.revOutletId && typeof setRevOutlet === 'function') {
+          setTimeout(() => setRevOutlet(p.revOutletId), 150);
+        }
         if (p.scrollTo) {
-          // Retry scrolling (page render may be async)
           const tryScroll = (attempts) => {
             const el = document.getElementById(p.scrollTo);
             if (el) {
-              el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              const headerH = window.innerWidth < 768 ? 180 : 130;
+              const rect = el.getBoundingClientRect();
+              const top = rect.top + window.scrollY - headerH;
+              window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
               el.style.transition = 'box-shadow 0.3s';
               el.style.boxShadow = '0 0 0 3px var(--purple)';
               setTimeout(() => { el.style.boxShadow = ''; }, 2000);
@@ -7880,7 +8101,7 @@ function renderGlobalSearchResults(query) {
               setTimeout(() => tryScroll(attempts - 1), 150);
             }
           };
-          setTimeout(() => tryScroll(8), 250);
+          setTimeout(() => tryScroll(15), 450);
         }
       }});
     }
@@ -7910,31 +8131,50 @@ function renderGlobalSearchResults(query) {
       results.push({ type: 'channel', label: c.name, sub: `Channel · ${c.platform}${c.active === false ? ' · Inactive' : ''}`, icon: '💼', action: () => { closeGlobalSearch(); nav('settings'); } });
     });
   }
-
-  // Stores
-  if (q) {
-    state.locations.filter(s => s.name.toLowerCase().includes(q)).forEach(s => {
-      results.push({ type: 'store', label: s.name, sub: `Store${s.active === false ? ' · Inactive' : ''}`, icon: '🏢', action: () => { closeGlobalSearch(); nav('revenue'); } });
-    });
-  }
+  // (Stores removed: Revenue · {store} entries in pages array already handle store search with scrollTo)
 
   _gsResults = results;
   if (_gsSelectedIdx >= results.length) _gsSelectedIdx = 0;
 
   if (results.length === 0) {
-    wrap.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray);font-size:14px;">No results</div>';
+    wrap.innerHTML = q
+      ? `<div class="gs-empty">
+          <div class="gs-empty-icon">🔎</div>
+          <div class="gs-empty-title">No results for "${q}"</div>
+          <div class="gs-empty-sub">Try a lead name, contact number, or page name</div>
+        </div>`
+      : `<div class="gs-empty">
+          <div class="gs-empty-icon">✨</div>
+          <div class="gs-empty-title">Type to search</div>
+          <div class="gs-empty-sub">Leads · Channels · Pages · Sections</div>
+        </div>`;
     return;
   }
 
-  wrap.innerHTML = results.map((r, i) => `
-    <div class="gs-item${i === _gsSelectedIdx ? ' active' : ''}" data-idx="${i}" onclick="_gsSelectAndGo(${i})" style="padding:10px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;${i === _gsSelectedIdx ? 'background:var(--purple-bg);' : ''}">
-      <span style="font-size:18px;width:24px;text-align:center;">${r.icon}</span>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:14px;font-weight:500;color:var(--black);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.label}</div>
-        <div style="font-size:12px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.sub}</div>
-      </div>
-    </div>
-  `).join('');
+  // Group results by type
+  const typeOrder = ['lead', 'page'];
+  const typeLabels = { lead: 'Leads', page: 'Pages & Sections' };
+  let html = '';
+  let rIdx = 0;
+  typeOrder.forEach(t => {
+    const group = results.filter(r => r.type === t);
+    if (group.length === 0) return;
+    html += `<div class="gs-section-label">${typeLabels[t]}</div>`;
+    group.forEach(r => {
+      const origIdx = results.indexOf(r);
+      html += `
+        <div class="gs-item${origIdx === _gsSelectedIdx ? ' active' : ''}" onclick="_gsSelectAndGo(${origIdx})">
+          <span class="gs-item-icon">${r.icon}</span>
+          <div class="gs-item-content">
+            <div class="gs-item-label">${r.label}</div>
+            <div class="gs-item-sub">${r.sub}</div>
+          </div>
+          <span class="gs-item-badge">${r.type === 'lead' ? 'Lead' : (r.sub === 'Section' ? 'Go' : 'Page')}</span>
+        </div>
+      `;
+    });
+  });
+  wrap.innerHTML = html;
 }
 
 function _gsSelectAndGo(idx) {
@@ -7952,15 +8192,28 @@ document.addEventListener('keydown', e => {
   const bd = document.getElementById('globalSearchBackdrop');
   if (!bd || !bd.classList.contains('open')) return;
   if (e.key === 'Escape') { closeGlobalSearch(); return; }
-  if (e.key === 'ArrowDown') { e.preventDefault(); _gsSelectedIdx = Math.min(_gsSelectedIdx + 1, _gsResults.length - 1); renderGlobalSearchResults(document.getElementById('globalSearchInput').value); return; }
-  if (e.key === 'ArrowUp') { e.preventDefault(); _gsSelectedIdx = Math.max(_gsSelectedIdx - 1, 0); renderGlobalSearchResults(document.getElementById('globalSearchInput').value); return; }
+  if (e.key === 'ArrowDown') { e.preventDefault(); _gsSelectedIdx = Math.min(_gsSelectedIdx + 1, _gsResults.length - 1); renderGlobalSearchResults(document.getElementById('globalSearchInput').value); _gsScrollToActive(); return; }
+  if (e.key === 'ArrowUp') { e.preventDefault(); _gsSelectedIdx = Math.max(_gsSelectedIdx - 1, 0); renderGlobalSearchResults(document.getElementById('globalSearchInput').value); _gsScrollToActive(); return; }
   if (e.key === 'Enter') { e.preventDefault(); if (_gsResults[_gsSelectedIdx]) _gsResults[_gsSelectedIdx].action(); return; }
 });
 
-// Input listener
+function _gsScrollToActive() {
+  const active = document.querySelector('#globalSearchResults .gs-item.active');
+  if (active) active.scrollIntoView({ block: 'nearest' });
+}
+
+// Input listener (debounced)
+let _gsInputTimer = null;
 setTimeout(() => {
   const gsInp = document.getElementById('globalSearchInput');
-  if (gsInp) gsInp.addEventListener('input', e => { _gsSelectedIdx = 0; renderGlobalSearchResults(e.target.value); });
+  if (gsInp) gsInp.addEventListener('input', e => {
+    clearTimeout(_gsInputTimer);
+    const val = e.target.value;
+    _gsInputTimer = setTimeout(() => {
+      _gsSelectedIdx = 0;
+      renderGlobalSearchResults(val);
+    }, 100);
+  });
 }, 100);
 
 // ---------- Init ----------
