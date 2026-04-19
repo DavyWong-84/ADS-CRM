@@ -358,7 +358,25 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .lead-item .lc-foot { display: flex; gap: 12px; font-size: 11px; color: var(--gray); padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.04); flex-wrap: wrap; }
 .lead-item .lc-foot strong { color: #374151; font-weight: 500; }
 .lead-item .lc-foot .muted { opacity: 0.45; }
-.lead-item .lc-foot .lc-channel { margin-left: auto; color: var(--silver); }
+.lead-item .lc-foot .lc-channel,
+.lead-item .lc-foot .lc-location {
+  color: var(--silver);
+  font-size: 11px;
+  padding: 2px 8px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  font-weight: 500;
+}
+.lead-item .lc-foot .lc-channel { margin-left: auto; }
+/* Compact card (Lead status) — channel chip */
+.lead-compact .lc-channel {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: var(--surface-2);
+  color: var(--silver);
+  border-radius: 10px;
+  font-weight: 500;
+}
 
 /* Legacy class aliases (backward compat — kept minimal) */
 .lead-row-1, .lead-row-2, .lead-meta { display: none; }
@@ -751,7 +769,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.30</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.31</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -3291,12 +3309,13 @@ function renderList() {
       const starHTML = ['yellow', 'red', 'green'].map(c =>
         `<span class="lc-flag ${flags[c] ? 'active' : ''}" data-flag="${c}" onclick="toggleLeadFlag(event, '${l.id}', '${c}')" title="${c}">★</span>`
       ).join('');
-      // Lead = compact card (contact + leadDate + tag only)
+      // Lead = compact card (contact + leadDate + channel + tag)
       if (l.status === 'lead') {
         return `<div class="lead-item lead-compact lc-lead${selected ? ' selected' : ''}" onclick="editLead('${l.id}')">
           <div class="lc-compact-row">
             <span class="lc-contact">${l.contact || '(no contact)'}</span>
             <span class="lc-compact-date">Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
+            ${l.channelName ? `<span class="lc-channel">${l.channelName}</span>` : ''}
             <span class="lc-flags">${starHTML}</span>
             <span class="badge badge-lead">Lead</span>
           </div>
@@ -3319,7 +3338,8 @@ function renderList() {
         <div class="lc-foot">
           <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
           <span class="${l.apptDate ? '' : 'muted'}">Appt: <strong>${l.apptDate ? fmt.monthDay(l.apptDate) : '—'}</strong></span>
-          ${l.channel ? `<span class="lc-channel">${l.channel}</span>` : ''}
+          ${l.channelName ? `<span class="lc-channel">${l.channelName}</span>` : ''}
+          ${l.location ? `<span class="lc-location">${l.location}</span>` : ''}
         </div>
       </div>`;
     }).join('');
