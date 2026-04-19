@@ -443,11 +443,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (min-width: 768px) {
   #searchIconBtn { display: none !important; }
   .mobile-only-search-bar { display: none !important; }
+  .mobile-only-chips { display: none !important; }
 }
-/* Mobile: hide desktop search input, show icon button, hide ESC/Enter hint */
+/* Mobile: hide desktop search input, show icon button, hide ESC/Enter hint, show chips, hide toggle */
 @media (max-width: 767px) {
   .desktop-search { display: none !important; }
   .desktop-only-hint { display: none !important; }
+  .desktop-only-toggle { display: none !important; }
+  .mobile-only-chips { display: flex !important; }
 }
 
 /* Modal */
@@ -581,7 +584,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     justify-content: flex-end;
     position: sticky;
     top: 0;
-    padding: 8px 8px 4px 8px;
+    padding: 6px 6px 2px 8px;
     background: var(--white);
     z-index: 91;
     border-radius: 16px 16px 0 0;
@@ -592,7 +595,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     color: var(--black) !important;
   }
   .contact-form-open #contactFormEmpty,
-  .contact-form-open #contactFormWrap { padding: 0 20px 20px 20px; }
+  .contact-form-open #contactFormWrap { padding: 0 16px 16px 16px; }
+  /* Inside modal: stepper should NOT be sticky (doesn't make sense in a modal) */
+  .contact-form-open #leadStepper:not(:empty) {
+    position: static !important;
+    top: auto !important;
+    margin: 0 0 8px 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    z-index: auto !important;
+  }
+  /* Reduce last-saved time block bottom padding */
+  .contact-form-open .last-saved-time { margin-top: 6px; margin-bottom: 0; padding: 0; }
   .contact-form-open .contact-list-panel { display: none !important; }
   .contact-form-open #contactFab,
   .contact-form-open #searchFab { display: none !important; }
@@ -829,7 +843,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.58</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.59</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -869,16 +883,19 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
       <!-- Row 2: filters (Month/Year toggle + date picker + channel + search) -->
       <div class="compact-filter" style="flex-wrap:wrap;gap:8px;">
-        <div class="toggle-group">
+        <!-- Mobile-only chips -->
+        <div class="quick-chips mobile-only-chips" id="listQuickChips" style="display:none;gap:6px;flex-wrap:wrap;"><button class="quick-chip " onclick="setListQuickPeriod('all')">All</button><button class="quick-chip active" onclick="setListQuickPeriod('today')">Today</button><button class="quick-chip " onclick="setListQuickPeriod('yesterday')">Yday</button></div>
+        <!-- Desktop-only Month/Year toggle -->
+        <div class="toggle-group desktop-only-toggle">
           <button class="toggle active" data-mode="month" onclick="setListMode('month')">Month</button>
           <button class="toggle" data-mode="year" onclick="setListMode('year')">Year</button>
         </div>
-        <button type="button" class="date-btn cf-select" id="listMonth_btn" onclick="openMonthPicker('listMonth')">
+        <button type="button" class="date-btn cf-select desktop-only-toggle" id="listMonth_btn" onclick="openMonthPicker('listMonth')" style="">
           <span id="listMonth_label">Apr 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
         <input type="hidden" id="listMonth" value="2026-04">
-        <button type="button" class="date-btn cf-select" id="listYearBtn" style="display:none;" onclick="openYearPicker('listYear', this)">
+        <button type="button" class="date-btn cf-select desktop-only-toggle" id="listYearBtn" style="display: none;" onclick="openYearPicker('listYear', this)">
           <span id="listYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -915,13 +932,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty">
+        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
           <div style="text-align:center;color:var(--gray);padding:40px 20px;">
             <div style="font-size:32px;margin-bottom:8px;">👤</div>
             <div style="font-size:14px;">Select a lead to edit<br>or click <strong>+ New Lead</strong></div>
           </div>
         </div>
-        <div id="contactFormWrap" style="display:none;">
+        <div id="contactFormWrap" style="display: block;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -976,7 +993,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label">Select date</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate">
+                    <input type="hidden" id="f_apptDate" value="">
                   </div>
                 </div>
               </div>
@@ -3368,22 +3385,41 @@ function setListMode(mode) {
 }
 
 function setListQuickPeriod(key) {
-  // Legacy — kept for backward compat, not used by new UI
+  // Used by mobile chips only
   state.listPeriod = (key === 'all') ? '' : key;
   state.listPage = 1;
   saveState();
   renderList();
 }
 
+function renderQuickChips() {
+  const wrap = document.getElementById('listQuickChips');
+  if (!wrap) return;
+  const chips = [
+    { key: 'all', label: 'All' },
+    { key: 'today', label: 'Today' },
+    { key: 'yesterday', label: 'Yday' }
+  ];
+  const cur = state.listPeriod || 'all';
+  wrap.innerHTML = chips.map(c =>
+    `<button class="quick-chip ${c.key === cur ? 'active' : ''}" onclick="setListQuickPeriod('${c.key}')">${c.label}</button>`
+  ).join('');
+}
+
 function renderList() {
   updateSearchActiveBar();
+  renderQuickChips();
   // Sync Month/Year toggle + picker labels
   const mode = state.listMode || 'month';
   document.querySelectorAll('#page-contact .toggle-group .toggle').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
   const mBtn = document.getElementById('listMonth_btn');
   const yBtn = document.getElementById('listYearBtn');
-  if (mBtn) mBtn.style.display = mode === 'month' ? '' : 'none';
-  if (yBtn) yBtn.style.display = mode === 'year' ? '' : 'none';
+  // Desktop: show only selected mode's picker; mobile: CSS handles hiding both
+  const isMobile = window.innerWidth < 768;
+  if (!isMobile) {
+    if (mBtn) mBtn.style.display = mode === 'month' ? '' : 'none';
+    if (yBtn) yBtn.style.display = mode === 'year' ? '' : 'none';
+  }
   // Sync picker labels
   const currentMonth = state.listMonth || todayStr().substring(0, 7);
   const currentYear = state.listYear || todayStr().substring(0, 4);
@@ -3400,9 +3436,9 @@ function renderList() {
       activeChannels.map(c => `<option value="${c.id}" ${c.id === state.listChannelId ? 'selected' : ''}>${c.name}</option>`).join('');
   }
 
-  // Filter by Month/Year + channel
+  // Filter: mobile uses chips (listPeriod), desktop uses Month/Year picker
   let filteredLeads = state.leads.slice();
-  const periodMatch = resolveListFilter();
+  const periodMatch = isMobile ? resolveQuickPeriod(state.listPeriod) : resolveListFilter();
   if (periodMatch) {
     filteredLeads = filteredLeads.filter(l => periodMatch(l.leadDate));
   }
