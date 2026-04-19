@@ -433,7 +433,92 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .quick-chip { padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; cursor: pointer; }
 .quick-chip:hover { border-color: var(--purple-light, #b99afa); color: var(--purple); }
 
-/* Global Search Modal — centered */
+/* Alerts Modal */
+#alertsBackdrop.open {
+  display: block !important;
+  position: fixed;
+  inset: 0;
+  background: rgba(16,17,20,0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 10000;
+  animation: fadein 0.15s ease;
+}
+#alertsBackdrop.open .alerts-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 32px);
+  max-width: 580px;
+  max-height: 78vh;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(16,17,20,0.28);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.alerts-header {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.alerts-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+.alerts-section-label {
+  padding: 14px 18px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca0a8;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.alert-item {
+  padding: 12px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.1s;
+}
+.alert-item:hover { background: #faf9ff; }
+.alert-item.sev-high { border-left-color: var(--red); }
+.alert-item.sev-med { border-left-color: var(--orange, #F59E0B); }
+.alert-item.sev-low { border-left-color: var(--yellow, #eab308); }
+.alert-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+  line-height: 1.3;
+}
+.alert-body { flex: 1; min-width: 0; }
+.alert-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 2px;
+}
+.alert-desc {
+  font-size: 12px;
+  color: var(--gray);
+  line-height: 1.5;
+}
+.alerts-empty {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--gray);
+}
+.alerts-empty-icon { font-size: 36px; margin-bottom: 10px; }
+.alerts-empty-title { font-weight: 600; color: var(--black); font-size: 15px; margin-bottom: 4px; }
 #globalSearchBackdrop.open {
   display: block !important;
   position: fixed;
@@ -1046,12 +1131,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.77</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.78</span>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <!-- Global search (all devices) -->
     <button onclick="openGlobalSearch()" aria-label="Search" title="Search (Ctrl+K)" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+    </button>
+    <!-- Alerts / Inbox -->
+    <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">5</span>
     </button>
     <!-- Mobile-only: Data Entry + Settings -->
     <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
@@ -1708,6 +1798,61 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </div>
 </div>
 
+<!-- Alerts / Inbox Modal -->
+<div class="modal-backdrop" id="alertsBackdrop" onclick="if(event.target===this) closeAlertsModal()">
+  <div class="alerts-modal">
+    <div class="alerts-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span style="font-size:16px;font-weight:600;">Data Alerts</span>
+        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;">5</span>
+      </div>
+      <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
+    </div>
+    <div id="alertsContent" class="alerts-content"><div class="alerts-section-label">Needs attention (5)</div>
+        <div class="alert-item sev-med" onclick="_alertAct(0)">
+          <div class="alert-icon">📊</div>
+          <div class="alert-body">
+            <div class="alert-title">Sunway — Revenue not filled for Mar 2026</div>
+            <div class="alert-desc">Last month's revenue data for Sunway is missing. Go to Data Entry → Revenue.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(1)">
+          <div class="alert-icon">📊</div>
+          <div class="alert-body">
+            <div class="alert-title">Cheras — Revenue not filled for Mar 2026</div>
+            <div class="alert-desc">Last month's revenue data for Cheras is missing. Go to Data Entry → Revenue.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(2)">
+          <div class="alert-icon">📊</div>
+          <div class="alert-body">
+            <div class="alert-title">ECO — Revenue not filled for Mar 2026</div>
+            <div class="alert-desc">Last month's revenue data for ECO is missing. Go to Data Entry → Revenue.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(3)">
+          <div class="alert-icon">💰</div>
+          <div class="alert-body">
+            <div class="alert-title">Simply 5 — Ads Spend not filled for Mar 2026</div>
+            <div class="alert-desc">Cost data missing. Go to Data Entry → Ads Cost.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(4)">
+          <div class="alert-icon">💰</div>
+          <div class="alert-body">
+            <div class="alert-title">Google Ads — Ads Spend not filled for Mar 2026</div>
+            <div class="alert-desc">Cost data missing. Go to Data Entry → Ads Cost.</div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+
 <nav class="bottom-nav">
   <button class="bottom-nav-item" data-page="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Contact</span></button>
   <button class="bottom-nav-item" data-page="summary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span>Summary</span></button>
@@ -1810,6 +1955,8 @@ function saveState() {
   const toSave = { ...state };
   delete toSave.listPage; delete toSave.listSearch;
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch (e) { console.error(e); }
+  // Refresh alerts badge after data changes
+  if (typeof refreshAlertsBadge === 'function') refreshAlertsBadge();
 }
 
 // ---------- Utilities ----------
@@ -7981,6 +8128,228 @@ async function gsDelete(sheetName, id) {
     await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'delete', sheet: sheetName, id }), headers: { 'Content-Type': 'text/plain' } });
   } catch (e) { console.warn('GS delete failed:', e); }
 }
+
+// ---------- Data Alerts (Completeness + Anomaly) ----------
+function computeAlerts() {
+  const alerts = [];
+  const today = todayStr(); // YYYY-MM-DD
+  const thisMonth = today.substring(0, 7);
+  const thisYear = today.substring(0, 4);
+  const curDay = parseInt(today.substring(8, 10), 10);
+
+  // Helper: previous month string
+  const prevMonth = (m) => {
+    const [y, mm] = m.split('-').map(Number);
+    const d = new Date(y, mm - 2, 1);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  };
+
+  // === COMPLETENESS CHECKS ===
+
+  // 1. Revenue missing for previous month (after the 5th of current month)
+  if (curDay >= 5) {
+    const lastMonth = prevMonth(thisMonth);
+    state.locations.filter(l => l.active !== false).forEach(loc => {
+      const rec = state.revenue.find(r => r.month === lastMonth && r.locationId === loc.id);
+      if (!rec || rec.total == null || rec.total === 0) {
+        alerts.push({
+          severity: 'med',
+          icon: '📊',
+          title: `${loc.name} — Revenue not filled for ${fmt.monthLabel(lastMonth)}`,
+          desc: `Last month's revenue data for ${loc.name} is missing. Go to Data Entry → Revenue.`,
+          action: () => { closeAlertsModal(); nav('entry'); setTimeout(() => { if (typeof switchEntryTab === 'function') switchEntryTab('rv'); }, 100); }
+        });
+      }
+    });
+  }
+
+  // 2. Ads Spend missing for previous month (after the 5th)
+  if (curDay >= 5) {
+    const lastMonth = prevMonth(thisMonth);
+    state.channels.filter(c => c.active !== false && (c.platform === 'meta' || c.platform === 'google')).forEach(ch => {
+      const rec = state.adsSpend.find(a => a.month === lastMonth && a.channelId === ch.id);
+      if (!rec || rec.cost == null || rec.cost === 0) {
+        alerts.push({
+          severity: 'med',
+          icon: '💰',
+          title: `${ch.name} — Ads Spend not filled for ${fmt.monthLabel(lastMonth)}`,
+          desc: `Cost data missing. Go to Data Entry → Ads Cost.`,
+          action: () => { closeAlertsModal(); nav('entry'); setTimeout(() => { if (typeof switchEntryTab === 'function') switchEntryTab('as'); }, 100); }
+        });
+      }
+    });
+  }
+
+  // 3. Lead dangling: Booked but appt date > 3 days past and no show-up status
+  state.leads.forEach(l => {
+    if (l.status === 'booked' && l.apptDate) {
+      const apptTime = new Date(l.apptDate + 'T00:00:00').getTime();
+      const daysPast = Math.floor((Date.now() - apptTime) / 86400000);
+      if (daysPast > 3 && !l.showUp) {
+        alerts.push({
+          severity: 'high',
+          icon: '⏰',
+          title: `Booked appt past ${daysPast} days — no status`,
+          desc: `${l.name || l.contact || '(no name)'} · Appt was ${l.apptDate}. Update Show Up status.`,
+          action: () => { closeAlertsModal(); nav('contact'); setTimeout(() => editLead(l.id), 100); }
+        });
+      }
+    }
+  });
+
+  // 4. No Show/Done without race (customer profile incomplete)
+  state.leads.forEach(l => {
+    if ((l.status === 'done' || l.status === 'noshow') && !l.race) {
+      alerts.push({
+        severity: 'low',
+        icon: '👥',
+        title: `${l.name || l.contact || '(no name)'} — Race not set`,
+        desc: `Status is ${l.status === 'noshow' ? 'No Show' : 'Done'} but race field is empty.`,
+        action: () => { closeAlertsModal(); nav('contact'); setTimeout(() => editLead(l.id), 100); }
+      });
+    }
+  });
+
+  // === ANOMALY CHECKS ===
+
+  // 5. Revenue anomaly: this month total drops > 50% or jumps > 200% vs prev month
+  state.locations.filter(l => l.active !== false).forEach(loc => {
+    const prev = state.revenue.find(r => r.month === prevMonth(thisMonth) && r.locationId === loc.id);
+    const cur = state.revenue.find(r => r.month === thisMonth && r.locationId === loc.id);
+    if (prev && cur && prev.total > 0 && cur.total > 0) {
+      const ratio = cur.total / prev.total;
+      if (ratio < 0.5) {
+        alerts.push({
+          severity: 'high',
+          icon: '📉',
+          title: `${loc.name} — Revenue dropped ${Math.round((1 - ratio) * 100)}% vs last month`,
+          desc: `${fmt.money(prev.total)} → ${fmt.money(cur.total)}. Verify the data.`,
+          action: () => { closeAlertsModal(); nav('revenue'); }
+        });
+      } else if (ratio > 3) {
+        alerts.push({
+          severity: 'high',
+          icon: '📈',
+          title: `${loc.name} — Revenue jumped ${Math.round(ratio * 100 - 100)}% vs last month`,
+          desc: `${fmt.money(prev.total)} → ${fmt.money(cur.total)}. Verify the data.`,
+          action: () => { closeAlertsModal(); nav('revenue'); }
+        });
+      }
+    }
+  });
+
+  // 6. Revenue input error: New > Total
+  state.revenue.forEach(r => {
+    if (r.total != null && r.newCustomer != null && r.newCustomer > r.total) {
+      const loc = state.locations.find(l => l.id === r.locationId);
+      alerts.push({
+        severity: 'high',
+        icon: '⚠️',
+        title: `${loc ? loc.name : 'Store'} ${fmt.monthLabel(r.month)} — New > Total`,
+        desc: `New customer (${fmt.money(r.newCustomer)}) exceeds total sales (${fmt.money(r.total)}). Input error.`,
+        action: () => { closeAlertsModal(); nav('entry'); setTimeout(() => { if (typeof switchEntryTab === 'function') switchEntryTab('rv'); }, 100); }
+      });
+    }
+  });
+
+  // 7. Ads Spend anomaly: sudden cost spike > 300%
+  state.channels.filter(c => c.active !== false).forEach(ch => {
+    const prev = state.adsSpend.find(a => a.month === prevMonth(thisMonth) && a.channelId === ch.id);
+    const cur = state.adsSpend.find(a => a.month === thisMonth && a.channelId === ch.id);
+    if (prev && cur && prev.cost > 0 && cur.cost > 0) {
+      const ratio = cur.cost / prev.cost;
+      if (ratio > 3) {
+        alerts.push({
+          severity: 'med',
+          icon: '💸',
+          title: `${ch.name} — Ads Cost ${Math.round(ratio * 100 - 100)}% higher than last month`,
+          desc: `${fmt.money(prev.cost)} → ${fmt.money(cur.cost)}. Verify spending.`,
+          action: () => { closeAlertsModal(); nav('adsspend'); }
+        });
+      }
+    }
+  });
+
+  return alerts;
+}
+
+function refreshAlertsBadge() {
+  const alerts = computeAlerts();
+  const badge = document.getElementById('alertsBadge');
+  if (!badge) return;
+  if (alerts.length === 0) {
+    badge.style.display = 'none';
+  } else {
+    badge.style.display = 'flex';
+    badge.textContent = alerts.length > 99 ? '99+' : String(alerts.length);
+  }
+}
+
+function openAlertsModal() {
+  const bd = document.getElementById('alertsBackdrop');
+  if (!bd) return;
+  bd.classList.add('open');
+  renderAlertsContent();
+}
+
+function closeAlertsModal() {
+  const bd = document.getElementById('alertsBackdrop');
+  if (bd) bd.classList.remove('open');
+}
+
+function renderAlertsContent() {
+  const alerts = computeAlerts();
+  const wrap = document.getElementById('alertsContent');
+  const badge = document.getElementById('alertsCountBadge');
+  if (badge) badge.textContent = alerts.length;
+  if (!wrap) return;
+
+  if (alerts.length === 0) {
+    wrap.innerHTML = `
+      <div class="alerts-empty">
+        <div class="alerts-empty-icon">✅</div>
+        <div class="alerts-empty-title">All clear!</div>
+        <div style="font-size:12px;color:var(--gray);">No data issues detected.</div>
+      </div>
+    `;
+    return;
+  }
+
+  // Group by severity
+  const order = ['high', 'med', 'low'];
+  const labels = { high: '⚠ Critical', med: 'Needs attention', low: 'Minor' };
+  let html = '';
+  order.forEach(sev => {
+    const group = alerts.filter(a => a.severity === sev);
+    if (group.length === 0) return;
+    html += `<div class="alerts-section-label">${labels[sev]} (${group.length})</div>`;
+    group.forEach((a, idx) => {
+      const origIdx = alerts.indexOf(a);
+      html += `
+        <div class="alert-item sev-${a.severity}" onclick="_alertAct(${origIdx})">
+          <div class="alert-icon">${a.icon}</div>
+          <div class="alert-body">
+            <div class="alert-title">${a.title}</div>
+            <div class="alert-desc">${a.desc}</div>
+          </div>
+        </div>
+      `;
+    });
+  });
+  wrap.innerHTML = html;
+  // Store for click handler
+  window._currentAlerts = alerts;
+}
+
+function _alertAct(idx) {
+  if (window._currentAlerts && window._currentAlerts[idx]) {
+    window._currentAlerts[idx].action();
+  }
+}
+
+// Refresh badge periodically + on data changes
+setTimeout(refreshAlertsBadge, 500);
+setInterval(refreshAlertsBadge, 60000); // every 1 min
 
 // ---------- Global Quick Switcher (Ctrl+K) ----------
 let _gsSelectedIdx = 0;
