@@ -372,6 +372,25 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .filter-tab.active { background: var(--purple); color: white; border-color: var(--purple); }
 .filter-tab .count { opacity: 0.7; margin-left: 4px; font-size: 12px; }
 
+/* Quick period chips (today/yesterday/month/year) */
+.quick-chip { padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; cursor: pointer; }
+.quick-chip:hover { border-color: var(--purple-light, #b99afa); color: var(--purple); }
+.quick-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
+
+/* Search icon button (top-right) */
+#searchIconBtn:hover { border-color: var(--purple); color: var(--purple); }
+#searchIconBtn.has-query { background: var(--purple); border-color: var(--purple); color: white; }
+
+/* Desktop: inline search input in toolbar, hide icon button + mobile active bar */
+@media (min-width: 768px) {
+  #searchIconBtn { display: none !important; }
+  .mobile-only-search-bar { display: none !important; }
+}
+/* Mobile: hide desktop search input, show icon button */
+@media (max-width: 767px) {
+  .desktop-search { display: none !important; }
+}
+
 /* Modal */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(16,17,20,0.5); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-backdrop.open { display: flex; animation: fadein 0.15s ease; }
@@ -633,7 +652,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.05</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.10</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -667,26 +686,35 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <!-- Standard page header (matches Dashboard/Appt/Ads Spend structure) -->
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
       <h1 class="page-title" style="margin:0;">Contact</h1>
-      <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
-    </div>
-
-    <!-- Filter bar (standard sticky-filter structure) -->
-    <div class="sticky-filter">
-      <div class="compact-filter" style="flex-wrap:wrap;">
-        <div class="list-search" style="flex:1 1 240px;min-width:180px;">
-          <input type="text" id="searchInput" placeholder="Search name, contact, remark...">
-        </div>
-        <button type="button" class="date-btn cf-select" id="listPeriodFilter_btn" onclick="openMonthPicker('listPeriodFilter')" style="min-width:100px;">
-          <span id="listPeriodFilter_label">Apr 2026</span>
-          <span class="date-btn-icon">📅</span>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button type="button" id="searchIconBtn" onclick="openSearchModal()" title="Search" aria-label="Search" style="background:var(--white);border:1px solid var(--border);width:34px;height:34px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);transition:all 0.15s;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
         </button>
-        <input type="hidden" id="listPeriodFilter" value="2026-04">
-        <select id="listChannelFilter" class="cf-select" onchange="setListChannelFilter(this.value)"><option value="">All channels</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
+        <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
       </div>
     </div>
 
+    <!-- Filter bar: quick chips (left) + channel dropdown + desktop search -->
+    <div class="sticky-filter">
+      <div class="compact-filter" style="flex-wrap:wrap;gap:8px;">
+        <div class="quick-chips" id="listQuickChips" style="display:flex;gap:6px;flex-wrap:wrap;"><button class="quick-chip " onclick="setListQuickPeriod('all')">All</button><button class="quick-chip active" onclick="setListQuickPeriod('today')">Today</button><button class="quick-chip " onclick="setListQuickPeriod('yesterday')">Yesterday</button><button class="quick-chip " onclick="setListQuickPeriod('month')">This Month</button><button class="quick-chip " onclick="setListQuickPeriod('year')">This Year</button></div>
+        <select id="listChannelFilter" class="cf-select" onchange="setListChannelFilter(this.value)" style="min-width:130px;"><option value="">All channels</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
+        <div class="list-search desktop-search" style="position:relative;flex:1 1 180px;min-width:160px;">
+          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <input type="text" id="searchInputDesktop" placeholder="Search name, contact, remark..." style="padding-left:30px;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
+    <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <span>Searching: <strong id="searchActiveTerm"></strong></span>
+      <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
+    </div>
+
     <!-- Status tabs (All / Lead / Booked / Pending / Done / No show) -->
-    <div class="filter-tabs" id="listFilters" style="margin-bottom:14px;"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('pending')">Pending<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
+    <div class="filter-tabs" id="listFilters" style="margin-bottom:14px;"><button class="filter-tab " onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('pending')">Pending<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab active" onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
@@ -815,6 +843,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <!-- Mobile FAB -->
     <button type="button" id="contactFab" onclick="openNewLead()" style="display:none;position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--purple);color:#fff;border:none;font-size:28px;font-weight:400;box-shadow:0 3px 12px rgba(113,50,245,0.35);cursor:pointer;z-index:20;line-height:1;">+</button>
+
+    <!-- Search Modal -->
+    <div class="modal-backdrop" id="searchModalBackdrop" onclick="if(event.target===this) closeSearchModal()">
+      <div class="modal" style="max-width:460px;">
+        <div class="modal-header">
+          <div class="modal-title">🔍 Search leads</div>
+          <button type="button" class="modal-close" onclick="closeSearchModal()">✕</button>
+        </div>
+        <input type="text" id="searchInput" placeholder="Name, contact, or remark..." style="width:100%;height:44px;padding:0 14px;font-size:15px;border:1px solid var(--border);border-radius:8px;outline:none;">
+        <div style="margin-top:10px;font-size:12px;color:var(--gray);">Press <kbd style="padding:2px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:11px;">ESC</kbd> to close · <kbd style="padding:2px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:11px;">Enter</kbd> to apply</div>
+      </div>
+    </div>
   </section>
 
   <!-- DASHBOARD PAGE (was Summary) -->
@@ -1231,7 +1271,7 @@ let state = {
   listPage: 1,
   listFilter: 'all',
   listSearch: '',
-  listPeriod: new Date().toISOString().substring(0, 7),
+  listPeriod: 'today',
   listChannelId: '',
   summaryMode: 'single',
   summaryYear: String(new Date().getFullYear()),
@@ -3016,16 +3056,54 @@ function applyMonth(mStr) {
 }
 
 // ---------- Lead List ----------
-function renderList() {
-  // Update period button label
-  const periodVal = state.listPeriod || '';
-  document.getElementById('listPeriodFilter').value = periodVal;
-  const periodLabel = document.getElementById('listPeriodFilter_label');
-  const periodBtn = document.getElementById('listPeriodFilter_btn');
-  if (periodLabel && periodBtn) {
-    periodLabel.textContent = periodVal ? fmt.monthLabel(periodVal) : 'All time';
-    periodBtn.classList.toggle('empty', !periodVal);
+// Resolve a quick-period key ('today', 'yesterday', 'month', 'year', '') to a match function against leadDate.
+// Returns null if value is empty (no filter).
+function resolveQuickPeriod(key) {
+  if (!key || key === 'all') return null;
+  const today = todayStr(); // YYYY-MM-DD
+  if (key === 'today') return (d) => d === today;
+  if (key === 'yesterday') {
+    const y = new Date(); y.setDate(y.getDate() - 1);
+    const yStr = y.toISOString().substring(0, 10);
+    return (d) => d === yStr;
   }
+  if (key === 'month') {
+    const m = today.substring(0, 7);
+    return (d) => typeof d === 'string' && d.startsWith(m);
+  }
+  if (key === 'year') {
+    const y = today.substring(0, 4);
+    return (d) => typeof d === 'string' && d.startsWith(y);
+  }
+  // Fallback: treat as YYYY-MM or YYYY prefix (backward compat)
+  return (d) => typeof d === 'string' && d.startsWith(key);
+}
+
+function renderQuickChips() {
+  const wrap = document.getElementById('listQuickChips');
+  if (!wrap) return;
+  const chips = [
+    { key: 'all', label: 'All' },
+    { key: 'today', label: 'Today' },
+    { key: 'yesterday', label: 'Yesterday' },
+    { key: 'month', label: 'This Month' },
+    { key: 'year', label: 'This Year' }
+  ];
+  const cur = state.listPeriod || 'all';
+  wrap.innerHTML = chips.map(c =>
+    `<button class="quick-chip ${c.key === cur ? 'active' : ''}" onclick="setListQuickPeriod('${c.key}')">${c.label}</button>`
+  ).join('');
+}
+
+function setListQuickPeriod(key) {
+  state.listPeriod = (key === 'all') ? '' : key;
+  state.listPage = 1;
+  renderList();
+}
+
+function renderList() {
+  renderQuickChips();
+  updateSearchActiveBar();
   // Populate channel filter (only active channels)
   const chSel = document.getElementById('listChannelFilter');
   if (chSel) {
@@ -3036,8 +3114,9 @@ function renderList() {
 
   // Filter tab counts — respect period + channel filter
   let filteredLeads = state.leads.slice();
-  if (state.listPeriod) {
-    filteredLeads = filteredLeads.filter(l => sw(l.leadDate, state.listPeriod));
+  const periodMatch = resolveQuickPeriod(state.listPeriod);
+  if (periodMatch) {
+    filteredLeads = filteredLeads.filter(l => periodMatch(l.leadDate));
   }
   if (state.listChannelId) {
     filteredLeads = filteredLeads.filter(l => l.channelId === state.listChannelId);
@@ -3134,15 +3213,74 @@ function renderList() {
 }
 function setListFilter(f) { state.listFilter = f; state.listPage = 1; renderList(); }
 function setListPage(p) { state.listPage = p; renderList(); window.scrollTo(0, 0); }
-function setListPeriodFilter(v) { state.listPeriod = v; state.listPage = 1; renderList(); }
 function setListChannelFilter(v) { state.listChannelId = v; state.listPage = 1; renderList(); }
 
-document.getElementById('listPeriodFilter').addEventListener('change', e => {
-  setListPeriodFilter(e.target.value);
-});
+// ---------- Search Modal ----------
+function openSearchModal() {
+  const bd = document.getElementById('searchModalBackdrop');
+  if (!bd) return;
+  bd.classList.add('open');
+  const inp = document.getElementById('searchInput');
+  if (inp) { inp.value = state.listSearch || ''; setTimeout(() => inp.focus(), 50); }
+}
+function closeSearchModal() {
+  const bd = document.getElementById('searchModalBackdrop');
+  if (bd) bd.classList.remove('open');
+}
+function clearSearchQuery() {
+  state.listSearch = '';
+  state.listPage = 1;
+  const mobileInp = document.getElementById('searchInput');
+  const desktopInp = document.getElementById('searchInputDesktop');
+  if (mobileInp) mobileInp.value = '';
+  if (desktopInp) desktopInp.value = '';
+  renderList();
+}
+// Update the "Searching: xxx" indicator bar + sync desktop input value
+function updateSearchActiveBar() {
+  const bar = document.getElementById('searchActiveBar');
+  const term = document.getElementById('searchActiveTerm');
+  const iconBtn = document.getElementById('searchIconBtn');
+  const desktopInp = document.getElementById('searchInputDesktop');
+  if (!bar || !term) return;
+  const hasQuery = state.listSearch && state.listSearch.trim();
+  // Keep desktop input synced in case state was changed elsewhere (e.g. via modal)
+  if (desktopInp && document.activeElement !== desktopInp && desktopInp.value !== state.listSearch) {
+    desktopInp.value = state.listSearch || '';
+  }
+  // On mobile (where icon button is visible), show the active bar
+  // Skip on desktop where inline input already shows the value
+  const isDesktop = window.innerWidth >= 768;
+  if (hasQuery && !isDesktop) {
+    term.textContent = state.listSearch;
+    bar.style.display = 'flex';
+  } else {
+    bar.style.display = 'none';
+  }
+  if (iconBtn) {
+    if (hasQuery) iconBtn.classList.add('has-query');
+    else iconBtn.classList.remove('has-query');
+  }
+}
 
-document.getElementById('searchInput').addEventListener('input', e => {
-  state.listSearch = e.target.value; state.listPage = 1; renderList();
+// Both inputs write to the same state
+function onSearchInputChange(value) {
+  state.listSearch = value;
+  state.listPage = 1;
+  renderList();
+}
+document.getElementById('searchInput').addEventListener('input', e => onSearchInputChange(e.target.value));
+document.getElementById('searchInputDesktop').addEventListener('input', e => onSearchInputChange(e.target.value));
+// ESC closes the search modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    const bd = document.getElementById('searchModalBackdrop');
+    if (bd && bd.classList.contains('open')) closeSearchModal();
+  }
+});
+// Enter also closes (applies)
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') closeSearchModal();
 });
 
 // ---------- Calculations ----------
@@ -6807,11 +6945,8 @@ async function gsPullSilent() {
     const sheetRev = d.data.Revenue || [];
     const sheetFees = d.data.ThirdPartyFees || [];
 
-    // Safety: skip if Sheet is totally empty (protects against broken Apps Script returning empty)
-    if (sheetLeads.length === 0 && sheetAds.length === 0 && sheetRev.length === 0 && sheetFees.length === 0) {
-      console.warn('[Auto-pull] Sheet returned empty data — skipping to protect local data');
-      return;
-    }
+    // Safety: per-table protection — if a specific table returns empty but local has data,
+    // skip that table to prevent accidental data loss (checked at state assignment below)
 
     // Safety: reject unexpected lead columns (same check as manual Pull)
     const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark']);
@@ -6905,12 +7040,29 @@ async function gsPullSilent() {
       }));
     } catch (e) {}
 
-    state.leads = normalizedLeads;
-    state.adsSpend = normalizedAds;
-    state.revenue = normalizedRev;
-    state.thirdPartyFees = normalizedFees;
+    // Per-table protection: only overwrite if Sheet has data OR local is also empty
+    // (prevents losing local data if a Sheet table returns empty due to Apps Script bug)
+    const skipped = [];
+    if (normalizedLeads.length > 0 || state.leads.length === 0) {
+      state.leads = normalizedLeads;
+    } else { skipped.push('leads'); }
+    if (normalizedAds.length > 0 || state.adsSpend.length === 0) {
+      state.adsSpend = normalizedAds;
+    } else { skipped.push('ads'); }
+    if (normalizedRev.length > 0 || state.revenue.length === 0) {
+      state.revenue = normalizedRev;
+    } else { skipped.push('revenue'); }
+    if (normalizedFees.length > 0 || state.thirdPartyFees.length === 0) {
+      state.thirdPartyFees = normalizedFees;
+    } else { skipped.push('fees'); }
+    if (skipped.length > 0) {
+      console.warn('[Auto-pull] Protected local tables from empty Sheet:', skipped.join(', '));
+    }
     saveState();
-    if (typeof toast === 'function') toast('✅ Synced from Sheet (' + normalizedLeads.length + ' leads)');
+    const msg = skipped.length > 0
+      ? `⚠️ Synced (${skipped.length} table(s) protected)`
+      : '✅ Synced from Sheet (' + state.leads.length + ' leads)';
+    if (typeof toast === 'function') toast(msg);
     // Refresh select dropdowns (year, month, store, channel) based on new data
     try {
       if (typeof refreshSelects === 'function') refreshSelects();
@@ -7017,12 +7169,6 @@ async function gsPull() {
       }
       return String(v);
     };
-
-    // Log first record of each sheet for debugging
-    console.log('[Pull] Leads sample:', sheetLeads[0]);
-    console.log('[Pull] AdsSpend sample:', sheetAds[0]);
-    console.log('[Pull] Revenue sample:', sheetRev[0]);
-    console.log('[Pull] Fees sample:', sheetFees[0]);
 
     // Normalize Revenue: total & newCustomer must be numbers; month must be YYYY-MM
     const normalizedRev = sheetRev.map(r => ({
