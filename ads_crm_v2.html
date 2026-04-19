@@ -365,14 +365,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* Lead flag stars (yellow / red / green) — click to toggle */
 .lc-flags { display: inline-flex; gap: 4px; margin-left: 6px; }
-.lc-flag { cursor: pointer; width: 22px; height: 22px; font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s; color: #d4d4d8; }
+.lc-flag { cursor: pointer; width: 22px; height: 22px; font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s; }
 .lc-flag:hover { transform: scale(1.2); }
-.lc-flag:not(.active) { animation: starPulse 1.6s ease-in-out infinite; }
-.lc-flag.active[data-flag="yellow"] { color: #eab308; animation: none; }
-.lc-flag.active[data-flag="red"] { color: #ef4444; animation: none; }
-.lc-flag.active[data-flag="green"] { color: #10b981; animation: none; }
+/* Unlit stars show a pastel version of their own color + pulse animation */
+.lc-flag:not(.active)[data-flag="yellow"] { color: #fde68a; animation: starPulse 1.6s ease-in-out infinite; }
+.lc-flag:not(.active)[data-flag="red"]    { color: #fca5a5; animation: starPulse 1.6s ease-in-out infinite; }
+.lc-flag:not(.active)[data-flag="green"]  { color: #6ee7b7; animation: starPulse 1.6s ease-in-out infinite; }
+/* Lit stars show saturated color, no pulse */
+.lc-flag.active[data-flag="yellow"] { color: #eab308; }
+.lc-flag.active[data-flag="red"]    { color: #ef4444; }
+.lc-flag.active[data-flag="green"]  { color: #10b981; }
 @keyframes starPulse {
-  0%, 100% { opacity: 0.35; }
+  0%, 100% { opacity: 0.45; }
   50% { opacity: 1; }
 }
 
@@ -750,7 +754,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.26</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.27</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
