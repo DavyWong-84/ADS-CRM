@@ -754,7 +754,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.27</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.28</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -3348,7 +3348,7 @@ function setListFilter(f) { state.listFilter = f; state.listPage = 1; saveState(
 function setListPage(p) { state.listPage = p; renderList(); window.scrollTo(0, 0); }
 function setListChannelFilter(v) { state.listChannelId = v; state.listPage = 1; saveState(); renderList(); }
 
-// Toggle a star flag on a lead (red/yellow/green). Flags are local-only (not synced to Sheet).
+// Toggle a star flag on a lead (red/yellow/green). Synced across devices via Sheet.
 function toggleLeadFlag(event, leadId, flagColor) {
   event.stopPropagation();
   const lead = state.leads.find(l => l.id === leadId);
@@ -3356,6 +3356,7 @@ function toggleLeadFlag(event, leadId, flagColor) {
   if (!lead.flags) lead.flags = {};
   lead.flags[flagColor] = !lead.flags[flagColor];
   saveState();
+  gsUpsert('Leads', gsLeadForSheet(lead));
   renderList();
 }
 
@@ -7165,6 +7166,14 @@ async function gsPullSilent() {
     // Preserve local-only flags (star markers) across sync
     const flagsMap = {};
     (state.leads || []).forEach(l => { if (l.flags && l.id) flagsMap[l.id] = l.flags; });
+    // Parse flags: prefer Sheet value (synced across devices); fallback to local
+    const parseFlags = (sheetFlags, localFlags) => {
+      if (sheetFlags && typeof sheetFlags === 'string') {
+        try { return JSON.parse(sheetFlags); } catch (e) {}
+      }
+      if (sheetFlags && typeof sheetFlags === 'object') return sheetFlags;
+      return localFlags || {};
+    };
     const normalizedLeads = sheetLeads.map(l => ({
       id: l.id || '', contact: String(l.contact || ''), channelId: l.channelId || '',
       channelName: l.channelName || '', platform: l.platform || '',
@@ -7172,7 +7181,7 @@ async function gsPullSilent() {
       locationId: l.locationId || '', location: locMap[l.locationId] || l.locationName || l.location || '',
       showUp: l.showUp || '', race: l.race || '', spend: toNum(l.spend),
       status: l.status || '', remark: l.remark || '',
-      flags: flagsMap[l.id] || {}
+      flags: parseFlags(l.flags, flagsMap[l.id])
     }));
     const normalizedAds = sheetAds.map(a => ({
       id: a.id || '', month: toMonthStr(a.month),
@@ -7356,6 +7365,14 @@ async function gsPull() {
     // Preserve local-only flags (star markers) across sync
     const flagsMapManual = {};
     (state.leads || []).forEach(l => { if (l.flags && l.id) flagsMapManual[l.id] = l.flags; });
+    // Parse flags: prefer Sheet value; fallback to local
+    const parseFlagsManual = (sheetFlags, localFlags) => {
+      if (sheetFlags && typeof sheetFlags === 'string') {
+        try { return JSON.parse(sheetFlags); } catch (e) {}
+      }
+      if (sheetFlags && typeof sheetFlags === 'object') return sheetFlags;
+      return localFlags || {};
+    };
     // Normalize Leads: spend must be number; dates must be YYYY-MM-DD
     const normalizedLeads = sheetLeads.map(l => ({
       id: l.id || '',
@@ -7373,7 +7390,7 @@ async function gsPull() {
       spend: toNum(l.spend),
       status: l.status || '',
       remark: l.remark || '',
-      flags: flagsMapManual[l.id] || {}
+      flags: parseFlagsManual(l.flags, flagsMapManual[l.id])
     }));
     // --- Safety check 2: auto-backup current CRM state before overwrite ---
     try {
@@ -7437,7 +7454,8 @@ function gsLeadForSheet(l) {
     race: l.race || '',
     spend: l.spend != null ? l.spend : 0,
     remark: l.remark || '',
-    status: l.status || ''
+    status: l.status || '',
+    flags: l.flags && Object.keys(l.flags).some(k => l.flags[k]) ? JSON.stringify(l.flags) : ''
   };
 }
 
