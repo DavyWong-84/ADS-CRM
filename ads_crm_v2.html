@@ -518,7 +518,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   #searchFab { display: flex !important; }
 }
 
-/* Mobile: form open = fullscreen modal (centered card with backdrop) */
+/* Mobile: form open = modal (backdrop is a flex container holding the modal card) */
 @media (max-width: 767px) {
   .contact-form-open #contactFormBackdrop {
     display: flex !important;
@@ -531,14 +531,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     z-index: 89;
     animation: fadein 0.15s ease;
   }
+  /* Move the form panel INSIDE the backdrop visually using fixed positioning */
   .contact-form-open .contact-form-panel {
     position: fixed !important;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: calc(100% - 32px);
+    top: 0; left: 0; right: 0; bottom: 0;
+    margin: auto;
+    width: calc(100% - 40px);
     max-width: 480px;
     max-height: calc(100vh - 40px);
+    height: fit-content;
     background: var(--white);
     border-radius: 16px;
     z-index: 90;
@@ -569,8 +570,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .contact-form-open #searchFab { display: none !important; }
 }
 @keyframes modalIn {
-  from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
-  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
 }
 #contactFormBackdrop { display: none; }
 
@@ -750,7 +751,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.29</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.30</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
