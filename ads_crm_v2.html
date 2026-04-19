@@ -406,6 +406,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .pagination button:hover:not(:disabled) { border-color: var(--purple); color: var(--purple); }
 .pagination button.active { background: var(--purple); color: white; border-color: var(--purple); }
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+@media (max-width: 767px) {
+  #listPagination { padding-bottom: 140px; }
+}
 
 /* Search */
 .list-toolbar { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
@@ -775,7 +778,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.32</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.35</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -2657,12 +2660,14 @@ function openNewLead() {
   currentEditingId = null;
   // Reset form
   document.getElementById('leadForm').reset();
-  document.getElementById('f_leadDate').value = '';
+  // Default Lead Date to today
+  const today = todayStr();
+  document.getElementById('f_leadDate').value = today;
   document.getElementById('f_apptDate').value = '';
   const ldLabel = document.getElementById('f_leadDate_label');
   const ldBtn = document.getElementById('f_leadDate_btn');
-  if (ldLabel) ldLabel.textContent = 'Select date';
-  if (ldBtn) ldBtn.classList.add('empty');
+  if (ldLabel) ldLabel.textContent = today;
+  if (ldBtn) ldBtn.classList.remove('empty');
   const adLabel = document.getElementById('f_apptDate_label');
   const adBtn = document.getElementById('f_apptDate_btn');
   if (adLabel) adLabel.textContent = 'Select date';
@@ -3326,7 +3331,6 @@ function renderList() {
             </div>
           </div>
           <div class="lc-foot">
-            <span class="lc-contact">${l.contact || ''}</span>
             <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
             ${l.channelName ? `<span class="lc-channel">${l.channelName}</span>` : ''}
           </div>
