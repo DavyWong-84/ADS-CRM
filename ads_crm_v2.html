@@ -633,7 +633,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.01</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.02</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -7129,8 +7129,8 @@ function init() {
   nav('contact');
   setTimeout(fixContactPanelTop, 200);
   window.addEventListener('resize', fixContactPanelTop);
-  // Auto-pull from Sheet (silent, 800ms delay to let UI render first)
-  setTimeout(() => { try { gsPullSilent(); } catch (e) { console.warn(e); } }, 800);
+  // Auto-pull DISABLED in v2.02 — debugging data loss issue
+  // setTimeout(() => { try { gsPullSilent(); } catch (e) { console.warn(e); } }, 800);
 }
 
 // Start app directly (no password lock)
