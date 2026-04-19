@@ -332,8 +332,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* Mobile list */
-.lead-list { display: flex; flex-direction: column; gap: 10px; }
-.lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; transition: all 0.15s; cursor: pointer; border-left: 3px solid var(--border); }
+.lead-list { display: flex; flex-direction: column; gap: 8px; }
+.lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; transition: all 0.15s; cursor: pointer; border-left: 3px solid var(--border); }
 .lead-item:hover { border-color: var(--purple); box-shadow: var(--shadow-sm); }
 .lead-item.today-appt { border-left-color: var(--amber) !important; }
 .lead-item.overdue { border-left-color: var(--red) !important; background: rgba(212,21,59,0.02); }
@@ -341,13 +341,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .lead-item.lc-booked { border-left-color: #85B7EB; }
 .lead-item.lc-done { border-left-color: #5DCAA5; }
 .lead-item.lc-noshow { border-left-color: #F09595; }
-.lead-item .lc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 6px; }
-.lead-item .lc-name { font-weight: 600; font-size: 15px; min-height: 20px; flex: 1; }
-.lead-item .lc-name.empty::before { content: '—'; color: var(--silver); font-weight: 400; }
+
+/* Lead (compact) — single row: contact + date + tag */
+.lead-item.lead-compact { padding: 8px 12px; }
+.lead-item .lc-compact-row { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+.lead-item .lc-compact-row .lc-contact { flex: 1; font-variant-numeric: tabular-nums; color: #374151; font-size: 13px; }
+.lead-item .lc-compact-date { font-size: 12px; color: var(--gray); }
+.lead-item .lc-compact-date strong { color: #374151; font-weight: 500; }
+
+/* Booked / Done / No show — standard card */
+.lead-item .lc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 4px; }
+.lead-item .lc-name { font-weight: 600; font-size: 15px; flex: 1; line-height: 1.3; }
 .lead-item .lc-body { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--gray); gap: 8px; margin-bottom: 6px; }
 .lead-item .lc-contact { font-variant-numeric: tabular-nums; color: #374151; }
-.lead-item .lc-amt { color: var(--purple); font-weight: 500; font-size: 14px; min-width: 60px; text-align: right; }
-.lead-item .lc-amt.empty { color: transparent; }
+.lead-item .lc-amt { color: var(--purple); font-weight: 500; font-size: 14px; }
 .lead-item .lc-foot { display: flex; gap: 12px; font-size: 11px; color: var(--gray); padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.04); flex-wrap: wrap; }
 .lead-item .lc-foot strong { color: #374151; font-weight: 500; }
 .lead-item .lc-foot .muted { opacity: 0.45; }
@@ -396,9 +403,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   #searchIconBtn { display: none !important; }
   .mobile-only-search-bar { display: none !important; }
 }
-/* Mobile: hide desktop search input, show icon button */
+/* Mobile: hide desktop search input, show icon button, hide ESC/Enter hint */
 @media (max-width: 767px) {
   .desktop-search { display: none !important; }
+  .desktop-only-hint { display: none !important; }
 }
 
 /* Modal */
@@ -481,10 +489,77 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   #contactFab { display: none !important; }
   #contactBackBar { display: none !important; }
 }
+@media (max-width: 767px) {
+  #contactBackBar { display: none; }
+}
 /* Mobile: form open = full screen */
 .contact-form-open .contact-list-panel { display: none !important; }
 .contact-form-open .contact-form-panel { display: block !important; }
 .contact-form-open #contactFab { display: none !important; }
+.contact-form-open #searchFab { display: none !important; }
+
+/* Mobile: hide top action buttons (use FABs instead) + show search FAB */
+#searchFab { display: none; }
+@media (max-width: 767px) {
+  .contact-top-actions { display: none !important; }
+  #searchFab { display: flex !important; }
+}
+
+/* Mobile: form open = fullscreen modal (centered card with backdrop) */
+@media (max-width: 767px) {
+  .contact-form-open #contactFormBackdrop {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: fixed;
+    inset: 0;
+    background: rgba(16,17,20,0.5);
+    z-index: 89;
+    animation: fadein 0.15s ease;
+  }
+  .contact-form-open .contact-form-panel {
+    position: fixed !important;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 32px);
+    max-width: 480px;
+    max-height: calc(100vh - 40px);
+    background: var(--white);
+    border-radius: 16px;
+    z-index: 90;
+    overflow-y: auto;
+    padding: 0;
+    animation: modalIn 0.2s ease;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  }
+  .contact-form-open #contactBackBar {
+    display: flex !important;
+    justify-content: flex-end;
+    position: sticky;
+    top: 0;
+    padding: 8px 8px 4px 8px;
+    background: var(--white);
+    z-index: 91;
+    border-radius: 16px 16px 0 0;
+    margin: 0;
+  }
+  .contact-form-open #contactBackBar button:hover {
+    background: var(--surface-2) !important;
+    color: var(--black) !important;
+  }
+  .contact-form-open #contactFormEmpty,
+  .contact-form-open #contactFormWrap { padding: 0 20px 20px 20px; }
+  .contact-form-open .contact-list-panel { display: none !important; }
+  .contact-form-open #contactFab,
+  .contact-form-open #searchFab { display: none !important; }
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 12px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+#contactFormBackdrop { display: none; }
 
 /* Responsive */
 @media (min-width: 768px) {
@@ -662,7 +737,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.12</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.21</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -688,15 +763,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 <main class="main">
   <!-- CONTACT PAGE (merged Lead + List) -->
   <section class="page" id="page-contact">
-    <!-- Mobile: back button (hidden by default, shown when form is open) -->
-    <div id="contactBackBar" style="display:none;margin-bottom:8px;">
-      <button type="button" onclick="closeContactForm()" style="font-size:13px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--border);border-radius:20px;padding:5px 14px;cursor:pointer;font-weight:600;">← Contact</button>
-    </div>
-
     <!-- Standard page header (matches Dashboard/Appt/Ads Spend structure) -->
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
       <h1 class="page-title" style="margin:0;">Contact</h1>
-      <div style="display:flex;gap:8px;align-items:center;">
+      <div class="contact-top-actions" style="display:flex;gap:8px;align-items:center;">
         <button type="button" id="searchIconBtn" onclick="openSearchModal()" title="Search" aria-label="Search" style="background:var(--white);border:1px solid var(--border);width:34px;height:34px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);transition:all 0.15s;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
         </button>
@@ -735,6 +805,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
       <div class="contact-form-panel" id="contactFormPanel" style="top: 62.8px; height: 728.2px;">
+        <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
+        <div id="contactBackBar">
+          <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
+        </div>
         <div class="contact-form-empty" id="contactFormEmpty">
           <div style="text-align:center;color:var(--gray);padding:40px 20px;">
             <div style="font-size:32px;margin-bottom:8px;">👤</div>
@@ -851,7 +925,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
     </div>
 
-    <!-- Mobile FAB -->
+    <!-- Mobile FABs -->
+    <div id="contactFormBackdrop" onclick="closeContactForm()"></div>
+    <button type="button" id="searchFab" onclick="openSearchModal()" aria-label="Search" title="Search" style="display:none;position:fixed;bottom:144px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--white);color:var(--purple);border:1px solid var(--border);box-shadow:0 3px 12px rgba(0,0,0,0.08);cursor:pointer;z-index:20;align-items:center;justify-content:center;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+    </button>
     <button type="button" id="contactFab" onclick="openNewLead()" style="display:none;position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--purple);color:#fff;border:none;font-size:28px;font-weight:400;box-shadow:0 3px 12px rgba(113,50,245,0.35);cursor:pointer;z-index:20;line-height:1;">+</button>
 
     <!-- Search Modal -->
@@ -862,7 +940,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <button type="button" class="modal-close" onclick="closeSearchModal()">✕</button>
         </div>
         <input type="text" id="searchInput" placeholder="Name, contact, or remark..." style="width:100%;height:44px;padding:0 14px;font-size:15px;border:1px solid var(--border);border-radius:8px;outline:none;">
-        <div style="margin-top:10px;font-size:12px;color:var(--gray);">Press <kbd style="padding:2px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:11px;">ESC</kbd> to close · <kbd style="padding:2px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:11px;">Enter</kbd> to apply</div>
+        <div class="desktop-only-hint" style="margin-top:10px;font-size:12px;color:var(--gray);">Press <kbd style="padding:2px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:11px;">ESC</kbd> to close · <kbd style="padding:2px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:11px;">Enter</kbd> to apply</div>
       </div>
     </div>
   </section>
@@ -1018,68 +1096,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
     </div>
 
-    <div id="revenueReportWrap"><div class="card" style="margin-bottom:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-      <div>
-        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
-        <div style="font-size:12px;color:var(--gray);">0 months · 3 outlets</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
-        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">—</div>
-        <div style="font-size:12px;color:var(--green-dark);">● New: — · 0.0%</div>
-        <div style="font-size:12px;color:var(--gray);">● Old: — · 0.0%</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <div onclick="setRevOutlet('st-sunway')" style="flex: 1 1 0%; min-width: 80px; background: var(--purple-bg); border-radius: 8px; padding: 10px 12px; cursor: pointer; transition: box-shadow 0.15s; box-shadow: none;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">Sunway ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div><div onclick="setRevOutlet('st-cheras')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">Cheras ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div><div onclick="setRevOutlet('st-eco')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">ECO ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div>
-    </div>
-  </div><div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data data-t">
-        <thead><tr><th>Metric</th><th class="num">Jan</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Apr</th><th class="num">May</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Aug</th><th class="num">Sep</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Dec</th><th class="num">TOTAL</th></tr></thead>
-        <tbody>
-          <tr>
-            <td style="color:var(--green-dark);">New Cust</td>
-            <td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td><td class="num" style="color:var(--green-dark);">—</td>
-            <td class="num" style="color:var(--green-dark);font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
-          </tr>
-          <tr>
-            <td style="color:var(--gray);">Old Cust</td>
-            <td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td><td class="num" style="color:var(--gray);">—</td>
-            <td class="num" style="color:var(--gray);font-weight:700;">—<br><span style="font-size:11px;">(0.0%)</span></td>
-          </tr>
-          <tr>
-            <td style="color:var(--meta-color);">Ads New</td>
-            <td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td><td class="num" style="color:var(--meta-color);">—</td>
-            <td class="num" style="color:var(--meta-color);font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(—%)</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;">Total Sales</td>
-            <td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td><td class="num" style="font-weight:700;">—</td>
-            <td class="num" style="font-weight:700;">—</td>
-          </tr>
-        </tbody>
-      </table></div>
-    </div><div id="chart_rev_all" style="margin-top:14px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1245 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
-      <rect width="1245" height="260" fill="white"></rect>
-      <text x="623" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="#7132f5">All Outlets — Revenue</text><line x1="58" y1="218.0" x2="1231" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1231" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1231" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1231" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1231" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1231" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1231" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1231" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1231" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1231" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1231" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1231" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="106.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="204.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="302.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="400.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="497.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="595.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="693.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="791.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="888.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="986.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1084.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1182.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="556.5" y="20" width="11" height="11" fill="#7132f5" rx="2"></rect><text x="572.5" y="29" font-size="10" fill="#334155">Total Sales</text><rect x="644.5" y="20" width="11" height="11" fill="#1877F2" rx="2"></rect><text x="660.5" y="29" font-size="10" fill="#334155">Ads New Sales</text>
-    </svg></div></div><div id="chart_rev_all2" style="margin-top: 12px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1245 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
-      <rect width="1245" height="260" fill="white"></rect>
-      <text x="623" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="#7132f5">All Outlets — New vs Old Customer</text><line x1="58" y1="218.0" x2="1231" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1231" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1231" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1231" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1231" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1231" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1231" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1231" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1231" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1231" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1231" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1231" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="106.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="204.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="302.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="400.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="497.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="595.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="693.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="791.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="888.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="986.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1084.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1182.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="556.5" y="20" width="11" height="11" fill="#10B981" rx="2"></rect><text x="572.5" y="29" font-size="10" fill="#334155">New Customer</text><rect x="644.5" y="20" width="11" height="11" fill="#a78bfa" rx="2"></rect><text x="660.5" y="29" font-size="10" fill="#334155">Old Customer</text>
-    </svg></div></div></div>
+    <div id="revenueReportWrap"></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -1099,7 +1116,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -1109,7 +1126,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
           <select id="rv_entryOutlet" style="width:100%;font-size:13px;"><option value="">— select outlet —</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
@@ -1117,52 +1134,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
         <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-    <thead><tr>
-      <th>Month</th>
-      <th class="num">Total (RM)</th>
-      <th class="num">New (RM)</th>
-      <th class="num" style="color:var(--gray);">Old (auto)</th>
-    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="color:var(--gray);" data-old-for="2026-01">—</td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="color:var(--gray);" data-old-for="2026-02">—</td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="color:var(--gray);" data-old-for="2026-03">—</td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="color:var(--gray);" data-old-for="2026-04">—</td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="color:var(--gray);" data-old-for="2026-05">—</td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="color:var(--gray);" data-old-for="2026-06">—</td>
-    </tr></tbody><tfoot><tr class="total-row">
-    <td>TOTAL 2026</td>
-    <td class="num">—</td>
-    <td class="num">—</td>
-    <td class="num">—</td>
-  </tr></tfoot></table></div></div>
+        <div id="rv_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <select id="as_entryChannel" style="width:100%;font-size:13px;"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
@@ -1170,51 +1146,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
         <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-      <thead><tr>
-        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
-        <th class="num">Amount (RM)</th>
-      </tr></thead>
-      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-01" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-02" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-03" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-04" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-05" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-06" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr></tbody>
-      <tfoot><tr class="total-row">
-        <td>TOTAL 2026</td>
-        <td class="num">—</td>
-      </tr></tfoot>
-    </table></div></div>
+        <div id="as_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <select id="fee_entryName" style="width:100%;font-size:13px;"><option value="">— select fee name —</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
@@ -1225,7 +1161,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
         <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
+        <div id="fee_entryTable" class="entry-card-table"></div>
       </div>
 
     </div>
@@ -1477,7 +1413,7 @@ function loadState() {
 
 function saveState() {
   const toSave = { ...state };
-  delete toSave.listPage; delete toSave.listFilter; delete toSave.listSearch;
+  delete toSave.listPage; delete toSave.listSearch;
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch (e) { console.error(e); }
 }
 
@@ -2618,6 +2554,10 @@ function saveLead(base) {
   resetLeadForm();
   toast('Saved ' + (lead.name || lead.contact));
   showLastSaved('lead_lastSaved');
+  // Mobile: auto-close the fullscreen form and return to list
+  if (window.innerWidth < 768) {
+    setTimeout(() => closeContactForm(), 400);
+  }
 }
 
 function resetLeadForm() {
@@ -2666,13 +2606,13 @@ function editLead(id) {
   document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.lead-item').forEach(el => { if (el.getAttribute('onclick')?.includes(id)) el.classList.add('selected'); });
 
-  // Mobile: show form full screen
+  // Mobile: open as modal
   const isMobile = window.innerWidth < 768;
   if (isMobile) {
     document.getElementById('page-contact').classList.add('contact-form-open');
-    document.getElementById('contactBackBar').style.display = 'block';
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function openNewLead() {
@@ -2704,18 +2644,17 @@ function openNewLead() {
   // Deselect any list item
   document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
 
-  // Mobile: show form full screen
+  // Mobile: open as modal (CSS handles visibility via .contact-form-open class)
   const isMobile = window.innerWidth < 768;
   if (isMobile) {
     document.getElementById('page-contact').classList.add('contact-form-open');
-    document.getElementById('contactBackBar').style.display = 'block';
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function closeContactForm() {
   document.getElementById('page-contact').classList.remove('contact-form-open');
-  document.getElementById('contactBackBar').style.display = 'none';
   // On desktop, show empty state
   const isDesktop = window.innerWidth >= 768;
   if (isDesktop) {
@@ -2870,6 +2809,10 @@ function saveDetailLead() {
     document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
     document.querySelectorAll('.lead-item').forEach(el => { if (el.getAttribute('onclick')?.includes(currentEditingId)) el.classList.add('selected'); });
   }, 50);
+  // Mobile: auto-close the fullscreen form and return to list
+  if (window.innerWidth < 768) {
+    setTimeout(() => closeContactForm(), 400);
+  }
 }
 
 function closeDetailPanel() {
@@ -3256,6 +3199,7 @@ function renderQuickChips() {
 function setListQuickPeriod(key) {
   state.listPeriod = (key === 'all') ? '' : key;
   state.listPage = 1;
+  saveState();
   renderList();
 }
 
@@ -3328,18 +3272,27 @@ function renderList() {
       const isOverdue = l.status === 'booked' && l.apptDate && l.apptDate < today;
       const cls = isToday ? 'today-appt' : (isOverdue ? 'overdue' : '');
       const selected = l.id === currentEditingId ? ' selected' : '';
-      const isLead = l.status === 'lead';
-      const showAmt = l.status === 'done' && l.spend;
       const statusLabel = l.status === 'noshow' ? 'No show' : (l.status.charAt(0).toUpperCase() + l.status.slice(1));
-      // Fixed-position card template — all fields reserve slots even when empty (empty → subtle placeholder)
+      // Lead = compact card (contact + leadDate + tag only)
+      if (l.status === 'lead') {
+        return `<div class="lead-item lead-compact lc-lead${selected ? ' selected' : ''}" onclick="editLead('${l.id}')">
+          <div class="lc-compact-row">
+            <span class="lc-contact">${l.contact || '(no contact)'}</span>
+            <span class="lc-compact-date">Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
+            <span class="badge badge-lead">Lead</span>
+          </div>
+        </div>`;
+      }
+      // Booked / Done / No show — same standard layout
+      const showAmt = l.status === 'done' && l.spend;
       return `<div class="lead-item lc-${l.status} ${cls}${selected}" onclick="editLead('${l.id}')">
         <div class="lc-head">
-          <div class="lc-name${l.name ? '' : ' empty'}">${l.name || (isLead ? '' : '—')}</div>
+          <div class="lc-name">${l.name || l.contact || '(no data)'}</div>
           <span class="badge badge-${l.status}">${statusLabel}</span>
         </div>
         <div class="lc-body">
           <span class="lc-contact">${l.contact || ''}</span>
-          ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : '<span class="lc-amt empty"></span>'}
+          ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : ''}
         </div>
         <div class="lc-foot">
           <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
@@ -3366,9 +3319,9 @@ function renderList() {
     pag.innerHTML = html;
   }
 }
-function setListFilter(f) { state.listFilter = f; state.listPage = 1; renderList(); }
+function setListFilter(f) { state.listFilter = f; state.listPage = 1; saveState(); renderList(); }
 function setListPage(p) { state.listPage = p; renderList(); window.scrollTo(0, 0); }
-function setListChannelFilter(v) { state.listChannelId = v; state.listPage = 1; renderList(); }
+function setListChannelFilter(v) { state.listChannelId = v; state.listPage = 1; saveState(); renderList(); }
 
 // ---------- Search Modal ----------
 function openSearchModal() {
@@ -3430,7 +3383,9 @@ document.getElementById('searchInputDesktop').addEventListener('input', e => onS
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     const bd = document.getElementById('searchModalBackdrop');
-    if (bd && bd.classList.contains('open')) closeSearchModal();
+    if (bd && bd.classList.contains('open')) { closeSearchModal(); return; }
+    const pg = document.getElementById('page-contact');
+    if (pg && pg.classList.contains('contact-form-open')) { closeContactForm(); }
   }
 });
 // Enter also closes (applies)
