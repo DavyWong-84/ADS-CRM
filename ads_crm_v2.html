@@ -752,26 +752,29 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     z-index: 89;
     animation: fadein 0.15s ease;
   }
-  /* Modal card: classic centering (inset 0 + margin auto), auto-fits content */
+  /* Modal card: centered via translate, hugs content height */
   .contact-form-open .contact-form-panel {
     position: fixed !important;
-    top: 0; left: 0; right: 0; bottom: 0;
-    margin: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: calc(100% - 40px);
     max-width: 480px;
     max-height: calc(100vh - 40px);
-    height: fit-content;
+    height: auto !important;
+    min-height: 0 !important;
     background: var(--white);
     border-radius: 16px;
     z-index: 90;
     overflow-y: auto;
     padding: 0;
-    animation: modalIn 0.2s ease;
+    display: block !important;
     box-shadow: 0 10px 40px rgba(0,0,0,0.2);
   }
-  /* Form wrap takes just the space it needs */
+  /* Form wrap: no flex, auto height */
   .contact-form-open #contactFormWrap {
-    display: block;
+    display: block !important;
+    height: auto !important;
   }
   .contact-form-open #contactBackBar {
     display: flex !important;
@@ -1043,7 +1046,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.76</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.77</span>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <!-- Global search (all devices) -->
@@ -1141,13 +1144,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
+        <div class="contact-form-empty" id="contactFormEmpty">
           <div style="text-align:center;color:var(--gray);padding:40px 20px;">
             <div style="font-size:32px;margin-bottom:8px;">👤</div>
             <div style="font-size:14px;">Select a lead to edit<br>or click <strong>+ New Lead</strong></div>
           </div>
         </div>
-        <div id="contactFormWrap" style="display: block;">
+        <div id="contactFormWrap" style="display:none;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -1202,7 +1205,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label">Select date</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate" value="">
+                    <input type="hidden" id="f_apptDate">
                   </div>
                 </div>
               </div>
