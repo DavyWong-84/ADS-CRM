@@ -294,7 +294,7 @@ table.data th { text-align: left; padding: 10px 12px; color: var(--purple-deep);
 table.data td { padding: 11px 12px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
 table.data th:not(:last-child), table.data td:not(:last-child) { border-right: 1px solid var(--border-light); }
 /* First column sticky + thicker right border */
-table.data thead th:first-child, table.data tbody td:first-child { position: sticky; left: 0; z-index: 2; background: var(--white); border-right: 2px solid var(--border) !important; min-width: 140px; }
+table.data thead th:first-child, table.data tbody td:first-child { position: sticky; left: 0; z-index: 2; background: var(--white); border-right: 2px solid var(--border) !important; white-space: nowrap; }
 table.data thead tr:not(:first-child) th:first-child { background: var(--purple-bg); }
 table.data thead tr:first-child th:first-child { background: var(--purple-bg); }
 table.data tr.total-row td:first-child { background: var(--purple-bg); z-index: 3; }
@@ -307,6 +307,11 @@ table.data th.num { text-align: center; }
 table.data .total-row { background: var(--purple-bg); font-weight: 600; }
 table.data .total-row td { border-bottom: none; color: var(--purple-deep); }
 table.data tr.subheader td { background: var(--purple-bg); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--purple-deep); font-weight: 700; padding: 0; border-bottom: none; }
+/* Transposed tables: no sticky first col, compact */
+table.data.data-t thead th:first-child, table.data.data-t tbody td:first-child, table.data.data-t tfoot td:first-child { position: static; border-right: 2px solid var(--border) !important; }
+table.data.data-t thead th:first-child { background: var(--purple-bg); }
+table.data.data-t tbody td:first-child { background: var(--white); }
+table.data.data-t tr.total-row td:first-child { background: var(--purple-bg); }
 table.data tr.subheader td:first-child { position: sticky; left: 0; z-index: 2; background: var(--purple-bg); padding: 8px 12px; }
 table.data tr.subheader td:not(:first-child) { padding: 0; border-right: none !important; }
 table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 0; }
@@ -387,6 +392,44 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* Week view */
 .week-table th { font-size: 11px; }
 
+/* Contact page layout */
+.contact-layout { display: flex; flex-direction: column; }
+
+/* Dashboard KPI cards */
+.dash-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.dash-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.dash-kpi { background: var(--surface); border-radius: 10px; padding: 12px 14px; transition: box-shadow 0.15s; border: 1.5px solid var(--border); }
+.dash-kpi:hover { box-shadow: 0 2px 8px rgba(113,50,245,0.1); }
+.dash-kpi-label { font-size: 11px; color: var(--gray); }
+.dash-kpi-value { font-size: 20px; font-weight: 700; margin-top: 3px; color: var(--black); }
+.dash-kpi-sub { font-size: 11px; color: var(--gray); margin-top: 2px; }
+.dash-funnel, .dash-chart { background: var(--surface); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; transition: box-shadow 0.15s; }
+.dash-funnel:hover, .dash-chart:hover { box-shadow: 0 2px 8px rgba(113,50,245,0.1); }
+.dash-section-label { font-size: 12px; font-weight: 600; color: var(--gray); margin-bottom: 10px; }
+@media (max-width: 767px) {
+  .dash-row-2 { grid-template-columns: 1fr 1fr; }
+  .dash-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .dash-kpi { padding: 10px; }
+  .dash-kpi-value { font-size: 16px; }
+  .dash-kpi-sub { font-size: 11px; }
+}
+.contact-form-panel { display: none; }
+#contactFab { display: block !important; }
+@media (min-width: 768px) {
+  .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: start; }
+  .contact-list-panel { border-right: 1px solid var(--border); padding-right: 20px; }
+  .contact-form-panel { display: block !important; padding-left: 20px; position: sticky; top: 70px; max-height: calc(100vh - 80px); overflow-y: auto; }
+  .contact-form-panel::-webkit-scrollbar { width: 4px; }
+  .contact-form-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .contact-form-panel .form-grid { display: block; max-width: 100%; }
+  #contactFab { display: none !important; }
+  #contactBackBar { display: none !important; }
+}
+/* Mobile: form open = full screen */
+.contact-form-open .contact-list-panel { display: none !important; }
+.contact-form-open .contact-form-panel { display: block !important; }
+.contact-form-open #contactFab { display: none !important; }
+
 /* Responsive */
 @media (min-width: 768px) {
   .bottom-nav { display: none; }
@@ -397,13 +440,6 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .nav-item .nav-icon { font-size: 16px; display: inline-flex; }
   .nav-divider { height: 1px; background: var(--border); margin: 10px 4px; }
   .lead-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
-  /* Master-detail layout for list page */
-  .list-master-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: start; }
-  .list-master { border-right: 1px solid var(--border); padding-right: 20px; }
-  .list-detail { padding-left: 20px; position: sticky; top: 70px; max-height: calc(100vh - 80px); overflow-y: auto; }
-  .list-detail::-webkit-scrollbar { width: 4px; }
-  .list-detail::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-  .list-detail-empty { display: flex; align-items: center; justify-content: center; min-height: 300px; color: var(--gray); font-size: 14px; }
   .lead-item.selected { border-color: var(--purple); background: var(--purple-bg); }
 @media (max-width: 767px) {
   .list-master-detail { display: block; }
@@ -423,6 +459,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .col-hide-mobile { display: none !important; }
 }
 @media (max-width: 767px) {
+  .data td, .data th { padding: 8px 3px; font-size: 12px; }
   .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hero-value { font-size: 32px; }
@@ -569,7 +606,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v1.233</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v1.246</span>
   </div>
   <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
     <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -582,9 +619,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 </header>
 
 <nav class="nav" id="navDesktop">
-  <button class="nav-item" data-page="lead"><span class="nav-icon">➕</span><span>New Lead</span></button>
-  <button class="nav-item" data-page="list"><span class="nav-icon">📋</span><span>List</span></button>
-  <button class="nav-item" data-page="summary"><span class="nav-icon">📊</span><span>Summary</span></button>
+  <button class="nav-item" data-page="contact"><span class="nav-icon">👤</span><span>Contact</span></button>
+  <button class="nav-item" data-page="summary"><span class="nav-icon">📊</span><span>Dashboard</span></button>
   <button class="nav-item" data-page="store"><span class="nav-icon">🏢</span><span>Appt</span></button>
   <button class="nav-item" data-page="adsspend"><span class="nav-icon">💰</span><span>Ads Spend</span></button>
   <button class="nav-item" data-page="revenue"><span class="nav-icon">📈</span><span>Revenue Outlet</span></button>
@@ -594,170 +630,368 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 </nav>
 
 <main class="main">
-  <!-- LEAD PAGE -->
-  <section class="page" id="page-lead">
-    <h1 class="page-title">New Lead</h1>
-    <p class="page-sub">Step-by-step entry. Start with phone + channel + lead date.</p>
+  <!-- CONTACT PAGE (merged Lead + List) -->
+  <section class="page" id="page-contact">
+    <!-- Mobile: back button (hidden by default, shown when form is open) -->
+    <div id="contactBackBar" style="display:none;margin-bottom:8px;">
+      <button type="button" onclick="closeContactForm()" style="font-size:13px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--border);border-radius:20px;padding:5px 14px;cursor:pointer;font-weight:600;">← Contact</button>
+    </div>
 
-    <div id="leadStepper"></div>
-    <form id="leadForm" class="form-grid">
-
-      <div class="step-card step-1">
-        <div class="step-header">
-          <span class="step-num">1</span>
-          <div>
-            <div class="step-title">Lead Info</div>
-            <div class="step-sub">Required · fill when customer first contacts you</div>
+    <div class="contact-layout">
+      <!-- LEFT: List panel -->
+      <div class="contact-list-panel" id="contactListPanel">
+        <div class="list-sticky-header">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <h1 class="page-title" style="margin:0;">Contact</h1>
+            <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
           </div>
-        </div>
-        <div class="step-body">
-          <div>
-            <label>Contact <span style="color:var(--red)">*</span></label>
-            <input type="tel" id="f_contact" placeholder="e.g. 60172472207" inputmode="tel" autocomplete="off">
-          </div>
-          <div class="form-row" style="margin-top:12px;">
-            <div>
-              <label>Channel <span style="color:var(--red)">*</span></label>
-              <select id="f_channel"><option value="">— select channel —</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
+          <div class="list-toolbar">
+            <div class="list-search">
+              <input type="text" id="searchInput" placeholder="Search name, contact, remark...">
             </div>
-            <div>
-              <label>Lead Date <span style="color:var(--red)">*</span></label>
-              <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                <span id="f_leadDate_label">2026-04-18</span>
+            <div class="period-select">
+              <button type="button" class="date-btn cf-select" id="listPeriodFilter_btn" onclick="openMonthPicker('listPeriodFilter')" style="min-width:100px;">
+                <span id="listPeriodFilter_label">Apr 2026</span>
                 <span class="date-btn-icon">📅</span>
               </button>
-              <input type="hidden" id="f_leadDate" value="2026-04-18">
+              <input type="hidden" id="listPeriodFilter" value="2026-04">
+              <select id="listChannelFilter" onchange="setListChannelFilter(this.value)"><option value="">All channels</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
             </div>
           </div>
+          <div class="filter-tabs" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">240</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">192</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">7</span></button><button class="filter-tab " onclick="setListFilter('pending')">Pending<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">39</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">2</span></button></div>
         </div>
+        <div class="lead-list" id="leadList"><div class="lead-item today-appt" onclick="editLead('L-1853')">
+          <div class="lead-row-1">
+            <div class="lead-name">Ong Seok Foon</div>
+            <span class="badge badge-booked">booked</span>
+          </div>
+          <div class="lead-row-2">
+            <span class="lead-contact">60162025434</span>
+            <span></span>
+            <span>→ 2026-04-19</span>
+            
+          </div>
+        </div><div class="lead-item today-appt" onclick="editLead('L-1852')">
+          <div class="lead-row-1">
+            <div class="lead-name">HEW GUAN YUAN</div>
+            <span class="badge badge-booked">booked</span>
+          </div>
+          <div class="lead-row-2">
+            <span class="lead-contact">60162520853</span>
+            <span></span>
+            <span>→ 2026-04-19</span>
+            
+          </div>
+        </div><div class="lead-item overdue" onclick="editLead('L-1851')">
+          <div class="lead-row-1">
+            <div class="lead-name">Sarvaisan</div>
+            <span class="badge badge-booked">booked</span>
+          </div>
+          <div class="lead-row-2">
+            <span class="lead-contact">60125016070</span>
+            <span></span>
+            <span>→ 2026-04-17</span>
+            
+          </div>
+        </div><div class="lead-item overdue" onclick="editLead('L-1351')">
+          <div class="lead-row-1">
+            <div class="lead-name">MS WONG</div>
+            <span class="badge badge-booked">booked</span>
+          </div>
+          <div class="lead-row-2">
+            <span class="lead-contact">601126053116</span>
+            <span></span>
+            <span>→ 2026-04-18</span>
+            
+          </div>
+        </div><div class="lead-item overdue" onclick="editLead('L-1352')">
+          <div class="lead-row-1">
+            <div class="lead-name">Chia Chee shiang</div>
+            <span class="badge badge-booked">booked</span>
+          </div>
+          <div class="lead-row-2">
+            <span class="lead-contact">60169028856</span>
+            <span></span>
+            <span>→ 2026-04-18</span>
+            
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1890')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60134892048</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1891')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">601111714314</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1892')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60123016855</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1893')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60122393833</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1894')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60129766290</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1895')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">601123456820</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1896')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60164236148</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1897')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60176771968</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1898')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60169951390</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1899')">
+          <div class="lead-row-1">
+            <div class="lead-name">vayne</div>
+            <span class="badge badge-booked">booked</span>
+          </div>
+          <div class="lead-row-2">
+            <span class="lead-contact">60164286497</span>
+            <span></span>
+            <span>→ 2026-04-21</span>
+            
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1900')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60173303737</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1901')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60169735054</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1350')">
+          <div class="lead-row-1">
+            <div class="lead-name">PANG CHEE ENH</div>
+            <span class="badge badge-done">done</span>
+          </div>
+          <div class="lead-row-2">
+            <span class="lead-contact">60187624906</span>
+            <span></span>
+            <span>→ 2026-04-16</span>
+            <span style="color:var(--green-dark);font-weight:500;">RM 139.00</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1490')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60123337975</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1491')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60125101685</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1492')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60166187428</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1495')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60192628683</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1496')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60126571225</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1497')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60123310408</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1883')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">601162590927</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1884')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60173007277</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1885')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60133792691</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1888')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60199911178</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1889')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">601163631088</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div><div class="lead-item " onclick="editLead('L-1484')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">60126996178</div>
+            <span class="badge badge-lead">lead</span>
+          </div>
+        </div></div>
+        <div class="pagination" id="listPagination"><button disabled="" onclick="setListPage(0)">‹</button><button class="active" onclick="setListPage(1)">1</button><button class="" onclick="setListPage(2)">2</button><button class="" onclick="setListPage(3)">3</button><button class="" onclick="setListPage(4)">4</button><button class="" onclick="setListPage(5)">5</button><button class="" onclick="setListPage(6)">6</button><button class="" onclick="setListPage(7)">7</button><button onclick="setListPage(2)">›</button></div>
       </div>
 
-      <div class="step-card step-2">
-        <div class="step-header">
-          <span class="step-num">2</span>
-          <div>
-            <div class="step-title">Booking</div>
-            <div class="step-sub">Fill when customer books appointment</div>
+      <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
+      <div class="contact-form-panel" id="contactFormPanel">
+        <div class="contact-form-empty" id="contactFormEmpty">
+          <div style="text-align:center;color:var(--gray);padding:40px 20px;">
+            <div style="font-size:32px;margin-bottom:8px;">👤</div>
+            <div style="font-size:14px;">Select a lead to edit<br>or click <strong>+ New Lead</strong></div>
           </div>
         </div>
-        <div class="step-body">
-          <div class="form-row">
-            <div>
-              <label>Name</label>
-              <input type="text" id="f_name" placeholder="Customer name">
+        <div id="contactFormWrap" style="display:none;">
+          <div id="leadStepper"></div>
+          <form id="leadForm" class="form-grid">
+            <div class="step-card step-1">
+              <div class="step-header">
+                <span class="step-num">1</span>
+                <div>
+                  <div class="step-title">Lead Info</div>
+                  <div class="step-sub">Required · fill when customer first contacts you</div>
+                </div>
+              </div>
+              <div class="step-body">
+                <div>
+                  <label>Contact <span style="color:var(--red)">*</span></label>
+                  <input type="tel" id="f_contact" placeholder="e.g. 60172472207" inputmode="tel" autocomplete="off">
+                </div>
+                <div class="form-row" style="margin-top:12px;">
+                  <div>
+                    <label>Channel <span style="color:var(--red)">*</span></label>
+                    <select id="f_channel"><option value="">— select channel —</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
+                  </div>
+                  <div>
+                    <label>Lead Date <span style="color:var(--red)">*</span></label>
+                    <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
+                      <span id="f_leadDate_label">2026-04-19</span>
+                      <span class="date-btn-icon">📅</span>
+                    </button>
+                    <input type="hidden" id="f_leadDate" value="2026-04-19">
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <label>Appt Date</label>
-              <button type="button" class="date-btn empty" id="f_apptDate_btn" onclick="openDatePicker('f_apptDate')">
-                <span id="f_apptDate_label">Select date</span>
-                <span class="date-btn-icon">📅</span>
-              </button>
-              <input type="hidden" id="f_apptDate">
-            </div>
-          </div>
-          <div style="margin-top:12px;">
-            <label>Location</label>
-            <select id="f_location"><option value="">— select store —</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
-          </div>
-        </div>
-      </div>
 
-      <!-- After Visit section — shown only when editing an existing lead -->
-      <div class="step-card step-3" id="afterVisitSection" style="display:none;">
-        <div class="step-header">
-          <span class="step-num">3</span>
-          <div>
-            <div class="step-title">After Visit</div>
-            <div class="step-sub">Fill after appointment visit</div>
-          </div>
-        </div>
-        <div class="step-body">
-          <div class="form-row">
-            <div>
-              <label>Show Up Status</label>
-              <select id="f_showUp">
-                <option value="">— select —</option>
-                <option value="Show up">Show up</option>
-                <option value="No Show up">No Show up</option>
-              </select>
+            <div class="step-card step-2">
+              <div class="step-header">
+                <span class="step-num">2</span>
+                <div>
+                  <div class="step-title">Booking</div>
+                  <div class="step-sub">Fill when customer books appointment</div>
+                </div>
+              </div>
+              <div class="step-body">
+                <div class="form-row">
+                  <div>
+                    <label>Name</label>
+                    <input type="text" id="f_name" placeholder="Customer name">
+                  </div>
+                  <div>
+                    <label>Appt Date</label>
+                    <button type="button" class="date-btn empty" id="f_apptDate_btn" onclick="openDatePicker('f_apptDate')">
+                      <span id="f_apptDate_label">Select date</span>
+                      <span class="date-btn-icon">📅</span>
+                    </button>
+                    <input type="hidden" id="f_apptDate">
+                  </div>
+                </div>
+                <div style="margin-top:12px;">
+                  <label>Location</label>
+                  <select id="f_location"><option value="">— select store —</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
+                </div>
+              </div>
             </div>
-            <div>
-              <label>Race</label>
-              <select id="f_race">
-                <option value="">— select —</option>
-                <option value="Chinese">Chinese</option>
-                <option value="Malay">Malay</option>
-                <option value="Indian">Indian</option>
-                <option value="Foreigner">Foreigner</option>
-                <option value="Others">Others</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row" style="margin-top:12px;">
-            <div>
-              <label>Spend (RM)</label>
-              <input type="number" id="f_spend" placeholder="0" step="0.01" min="0">
-            </div>
-            <div>
-              <label>Remark</label>
-              <input type="text" id="f_remark" placeholder="Notes...">
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div style="grid-column:1/-1;margin-top:4px;">
-        <button type="submit" class="btn btn-primary btn-full" style="font-size:15px;padding:14px;">Save Lead</button>
+            <div class="step-card step-3" id="afterVisitSection" style="display:none;">
+              <div class="step-header">
+                <span class="step-num">3</span>
+                <div>
+                  <div class="step-title">After Visit</div>
+                  <div class="step-sub">Fill after appointment visit</div>
+                </div>
+              </div>
+              <div class="step-body">
+                <div class="form-row">
+                  <div>
+                    <label>Show Up Status</label>
+                    <select id="f_showUp">
+                      <option value="">— select —</option>
+                      <option value="Show up">Show up</option>
+                      <option value="No Show up">No Show up</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label>Race</label>
+                    <select id="f_race">
+                      <option value="">— select —</option>
+                      <option value="Chinese">Chinese</option>
+                      <option value="Malay">Malay</option>
+                      <option value="Indian">Indian</option>
+                      <option value="Foreigner">Foreigner</option>
+                      <option value="Others">Others</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-row" style="margin-top:12px;">
+                  <div>
+                    <label>Spend (RM)</label>
+                    <input type="number" id="f_spend" placeholder="0" step="0.01" min="0">
+                  </div>
+                  <div>
+                    <label>Remark</label>
+                    <input type="text" id="f_remark" placeholder="Notes...">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="grid-column:1/-1;margin-top:4px;">
+              <button type="submit" class="btn btn-primary btn-full" style="font-size:15px;padding:14px;">Save Lead</button>
+            </div>
+            <div id="lead_lastSaved" class="last-saved-time"></div>
+          </form>
+        </div>
       </div>
-      <div id="lead_lastSaved" class="last-saved-time"></div>
-    </form>
+    </div>
+
+    <!-- Mobile FAB -->
+    <button type="button" id="contactFab" onclick="openNewLead()" style="display:none;position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--purple);color:#fff;border:none;font-size:28px;font-weight:400;box-shadow:0 3px 12px rgba(113,50,245,0.35);cursor:pointer;z-index:20;line-height:1;">+</button>
   </section>
 
-  <!-- LIST PAGE -->
-  <section class="page" id="page-list">
-    <h1 class="page-title">Lead List</h1>
-
-    <div class="list-sticky-header">
-    <div class="list-toolbar">
-      <div class="list-search">
-        <input type="text" id="searchInput" placeholder="Search name, contact, remark...">
-      </div>
-      <div class="period-select">
-        <button type="button" class="date-btn cf-select" id="listPeriodFilter_btn" onclick="openMonthPicker('listPeriodFilter')" style="min-width:100px;">
-          <span id="listPeriodFilter_label">All time</span>
-          <span class="date-btn-icon">📅</span>
-        </button>
-        <input type="hidden" id="listPeriodFilter" value="">
-        <select id="listChannelFilter" onchange="setListChannelFilter(this.value)">
-          <option value="">All channels</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="filter-tabs" id="listFilters"></div>
-    </div>
-    <div class="list-master-detail">
-      <div class="list-master">
-        <div class="lead-list" id="leadList"></div>
-        <div class="pagination" id="listPagination"></div>
-      </div>
-      <div class="list-detail" id="listDetailPanel" style="display:none;">
-        <div class="list-detail-empty">Click a lead to edit</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SUMMARY PAGE -->
+  <!-- DASHBOARD PAGE (was Summary) -->
   <section class="page" id="page-summary">
-    <h1 class="page-title">Summary</h1>
-    <p class="page-sub">Report &amp; analytics</p>
+    <h1 class="page-title">Dashboard</h1>
 
     <div class="sticky-filter">
       <div class="compact-filter">
         <div class="toggle-group">
           <button class="toggle active" data-mode="single" onclick="setSummaryMode('single')">Month</button>
           <button class="toggle" data-mode="multi" onclick="setSummaryMode('multi')">Year</button>
-          <button class="toggle" data-mode="custom" onclick="setSummaryMode('custom')">Custom</button>
         </div>
         <select id="summaryYear" class="cf-select" style="display:none"><option value="2025">2025</option><option value="2026" selected="">2026</option></select>
         <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
@@ -765,17 +999,6 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span class="date-btn-icon">📅</span>
         </button>
         <input type="hidden" id="summaryMonth" value="2026-04">
-        <button type="button" class="date-btn cf-select" id="summaryFromMonth_btn" style="display:none;" onclick="openMonthPicker('summaryFromMonth')">
-          <span id="summaryFromMonth_label">From</span>
-          <span class="date-btn-icon">📅</span>
-        </button>
-        <input type="hidden" id="summaryFromMonth">
-        <span id="summaryCustomArrow" style="display:none;color:var(--gray);font-size:13px;">→</span>
-        <button type="button" class="date-btn cf-select" id="summaryToMonth_btn" style="display:none;" onclick="openMonthPicker('summaryToMonth')">
-          <span id="summaryToMonth_label">To</span>
-          <span class="date-btn-icon">📅</span>
-        </button>
-        <input type="hidden" id="summaryToMonth">
       </div>
     </div>
 
@@ -1255,8 +1478,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 </main>
 
 <nav class="bottom-nav">
-  <button class="bottom-nav-item" data-page="lead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Lead</span></button>
-  <button class="bottom-nav-item" data-page="list"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><circle cx="4" cy="6" r="1"></circle><circle cx="4" cy="12" r="1"></circle><circle cx="4" cy="18" r="1"></circle></svg><span>List</span></button>
+  <button class="bottom-nav-item" data-page="contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Contact</span></button>
   <button class="bottom-nav-item" data-page="summary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span>Summary</span></button>
   <button class="bottom-nav-item" data-page="store"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg><span>Appt</span></button>
   <button class="bottom-nav-item" data-page="revenue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg><span>Revenue</span></button>
@@ -1391,6 +1613,8 @@ function todayStr() { return new Date().toISOString().split('T')[0]; }
 
 // ---------- Navigation ----------
 function nav(page) {
+  // Map old page names to contact
+  if (page === 'lead' || page === 'list') page = 'contact';
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const pageEl = document.getElementById('page-' + page);
   if (!pageEl) return;
@@ -1400,13 +1624,15 @@ function nav(page) {
   });
   window.scrollTo(0, 0);
   renderTopbarToday();
-  // When navigating to lead page fresh (not via editLead), hide After Visit
-  if (page === 'lead' && !window._editingNav) {
-    const avs = document.getElementById('afterVisitSection');
-    if (avs && !currentEditingId) avs.style.display = 'none';
+  if (page === 'contact') {
+    // When navigating to contact fresh (not via editLead), hide After Visit
+    if (!window._editingNav) {
+      const avs = document.getElementById('afterVisitSection');
+      if (avs && !currentEditingId) avs.style.display = 'none';
+    }
+    renderList();
   }
   window._editingNav = false;
-  if (page === 'list') renderList();
   if (page === 'summary') renderSummary();
   if (page === 'store') renderStore();
   if (page === 'entry') renderEntry();
@@ -1824,15 +2050,14 @@ document.addEventListener('click', function(e) {
 // Build responsive table: desktop = metric rows × month cols
 // mobile = month rows × metric cols (transposed)
 function buildResponsiveTable(title, h4Style, metrics, mArr, fmt12) {
-  // metrics = [{label, values, bold, formatter}]
-  // mArr = array of month strings
+  // metrics = [{label, values, bold, formatter, totalValue?}]
+  // totalValue: if provided, use this instead of sum for TOTAL column
   const isMobile = window.innerWidth < 767;
 
   if (!isMobile) {
-    // Desktop: original layout — metric in rows, months in cols
     const thd = `<thead><tr><th>Metric</th>${mArr.map(m => `<th class="num">${fmt12(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>`;
-    const rows = metrics.map(({ label, values, bold, formatter }) => {
-      const total = values.reduce((s, v) => s + (v || 0), 0);
+    const rows = metrics.map(({ label, values, bold, formatter, totalValue }) => {
+      const total = totalValue !== undefined ? totalValue : values.reduce((s, v) => s + (v || 0), 0);
       const fw = bold ? 'font-weight:700;' : '';
       return `<tr>
         <td style="${fw}">${label}</td>
@@ -1842,8 +2067,6 @@ function buildResponsiveTable(title, h4Style, metrics, mArr, fmt12) {
     }).join('');
     return `<h4 style="${h4Style}">${title}</h4><div class="table-wrap"><table class="data">${thd}<tbody>${rows}</tbody></table></div>`;
   } else {
-    // Mobile: transposed — months in rows, metrics in cols
-    // Only show months that have at least one non-zero value
     const activeMonths = mArr.filter((m, mi) => metrics.some(met => (met.values[mi] || 0) !== 0));
     const thd = `<thead><tr><th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>${metrics.map(met => `<th class="num"${met.bold?' style="font-weight:700;"':''}>${met.label}</th>`).join('')}</tr></thead>`;
     const rows = activeMonths.map(m => {
@@ -1853,11 +2076,10 @@ function buildResponsiveTable(title, h4Style, metrics, mArr, fmt12) {
         ${metrics.map(met => `<td class="num"${met.bold?' style="font-weight:700;"':''}>${met.formatter(met.values[mi])}</td>`).join('')}
       </tr>`;
     }).join('');
-    // Total row
     const totalRow = `<tr class="total-row">
       <td>TOTAL</td>
       ${metrics.map(met => {
-        const total = met.values.reduce((s, v) => s + (v || 0), 0);
+        const total = met.totalValue !== undefined ? met.totalValue : met.values.reduce((s, v) => s + (v || 0), 0);
         return `<td class="num">${met.formatter(total)}</td>`;
       }).join('')}
     </tr>`;
@@ -2059,31 +2281,47 @@ function renderFunnelTab() {
     document.getElementById('cpsTableWrap').innerHTML = noData;
   } else if (tab === 'all') {
     const fullData = mArr.map(m => calcMonthMetrics(m));
+    const tCost = fullData.reduce((s,m) => s+m.totalAdsCost, 0);
+    const tMetaCost = fullData.reduce((s,m) => s+m.costByPlatform.meta, 0);
+    const tGoogleCost = fullData.reduce((s,m) => s+m.costByPlatform.google, 0);
+    const tLeads = fullData.reduce((s,m) => s+m.totalLeads, 0);
+    const tMetaLeads = fullData.reduce((s,m) => s+m.leadsByPlatformByLead.meta, 0);
+    const tGoogleLeads = fullData.reduce((s,m) => s+m.leadsByPlatformByLead.google, 0);
+    const tAppts = fullData.reduce((s,m) => s+m.appts, 0);
+    const tMetaAppts = fullData.reduce((s,m) => s+(m.apptsByPlatform?.meta||0), 0);
+    const tGoogleAppts = fullData.reduce((s,m) => s+(m.apptsByPlatform?.google||0), 0);
+    const tShows = fullData.reduce((s,m) => s+m.showUps, 0);
+    const tMetaShows = fullData.reduce((s,m) => s+(m.showsByPlatform?.meta||0), 0);
+    const tGoogleShows = fullData.reduce((s,m) => s+(m.showsByPlatform?.google||0), 0);
     document.getElementById('cplTableWrap').innerHTML = buildResponsiveTable('CPL · Cost per Lead', cplH4,
       [
-        { label:'Meta CPL',   values:fullData.map(m => m.leadsByPlatformByLead.meta>0   ? m.costByPlatform.meta/m.leadsByPlatformByLead.meta     : null), formatter:fmtAvg },
-        { label:'Google CPL', values:fullData.map(m => m.leadsByPlatformByLead.google>0 ? m.costByPlatform.google/m.leadsByPlatformByLead.google   : null), formatter:fmtAvg },
-        { label:'Total CPL',  values:fullData.map(m => m.totalLeads>0 ? m.totalAdsCost/m.totalLeads : null), formatter:fmtAvg, bold:true },
+        { label:'Meta CPL',   values:fullData.map(m => m.leadsByPlatformByLead.meta>0   ? m.costByPlatform.meta/m.leadsByPlatformByLead.meta     : null), formatter:fmtAvg, totalValue: tMetaLeads>0 ? tMetaCost/tMetaLeads : null },
+        { label:'Google CPL', values:fullData.map(m => m.leadsByPlatformByLead.google>0 ? m.costByPlatform.google/m.leadsByPlatformByLead.google   : null), formatter:fmtAvg, totalValue: tGoogleLeads>0 ? tGoogleCost/tGoogleLeads : null },
+        { label:'Total CPL',  values:fullData.map(m => m.totalLeads>0 ? m.totalAdsCost/m.totalLeads : null), formatter:fmtAvg, bold:true, totalValue: tLeads>0 ? tCost/tLeads : null },
       ], mArr, fmtMS);
     document.getElementById('cpaTableWrap').innerHTML = buildResponsiveTable('CPA · Cost per Appt', cplH4,
       [
-        { label:'Meta CPA',   values:fullData.map(m => m.apptsByPlatform.meta>0   ? m.costByPlatform.meta/m.apptsByPlatform.meta     : null), formatter:fmtAvg },
-        { label:'Google CPA', values:fullData.map(m => m.apptsByPlatform.google>0 ? m.costByPlatform.google/m.apptsByPlatform.google   : null), formatter:fmtAvg },
-        { label:'Total CPA',  values:fullData.map(m => m.appts>0 ? m.totalAdsCost/m.appts : null), formatter:fmtAvg, bold:true },
+        { label:'Meta CPA',   values:fullData.map(m => m.apptsByPlatform.meta>0   ? m.costByPlatform.meta/m.apptsByPlatform.meta     : null), formatter:fmtAvg, totalValue: tMetaAppts>0 ? tMetaCost/tMetaAppts : null },
+        { label:'Google CPA', values:fullData.map(m => m.apptsByPlatform.google>0 ? m.costByPlatform.google/m.apptsByPlatform.google   : null), formatter:fmtAvg, totalValue: tGoogleAppts>0 ? tGoogleCost/tGoogleAppts : null },
+        { label:'Total CPA',  values:fullData.map(m => m.appts>0 ? m.totalAdsCost/m.appts : null), formatter:fmtAvg, bold:true, totalValue: tAppts>0 ? tCost/tAppts : null },
       ], mArr, fmtMS);
     document.getElementById('cpsTableWrap').innerHTML = buildResponsiveTable('CPS · Cost per Show-up', cplH4,
       [
-        { label:'Meta CPS',   values:fullData.map(m => m.showsByPlatform&&m.showsByPlatform.meta>0   ? m.costByPlatform.meta/m.showsByPlatform.meta     : null), formatter:fmtAvg },
-        { label:'Google CPS', values:fullData.map(m => m.showsByPlatform&&m.showsByPlatform.google>0 ? m.costByPlatform.google/m.showsByPlatform.google   : null), formatter:fmtAvg },
-        { label:'Total CPS',  values:fullData.map(m => m.showUps>0 ? m.totalAdsCost/m.showUps : null), formatter:fmtAvg, bold:true },
+        { label:'Meta CPS',   values:fullData.map(m => m.showsByPlatform&&m.showsByPlatform.meta>0   ? m.costByPlatform.meta/m.showsByPlatform.meta     : null), formatter:fmtAvg, totalValue: tMetaShows>0 ? tMetaCost/tMetaShows : null },
+        { label:'Google CPS', values:fullData.map(m => m.showsByPlatform&&m.showsByPlatform.google>0 ? m.costByPlatform.google/m.showsByPlatform.google   : null), formatter:fmtAvg, totalValue: tGoogleShows>0 ? tGoogleCost/tGoogleShows : null },
+        { label:'Total CPS',  values:fullData.map(m => m.showUps>0 ? m.totalAdsCost/m.showUps : null), formatter:fmtAvg, bold:true, totalValue: tShows>0 ? tCost/tShows : null },
       ], mArr, fmtMS);
   } else {
+    const sCost = monthData.reduce((s,d) => s+d.cost, 0);
+    const sLeads = monthData.reduce((s,d) => s+d.totalLeads, 0);
+    const sAppts = monthData.reduce((s,d) => s+d.appts, 0);
+    const sShows = monthData.reduce((s,d) => s+d.showUps, 0);
     document.getElementById('cplTableWrap').innerHTML = buildResponsiveTable('CPL · Cost per Lead', cplH4,
-      [{ label:'CPL', values:monthData.map(d => d.totalLeads>0&&d.cost>0 ? d.cost/d.totalLeads : null), formatter:fmtAvg }], mArr, fmtMS);
+      [{ label:'CPL', values:monthData.map(d => d.totalLeads>0&&d.cost>0 ? d.cost/d.totalLeads : null), formatter:fmtAvg, totalValue: sLeads>0&&sCost>0 ? sCost/sLeads : null }], mArr, fmtMS);
     document.getElementById('cpaTableWrap').innerHTML = buildResponsiveTable('CPA · Cost per Appt', cplH4,
-      [{ label:'CPA', values:monthData.map(d => d.appts>0&&d.cost>0 ? d.cost/d.appts : null), formatter:fmtAvg }], mArr, fmtMS);
+      [{ label:'CPA', values:monthData.map(d => d.appts>0&&d.cost>0 ? d.cost/d.appts : null), formatter:fmtAvg, totalValue: sAppts>0&&sCost>0 ? sCost/sAppts : null }], mArr, fmtMS);
     document.getElementById('cpsTableWrap').innerHTML = buildResponsiveTable('CPS · Cost per Show-up', cplH4,
-      [{ label:'CPS', values:monthData.map(d => d.showUps>0&&d.cost>0 ? d.cost/d.showUps : null), formatter:fmtAvg }], mArr, fmtMS);
+      [{ label:'CPS', values:monthData.map(d => d.showUps>0&&d.cost>0 ? d.cost/d.showUps : null), formatter:fmtAvg, totalValue: sShows>0&&sCost>0 ? sCost/sShows : null }], mArr, fmtMS);
   }
 
   // Render charts for all panels (deferred so DOM widths are available)
@@ -2435,7 +2673,12 @@ function resetLeadForm() {
   const avs = document.getElementById('afterVisitSection');
   if (avs) avs.style.display = 'none';
   if (wasEditing) {
-    nav('list');
+    // Close form on mobile, refresh list
+    closeContactForm();
+    renderList();
+  } else {
+    // New lead saved — refresh list, keep form open for next entry
+    renderList();
   }
 }
 
@@ -2443,30 +2686,80 @@ function editLead(id) {
   const l = state.leads.find(x => x.id === id);
   if (!l) return;
   
-  // Desktop inline editing in list detail panel
-  const isDesktop = window.innerWidth >= 768;
-  const detailPanel = document.getElementById('listDetailPanel');
-  if (isDesktop && detailPanel && document.getElementById('page-list').classList.contains('active')) {
-    currentEditingId = id;
-    // Highlight selected card
-    document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
-    const cards = document.querySelectorAll('.lead-item');
-    cards.forEach(el => { if (el.getAttribute('onclick')?.includes(id)) el.classList.add('selected'); });
-    // Render inline edit form
-    detailPanel.style.display = 'block';
-    renderDetailPanel(l);
-    return;
-  }
-
-  // Mobile: navigate to lead page
   currentEditingId = id;
   populateLeadForm(l);
   renderLeadStepper(l);
   const avs = document.getElementById('afterVisitSection');
   if (avs) avs.style.display = 'block';
-  window._editingNav = true;
-  nav('lead');
+
+  // Show form panel
+  const formWrap = document.getElementById('contactFormWrap');
+  const formEmpty = document.getElementById('contactFormEmpty');
+  if (formWrap) formWrap.style.display = 'block';
+  if (formEmpty) formEmpty.style.display = 'none';
+
+  // Highlight selected card
+  document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.lead-item').forEach(el => { if (el.getAttribute('onclick')?.includes(id)) el.classList.add('selected'); });
+
+  // Mobile: show form full screen
+  const isMobile = window.innerWidth < 768;
+  if (isMobile) {
+    document.getElementById('page-contact').classList.add('contact-form-open');
+    document.getElementById('contactBackBar').style.display = 'block';
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openNewLead() {
+  currentEditingId = null;
+  // Reset form
+  document.getElementById('leadForm').reset();
+  document.getElementById('f_leadDate').value = '';
+  document.getElementById('f_apptDate').value = '';
+  const ldLabel = document.getElementById('f_leadDate_label');
+  const ldBtn = document.getElementById('f_leadDate_btn');
+  if (ldLabel) ldLabel.textContent = 'Select date';
+  if (ldBtn) ldBtn.classList.add('empty');
+  const adLabel = document.getElementById('f_apptDate_label');
+  const adBtn = document.getElementById('f_apptDate_btn');
+  if (adLabel) adLabel.textContent = 'Select date';
+  if (adBtn) adBtn.classList.add('empty');
+  const avs = document.getElementById('afterVisitSection');
+  if (avs) avs.style.display = 'none';
+  renderLeadStepper(null);
+  // Populate channel dropdown
+  refreshSelects();
+
+  // Show form panel
+  const formWrap = document.getElementById('contactFormWrap');
+  const formEmpty = document.getElementById('contactFormEmpty');
+  if (formWrap) formWrap.style.display = 'block';
+  if (formEmpty) formEmpty.style.display = 'none';
+
+  // Deselect any list item
+  document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+
+  // Mobile: show form full screen
+  const isMobile = window.innerWidth < 768;
+  if (isMobile) {
+    document.getElementById('page-contact').classList.add('contact-form-open');
+    document.getElementById('contactBackBar').style.display = 'block';
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function closeContactForm() {
+  document.getElementById('page-contact').classList.remove('contact-form-open');
+  document.getElementById('contactBackBar').style.display = 'none';
+  // On desktop, show empty state
+  const isDesktop = window.innerWidth >= 768;
+  if (isDesktop) {
+    document.getElementById('contactFormWrap').style.display = 'none';
+    document.getElementById('contactFormEmpty').style.display = 'block';
+  }
+  currentEditingId = null;
+  document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
 }
 
 function populateLeadForm(l) {
@@ -2669,7 +2962,8 @@ function cancelEdit() {
   renderLeadStepper(null);
   const avs = document.getElementById('afterVisitSection');
   if (avs) avs.style.display = 'none';
-  nav('list');
+  closeContactForm();
+  renderList();
 }
 
 // ---------- Duplicate detection ----------
@@ -3032,28 +3326,29 @@ function renderList() {
       const isToday = l.apptDate === today && (l.status === 'booked' || l.status === 'pending');
       const isOverdue = l.status === 'booked' && l.apptDate && l.apptDate < today;
       const cls = isToday ? 'today-appt' : (isOverdue ? 'overdue' : '');
-      // Show name if available, otherwise show contact as main title
       const hasName = l.name && l.name.trim();
-      const mainTitle = hasName ? l.name : (l.contact || '(no data)');
-      const subTitle = hasName
-        ? `<span class="lead-contact">${l.contact || ''}</span><span>${l.channel || ''}</span>`
-        : `<span style="color:var(--silver);font-style:italic;">no name yet</span><span>${l.channel || ''}</span>`;
-      return `<div class="lead-item ${cls}" onclick="editLead('${l.id}')">
-        <div class="lead-row-1">
-          <div class="lead-name ${hasName ? '' : 'tabnum'}">${mainTitle}</div>
-          <span class="badge badge-${l.status}">${l.status}</span>
-        </div>
-        <div class="lead-row-2">
-          ${subTitle}
-        </div>
-        <div class="lead-meta">
-          <span>📅 ${fmt.date(l.leadDate)}</span>
-          ${l.apptDate ? `<span>→ ${fmt.date(l.apptDate)}</span>` : ''}
-          ${l.location ? `<span>📍 ${l.location}</span>` : ''}
-          ${l.spend ? `<span style="color:var(--green-dark);font-weight:500;">${fmt.money(l.spend)}</span>` : ''}
-          ${l.race ? `<span>${l.race}</span>` : ''}
-        </div>
-      </div>`;
+      const selected = l.id === currentEditingId ? ' selected' : '';
+      if (hasName) {
+        return `<div class="lead-item ${cls}${selected}" onclick="editLead('${l.id}')">
+          <div class="lead-row-1">
+            <div class="lead-name">${l.name}</div>
+            <span class="badge badge-${l.status}">${l.status}</span>
+          </div>
+          <div class="lead-row-2">
+            <span class="lead-contact">${l.contact || ''}</span>
+            <span>${l.channel || ''}</span>
+            ${l.apptDate ? `<span>→ ${fmt.date(l.apptDate)}</span>` : ''}
+            ${l.spend ? `<span style="color:var(--green-dark);font-weight:500;">${fmt.money(l.spend)}</span>` : ''}
+          </div>
+        </div>`;
+      } else {
+        return `<div class="lead-item ${cls}${selected}" onclick="editLead('${l.id}')" style="padding:10px 14px;">
+          <div class="lead-row-1">
+            <div class="lead-name tabnum">${l.contact || '(no data)'}</div>
+            <span class="badge badge-${l.status}">${l.status}</span>
+          </div>
+        </div>`;
+      }
     }).join('');
   }
 
@@ -3220,18 +3515,230 @@ function setSummaryMode(mode) {
   document.querySelectorAll('#page-summary .toggle').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
   document.getElementById('summaryMonth_btn').style.display = mode === 'single' ? '' : 'none';
   document.getElementById('summaryYear').style.display = mode === 'multi' ? '' : 'none';
-  document.getElementById('summaryFromMonth_btn').style.display = mode === 'custom' ? '' : 'none';
-  document.getElementById('summaryCustomArrow').style.display = mode === 'custom' ? '' : 'none';
-  document.getElementById('summaryToMonth_btn').style.display = mode === 'custom' ? '' : 'none';
-  if (mode === 'custom') refreshSummaryCustomSelects();
   renderSummary();
 }
 
 function renderSummary() {
-  if (state.summaryMode === 'single') renderSummarySingle();
-  else if (state.summaryMode === 'custom') renderSummaryCustom();
-  else renderSummaryMulti();
-  setTimeout(wrapCollapsibleSections, 10);
+  if (state.summaryMode === 'multi') renderDashboardYear();
+  else renderDashboardMonth();
+}
+
+function dashNav(page, tab) {
+  nav(page);
+  if (tab && page === 'adsspend') { setTimeout(() => switchAdsTab(tab), 50); }
+  if (tab && page === 'store') { setTimeout(() => switchStoreTab(tab), 50); }
+}
+
+function renderDashboardMonth() {
+  const month = document.getElementById('summaryMonth').value || state.summaryMonth;
+  if (!month) { document.getElementById('summaryContent').innerHTML = '<div class="empty">No data</div>'; return; }
+  const m = calcMonthMetrics(month);
+  const rev = m.revenue.total || 0;
+  const newRev = m.revenue.new || 0;
+  const adsCost = m.totalAdsCost || 0;
+  const profit = rev - adsCost;
+  const roas = m.totalROAS;
+  const metaROAS = m.metaROAS;
+  const googleROAS = m.googleROAS;
+  const leads = m.totalLeads;
+  const appts = m.appts;
+  const shows = m.showUps;
+  const showRate = appts > 0 ? shows / appts : null;
+  const avgShow = shows > 0 ? m.totalCustomerSpend / shows : null;
+  const cpl = adsCost > 0 && leads > 0 ? adsCost / leads : null;
+  const cpa = adsCost > 0 && appts > 0 ? adsCost / appts : null;
+  const cps = adsCost > 0 && shows > 0 ? adsCost / shows : null;
+  const sales = m.totalCustomerSpend || 0;
+  const newPct = rev > 0 ? (newRev / rev * 100).toFixed(1) : '0.0';
+  const costPct = rev > 0 ? (adsCost / rev * 100).toFixed(1) : '—';
+  const label = fmt.monthLabel(month);
+
+  const kpi = (lbl, val, sub, onclick) => `<div class="dash-kpi" onclick="${onclick||''}" style="${onclick?'cursor:pointer;':''}">
+    <div class="dash-kpi-label">${lbl}${onclick?' →':''}</div>
+    <div class="dash-kpi-value">${val}</div>
+    ${sub ? `<div class="dash-kpi-sub">${sub}</div>` : ''}
+  </div>`;
+
+  // Revenue trend chart data
+  const year = month.split('-')[0];
+  const mArr = Array.from({length:12},(_,i)=>`${year}-${String(i+1).padStart(2,'0')}`);
+  const locs = state.locations.filter(l => l.active !== false);
+  const revData = mArr.map(m2 => locs.reduce((s,loc) => { const r = state.revenue.find(x=>x.month===m2&&x.locationId===loc.id); return s+(r?.total||0); }, 0));
+  const maxRev = Math.max(...revData, 1);
+
+  const newCustSales = m.revenue.new || 0;
+  const newCustPct = rev > 0 ? (newCustSales / rev * 100).toFixed(1) : '—';
+
+  document.getElementById('summaryContent').innerHTML = `
+    <div class="dash-row-2">
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Revenue →</div><div class="dash-kpi-value">${fmt.moneyK(rev)}</div><div class="dash-kpi-sub">${label}</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">${fmt.moneyK(newCustSales)}</div><div class="dash-kpi-sub">${newCustPct}% of rev</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">${fmt.moneyK(adsCost)}</div><div class="dash-kpi-sub">${costPct}% of rev</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
+        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">${roas != null ? roas.toFixed(2)+'x' : '—'}</div><div class="dash-kpi-sub">Meta ${metaROAS!=null?metaROAS.toFixed(1)+'x':'—'} · G ${googleROAS!=null?googleROAS.toFixed(1)+'x':'—'}</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">${avgShow != null ? fmt.money(avgShow) : '—'}</div><div class="dash-kpi-sub">${fmt.num(shows)||'—'} shows</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">${cpl != null ? fmt.money(cpl) : '—'}</div><div class="dash-kpi-sub">Cost / ${fmt.num(leads)||'—'} leads</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">${cpa != null ? fmt.money(cpa) : '—'}</div><div class="dash-kpi-sub">Cost / ${fmt.num(appts)||'—'} appt</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">${cps != null ? fmt.money(cps) : '—'}</div><div class="dash-kpi-sub">Cost / ${fmt.num(shows)||'—'} shows</div>
+      </div>
+    </div>
+    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
+      <div class="dash-section-label">Funnel — ${label} →</div>
+      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
+        <div style="flex:4;background:var(--purple-bg);border-radius:6px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">${fmt.num(leads)||'—'}</div>
+          <div style="font-size:11px;color:var(--purple);">Leads</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#0C447C;">${fmt.num(appts)||'—'}</div>
+          <div style="font-size:11px;color:#185FA5;">Appt${leads>0&&appts>0?` (${(appts/leads*100).toFixed(1)}%)`:''}</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#085041;">${fmt.num(shows)||'—'}</div>
+          <div style="font-size:11px;color:#0F6E56;">Show${appts>0&&shows>0?` (${(shows/appts*100).toFixed(1)}%)`:''}</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#633806;">${fmt.moneyK(sales)}</div>
+          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
+      <div class="dash-section-label">Revenue trend — ${year} →</div>
+      <div id="chart_dash_rev" style="margin-top:8px;"></div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    AdsChart.render('chart_dash_rev', {
+      title: '',
+      labels: mArr.map(m2 => fmt.monthShort(m2)),
+      series: [{ label: 'Revenue', color: '#7132f5', data: revData.map(v => v > 0 ? v : null) }],
+      yFmt: v => v >= 1000 ? 'RM'+(v/1000).toFixed(0)+'k' : 'RM'+v.toFixed(0),
+    });
+  }, 30);
+}
+
+function renderDashboardYear() {
+  const year = document.getElementById('summaryYear').value || state.summaryYear || String(new Date().getFullYear());
+  const mArr = Array.from({length:12},(_,i)=>`${year}-${String(i+1).padStart(2,'0')}`);
+  const allMonths = mArr.map(m => calcMonthMetrics(m));
+  const locs = state.locations.filter(l => l.active !== false);
+
+  let rev=0, newRev=0, adsCost=0, leads=0, appts=0, shows=0, sales=0;
+  allMonths.forEach(m => {
+    rev += m.revenue.total||0;
+    newRev += m.revenue.new||0;
+    adsCost += m.totalAdsCost||0;
+    leads += m.totalLeads;
+    appts += m.appts;
+    shows += m.showUps;
+    sales += m.totalCustomerSpend||0;
+  });
+  const profit = rev - adsCost;
+  const roas = adsCost > 0 ? sales / adsCost : null;
+  const showRate = appts > 0 ? shows / appts : null;
+  const avgShow = shows > 0 ? sales / shows : null;
+  const cpl = adsCost > 0 && leads > 0 ? adsCost / leads : null;
+  const cpa = adsCost > 0 && appts > 0 ? adsCost / appts : null;
+  const newPct = rev > 0 ? (newRev/rev*100).toFixed(1) : '0.0';
+  const costPct = rev > 0 ? (adsCost/rev*100).toFixed(1) : '—';
+
+  const cps = adsCost > 0 && shows > 0 ? adsCost / shows : null;
+  const newCustPctY = rev > 0 ? (newRev/rev*100).toFixed(1) : '0.0';
+
+  const revData = mArr.map(m2 => locs.reduce((s,loc) => { const r = state.revenue.find(x=>x.month===m2&&x.locationId===loc.id); return s+(r?.total||0); }, 0));
+
+  document.getElementById('summaryContent').innerHTML = `
+    <div class="dash-row-2">
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Revenue YTD →</div><div class="dash-kpi-value">${fmt.moneyK(rev)}</div><div class="dash-kpi-sub">${year}</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">${fmt.moneyK(newRev)}</div><div class="dash-kpi-sub">${newCustPctY}% of rev</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">${fmt.moneyK(adsCost)}</div><div class="dash-kpi-sub">${costPct}% of rev</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
+        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">${roas != null ? roas.toFixed(2)+'x' : '—'}</div><div class="dash-kpi-sub">&nbsp;</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">${avgShow != null ? fmt.money(avgShow) : '—'}</div><div class="dash-kpi-sub">${fmt.num(shows)||'—'} shows</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">${cpl != null ? fmt.money(cpl) : '—'}</div><div class="dash-kpi-sub">Cost / ${fmt.num(leads)||'—'} leads</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">${cpa != null ? fmt.money(cpa) : '—'}</div><div class="dash-kpi-sub">Cost / ${fmt.num(appts)||'—'} appt</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">${cps != null ? fmt.money(cps) : '—'}</div><div class="dash-kpi-sub">Cost / ${fmt.num(shows)||'—'} shows</div>
+      </div>
+    </div>
+    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
+      <div class="dash-section-label">Funnel — ${year} YTD →</div>
+      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
+        <div style="flex:4;background:var(--purple-bg);border-radius:6px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">${fmt.num(leads)||'—'}</div>
+          <div style="font-size:11px;color:var(--purple);">Leads</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#0C447C;">${fmt.num(appts)||'—'}</div>
+          <div style="font-size:11px;color:#185FA5;">Appt (${leads>0?(appts/leads*100).toFixed(1):'0'}%)</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#085041;">${fmt.num(shows)||'—'}</div>
+          <div style="font-size:11px;color:#0F6E56;">Show (${appts>0?(shows/appts*100).toFixed(1):'0'}%)</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#633806;">${fmt.moneyK(sales)}</div>
+          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
+      <div class="dash-section-label">Revenue trend — ${year} →</div>
+      <div id="chart_dash_rev" style="margin-top:8px;"></div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    AdsChart.render('chart_dash_rev', {
+      title: '',
+      labels: mArr.map(m2 => fmt.monthShort(m2)),
+      series: [{ label: 'Revenue', color: '#7132f5', data: revData.map(v => v > 0 ? v : null) }],
+      yFmt: v => v >= 1000 ? 'RM'+(v/1000).toFixed(0)+'k' : 'RM'+v.toFixed(0),
+    });
+  }, 30);
 }
 
 function wrapCollapsibleSections() {
@@ -3288,11 +3795,13 @@ document.getElementById('summaryMonth').addEventListener('change', e => {
   state.summaryMonth = e.target.value;
   renderSummary();
 });
-document.getElementById('summaryFromMonth').addEventListener('change', e => {
+const _sfm = document.getElementById('summaryFromMonth');
+if (_sfm) _sfm.addEventListener('change', e => {
   state.summaryCustomFrom = e.target.value;
   renderSummary();
 });
-document.getElementById('summaryToMonth').addEventListener('change', e => {
+const _stm = document.getElementById('summaryToMonth');
+if (_stm) _stm.addEventListener('change', e => {
   state.summaryCustomTo = e.target.value;
   renderSummary();
 });
@@ -4218,12 +4727,12 @@ function renderStore() {
         const prefix = locFilter ? (locsToShow[0]?.name||'') + ' — ' : 'All Outlets — ';
         let tbl;
         if (!isMobile) {
-          const pb = (v, pct) => `${v}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
+          const pb = (v, pct) => `${v}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
           const activeP = pData;
           const mHdr = activeP.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
           tbl = `<div class="section-title"><h3>${prefix}${platLabel} ${platYear}</h3></div>
-            <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
-              <thead><tr><th style="width:50px;white-space:nowrap;">Metric</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
+            <div class="table-wrap"><table class="data data-t">
+              <thead><tr><th>Metric</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
               <tbody>
                 ${!locFilter ? `<tr><td>Lead</td>${activeP.map(d=>`<td class="num">${tc(d.ld)}</td>`).join('')}<td class="num" style="font-weight:700;">${tc(tLead)}</td></tr>` : ''}
                 <tr><td>Appt</td>${activeP.map(d=>`<td class="num">${!locFilter&&d.ld>0&&d.a>0?pb(tc(d.a),fmt.pct(d.a/d.ld)):tc(d.a)}</td>`).join('')}<td class="num" style="font-weight:700;">${!locFilter&&tLead>0?pb(tc(tAppt),fmt.pct(tAppt/tLead)):tc(tAppt)}</td></tr>
@@ -4302,14 +4811,14 @@ function renderStore() {
           mData.push({m,ld,a,s,n,sp});
         });
         const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
-        const activeM = mData;
+        const activeM = isMobile ? mData.filter(d => d.ld > 0 || d.a > 0) : mData;
         if (!isMobile) {
           // Desktop: months as columns, metrics as rows
-          const pb = (v, pct) => `${v}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
+          const pb = (v, pct) => `${v}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
           const mHdr = activeM.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
           html += `<div class="section-title"><h3>${sumTitle}</h3></div>
-            <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
-              <thead><tr><th style="width:50px;white-space:nowrap;">Metric</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
+            <div class="table-wrap"><table class="data data-t">
+              <thead><tr><th>Metric</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
               <tbody>
                 ${!locFilter ? `<tr><td>Lead</td>${activeM.map(d=>`<td class="num">${tc(d.ld)}</td>`).join('')}<td class="num" style="font-weight:700;">${tc(sTLd)}</td></tr>` : ''}
                 <tr><td>Appt</td>${activeM.map(d=>`<td class="num">${!locFilter&&d.ld>0&&d.a>0?pb(tc(d.a),fmt.pct(d.a/d.ld)):tc(d.a)}</td>`).join('')}<td class="num" style="font-weight:700;">${!locFilter&&sTLd>0?pb(tc(sTA),fmt.pct(sTA/sTLd)):tc(sTA)}</td></tr>
@@ -4406,12 +4915,11 @@ function renderStore() {
         let tbl;
         if (!isMobile) {
           const activeRD = mRaceData;
-          const colW = `style="width:${Math.floor(85/(activeRD.length+1))}%;min-width:auto;"`;
-          const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
-          const mHdr = activeRD.map(d => `<th class="num" ${colW}>${fmt.monthShort(d.m)}</th>`).join('');
+          const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
+          const mHdr = activeRD.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
           tbl = `<div class="section-title"><h3>${title}</h3></div>
-            <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
-              <thead><tr><th style="width:50px;white-space:nowrap;">Race</th>${mHdr}<th class="num" ${colW}>TOTAL</th></tr></thead>
+            <div class="table-wrap"><table class="data data-t">
+              <thead><tr><th>Race</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
               <tbody>
                 ${races.map(r => `<tr><td>${r}</td>${activeRD.map(d=>`<td class="num">${d.s>0&&d.byRace[r].length>0?pb(d.byRace[r].length,fmt.pct(d.byRace[r].length/d.s)):(d.byRace[r].length||'—')}</td>`).join('')}<td class="num" style="font-weight:700;">${totals.show>0&&totals[r]>0?pb(totals[r],fmt.pct(totals[r]/totals.show)):(totals[r]||'—')}</td></tr>`).join('')}
                 <tr class="total-row"><td style="font-weight:700;">Total</td>${activeRD.map(d=>`<td class="num" style="font-weight:700;">${tc(d.s)}</td>`).join('')}<td class="num" style="font-weight:700;">${tc(totals.show)}</td></tr>
@@ -4460,8 +4968,8 @@ function renderStore() {
           const activeAvg = mAvgData;
           const mHdr2 = activeAvg.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
           avgTbl = `<div class="section-title" style="margin-top:20px;"><h3>AVG Spend by Race</h3></div>
-            <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
-              <thead><tr><th style="width:50px;white-space:nowrap;">Race</th>${mHdr2}<th class="num">AVG</th></tr></thead>
+            <div class="table-wrap"><table class="data data-t">
+              <thead><tr><th>Race</th>${mHdr2}<th class="num">AVG</th></tr></thead>
               <tbody>
                 ${races.map(r => `<tr><td>${r}</td>${activeAvg.map(d=>`<td class="num">${d.byR[r].cnt>0?fmt.money(d.byR[r].sp/d.byR[r].cnt):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${avgTotals[r].cnt>0?fmt.money(avgTotals[r].sp/avgTotals[r].cnt):'—'}</td></tr>`).join('')}
               </tbody>
@@ -4699,7 +5207,7 @@ function renderAdsSpend() {
           </tbody>`;
       } else {
         // Mobile: month on left
-        html = `<thead><tr><th style="width:36px;min-width:36px;">Month</th><th class="num">Meta</th><th class="num">Google</th><th class="num">Total</th><th class="num">Avg/d</th></tr></thead><tbody>`;
+        html = `<thead><tr><th style="width:36px;min-width:36px;">Month</th><th class="num">Meta</th><th class="num">Google</th><th class="num">Total</th><th class="num">Avg/day</th></tr></thead><tbody>`;
         activeM.forEach((m,i) => { html += `<tr><td style="font-weight:500;white-space:nowrap;">${fmt.monthShort(m)}</td><td class="num">${fmt.money(metaVals[i])}</td><td class="num">${fmt.money(googleVals[i])}</td><td class="num">${fmt.money(totalVals[i])}</td><td class="num">${fmt.money(avgVals[i])}</td></tr>`; });
         html += `<tr class="total-row"><td>TOTAL</td><td class="num">${fmt.money(gMeta)}</td><td class="num">${fmt.money(gGoogle)}</td><td class="num">${fmt.money(gTotal)}</td><td class="num">${fmt.money(gDays>0?gTotal/gDays:0)}</td></tr></tbody>`;
       }
@@ -5506,18 +6014,18 @@ function renderRevenueOutlet(mArr, locId) {
   const adsNewYr = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(year) && l.locationId === locId && (l.status==='pending'||l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
 
   if (!isMobile) {
-    const pb = (val, pct) => `${val}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
+    const pb = (val, pct) => `${val}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
     const mHdr = oMData.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
-    html += `<div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
-      <thead><tr><th style="width:50px;white-space:nowrap;">Metric</th>${mHdr}</tr></thead>
+    html += `<div class="table-wrap"><table class="data data-t">
+      <thead><tr><th>Metric</th>${mHdr}</tr></thead>
       <tbody>
-        <tr><td style="white-space:nowrap;">Total Sales</td>${oMData.map(d=>`<td class="num">${d.t>0?fmt.money(d.t):'—'}</td>`).join('')}</tr>
-        <tr><td style="color:var(--green-dark);white-space:nowrap;">New Cust</td>${oMData.map(d=>`<td class="num" style="color:var(--green-dark);">${d.t>0?pb(fmt.money(d.n),(d.n/d.t*100).toFixed(1)+'%'):'—'}</td>`).join('')}</tr>
-        <tr><td style="color:var(--gray);white-space:nowrap;">Old Cust</td>${oMData.map(d=>`<td class="num" style="color:var(--gray);">${d.t>0?pb(fmt.money(d.o),(d.o/d.t*100).toFixed(1)+'%'):'—'}</td>`).join('')}</tr>
-        <tr><td style="color:var(--meta-color);white-space:nowrap;">Ads New</td>${oMData.map(d=>`<td class="num" style="color:var(--meta-color);">${d.adsNew>0?pb(fmt.money(d.adsNew),(d.t>0?(d.adsNew/d.t*100).toFixed(1)+'%':'—')):'—'}</td>`).join('')}</tr>
+        <tr><td>Total Sales</td>${oMData.map(d=>`<td class="num">${d.t>0?fmt.money(d.t):'—'}</td>`).join('')}</tr>
+        <tr><td style="color:var(--green-dark);">New Cust</td>${oMData.map(d=>`<td class="num" style="color:var(--green-dark);">${d.t>0?pb(fmt.money(d.n),(d.n/d.t*100).toFixed(1)+'%'):'—'}</td>`).join('')}</tr>
+        <tr><td style="color:var(--gray);">Old Cust</td>${oMData.map(d=>`<td class="num" style="color:var(--gray);">${d.t>0?pb(fmt.money(d.o),(d.o/d.t*100).toFixed(1)+'%'):'—'}</td>`).join('')}</tr>
+        <tr><td style="color:var(--meta-color);">Ads New</td>${oMData.map(d=>`<td class="num" style="color:var(--meta-color);">${d.adsNew>0?pb(fmt.money(d.adsNew),(d.t>0?(d.adsNew/d.t*100).toFixed(1)+'%':'—')):'—'}</td>`).join('')}</tr>
       </tbody>
       <tfoot><tr class="total-row">
-        <td style="white-space:nowrap;">TOTAL</td>
+        <td>TOTAL</td>
         <td class="num" colspan="${oMData.length}">
           <div style="display:flex;justify-content:space-around;text-align:center;">
             <div>Total<br><strong>${fmt.money(yearTotal)}</strong></div>
@@ -5669,7 +6177,7 @@ function renderRevenueSummary(mArr) {
 
   } // end placeholder
   // All Outlets combined table
-  const allM12 = mArr;
+  const allM12 = isMobile ? mArr.filter(m => state.revenue.some(r => r.month === m)) : mArr;
   let allYearTotal = 0, allYearNew = 0, allYearAds = 0;
   const allMData = [];
   allM12.forEach(m => {
@@ -5683,18 +6191,18 @@ function renderRevenueSummary(mArr) {
   if (!isMobile) {
     // Desktop: months as columns, TOTAL as bottom row
     const mHdr = allMData.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
-    const pb = (val, pct) => `${val}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
+    const pb = (val, pct) => `${val}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
     html += `<div class="card" style="margin-top:14px;">
       <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data" style="table-layout:fixed;width:100%;">
-        <thead><tr><th style="width:50px;white-space:nowrap;">Metric</th>${mHdr}</tr></thead>
+      <div class="table-wrap"><table class="data data-t">
+        <thead><tr><th>Metric</th>${mHdr}</tr></thead>
         <tbody>
-          <tr><td style="white-space:nowrap;">Total Sales</td>${allMData.map(d=>`<td class="num">${d.mTotal>0?fmt.money(d.mTotal):'—'}</td>`).join('')}</tr>
-          <tr><td style="color:var(--green-dark);white-space:nowrap;">New Cust</td>${allMData.map(d=>`<td class="num" style="color:var(--green-dark);">${d.mTotal>0?pb(fmt.money(d.mNew),(d.mNew/d.mTotal*100).toFixed(1)+'%'):'—'}</td>`).join('')}</tr>
-          <tr><td style="color:var(--meta-color);white-space:nowrap;">Ads New</td>${allMData.map(d=>`<td class="num" style="color:var(--meta-color);">${d.mAds>0?pb(fmt.money(d.mAds),(d.mTotal>0?(d.mAds/d.mTotal*100).toFixed(1)+'%':'—')):'—'}</td>`).join('')}</tr>
+          <tr><td>Total Sales</td>${allMData.map(d=>`<td class="num">${d.mTotal>0?fmt.money(d.mTotal):'—'}</td>`).join('')}</tr>
+          <tr><td style="color:var(--green-dark);">New Cust</td>${allMData.map(d=>`<td class="num" style="color:var(--green-dark);">${d.mTotal>0?pb(fmt.money(d.mNew),(d.mNew/d.mTotal*100).toFixed(1)+'%'):'—'}</td>`).join('')}</tr>
+          <tr><td style="color:var(--meta-color);">Ads New</td>${allMData.map(d=>`<td class="num" style="color:var(--meta-color);">${d.mAds>0?pb(fmt.money(d.mAds),(d.mTotal>0?(d.mAds/d.mTotal*100).toFixed(1)+'%':'—')):'—'}</td>`).join('')}</tr>
         </tbody>
         <tfoot><tr class="total-row">
-          <td style="white-space:nowrap;">TOTAL</td>
+          <td>TOTAL</td>
           <td class="num" style="font-weight:700;" colspan="${allMData.length}">
             <div style="display:flex;justify-content:space-around;text-align:center;">
               <div>Total<br><strong>${fmt.money(allYearTotal)}</strong></div>
@@ -6523,8 +7031,8 @@ function init() {
   if (storeToEl) storeToEl.addEventListener('change', e => { state.storeCustomTo = e.target.value; renderStore(); });
   const storeSelectEl = document.getElementById('storeSelect');
   if (storeSelectEl) storeSelectEl.addEventListener('change', e => { state.storeSelected = e.target.value; renderStore(); });
-  // Default to Lead page
-  nav('lead');
+  // Default to Contact page
+  nav('contact');
   // Start Google Sheet auto-sync
   gsStartAutoSync();
 }
