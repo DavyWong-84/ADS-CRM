@@ -542,9 +542,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   word-wrap: break-word;
 }
 .ai-msg.user .ai-msg-bubble {
-  background: #8bb8d4;
+  background: #fff;
   color: #1a1a1a;
   border-bottom-right-radius: 4px;
+  border: 1.5px solid var(--purple);
+  animation: aiUserGlow 2.5s ease-in-out infinite;
+}
+@keyframes aiUserGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(113,50,245,0); border-color: var(--purple); }
+  50% { box-shadow: 0 0 0 3px rgba(113,50,245,0.25); border-color: #9b5fff; }
 }
 .ai-msg.assistant .ai-msg-bubble {
   background: var(--surface);
@@ -1556,7 +1562,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v2.96</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v2.97</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -9294,17 +9300,24 @@ function buildMonthSummary(mStr) {
     const r = rev.find(x => x.locationId === loc.id);
     byStore[loc.name] = r ? { total: r.total || 0, new: r.newCustomer || 0 } : { total: 0, new: 0 };
   });
-  // Ads
+  // Ads cost — lookup platform via channelId (adsSpend records have no platform field)
   const ads = state.adsSpend.filter(a => a.month === mStr);
-  const metaCost = ads.filter(a => a.platform === 'meta').reduce((s, a) => s + (a.amount || 0), 0);
-  const googleCost = ads.filter(a => a.platform === 'google').reduce((s, a) => s + (a.amount || 0), 0);
-  const totalAdsCost = metaCost + googleCost;
-  // Ads sales (from leads done/pending with apptDate in month)
-  const monthApptLeads = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(mStr) && (l.status === 'done' || l.status === 'pending'));
-  const metaSales = monthApptLeads.filter(l => l.platform === 'meta').reduce((s, l) => s + (l.spend || 0), 0);
-  const googleSales = monthApptLeads.filter(l => l.platform === 'google').reduce((s, l) => s + (l.spend || 0), 0);
-  const organicSales = monthApptLeads.filter(l => l.platform === 'organic').reduce((s, l) => s + (l.spend || 0), 0);
-  const fuSales = monthApptLeads.filter(l => l.platform === 'followup').reduce((s, l) => s + (l.spend || 0), 0);
+  let metaCost = 0, googleCost = 0, totalAdsCost = 0;
+  ads.forEach(a => {
+    const ch = state.channels.find(c => c.id === a.channelId);
+    const amt = a.amount || 0;
+    if (ch) {
+      if (ch.platform === 'meta') metaCost += amt;
+      else if (ch.platform === 'google') googleCost += amt;
+    }
+    totalAdsCost += amt;
+  });
+  // Ads sales — ALL appts with spend (matches CRM's calcMonthMetrics logic)
+  const appts = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(mStr) && l.name && l.apptDate);
+  const metaSales = appts.filter(l => l.platform === 'meta').reduce((s, l) => s + (l.spend || 0), 0);
+  const googleSales = appts.filter(l => l.platform === 'google').reduce((s, l) => s + (l.spend || 0), 0);
+  const organicSales = appts.filter(l => l.platform === 'organic').reduce((s, l) => s + (l.spend || 0), 0);
+  const fuSales = appts.filter(l => l.platform === 'followup').reduce((s, l) => s + (l.spend || 0), 0);
   const roasMeta = metaCost > 0 ? metaSales / metaCost : null;
   const roasGoogle = googleCost > 0 ? googleSales / googleCost : null;
   const roasTotal = totalAdsCost > 0 ? (metaSales + googleSales + organicSales + fuSales) / totalAdsCost : null;
