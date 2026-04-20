@@ -611,17 +611,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   white-space: nowrap;
 }
 .ai-msg.assistant .ai-msg-bubble .ai-pct {
-  color: #D97706;
+  color: #7132f5;
   font-weight: 700;
-  background: rgba(217,119,6,0.08);
+  background: rgba(113,50,245,0.08);
   padding: 1px 5px;
   border-radius: 5px;
   white-space: nowrap;
 }
 .ai-msg.assistant .ai-msg-bubble .ai-roas {
-  color: #D97706;
+  color: #7132f5;
   font-weight: 700;
-  background: rgba(217,119,6,0.12);
+  background: rgba(113,50,245,0.10);
   padding: 1px 6px;
   border-radius: 5px;
   white-space: nowrap;
@@ -1604,7 +1604,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.11</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.14</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2351,6 +2351,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <span id="aiModelLabel" style="font-size:10px;padding:2px 7px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;text-transform:uppercase;">Flash</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
+        <button type="button" onclick="toggleAISettings()" class="ai-icon-btn" id="aiSettingsBtn" aria-label="Settings" title="设置">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
         <button type="button" onclick="openChipsEditor()" class="ai-icon-btn" aria-label="Edit shortcuts" title="编辑快捷问题">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
         </button>
@@ -2362,6 +2365,48 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </button>
       </div>
     </div>
+
+    <!-- Inline Settings Panel (collapsible) -->
+    <div id="aiSettingsPanel" style="display:none;border-bottom:1px solid var(--border);background:var(--surface);padding:12px 16px;flex-shrink:0;">
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <!-- Model -->
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:12px;color:var(--gray);white-space:nowrap;min-width:48px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            Model
+          </span>
+          <select id="ai_model_inline" onchange="onAIModelChangeInline(this.value)" style="flex:1;font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+            <option value="gemini-2.5-pro">Gemini 2.5 Pro · 最聪明</option>
+            <option value="gemini-2.5-flash">Gemini 2.5 Flash · 推荐</option>
+            <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite · 最快</option>
+          </select>
+        </div>
+        <!-- Role / Prompt -->
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+            <span style="font-size:12px;color:var(--gray);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              AI 角色
+            </span>
+            <select id="ai_role_preset_inline" onchange="applyAIRolePresetInline(this.value)" style="font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;background:#fff;margin-left:auto;">
+              <option value="">— 套用模板 —</option>
+              <option value="analyst">📊 数据分析师</option>
+              <option value="coach">🎯 营销顾问</option>
+              <option value="concise">⚡ 极简模式</option>
+              <option value="bilingual">🌏 中英双语</option>
+            </select>
+          </div>
+          <textarea id="ai_custom_role_inline" rows="3" placeholder="留空 = 默认角色。可自定义 AI 语气、专注点..." style="width:100%;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:none;line-height:1.5;box-sizing:border-box;background:#fff;"></textarea>
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <button class="btn btn-primary" style="font-size:11px;padding:4px 12px;" onclick="saveAISettingsInline()">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-1px;margin-right:3px;"><polyline points="20 6 9 17 4 12"></polyline></svg>保存
+            </button>
+            <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="clearAIRoleInline()">✕ 清除角色</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="aiMessages" class="ai-messages"></div>
     <div class="ai-quick-actions" id="aiQuickActions"></div>
     <div class="ai-input-wrap">
@@ -2405,7 +2450,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.13'; // bump this to force reload of preloaded data
+const DATA_VERSION = '2.16'; // bump this to force reload of preloaded data
 
 // ---------- State ----------
 let state = {
@@ -9111,8 +9156,8 @@ function renderAIMessages() {
     const isErr = m.error;
     const cls = isUser ? 'user' : (isErr ? 'assistant error' : 'assistant');
     const body = isUser ? escapeHTML(m.text) : renderMarkdown(m.text);
-    const rawText = m.text.replace(/\[\[note\]\][\s\S]*?\[\[\/note\]\]/g, '').trim();
-    const copyBtn = `<button class="ai-copy-btn" onclick="copyAIMsg(this,${JSON.stringify(rawText)})" title="复制">
+    const msgIdx = _aiHistory.indexOf(m);
+    const copyBtn = `<button class="ai-copy-btn" data-copy-idx="${msgIdx}" title="复制">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
     </button>`;
     if (isUser) {
@@ -9142,6 +9187,27 @@ function renderAIMessages() {
   }
   // Scroll to bottom
   setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+
+  // Copy button delegation
+  wrap.onclick = wrap.onclick || function(e) {
+    const btn = e.target.closest('[data-copy-idx]');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.copyIdx, 10);
+    const msg = _aiHistory[idx];
+    if (!msg) return;
+    const text = msg.text.replace(/\[\[note\]\][\s\S]*?\[\[\/note\]\]/g, '').trim();
+    copyAIMsg(btn, text);
+  };
+  // Re-attach each render (innerHTML reset clears old listener)
+  wrap.onclick = function(e) {
+    const btn = e.target.closest('[data-copy-idx]');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.copyIdx, 10);
+    const msg = _aiHistory[idx];
+    if (!msg) return;
+    const text = msg.text.replace(/\[\[note\]\][\s\S]*?\[\[\/note\]\]/g, '').trim();
+    copyAIMsg(btn, text);
+  };
 }
 
 // Minimal Markdown renderer — safe (escapes HTML first, then applies replacements)
@@ -9233,39 +9299,46 @@ function renderDataCard(jsonStr) {
   }
 }
 
-// Render a data table block with horizontal bars
-// Expected JSON: { "title": "Store Revenue", "columns": ["Store", "Revenue", ""], "rows": [["Sunway", "RM 54,345", 54345], ...], "barColor": "purple|meta|google|neg" }
-// Last column (if numeric) will be treated as value for bar width
+// Render a data table block
+// JSON: { "title": "...", "columns": [...], "rows": [[...], ...], "prevValues": [[num,...], ...], "totalRow": [...] }
+// prevValues: parallel array to rows, each entry is array of previous-period numeric values (same col order, skip label col)
+// If prevValues provided, numeric cells get ↑↓ arrow + % change vs prev
 function renderDataTable(jsonStr) {
   try {
     const d = JSON.parse(jsonStr);
     const title = d.title ? `<div class="ai-table-title">${escapeHTML(d.title)}</div>` : '';
     const cols = d.columns || [];
     const rows = d.rows || [];
-    const barColor = d.barColor || 'purple';
-    const totalRow = d.totalRow || null; // Optional TOTAL row
-
-    // Determine bar max (use numeric values from last column OR separate barValues)
-    const barValues = d.barValues || rows.map(r => {
-      const last = r[r.length - 1];
-      return typeof last === 'number' ? last : parseFloat(String(last).replace(/[^\d.-]/g, '')) || 0;
-    });
-    const barMax = Math.max(...barValues.map(Math.abs), 1);
+    const totalRow = d.totalRow || null;
+    const prevValues = d.prevValues || null; // [[num, num, ...], ...] parallel to rows, skip col 0
 
     const ths = cols.map((c, i) => {
       const numCls = i > 0 ? ' class="num"' : '';
       return `<th${numCls}>${escapeHTML(c)}</th>`;
-    }).join('') + '<th class="num"></th>';
+    }).join('');
 
     const trs = rows.map((r, rIdx) => {
+      const prev = prevValues ? prevValues[rIdx] : null; // array of prev nums for this row
       const tds = r.map((cell, cIdx) => {
         const isNum = cIdx > 0 && (typeof cell === 'number' || /^[\s\-+]*(?:RM\s*)?[\d,]+(\.\d+)?(\s*%|x)?\s*$/.test(String(cell)));
         const cellStr = typeof cell === 'number' ? formatNumDisplay(cell) : String(cell);
-        return `<td${isNum ? ' class="num"' : ''}>${applyNumHighlight(escapeHTML(cellStr))}</td>`;
+        let trendHTML = '';
+        if (isNum && prev && prev[cIdx - 1] != null) {
+          const curNum = typeof cell === 'number' ? cell : parseFloat(String(cell).replace(/[^\d.-]/g, ''));
+          const prevNum = parseFloat(prev[cIdx - 1]);
+          if (!isNaN(curNum) && !isNaN(prevNum) && prevNum !== 0) {
+            const pct = ((curNum - prevNum) / Math.abs(prevNum) * 100);
+            const isUp = pct > 0;
+            const isDown = pct < 0;
+            const arrow = isUp ? '↑' : (isDown ? '↓' : '→');
+            const color = isUp ? '#10B981' : (isDown ? '#DC2626' : '#94a3b8');
+            const pctStr = (isUp ? '+' : '') + pct.toFixed(1) + '%';
+            trendHTML = ` <span style="font-size:10px;font-weight:600;color:${color};white-space:nowrap;">${arrow}${pctStr}</span>`;
+          }
+        }
+        return `<td${isNum ? ' class="num"' : ''}>${applyNumHighlight(escapeHTML(cellStr))}${trendHTML}</td>`;
       }).join('');
-      const bw = Math.round(Math.abs(barValues[rIdx]) / barMax * 100);
-      const barTd = `<td class="ai-table-bar-cell"><span class="ai-table-bar ${barColor}" style="width:${bw}%;"></span></td>`;
-      return `<tr>${tds}${barTd}</tr>`;
+      return `<tr>${tds}</tr>`;
     }).join('');
 
     let totalTR = '';
@@ -9275,7 +9348,7 @@ function renderDataTable(jsonStr) {
         const cellStr = typeof cell === 'number' ? formatNumDisplay(cell) : String(cell);
         return `<td${isNum ? ' class="num"' : ''}>${applyNumHighlight(escapeHTML(cellStr))}</td>`;
       }).join('');
-      totalTR = `<tr class="ai-table-row-total">${tds}<td></td></tr>`;
+      totalTR = `<tr class="ai-table-row-total">${tds}</tr>`;
     }
 
     return `<div class="ai-table">${title}<table><thead><tr>${ths}</tr></thead><tbody>${trs}${totalTR}</tbody></table></div>`;
@@ -9318,26 +9391,88 @@ function _aiInputKey(e) {
 }
 
 function copyAIMsg(btn, text) {
-  navigator.clipboard.writeText(text).then(() => {
+  const doFeedback = () => {
     btn.classList.add('copied');
-    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    btn.title = 'Copied!';
+    // Force visible even without hover
+    btn.style.opacity = '1';
     setTimeout(() => {
       btn.classList.remove('copied');
-      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-    }, 1500);
-  }).catch(() => {
-    // Fallback for older browsers
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    btn.classList.add('copied');
-    setTimeout(() => btn.classList.remove('copied'), 1500);
-  });
+      btn.style.opacity = '';
+      btn.title = '复制';
+      btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
+    }, 2000);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(doFeedback).catch(() => {
+      fallbackCopy(text); doFeedback();
+    });
+  } else {
+    fallbackCopy(text); doFeedback();
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+function toggleAISettings() {
+  const panel = document.getElementById('aiSettingsPanel');
+  const btn = document.getElementById('aiSettingsBtn');
+  if (!panel) return;
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  btn.style.background = isOpen ? '' : 'var(--purple-bg)';
+  btn.style.borderColor = isOpen ? '' : 'var(--purple)';
+  btn.style.color = isOpen ? '' : 'var(--purple)';
+  if (!isOpen) {
+    const sel = document.getElementById('ai_model_inline');
+    if (sel) sel.value = getAIModel();
+    const ta = document.getElementById('ai_custom_role_inline');
+    if (ta) ta.value = getAICustomRole();
+  }
+}
+
+function onAIModelChangeInline(val) {
+  setAIModel(val);
+  const sel = document.getElementById('ai_model');
+  if (sel) sel.value = val;
+}
+
+function applyAIRolePresetInline(key) {
+  if (!key || !AI_ROLE_PRESETS[key]) return;
+  const ta = document.getElementById('ai_custom_role_inline');
+  if (ta) ta.value = AI_ROLE_PRESETS[key];
+  document.getElementById('ai_role_preset_inline').value = '';
+}
+
+function saveAISettingsInline() {
+  const val = (document.getElementById('ai_custom_role_inline')?.value || '').trim();
+  if (val) localStorage.setItem(AI_ROLE_KEY, val);
+  else localStorage.removeItem(AI_ROLE_KEY);
+  const ta = document.getElementById('ai_custom_role');
+  if (ta) ta.value = val;
+  const panel = document.getElementById('aiSettingsPanel');
+  const btn = document.getElementById('aiSettingsBtn');
+  if (panel) panel.style.display = 'none';
+  if (btn) { btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = ''; }
+  toast('设置已保存 ✓');
+}
+
+function clearAIRoleInline() {
+  const ta = document.getElementById('ai_custom_role_inline');
+  if (ta) ta.value = '';
+  localStorage.removeItem(AI_ROLE_KEY);
+  const ta2 = document.getElementById('ai_custom_role');
+  if (ta2) ta2.value = '';
+  toast('角色已清除');
 }
 
 function askAIQuick(q) {
