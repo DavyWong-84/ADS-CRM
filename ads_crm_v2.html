@@ -472,10 +472,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     border-radius: 14px;
   }
   .ai-header { padding: 12px 14px; }
-  .ai-messages { padding: 10px 12px; }
-  .ai-msg { max-width: 95%; }
-  .ai-msg.assistant { max-width: 98%; }
-  .ai-msg-bubble { padding: 8px 10px; font-size: 13.5px; }
+  .ai-messages { padding: 14px 14px; gap: 14px; }
+  .ai-msg { max-width: 100%; gap: 10px; }
+  .ai-msg.user { max-width: 82%; }
+  .ai-msg.assistant { max-width: 100%; }
+  .ai-msg-bubble { font-size: 13.5px; line-height: 1.6; }
+  .ai-msg.user .ai-msg-bubble { padding: 8px 12px; }
   /* Smaller hero card on mobile */
   .ai-msg.assistant .ai-msg-bubble .ai-card { padding: 10px 12px; }
   .ai-card-value { font-size: 22px; }
@@ -514,67 +516,73 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
   flex-shrink: 0;
 }
 .ai-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 18px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 18px; /* v3.24: breathing room between messages */
 }
 .ai-msg {
   max-width: 88%;
   display: flex;
-  gap: 8px;
+  gap: 12px;
 }
 .ai-msg.assistant {
-  max-width: 95%; /* wider for data display */
+  max-width: 98%; /* v3.24: AI fills width since no bubble */
 }
 .ai-msg.user {
   align-self: flex-end;
   flex-direction: row-reverse;
+  max-width: 75%;
 }
 .ai-msg-avatar {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 14px;
+  font-size: 10px;
   overflow: hidden;
+  margin-top: 2px;
 }
-.ai-msg.user .ai-msg-avatar { background: var(--purple); color: #fff; width: 28px; height: 28px; }
+.ai-msg.user .ai-msg-avatar { display: none; } /* v3.24: user side no avatar */
 .ai-msg.assistant .ai-msg-avatar { background: transparent; }
 .ai-msg-bubble {
-  padding: 8px 12px;
-  border-radius: 14px;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.65;
   white-space: pre-wrap;
   word-wrap: break-word;
 }
+/* v3.24: User message — soft tinted bubble, no border, no glow */
 .ai-msg.user .ai-msg-bubble {
-  background: #fff;
+  background: #F1EFE8;
   color: #1a1a1a;
-  border-bottom-right-radius: 4px;
-  border: 1.5px solid var(--purple);
-  animation: aiUserGlow 2.5s ease-in-out infinite;
+  padding: 9px 14px;
+  border-radius: 14px;
 }
-@keyframes aiUserGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(113,50,245,0); border-color: var(--purple); }
-  50% { box-shadow: 0 0 0 3px rgba(113,50,245,0.25); border-color: #9b5fff; }
-}
+/* v3.24: AI message — NO bubble (ChatGPT/Claude style) */
 .ai-msg.assistant .ai-msg-bubble {
-  background: var(--surface);
+  background: transparent;
   color: var(--black);
-  border-bottom-left-radius: 4px;
-  border: 1px solid var(--border);
+  border: none;
+  padding: 0;
   white-space: normal;
+  flex: 1;
+  min-width: 0;
+}
+/* Error variant still has subtle bubble for visual distinction */
+.ai-msg.assistant.error .ai-msg-bubble {
+  background: #FEF2F2;
+  border: 0.5px solid #FCA5A5;
+  padding: 8px 12px;
+  border-radius: 10px;
 }
 /* Markdown content inside assistant bubble */
 .ai-msg.assistant .ai-msg-bubble p { margin: 0 0 4px 0; }
@@ -786,23 +794,23 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-copy-btn {
   flex-shrink: 0;
   align-self: flex-end;
-  width: 26px;
-  height: 26px;
-  border: 1px solid var(--border);
-  background: #fff;
-  border-radius: 7px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: var(--gray);
+  color: var(--silver);
   opacity: 0;
-  transition: opacity 0.15s, color 0.15s;
+  transition: all 0.15s;
   margin-bottom: 2px;
 }
 .ai-msg:hover .ai-copy-btn { opacity: 1; }
-.ai-copy-btn:hover { color: var(--purple); border-color: var(--purple); }
-.ai-copy-btn.copied { color: #047857; border-color: #047857; opacity: 1; }
+.ai-copy-btn:hover { color: var(--purple); background: var(--surface); }
+.ai-copy-btn.copied { color: #059669; opacity: 1; }
 .ai-msg.error .ai-msg-bubble {
   background: #fef2f2;
   color: #dc2626;
@@ -834,7 +842,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.7; }
 .ai-empty-title { font-weight: 600; color: var(--black); font-size: 15px; margin-bottom: 4px; }
 .ai-quick-actions {
-  padding: 8px 14px 0;
+  padding: 10px 20px 2px;
   display: flex;
   gap: 6px;
   overflow-x: auto;
@@ -845,45 +853,57 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-quick-actions::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 .ai-chip {
   flex-shrink: 0;
-  padding: 6px 12px;
+  padding: 5px 12px;
   font-size: 12px;
-  border: 1px solid var(--border);
+  border: 0.5px solid var(--border);
   background: #fff;
-  border-radius: 18px;
+  border-radius: 14px;
   cursor: pointer;
-  color: var(--black);
+  color: var(--gray);
   white-space: nowrap;
   font-family: inherit;
   font-weight: 500;
   transition: all 0.15s;
 }
 .ai-chip:hover { background: var(--purple-bg); border-color: var(--purple); color: var(--purple); }
+.ai-chip:active { transform: scale(0.97); }
 .ai-input-wrap {
-  padding: 12px 14px 14px;
+  padding: 14px 20px 18px;
+  border-top: 0.5px solid var(--border);
+  flex-shrink: 0;
+}
+/* v3.24: textarea + send share one pill container */
+.ai-input-wrap-inner {
   display: flex;
   gap: 8px;
   align-items: flex-end;
-  border-top: 1px solid var(--border);
-  flex-shrink: 0;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 14px;
+  padding: 8px 8px 8px 14px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ai-input-wrap-inner:focus-within {
+  border-color: var(--purple);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(113,50,245,0.1);
 }
 .ai-input-wrap textarea {
   flex: 1;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 14px;
+  border: none;
+  padding: 4px 0;
   font-size: 14px;
   font-family: inherit;
   resize: none;
   outline: none;
   max-height: 120px;
   line-height: 1.5;
-  background: var(--surface);
+  background: transparent;
 }
-.ai-input-wrap textarea:focus { border-color: var(--purple); background: #fff; }
 .ai-send {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
   background: var(--purple);
   color: #fff;
   border: none;
@@ -895,6 +915,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   transition: all 0.15s;
 }
 .ai-send:hover { background: var(--purple-deep, #5B1ECF); }
+.ai-send:active { transform: scale(0.94); }
 .ai-send:disabled { background: var(--border); cursor: not-allowed; }
 .ai-footer-info {
   padding: 8px 18px;
@@ -1086,22 +1107,23 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .gs-close:hover { background: var(--surface-2); color: var(--black); }
 .ai-icon-btn {
-  background: #fff;
-  border: 1.5px solid var(--border);
+  background: transparent;
+  border: none;
   color: var(--gray);
   cursor: pointer;
   font-size: 15px;
   line-height: 1;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.15s;
   flex-shrink: 0;
 }
-.ai-icon-btn:hover { background: var(--surface); border-color: var(--purple); color: var(--purple); }
+.ai-icon-btn:hover { background: var(--surface); color: var(--purple); }
+.ai-icon-btn:active { transform: scale(0.95); }
 .gs-results {
   flex: 1;
   overflow-y: auto;
@@ -1630,7 +1652,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.23</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.25</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2328,11 +2350,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="ai-modal">
     <div class="ai-header">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:28px;height:28px;" id="aiHeaderAvatar"></div>
-        <span style="font-size:16px;font-weight:600;">Ask CRM</span>
-        <span id="aiModelLabel" style="font-size:10px;padding:2px 7px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;text-transform:uppercase;">Flash</span>
+        <div style="width:26px;height:26px;" id="aiHeaderAvatar"><div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;letter-spacing:0.3px;">AI</div></div>
+        <div style="display:flex;flex-direction:column;line-height:1.15;">
+          <span style="font-size:14px;font-weight:500;color:#1a1a1a;letter-spacing:-0.2px;">Ask CRM</span>
+          <span id="aiModelLabel" style="font-size:9.5px;color:var(--gray);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-top:1px;">Gemini Flash</span>
+        </div>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;">
+      <div style="display:flex;gap:4px;align-items:center;">
         <button type="button" onclick="openAINotebook()" class="ai-icon-btn" id="aiNotebookBtn" aria-label="笔记本" title="笔记本" style="position:relative;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
           <span id="aiNotebookBadge" style="display:none;position:absolute;top:-2px;right:-2px;background:#DC2626;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:8px;min-width:14px;text-align:center;line-height:1.2;"></span>
@@ -2355,19 +2379,27 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <!-- Inline Settings Panel (collapsible) -->
     <!-- v3.23: Settings moved to standalone Modal (see aiSettingsBackdrop below) -->
 
-    <div id="aiMessages" class="ai-messages"></div>
-    <div class="ai-quick-actions" id="aiQuickActions"></div>
+    <div id="aiMessages" class="ai-messages">
+      <div class="ai-empty">
+        <div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>
+        <div class="ai-empty-title">你的 CRM 分析助手</div>
+        <div style="font-size:12px;color:var(--gray);">Click a quick action below or type your question</div>
+      </div>
+    </div>
+    <div class="ai-quick-actions" id="aiQuickActions"><button class="ai-chip" data-chip-idx="0">💰 每月营业额</button><button class="ai-chip" data-chip-idx="1">💸 每月 Ads Spend</button><button class="ai-chip" data-chip-idx="2">🎯 每月 ROAS</button><button class="ai-chip" data-chip-idx="3">📡 每月 Lead</button><button class="ai-chip" data-chip-idx="4">🏢 门店月度营业额</button><button class="ai-chip" data-chip-idx="5">🏆 门店本月对比</button><button class="ai-chip" data-chip-idx="6">🎪 渠道本月对比</button><button class="ai-chip" data-chip-idx="7">📊 本月 vs 上月</button></div>
     <div class="ai-input-wrap">
-      <textarea id="aiInput" placeholder="问我任何数据问题..." rows="1" onkeydown="_aiInputKey(event)"></textarea>
-      <button type="button" onclick="sendAIMessage()" class="ai-send" id="aiSendBtn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-      </button>
+      <div class="ai-input-wrap-inner">
+        <textarea id="aiInput" placeholder="问我任何数据问题..." rows="1" onkeydown="_aiInputKey(event)"></textarea>
+        <button type="button" onclick="sendAIMessage()" class="ai-send" id="aiSendBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- v3.23: AI Settings Modal (replaces old inline panel) -->
-<div class="modal-backdrop" id="aiSettingsBackdrop" onclick="if(event.target===this)closeAISettings()" style="display:none;z-index:10002;">
+<div class="modal-backdrop" id="aiSettingsBackdrop" onclick="if(event.target===this)closeAISettings()" style="display: none; z-index: 10002;">
   <div style="background:#fff;border-radius:16px;width:min(520px,96vw);max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -2447,40 +2479,75 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (max-width: 767px) {
   #aiInsightToast { top: 70px; right: 10px; left: 10px; width: auto; }
 }
-/* Note pending recommendation under each AI message */
+/* v3.24: Pending note recommendation — refined, premium feel */
 .ai-note-rec {
-  margin-top: 8px;
-  padding: 8px 12px;
-  background: linear-gradient(135deg, #fffbeb, #fff4d1);
-  border: 1px solid #f5d77a;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 0.5px solid var(--border);
   border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-size: 12px;
-  color: #6b4e0d;
+  color: var(--black);
+  transition: border-color 0.15s;
 }
-.ai-note-rec-text { flex: 1; line-height: 1.4; }
-.ai-note-rec-star {
-  background: #fff;
-  border: 1.5px solid #f5b400;
-  color: #f5b400;
-  width: 28px; height: 28px;
+.ai-note-rec:hover { border-color: #f5b400; }
+.ai-note-rec-icon {
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  font-size: 14px;
-  transition: all 0.15s;
+  background: #FAEEDA;
+  color: #854F0B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
   flex-shrink: 0;
 }
-.ai-note-rec-star:hover { background: #f5b400; color:#fff; transform: scale(1.1); }
-.ai-note-rec-star.saved { background: #10B981; border-color: #10B981; color: #fff; cursor: default; }
-.ai-note-rec-dismiss {
-  background: transparent; border: none; color: #aaa;
-  width: 20px; height: 20px; cursor: pointer; font-size: 14px;
-  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+.ai-note-rec-text { flex: 1; line-height: 1.4; min-width: 0; }
+.ai-note-rec-label {
+  font-size: 9.5px;
+  color: var(--gray);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 1px;
+  font-weight: 500;
 }
-.ai-note-rec-dismiss:hover { color: #DC2626; }
+.ai-note-rec-summary {
+  color: var(--black);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-note-rec-star {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  color: var(--black);
+  padding: 5px 11px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  white-space: nowrap;
+  gap: 3px;
+}
+.ai-note-rec-star:hover { background: #FAEEDA; border-color: #f5b400; color: #854F0B; }
+.ai-note-rec-star:active { transform: scale(0.96); }
+.ai-note-rec-star.saved { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; cursor: default; }
+.ai-note-rec-dismiss {
+  background: transparent; border: none; color: var(--silver);
+  width: 22px; height: 22px; cursor: pointer; font-size: 13px;
+  border-radius: 6px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  transition: all 0.15s;
+}
+.ai-note-rec-dismiss:hover { background: var(--surface); color: #B91C1C; }
 /* Notebook item */
 .ai-nb-item {
   margin-bottom: 10px;
@@ -9409,11 +9476,14 @@ function renderPendingNoteRec(noteId) {
   if (!note) return '';
   const isSaved = saved.some(s => s.id === noteId || s.summary === note.summary);
   const starCls = isSaved ? 'ai-note-rec-star saved' : 'ai-note-rec-star';
-  const starTxt = isSaved ? '✓' : '⭐';
+  const starTxt = isSaved ? '✓ 已保存' : '⭐ 保存';
   const dismissBtn = isSaved ? '' : `<button type="button" class="ai-note-rec-dismiss" onclick="dismissAINoteUI('${noteId}', this)" title="忽略">✕</button>`;
   return `<div class="ai-note-rec">
-    <div style="font-size:13px;flex-shrink:0;">💡</div>
-    <div class="ai-note-rec-text">建议存笔记：${escapeHTML(note.summary)}</div>
+    <div class="ai-note-rec-icon">💡</div>
+    <div class="ai-note-rec-text">
+      <div class="ai-note-rec-label">值得记录</div>
+      <div class="ai-note-rec-summary">${escapeHTML(note.summary)}</div>
+    </div>
     <button type="button" class="${starCls}" data-note-pending="${noteId}" onclick="approveAINoteUI('${noteId}', this)" title="${isSaved ? '已保存' : '点击保存到笔记本'}">${starTxt}</button>
     ${dismissBtn}
   </div>`;
@@ -9586,7 +9656,7 @@ function getAIModel() {
 function setAIModel(m) {
   localStorage.setItem(AI_SETTINGS_KEY, m);
   const lbl = document.getElementById('aiModelLabel');
-  if (lbl) lbl.textContent = m.includes('pro') ? 'Pro' : (m.includes('lite') ? 'Lite' : 'Flash');
+  if (lbl) lbl.textContent = 'Gemini ' + (m.includes('pro') ? 'Pro' : (m.includes('lite') ? 'Lite' : 'Flash'));
 }
 
 function openAIChat() {
@@ -9810,6 +9880,17 @@ function renderDataTable(jsonStr) {
       return isNaN(n) ? null : n;
     };
 
+    // v3.25: Detect which cols are "already percentage" cols — skip trend calc on these
+    // A col is a % col if ALL its numeric cells are % strings (or ROAS x strings)
+    const pctColIdx = new Set();
+    const colCount = rows[0] ? rows[0].length : 0;
+    for (let c = 1; c < colCount; c++) {
+      const vals = rows.map(r => String(r[c] || '')).filter(v => v.trim());
+      if (vals.length === 0) continue;
+      const allPctOrX = vals.every(v => /%/.test(v) || /[0-9]x\b/.test(v));
+      if (allPctOrX) pctColIdx.add(c);
+    }
+
     const trs = rows.map((r, rIdx) => {
       // v3.21: Prioritize explicit prevValues from AI (authoritative), fallback to previous row
       // prevValues semantic: "period-over-period comparison" (e.g., last month same row vs this month same row)
@@ -9818,7 +9899,8 @@ function renderDataTable(jsonStr) {
         const expl = prevValues[rIdx].map(v => typeof v === 'number' ? v : extractNum(v));
         if (expl.some(v => v !== null && v !== 0)) prevNums = expl;
       }
-      // Fallback: compare to PREVIOUS ROW (only if no explicit prevValues)
+      // v3.25: Fallback row-over-row comparison ONLY if explicit prevValues was missing
+      // (Skipped when AI provides prevValues because those are authoritative)
       if (!prevNums && rIdx > 0) {
         prevNums = rows[rIdx - 1].slice(1).map(extractNum);
       }
@@ -9837,16 +9919,18 @@ function renderDataTable(jsonStr) {
         })();
 
         let trendHTML = '';
-        if (isNum && prevNums) {
+        // v3.25: skip trend on % / ROAS-x columns (nonsense to "compare" percentages row-by-row)
+        const isPctCol = pctColIdx.has(cIdx);
+        if (isNum && prevNums && !isPctCol) {
           const prevNum = prevNums[cIdx - 1];
           if (prevNum !== null && prevNum !== 0 && !isNaN(prevNum)) {
             const pct = (curNum - prevNum) / Math.abs(prevNum) * 100;
-            if (Math.abs(pct) > 0.05) {
+            // v3.25: cap outlier displays — if % > 200 or < -99, probably a bogus comparison, suppress
+            if (Math.abs(pct) > 0.05 && pct > -99.5 && pct < 200) {
               const isUp = pct > 0;
               const arrow = isUp ? '▲' : '▼';
-              const color = isUp ? '#059669' : '#B91C1C'; // v3.23: softer tones
+              const color = isUp ? '#059669' : '#B91C1C';
               const pctStr = (isUp ? '+' : '') + pct.toFixed(1) + '%';
-              // v3.23: lighter weight + softer color, class-based so mobile can wrap it
               trendHTML = ` <span class="ai-pct-trend" style="color:${color};">${arrow} ${pctStr}</span>`;
             }
           }
