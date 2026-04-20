@@ -482,9 +482,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .ai-msg.assistant .ai-msg-bubble .ai-card { padding: 10px 12px; }
   .ai-card-value { font-size: 22px; }
   .ai-card-label { font-size: 10px; }
-  /* v3.23: Tighter table on mobile */
-  .ai-msg.assistant .ai-msg-bubble .ai-table { padding: 6px; position: relative; }
-  .ai-table th, .ai-table td { padding: 4px 5px; font-size: 11px; }
+  /* v3.27: Tighter mobile table + horizontal scroll when needed */
+  .ai-msg.assistant .ai-msg-bubble .ai-table {
+    padding: 6px;
+    position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .ai-table th, .ai-table td { padding: 5px 7px; font-size: 11px; }
   .ai-table th { font-size: 9.5px; }
   .ai-table-title { font-size: 11px; }
   .ai-table-bar-cell { min-width: 40px; }
@@ -495,15 +500,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     margin-top: 1px;
     font-size: 9px;
   }
-  /* v3.23 mobile: right-edge scroll hint shadow when table overflows */
-  .ai-msg.assistant .ai-msg-bubble .ai-table::after {
+  /* v3.27: scroll hint — narrower (12px) + only shows if table actually overflows */
+  .ai-msg.assistant .ai-msg-bubble .ai-table.is-scrollable::after {
     content: '';
     position: absolute;
-    top: 0; right: 0; bottom: 0;
-    width: 18px;
-    background: linear-gradient(to right, transparent, rgba(255,255,255,0.85));
+    top: 6px; right: 0; bottom: 6px;
+    width: 12px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.92));
     pointer-events: none;
-    border-radius: 0 8px 8px 0;
   }
   /* Quick action chips smaller */
   .ai-chip { padding: 5px 10px; font-size: 11px; }
@@ -626,37 +630,25 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   overflow-x: auto;
   margin: 4px 0;
 }
-/* Numeric highlights — colored inline pills (readable but distinctive) */
+/* v3.27: Numeric highlights — removed purple pill background, cleaner look */
 .ai-msg.assistant .ai-msg-bubble .ai-money {
   color: #5B1ECF;
-  font-weight: 700;
-  background: rgba(113,50,245,0.08);
-  padding: 1px 6px;
-  border-radius: 5px;
+  font-weight: 500;
   white-space: nowrap;
 }
 .ai-msg.assistant .ai-msg-bubble .ai-pct {
-  color: #7132f5;
-  font-weight: 700;
-  background: rgba(113,50,245,0.08);
-  padding: 1px 5px;
-  border-radius: 5px;
+  color: inherit;
+  font-weight: 500;
   white-space: nowrap;
 }
 .ai-msg.assistant .ai-msg-bubble .ai-roas {
-  color: #7132f5;
-  font-weight: 700;
-  background: rgba(113,50,245,0.10);
-  padding: 1px 6px;
-  border-radius: 5px;
+  color: inherit;
+  font-weight: 500;
   white-space: nowrap;
 }
 .ai-msg.assistant .ai-msg-bubble .ai-pos {
-  color: #047857;
-  font-weight: 700;
-  background: rgba(16,185,129,0.1);
-  padding: 1px 6px;
-  border-radius: 5px;
+  color: #059669;
+  font-weight: 500;
 }
 .ai-msg.assistant .ai-msg-bubble .ai-pos .ai-pct {
   background: transparent;
@@ -664,11 +656,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   padding: 0;
 }
 .ai-msg.assistant .ai-msg-bubble .ai-neg {
-  color: #DC2626;
-  font-weight: 700;
-  background: rgba(220,38,38,0.1);
-  padding: 1px 6px;
-  border-radius: 5px;
+  color: #B91C1C;
+  font-weight: 500;
 }
 .ai-msg.assistant .ai-msg-bubble .ai-neg .ai-pct {
   background: transparent;
@@ -752,15 +741,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .ai-table th:first-child { text-align: left; }
 .ai-table th:last-child { border-right: none; }
-.ai-table th.num { text-align: right; }
+.ai-table th.num { text-align: center; }
 .ai-table td {
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-bottom: 1px solid #f5f5f5;
   border-right: 1px solid #f5f5f5;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 .ai-table td:last-child { border-right: none; }
-.ai-table td.num { text-align: right; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ai-table td.num { text-align: center; font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .ai-table tr:last-child td { border-bottom: none; }
 .ai-table-bar-cell {
   position: relative;
@@ -1652,7 +1641,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.26</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.27</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -9783,6 +9772,13 @@ function renderAIMessages() {
   }
   // Scroll to bottom
   setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+  // v3.27: detect which tables actually overflow → show scroll shadow
+  setTimeout(() => {
+    wrap.querySelectorAll('.ai-table').forEach(t => {
+      if (t.scrollWidth > t.clientWidth + 2) t.classList.add('is-scrollable');
+      else t.classList.remove('is-scrollable');
+    });
+  }, 80);
 
   // Copy button delegation
   wrap.onclick = wrap.onclick || function(e) {
@@ -9951,13 +9947,17 @@ function renderDataTable(jsonStr) {
       const tds = r.map((cell, cIdx) => {
         const curNum = extractNum(cell);
         const isNum = cIdx > 0 && curNum !== null;
-        // Format display: add RM for money-like numbers (>=100, no % or x suffix)
+        // v3.27: Only auto-prepend RM if column header hints it's money
+        const colHeader = cols[cIdx] ? String(cols[cIdx]).toLowerCase() : '';
+        const isMoneyCol = /rm|\$|营业额|销售|花费|收入|成本|revenue|sales|cost|spend|amount|price/.test(colHeader);
         const rawStr = String(cell);
         const cellStr = (() => {
           if (!isNum) return rawStr;
           if (rawStr.includes('%') || rawStr.includes('x') || rawStr.toLowerCase().includes('roas')) return rawStr;
           if (rawStr.includes('RM')) return rawStr; // already formatted
-          if (curNum >= 100) return 'RM ' + curNum.toLocaleString('en-US', { maximumFractionDigits: 0 });
+          // v3.27: only add RM for money-category columns; Lead/count columns stay as plain numbers
+          if (isMoneyCol && curNum >= 100) return 'RM ' + curNum.toLocaleString('en-US', { maximumFractionDigits: 0 });
+          if (curNum >= 1000) return curNum.toLocaleString('en-US', { maximumFractionDigits: 0 });
           return rawStr;
         })();
 
