@@ -1328,7 +1328,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.81</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.82</span>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <!-- Global search (all devices) -->
@@ -2050,13 +2050,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <button type="button" onclick="closeAIChat()" class="gs-close" aria-label="Close">✕</button>
       </div>
     </div>
-    <div id="aiMessages" class="ai-messages">
-      <div class="ai-empty">
-        <div class="ai-empty-icon">🤖</div>
-        <div class="ai-empty-title">Ask me anything about your data</div>
-        <div style="font-size:12px;color:var(--gray);">Click a quick action below or type your question</div>
-      </div>
-    </div>
+    <div id="aiMessages" class="ai-messages"></div>
     <div class="ai-quick-actions" id="aiQuickActions">
       <button class="ai-chip" onclick="askAIQuick('今日新 lead 多少？')">今日 Lead</button>
       <button class="ai-chip" onclick="askAIQuick('这个月总销售多少？')">本月销售</button>
@@ -8730,9 +8724,9 @@ async function sendAIMessage() {
   }
 }
 
-// Helper: get configured Apps Script URL
+// Helper: get configured Apps Script URL (reuse existing getter)
 function getGSheetUrl() {
-  return (state.sheetUrl || '').trim();
+  return (typeof getGsUrl === 'function') ? getGsUrl() : (state.sheetUrl || '').trim();
 }
 
 // Build token-efficient context snapshot for AI
