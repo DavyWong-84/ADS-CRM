@@ -727,7 +727,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .ai-table th:first-child { text-align: left; }
 .ai-table th:last-child { border-right: none; }
-.ai-table th.num { text-align: center; }
+.ai-table th.num { text-align: right; }
 .ai-table td {
   padding: 6px 8px;
   border-bottom: 1px solid #f5f5f5;
@@ -757,6 +757,26 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   background: var(--purple-bg);
   font-weight: 700;
 }
+.ai-copy-btn {
+  flex-shrink: 0;
+  align-self: flex-end;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--gray);
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  margin-bottom: 2px;
+}
+.ai-msg:hover .ai-copy-btn { opacity: 1; }
+.ai-copy-btn:hover { color: var(--purple); border-color: var(--purple); }
+.ai-copy-btn.copied { color: #047857; border-color: #047857; opacity: 1; }
 .ai-msg.error .ai-msg-bubble {
   background: #fef2f2;
   color: #dc2626;
@@ -1584,7 +1604,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.09</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.11</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2385,7 +2405,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.11'; // bump this to force reload of preloaded data
+const DATA_VERSION = '2.13'; // bump this to force reload of preloaded data
 
 // ---------- State ----------
 let state = {
@@ -9091,11 +9111,15 @@ function renderAIMessages() {
     const isErr = m.error;
     const cls = isUser ? 'user' : (isErr ? 'assistant error' : 'assistant');
     const body = isUser ? escapeHTML(m.text) : renderMarkdown(m.text);
-    // User messages: no avatar, just bubble right-aligned. Assistant: keep AI avatar.
+    const rawText = m.text.replace(/\[\[note\]\][\s\S]*?\[\[\/note\]\]/g, '').trim();
+    const copyBtn = `<button class="ai-copy-btn" onclick="copyAIMsg(this,${JSON.stringify(rawText)})" title="复制">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    </button>`;
     if (isUser) {
       return `
         <div class="ai-msg ${cls}">
           <div class="ai-msg-bubble">${body}</div>
+          ${copyBtn}
         </div>
       `;
     }
@@ -9103,6 +9127,7 @@ function renderAIMessages() {
       <div class="ai-msg ${cls}">
         <div class="ai-msg-avatar">${AI_AVATAR_SVG}</div>
         <div class="ai-msg-bubble">${body}</div>
+        ${copyBtn}
       </div>
     `;
   }).join('');
@@ -9121,6 +9146,9 @@ function renderAIMessages() {
 
 // Minimal Markdown renderer — safe (escapes HTML first, then applies replacements)
 function renderMarkdown(text) {
+  // Strip [[note]] blocks — extracted silently, never shown in UI
+  text = text.replace(/\[\[note\]\][\s\S]*?\[\[\/note\]\]/g, '').trim();
+
   // Extract [[card]]...[[/card]] and [[table]]...[[/table]] blocks BEFORE escaping
   const blocks = [];
   text = text.replace(/\[\[card\]\]([\s\S]*?)\[\[\/card\]\]/g, (_, content) => {
@@ -9287,6 +9315,29 @@ function _aiInputKey(e) {
     e.preventDefault();
     sendAIMessage();
   }
+}
+
+function copyAIMsg(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+    }, 1500);
+  }).catch(() => {
+    // Fallback for older browsers
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 1500);
+  });
 }
 
 function askAIQuick(q) {
