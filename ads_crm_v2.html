@@ -433,7 +433,193 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .quick-chip { padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; cursor: pointer; }
 .quick-chip:hover { border-color: var(--purple-light, #b99afa); color: var(--purple); }
 
-/* Alerts Modal */
+/* AI Chat Modal */
+#aiChatBackdrop.open {
+  display: block !important;
+  position: fixed;
+  inset: 0;
+  background: rgba(16,17,20,0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 10000;
+  animation: fadein 0.15s ease;
+}
+#aiChatBackdrop.open .ai-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  width: calc(100% - 32px);
+  max-width: 620px;
+  height: 80vh;
+  max-height: 720px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(16,17,20,0.28);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalIn 0.2s ease;
+}
+.ai-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ai-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ai-msg {
+  max-width: 85%;
+  display: flex;
+  gap: 10px;
+}
+.ai-msg.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+.ai-msg-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 14px;
+}
+.ai-msg.user .ai-msg-avatar { background: var(--purple); color: #fff; }
+.ai-msg.assistant .ai-msg-avatar { background: var(--purple-bg); color: var(--purple); }
+.ai-msg-bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.ai-msg.user .ai-msg-bubble {
+  background: var(--purple);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.ai-msg.assistant .ai-msg-bubble {
+  background: var(--surface);
+  color: var(--black);
+  border-bottom-left-radius: 4px;
+  border: 1px solid var(--border);
+}
+.ai-msg.error .ai-msg-bubble {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+.ai-typing {
+  display: flex;
+  gap: 4px;
+  padding: 10px 0;
+}
+.ai-typing-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--gray);
+  border-radius: 50%;
+  animation: aiTyping 1.2s infinite;
+}
+.ai-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.ai-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes aiTyping {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-4px); }
+}
+.ai-empty {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--gray);
+}
+.ai-empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.7; }
+.ai-empty-title { font-weight: 600; color: var(--black); font-size: 15px; margin-bottom: 4px; }
+.ai-quick-actions {
+  padding: 8px 14px 0;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: thin;
+}
+.ai-quick-actions::-webkit-scrollbar { height: 4px; }
+.ai-quick-actions::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.ai-chip {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 18px;
+  cursor: pointer;
+  color: var(--black);
+  white-space: nowrap;
+  font-family: inherit;
+  font-weight: 500;
+  transition: all 0.15s;
+}
+.ai-chip:hover { background: var(--purple-bg); border-color: var(--purple); color: var(--purple); }
+.ai-input-wrap {
+  padding: 12px 14px 14px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.ai-input-wrap textarea {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  max-height: 120px;
+  line-height: 1.5;
+  background: var(--surface);
+}
+.ai-input-wrap textarea:focus { border-color: var(--purple); background: #fff; }
+.ai-send {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.ai-send:hover { background: var(--purple-deep, #5B1ECF); }
+.ai-send:disabled { background: var(--border); cursor: not-allowed; }
+.ai-footer-info {
+  padding: 8px 18px;
+  font-size: 11px;
+  color: var(--gray);
+  text-align: center;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
 #alertsBackdrop.open {
   display: block !important;
   position: fixed;
@@ -1142,12 +1328,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="brand">
     <div class="brand-logo">A</div>
     <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.80</span>
+    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.81</span>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <!-- Global search (all devices) -->
     <button onclick="openGlobalSearch()" aria-label="Search" title="Search (Ctrl+K)" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+    </button>
+    <!-- AI Assistant -->
+    <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"></path><rect x="2" y="8" width="20" height="14" rx="2" ry="2"></rect><path d="M12 2v2"></path><path d="M8 14h.01"></path><path d="M16 14h.01"></path><path d="M12 18h.01"></path></svg>
     </button>
     <!-- Alerts / Inbox -->
     <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -1274,10 +1464,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-04-19</span>
+                      <span id="f_leadDate_label">2026-04-20</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-04-19">
+                    <input type="hidden" id="f_leadDate" value="2026-04-20">
                   </div>
                 </div>
               </div>
@@ -1774,6 +1964,28 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           </div>
         </div>
 
+        <!-- AI Assistant -->
+        <div class="card">
+          <div class="section-title"><h3>🤖 AI Assistant</h3></div>
+          <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
+            用 Gemini AI 查询数据。API Key 藏在 Apps Script 里（安全）。
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div>
+              <label style="font-size:12px;">Model</label>
+              <select id="ai_model" onchange="onAIModelChange(this.value)" style="width:100%;font-size:13px;">
+                <option value="gemini-2.5-pro">Gemini 2.5 Pro (100/day · 最聪明)</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (500/day · 推荐)</option>
+                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (1000/day · 最快)</option>
+              </select>
+            </div>
+            <div style="font-size:11px;color:var(--gray);background:var(--surface);padding:8px 10px;border-radius:6px;line-height:1.5;">
+              💡 Key 设置在 <strong>Apps Script → Project Settings → Script Properties</strong>，加一条 <code>GEMINI_API_KEY</code> = 你的 key。
+            </div>
+            <button type="button" class="btn btn-outline" onclick="openAIChat()">🤖 打开 AI 助手</button>
+          </div>
+        </div>
+
         <!-- Backup -->
         <div class="card">
           <div class="section-title"><h3>💾 Backup</h3></div>
@@ -1821,6 +2033,46 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
     </div>
     <div id="alertsContent" class="alerts-content"></div>
+  </div>
+</div>
+
+<!-- AI Chat Modal -->
+<div class="modal-backdrop" id="aiChatBackdrop" onclick="if(event.target===this) closeAIChat()">
+  <div class="ai-modal">
+    <div class="ai-header">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"></path><rect x="2" y="8" width="20" height="14" rx="2" ry="2"></rect><path d="M12 2v2"></path><path d="M8 14h.01"></path><path d="M16 14h.01"></path><path d="M12 18h.01"></path></svg>
+        <span style="font-size:16px;font-weight:600;">Ask CRM</span>
+        <span id="aiModelLabel" style="font-size:10px;padding:2px 7px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;text-transform:uppercase;">Flash</span>
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <button type="button" onclick="clearAIChat()" class="gs-close" aria-label="New chat" title="New chat" style="font-size:14px;">↻</button>
+        <button type="button" onclick="closeAIChat()" class="gs-close" aria-label="Close">✕</button>
+      </div>
+    </div>
+    <div id="aiMessages" class="ai-messages">
+      <div class="ai-empty">
+        <div class="ai-empty-icon">🤖</div>
+        <div class="ai-empty-title">Ask me anything about your data</div>
+        <div style="font-size:12px;color:var(--gray);">Click a quick action below or type your question</div>
+      </div>
+    </div>
+    <div class="ai-quick-actions" id="aiQuickActions">
+      <button class="ai-chip" onclick="askAIQuick('今日新 lead 多少？')">今日 Lead</button>
+      <button class="ai-chip" onclick="askAIQuick('这个月总销售多少？')">本月销售</button>
+      <button class="ai-chip" onclick="askAIQuick('这个月 ROAS 多少？')">本月 ROAS</button>
+      <button class="ai-chip" onclick="askAIQuick('今日有几单预约？')">今日预约</button>
+      <button class="ai-chip" onclick="askAIQuick('本月 vs 上月对比')">月度对比</button>
+      <button class="ai-chip" onclick="askAIQuick('哪个门店表现最好？')">门店排名</button>
+      <button class="ai-chip" onclick="askAIQuick('哪个渠道 ROAS 最高？')">渠道排名</button>
+      <button class="ai-chip" onclick="askAIQuick('分析最近的销售趋势')">趋势分析</button>
+    </div>
+    <div class="ai-input-wrap">
+      <textarea id="aiInput" placeholder="问我任何数据问题..." rows="1" onkeydown="_aiInputKey(event)"></textarea>
+      <button type="button" onclick="sendAIMessage()" class="ai-send" id="aiSendBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -7382,6 +7634,9 @@ function editRevRow(month, locationId) {
 // ---------- Settings ----------
 function renderSettings() {
   loadGitHubConfig();
+  // Sync AI model select to stored value
+  const aiSel = document.getElementById('ai_model');
+  if (aiSel) aiSel.value = getAIModel();
   document.getElementById('channelsList').innerHTML = state.channels.map(c => {
     const isActive = c.active !== false;
     const statusColor = isActive ? 'var(--green-dark)' : 'var(--gray)';
@@ -8321,6 +8576,330 @@ function _alertAct(idx) {
 // Refresh badge periodically + on data changes
 setTimeout(refreshAlertsBadge, 500);
 setInterval(refreshAlertsBadge, 60000); // every 1 min
+
+function onAIModelChange(m) {
+  setAIModel(m);
+  toast('AI model changed to ' + m);
+}
+
+// ---------- AI Chat (Gemini) ----------
+const AI_SETTINGS_KEY = 'ads-crm-ai-model';
+let _aiHistory = []; // Last N turns: [{role, text}]
+let _aiBusy = false;
+
+function getAIModel() {
+  return localStorage.getItem(AI_SETTINGS_KEY) || 'gemini-2.5-flash';
+}
+
+function setAIModel(m) {
+  localStorage.setItem(AI_SETTINGS_KEY, m);
+  const lbl = document.getElementById('aiModelLabel');
+  if (lbl) lbl.textContent = m.includes('pro') ? 'Pro' : (m.includes('lite') ? 'Lite' : 'Flash');
+}
+
+function openAIChat() {
+  const bd = document.getElementById('aiChatBackdrop');
+  if (!bd) return;
+  bd.classList.add('open');
+  setAIModel(getAIModel()); // Sync label
+  renderAIMessages();
+  setTimeout(() => { const inp = document.getElementById('aiInput'); if (inp) inp.focus(); }, 100);
+}
+
+function closeAIChat() {
+  const bd = document.getElementById('aiChatBackdrop');
+  if (bd) bd.classList.remove('open');
+}
+
+function clearAIChat() {
+  _aiHistory = [];
+  renderAIMessages();
+}
+
+function renderAIMessages() {
+  const wrap = document.getElementById('aiMessages');
+  if (!wrap) return;
+  if (_aiHistory.length === 0) {
+    wrap.innerHTML = `
+      <div class="ai-empty">
+        <div class="ai-empty-icon">🤖</div>
+        <div class="ai-empty-title">Ask me anything about your data</div>
+        <div style="font-size:12px;color:var(--gray);">Click a quick action below or type your question</div>
+      </div>
+    `;
+    return;
+  }
+  wrap.innerHTML = _aiHistory.map(m => {
+    const isUser = m.role === 'user';
+    const isErr = m.error;
+    const avatar = isUser ? '👤' : '🤖';
+    const cls = isUser ? 'user' : (isErr ? 'assistant error' : 'assistant');
+    return `
+      <div class="ai-msg ${cls}">
+        <div class="ai-msg-avatar">${avatar}</div>
+        <div class="ai-msg-bubble">${escapeHTML(m.text)}</div>
+      </div>
+    `;
+  }).join('');
+  // Add typing indicator if busy
+  if (_aiBusy) {
+    wrap.innerHTML += `
+      <div class="ai-msg assistant">
+        <div class="ai-msg-avatar">🤖</div>
+        <div class="ai-msg-bubble"><div class="ai-typing"><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div></div></div>
+      </div>
+    `;
+  }
+  // Scroll to bottom
+  setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+}
+
+function escapeHTML(s) {
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function _aiInputKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendAIMessage();
+  }
+}
+
+function askAIQuick(q) {
+  const inp = document.getElementById('aiInput');
+  if (inp) inp.value = q;
+  sendAIMessage();
+}
+
+async function sendAIMessage() {
+  if (_aiBusy) return;
+  const inp = document.getElementById('aiInput');
+  const q = String(inp?.value || '').trim();
+  if (!q) return;
+
+  // Check Apps Script URL
+  const gsUrl = getGSheetUrl();
+  if (!gsUrl) {
+    alert('Please configure Apps Script URL in Settings → Google Sheet Sync first.');
+    return;
+  }
+
+  // Add user message
+  _aiHistory.push({ role: 'user', text: q });
+  inp.value = '';
+  _aiBusy = true;
+  renderAIMessages();
+
+  try {
+    // Build context from state
+    const context = buildAIContext(q);
+    const model = getAIModel();
+
+    // Build history for multi-turn (exclude the current question we just pushed)
+    const history = _aiHistory.slice(0, -1).slice(-10).map(m => ({
+      role: m.role === 'user' ? 'user' : 'model',
+      text: m.text
+    }));
+
+    const res = await fetch(gsUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' }, // Apps Script accepts this for CORS
+      body: JSON.stringify({
+        action: 'askAI',
+        question: q,
+        model: model,
+        context: context,
+        history: history
+      })
+    });
+    const data = await res.json();
+    _aiBusy = false;
+    if (data.success && data.result && data.result.answer) {
+      _aiHistory.push({ role: 'model', text: data.result.answer });
+    } else {
+      const errMsg = data.result?.error || data.error || 'Unknown error';
+      _aiHistory.push({ role: 'model', text: '❌ ' + errMsg, error: true });
+    }
+    renderAIMessages();
+  } catch (err) {
+    _aiBusy = false;
+    _aiHistory.push({ role: 'model', text: '❌ Network error: ' + err.message, error: true });
+    renderAIMessages();
+  }
+}
+
+// Helper: get configured Apps Script URL
+function getGSheetUrl() {
+  return (state.sheetUrl || '').trim();
+}
+
+// Build token-efficient context snapshot for AI
+function buildAIContext(question) {
+  const q = question.toLowerCase();
+  const today = todayStr();
+  const thisMonth = today.substring(0, 7);
+  const prevMonth = (() => {
+    const [y, m] = thisMonth.split('-').map(Number);
+    const d = new Date(y, m - 2, 1);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  })();
+
+  // Dictionary (always include — helps AI understand IDs)
+  const dictionary = {
+    channels: state.channels.map(c => ({ id: c.id, name: c.name, platform: c.platform, active: c.active !== false })),
+    stores: state.locations.map(s => ({ id: s.id, name: s.name, active: s.active !== false })),
+    lead_status: { lead: '初诊 Lead', booked: '已预约', done: '已到诊', noshow: '未到诊' }
+  };
+
+  // Always include: today + this month + last month summary
+  const snapshot = {
+    today: today,
+    this_month: thisMonth,
+    last_month: prevMonth,
+    summary: {
+      today: buildDaySummary(today),
+      this_month: buildMonthSummary(thisMonth),
+      last_month: buildMonthSummary(prevMonth)
+    }
+  };
+
+  // Keyword-based enrichment
+  if (/趋势|trend|\u8fd1|recent|6 month|history/i.test(q)) {
+    snapshot.last_6_months = buildTrendSummary(6);
+  }
+  if (/year|年|ytd|annual/i.test(q)) {
+    snapshot.this_year = buildYearSummary(thisMonth.substring(0, 4));
+  }
+  if (/lead|询问|咨询/i.test(q)) {
+    snapshot.recent_leads_count = buildLeadsCount();
+  }
+
+  return { dictionary, snapshot };
+}
+
+function buildDaySummary(dStr) {
+  const dayLeads = state.leads.filter(l => l.leadDate === dStr);
+  const byStatus = { lead: 0, booked: 0, done: 0, noshow: 0 };
+  dayLeads.forEach(l => { if (byStatus[l.status] != null) byStatus[l.status]++; });
+  const apptsToday = state.leads.filter(l => l.apptDate === dStr).length;
+  return {
+    new_leads: dayLeads.length,
+    by_status: byStatus,
+    appointments_today: apptsToday
+  };
+}
+
+function buildMonthSummary(mStr) {
+  const monthLeads = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(mStr));
+  // Revenue
+  const rev = state.revenue.filter(r => r.month === mStr);
+  const totalRev = rev.reduce((s, r) => s + (r.total || 0), 0);
+  const newCust = rev.reduce((s, r) => s + (r.newCustomer || 0), 0);
+  const oldCust = totalRev - newCust;
+  const byStore = {};
+  state.locations.filter(l => l.active !== false).forEach(loc => {
+    const r = rev.find(x => x.locationId === loc.id);
+    byStore[loc.name] = r ? { total: r.total || 0, new: r.newCustomer || 0 } : { total: 0, new: 0 };
+  });
+  // Ads
+  const ads = state.adsSpend.filter(a => a.month === mStr);
+  const metaCost = ads.filter(a => a.platform === 'meta').reduce((s, a) => s + (a.amount || 0), 0);
+  const googleCost = ads.filter(a => a.platform === 'google').reduce((s, a) => s + (a.amount || 0), 0);
+  const totalAdsCost = metaCost + googleCost;
+  // Ads sales (from leads done/pending with apptDate in month)
+  const monthApptLeads = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(mStr) && (l.status === 'done' || l.status === 'pending'));
+  const metaSales = monthApptLeads.filter(l => l.platform === 'meta').reduce((s, l) => s + (l.spend || 0), 0);
+  const googleSales = monthApptLeads.filter(l => l.platform === 'google').reduce((s, l) => s + (l.spend || 0), 0);
+  const organicSales = monthApptLeads.filter(l => l.platform === 'organic').reduce((s, l) => s + (l.spend || 0), 0);
+  const fuSales = monthApptLeads.filter(l => l.platform === 'followup').reduce((s, l) => s + (l.spend || 0), 0);
+  const roasMeta = metaCost > 0 ? metaSales / metaCost : null;
+  const roasGoogle = googleCost > 0 ? googleSales / googleCost : null;
+  const roasTotal = totalAdsCost > 0 ? (metaSales + googleSales + organicSales + fuSales) / totalAdsCost : null;
+  // Status
+  const byStatus = { lead: 0, booked: 0, done: 0, noshow: 0 };
+  monthLeads.forEach(l => { if (byStatus[l.status] != null) byStatus[l.status]++; });
+  return {
+    revenue_total: Math.round(totalRev),
+    revenue_new: Math.round(newCust),
+    revenue_old: Math.round(oldCust),
+    new_customer_pct: totalRev > 0 ? Math.round(newCust / totalRev * 1000) / 10 : 0,
+    revenue_by_store: byStore,
+    ads_cost_meta: Math.round(metaCost),
+    ads_cost_google: Math.round(googleCost),
+    ads_cost_total: Math.round(totalAdsCost),
+    ads_sales_meta: Math.round(metaSales),
+    ads_sales_google: Math.round(googleSales),
+    ads_sales_organic: Math.round(organicSales),
+    ads_sales_followup: Math.round(fuSales),
+    roas_meta: roasMeta ? Math.round(roasMeta * 100) / 100 : null,
+    roas_google: roasGoogle ? Math.round(roasGoogle * 100) / 100 : null,
+    roas_total: roasTotal ? Math.round(roasTotal * 100) / 100 : null,
+    leads_total: monthLeads.length,
+    leads_by_status: byStatus
+  };
+}
+
+function buildYearSummary(yStr) {
+  const rev = state.revenue.filter(r => r.month && r.month.startsWith(yStr));
+  const total = rev.reduce((s, r) => s + (r.total || 0), 0);
+  const newC = rev.reduce((s, r) => s + (r.newCustomer || 0), 0);
+  const ads = state.adsSpend.filter(a => a.month && a.month.startsWith(yStr));
+  const adsTotal = ads.reduce((s, a) => s + (a.amount || 0), 0);
+  const leadsThisYr = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(yStr)).length;
+  return {
+    revenue_ytd: Math.round(total),
+    new_customer_ytd: Math.round(newC),
+    new_customer_pct_ytd: total > 0 ? Math.round(newC / total * 1000) / 10 : 0,
+    ads_cost_ytd: Math.round(adsTotal),
+    leads_ytd: leadsThisYr
+  };
+}
+
+function buildTrendSummary(nMonths) {
+  const arr = [];
+  const today = new Date();
+  for (let i = nMonths - 1; i >= 0; i--) {
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+    const m = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    const rev = state.revenue.filter(r => r.month === m).reduce((s, r) => s + (r.total || 0), 0);
+    const newC = state.revenue.filter(r => r.month === m).reduce((s, r) => s + (r.newCustomer || 0), 0);
+    const ads = state.adsSpend.filter(a => a.month === m).reduce((s, a) => s + (a.amount || 0), 0);
+    const leadsN = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m)).length;
+    arr.push({
+      month: m,
+      revenue: Math.round(rev),
+      new_customer: Math.round(newC),
+      ads_cost: Math.round(ads),
+      leads: leadsN
+    });
+  }
+  return arr;
+}
+
+function buildLeadsCount() {
+  const today = todayStr();
+  const thisMonth = today.substring(0, 7);
+  const thisWeekStart = (() => {
+    const d = new Date();
+    d.setDate(d.getDate() - d.getDay());
+    return d.toISOString().substring(0, 10);
+  })();
+  return {
+    today: state.leads.filter(l => l.leadDate === today).length,
+    this_week: state.leads.filter(l => l.leadDate >= thisWeekStart).length,
+    this_month: state.leads.filter(l => l.leadDate && l.leadDate.startsWith(thisMonth)).length
+  };
+}
+
+// Alt+A shortcut
+document.addEventListener('keydown', e => {
+  if (e.altKey && (e.key === 'a' || e.key === 'A')) {
+    e.preventDefault();
+    openAIChat();
+  }
+});
 
 // ---------- Global Quick Switcher (Ctrl+K) ----------
 let _gsSelectedIdx = 0;
