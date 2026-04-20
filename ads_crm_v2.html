@@ -1567,7 +1567,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.00</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.02</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2333,7 +2333,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.02'; // bump this to force reload of preloaded data
+const DATA_VERSION = '2.04'; // bump this to force reload of preloaded data
 
 // ---------- State ----------
 let state = {
@@ -9343,6 +9343,15 @@ function buildMonthSummary(mStr) {
     ads_sales_google: Math.round(googleSales),
     ads_sales_organic: Math.round(organicSales),
     ads_sales_followup: Math.round(fuSales),
+    ads_sales_total: Math.round(metaSales + googleSales + organicSales + fuSales),
+    ads_sales_by_store: (() => {
+      const byStore = {};
+      state.locations.filter(l => l.active !== false).forEach(loc => {
+        const storeAppts = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(mStr) && l.locationId === loc.id);
+        byStore[loc.name] = Math.round(storeAppts.reduce((s, l) => s + (l.spend || 0), 0));
+      });
+      return byStore;
+    })(),
     roas_meta: roasMeta ? Math.round(roasMeta * 100) / 100 : null,
     roas_google: roasGoogle ? Math.round(roasGoogle * 100) / 100 : null,
     roas_total: roasTotal ? Math.round(roasTotal * 100) / 100 : null,
