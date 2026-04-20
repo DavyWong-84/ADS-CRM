@@ -1584,7 +1584,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.06</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.09</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2239,6 +2239,28 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <div style="font-size:11px;color:var(--gray);background:var(--surface);padding:8px 10px;border-radius:6px;line-height:1.5;">
               💡 Key 设置在 <strong>Apps Script → Project Settings → Script Properties</strong>，加一条 <code>GEMINI_API_KEY</code> = 你的 key。
             </div>
+
+            <!-- AI Role / Custom Prompt -->
+            <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <label style="font-size:12px;font-weight:600;">🎭 AI 角色 / System Prompt</label>
+                <div style="display:flex;gap:4px;">
+                  <select id="ai_role_preset" onchange="applyAIRolePreset(this.value)" style="font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;">
+                    <option value="">— 套用模板 —</option>
+                    <option value="analyst">📊 数据分析师</option>
+                    <option value="coach">🎯 营销顾问</option>
+                    <option value="concise">⚡ 极简模式</option>
+                    <option value="bilingual">🌏 中英双语</option>
+                  </select>
+                </div>
+              </div>
+              <textarea id="ai_custom_role" rows="4" placeholder="留空 = 使用默认角色。可自定义 AI 的回答风格、专注点、语气..." style="width:100%;font-size:12px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:vertical;line-height:1.5;box-sizing:border-box;" onchange="saveAICustomRole()"></textarea>
+              <div style="display:flex;gap:6px;margin-top:6px;">
+                <button class="btn btn-outline" style="font-size:11px;padding:4px 10px;" onclick="saveAICustomRole();toast('已保存 ✓')">💾 保存</button>
+                <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="document.getElementById('ai_custom_role').value='';saveAICustomRole();toast('已清除')">✕ 清除</button>
+              </div>
+            </div>
+
             <button type="button" class="btn btn-outline" onclick="openAIChat()">💬 打开 AI 助手</button>
           </div>
         </div>
@@ -2363,7 +2385,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.08'; // bump this to force reload of preloaded data
+const DATA_VERSION = '2.11'; // bump this to force reload of preloaded data
 
 // ---------- State ----------
 let state = {
@@ -7907,6 +7929,8 @@ function renderSettings() {
   // Sync AI model select to stored value
   const aiSel = document.getElementById('ai_model');
   if (aiSel) aiSel.value = getAIModel();
+  // Load AI custom role
+  loadAIRoleToUI();
   document.getElementById('channelsList').innerHTML = state.channels.map(c => {
     const isActive = c.active !== false;
     const statusColor = isActive ? 'var(--green-dark)' : 'var(--gray)';
@@ -8936,7 +8960,73 @@ function onAIModelChange(m) {
 const AI_SETTINGS_KEY = 'ads-crm-ai-model';
 let _aiHistory = []; // Last N turns: [{role, text}]
 let _aiBusy = false;
-const AI_CHAT_HISTORY_KEY = 'ads_crm_ai_history';
+const AI_NOTES_KEY = 'ads_crm_ai_notes';
+const AI_NOTES_MAX = 50; // keep latest 50 notes
+
+function getAINotes() {
+  try {
+    const raw = localStorage.getItem(AI_NOTES_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveAINotes(notes) {
+  try { localStorage.setItem(AI_NOTES_KEY, JSON.stringify(notes.slice(-AI_NOTES_MAX))); } catch(e) {}
+}
+
+// Called after every AI response — AI may append [[note]]...[[/note]] blocks
+function extractAndSaveAINotes(responseText) {
+  const notePattern = /\[\[note\]\]([\s\S]*?)\[\[\/note\]\]/g;
+  let match;
+  const newNotes = [];
+  while ((match = notePattern.exec(responseText)) !== null) {
+    try {
+      const n = JSON.parse(match[1].trim());
+      if (n.content) {
+        newNotes.push({
+          date: n.date || new Date().toISOString().substring(0, 10),
+          type: n.type || 'insight',
+          content: n.content,
+          data: n.data || ''
+        });
+      }
+    } catch(e) {}
+  }
+  if (newNotes.length > 0) {
+    const existing = getAINotes();
+    saveAINotes([...existing, ...newNotes]);
+  }
+}
+
+const AI_ROLE_KEY = 'ads_crm_ai_custom_role';
+const AI_ROLE_PRESETS = {
+  analyst: `你是一个专业的数据分析师。回答时优先给表格和数字，简洁直接。每次回答必须包含关键数据对比和趋势分析。用中文回答。`,
+  coach: `你是一个经验丰富的 marketing 顾问，熟悉美容医疗行业。除了给数据，还要主动指出哪里有改善空间，哪个渠道值得加大投入。用中文回答，带点建议性语气。`,
+  concise: `极简模式：直接给数字，不要解释，不要前言，不要客套话。只给表格或一行结论。`,
+  bilingual: `Reply in both Chinese and English. Show the key number first in Chinese, then add English summary below. Keep both concise.`
+};
+
+function getAICustomRole() {
+  return localStorage.getItem(AI_ROLE_KEY) || '';
+}
+
+function saveAICustomRole() {
+  const val = (document.getElementById('ai_custom_role')?.value || '').trim();
+  if (val) localStorage.setItem(AI_ROLE_KEY, val);
+  else localStorage.removeItem(AI_ROLE_KEY);
+}
+
+function applyAIRolePreset(key) {
+  if (!key || !AI_ROLE_PRESETS[key]) return;
+  const ta = document.getElementById('ai_custom_role');
+  if (ta) { ta.value = AI_ROLE_PRESETS[key]; saveAICustomRole(); toast('模板已套用，记得保存 ✓'); }
+  document.getElementById('ai_role_preset').value = '';
+}
+
+function loadAIRoleToUI() {
+  const ta = document.getElementById('ai_custom_role');
+  if (ta) ta.value = getAICustomRole();
+}
 
 function saveAIHistory() {
   try { localStorage.setItem(AI_CHAT_HISTORY_KEY, JSON.stringify(_aiHistory.slice(-20))); } catch(e) {}
@@ -9234,9 +9324,18 @@ function renderChips() {
   const wrap = document.getElementById('aiQuickActions');
   if (!wrap) return;
   const chips = getChips();
-  wrap.innerHTML = chips.map(c =>
-    `<button class="ai-chip" onclick="askAIQuick(${JSON.stringify(c.prompt)})">${escapeHTML(c.label)}</button>`
+  wrap.innerHTML = chips.map((c, i) =>
+    `<button class="ai-chip" data-chip-idx="${i}">${escapeHTML(c.label)}</button>`
   ).join('');
+  // Store prompts separately to avoid HTML escaping issues
+  wrap._chipPrompts = chips.map(c => c.prompt);
+  wrap.onclick = (e) => {
+    const btn = e.target.closest('[data-chip-idx]');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.chipIdx, 10);
+    const prompt = wrap._chipPrompts[idx];
+    if (prompt) askAIQuick(prompt);
+  };
 }
 
 function openChipsEditor() {
@@ -9359,7 +9458,9 @@ async function sendAIMessage() {
 
     _aiBusy = false;
     if (data && data.success && data.result && data.result.answer) {
-      _aiHistory.push({ role: 'model', text: data.result.answer });
+      const answer = data.result.answer;
+      extractAndSaveAINotes(answer); // Auto-save any [[note]] blocks
+      _aiHistory.push({ role: 'model', text: answer });
     } else {
       const errMsg = lastErr || 'Unknown error';
       const is503 = errMsg.includes('503') || errMsg.includes('UNAVAILABLE');
@@ -9387,10 +9488,15 @@ function getGSheetUrl() {
 function buildAIContext(question) {
   const today = todayStr();
   const thisMonth = today.substring(0, 7);
+  const thisYear = thisMonth.substring(0, 4);
   const prevMonth = (() => {
     const [y, m] = thisMonth.split('-').map(Number);
     const d = new Date(y, m - 2, 1);
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  })();
+  const yesterday = (() => {
+    const d = new Date(); d.setDate(d.getDate() - 1);
+    return d.toISOString().substring(0, 10);
   })();
 
   // Dictionary (always include — helps AI understand IDs)
@@ -9408,25 +9514,54 @@ function buildAIContext(question) {
       roas_google: 'Google ROAS (GoogleSales / GoogleCost)',
       roas_total: 'Total ROAS ((Meta+Google+Organic+FU Sales) / (Meta+Google Cost))',
       leads_total: '总 Lead 数 Total Leads',
-      new_customer_pct: '新客占比 New Customer %'
+      new_customer_pct: '新客占比 New Customer %',
+      ads_sales_total: 'Ads 系统统计总销售额 (meta+google+organic+followup)',
+      ads_sales_by_store: 'Ads 销售额按门店分 — USE for store-specific ads sales questions',
+      leads_by_channel: 'Lead 数按渠道分',
+      week_iso: 'ISO 周号 (YYYY-WNN format)'
     }
   };
 
   // Build ALL months (from earliest data to current) — AI gets full history
   const allMonthsData = buildAllMonthsHistory();
 
+  // Weekly data for ALL months (leads + appts + ads_sales by channel & store)
+  const weeklyData = allMonthsData.map(m => buildMonthWeeklySummary(m.month));
+
+  // Last 90 days daily summaries — only days with activity (saves tokens)
+  const daily90 = [];
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dStr = d.toISOString().substring(0, 10);
+    const s = buildDaySummary(dStr);
+    if (s.new_leads > 0 || s.appointments > 0) {
+      daily90.push({ date: dStr, ...s });
+    }
+  }
+
+  // AI notes (auto-written by AI, stored in localStorage)
+  const aiNotes = getAINotes();
+
   const snapshot = {
     today: today,
+    yesterday: yesterday,
     this_month: thisMonth,
     last_month: prevMonth,
+    this_year: thisYear,
     today_summary: buildDaySummary(today),
-    all_months: allMonthsData, // Every month from earliest data
-    this_year_ytd: buildYearSummary(thisMonth.substring(0, 4)),
-    last_year_full: buildYearSummary(String(parseInt(thisMonth.substring(0, 4), 10) - 1)),
-    leads_counts: buildLeadsCount()
+    yesterday_summary: { date: yesterday, ...buildDaySummary(yesterday) },
+    daily_last_90: daily90,        // Day-by-day: leads, appts, shows, ads_sales, by_store
+    all_months: allMonthsData,     // Monthly summaries — full history
+    weekly_all: weeklyData,        // Week-by-week for every month — full history
+    this_year_ytd: buildYearSummary(thisYear),
+    last_year_full: buildYearSummary(String(parseInt(thisYear, 10) - 1)),
+    leads_counts: buildLeadsCount(),
+    ai_notes: aiNotes              // Accumulated AI observations over time
   };
 
-  return { dictionary, snapshot };
+  const customRole = getAICustomRole();
+  return { dictionary, snapshot, ...(customRole ? { custom_role: customRole } : {}) };
 }
 
 // Build ALL months of history (every month that has any data)
@@ -9441,15 +9576,66 @@ function buildAllMonthsHistory() {
   return months.map(m => buildMonthSummary(m));
 }
 
+function buildMonthWeeklySummary(mStr) {
+  const sw = (d, m) => d && d.startsWith(m);
+  const leadsInMonth = state.leads.filter(l => sw(l.leadDate, mStr));
+  const apptsInMonth = state.leads.filter(l => sw(l.apptDate, mStr) && l.name);
+  const weeks = {};
+
+  leadsInMonth.forEach(l => {
+    const w = isoWeek(l.leadDate);
+    const wk = mStr + '-W' + String(w).padStart(2, '0');
+    if (!weeks[wk]) weeks[wk] = { week: wk, leads: 0, by_channel: {}, appts: 0, shows: 0, ads_sales: 0, by_store: {} };
+    weeks[wk].leads++;
+    const ch = state.channels.find(c => c.id === l.channelId);
+    if (ch) weeks[wk].by_channel[ch.name] = (weeks[wk].by_channel[ch.name] || 0) + 1;
+  });
+
+  apptsInMonth.forEach(l => {
+    const w = isoWeek(l.apptDate);
+    const wk = mStr + '-W' + String(w).padStart(2, '0');
+    if (!weeks[wk]) weeks[wk] = { week: wk, leads: 0, by_channel: {}, appts: 0, shows: 0, ads_sales: 0, by_store: {} };
+    weeks[wk].appts++;
+    if (l.status === 'done') { weeks[wk].shows++; weeks[wk].ads_sales += (l.spend || 0); }
+    // by store
+    const loc = state.locations.find(s => s.id === l.locationId);
+    if (loc) {
+      if (!weeks[wk].by_store[loc.name]) weeks[wk].by_store[loc.name] = { appts: 0, shows: 0, ads_sales: 0 };
+      weeks[wk].by_store[loc.name].appts++;
+      if (l.status === 'done') { weeks[wk].by_store[loc.name].shows++; weeks[wk].by_store[loc.name].ads_sales += (l.spend || 0); }
+    }
+  });
+
+  const sorted = Object.values(weeks).sort((a, b) => a.week.localeCompare(b.week));
+  return { month: mStr, weeks: sorted.map(w => ({ ...w, ads_sales: Math.round(w.ads_sales) })) };
+}
+
 function buildDaySummary(dStr) {
   const dayLeads = state.leads.filter(l => l.leadDate === dStr);
   const byStatus = { lead: 0, booked: 0, done: 0, noshow: 0 };
   dayLeads.forEach(l => { if (byStatus[l.status] != null) byStatus[l.status]++; });
-  const apptsToday = state.leads.filter(l => l.apptDate === dStr).length;
+  const dayAppts = state.leads.filter(l => l.apptDate === dStr && l.name);
+  const adsSales = dayAppts.filter(l => l.status === 'done').reduce((s, l) => s + (l.spend || 0), 0);
+  const byStore = {};
+  state.locations.filter(l => l.active !== false).forEach(loc => {
+    const storeAppts = dayAppts.filter(l => l.locationId === loc.id);
+    byStore[loc.name] = {
+      appts: storeAppts.length,
+      shows: storeAppts.filter(l => l.status === 'done').length,
+      ads_sales: Math.round(storeAppts.filter(l => l.status === 'done').reduce((s, l) => s + (l.spend || 0), 0))
+    };
+  });
+  const byChannel = {};
+  state.channels.forEach(c => { byChannel[c.name] = 0; });
+  dayLeads.forEach(l => { const ch = state.channels.find(c => c.id === l.channelId); if (ch) byChannel[ch.name] = (byChannel[ch.name] || 0) + 1; });
   return {
     new_leads: dayLeads.length,
     by_status: byStatus,
-    appointments_today: apptsToday
+    by_channel: byChannel,
+    appointments: dayAppts.length,
+    shows: dayAppts.filter(l => l.status === 'done').length,
+    ads_sales: Math.round(adsSales),
+    by_store: byStore
   };
 }
 
