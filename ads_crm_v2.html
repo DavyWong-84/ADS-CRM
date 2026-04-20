@@ -1604,7 +1604,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.18</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.20</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2406,7 +2406,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.20'; // bump this to force reload of preloaded data
+const DATA_VERSION = '2.22'; // bump this to force reload of preloaded data
 
 // ---------- State ----------
 let state = {
@@ -9274,34 +9274,51 @@ function renderDataTable(jsonStr) {
       return `<th${numCls}>${escapeHTML(c)}</th>`;
     }).join('');
 
+    // Helper: extract raw number from any cell value
+    const extractNum = (cell) => {
+      if (typeof cell === 'number') return cell;
+      const s = String(cell).replace(/[^\d.-]/g, '');
+      const n = parseFloat(s);
+      return isNaN(n) ? null : n;
+    };
+
     const trs = rows.map((r, rIdx) => {
-      // Auto prev: use previous row's numeric values if prevValues not given or entry is all-zero
-      let prev = prevValues ? prevValues[rIdx] : null;
+      // Build prev numbers from previous row (auto row-over-row comparison)
+      let prevNums = null;
       if (rIdx > 0) {
-        const prevRowNums = rows[rIdx - 1].slice(1).map(c =>
-          typeof c === 'number' ? c : parseFloat(String(c).replace(/[^\d.-]/g, '')) || 0
-        );
-        const hasRealPrev = prev && prev.some(v => v !== 0);
-        if (!hasRealPrev) prev = prevRowNums;
-      } else {
-        prev = null; // First row: no comparison
+        prevNums = rows[rIdx - 1].slice(1).map(extractNum);
+        // Override with explicit prevValues if provided and non-zero
+        if (prevValues && prevValues[rIdx]) {
+          const expl = prevValues[rIdx].map(v => typeof v === 'number' ? v : extractNum(v));
+          if (expl.some(v => v !== null && v !== 0)) prevNums = expl;
+        }
       }
 
       const tds = r.map((cell, cIdx) => {
-        const isNum = cIdx > 0 && (typeof cell === 'number' || /^[\s\-+]*(?:RM\s*)?[\d,]+(\.\d+)?(\s*%|x)?\s*$/.test(String(cell)));
-        const cellStr = (() => { if (typeof cell === 'number') return formatNumDisplay(cell); const s = String(cell); if (isNum && !s.includes('%') && !s.includes('x') && !s.includes('RM')) { const n = parseFloat(s.replace(/[^\d.-]/g, '')); if (!isNaN(n)) return formatNumDisplay(n); } return s; })();
+        const curNum = extractNum(cell);
+        const isNum = cIdx > 0 && curNum !== null;
+        // Format display: add RM for money-like numbers (>=100, no % or x suffix)
+        const rawStr = String(cell);
+        const cellStr = (() => {
+          if (!isNum) return rawStr;
+          if (rawStr.includes('%') || rawStr.includes('x') || rawStr.toLowerCase().includes('roas')) return rawStr;
+          if (rawStr.includes('RM')) return rawStr; // already formatted
+          if (curNum >= 100) return 'RM ' + curNum.toLocaleString('en-US', { maximumFractionDigits: 0 });
+          return rawStr;
+        })();
+
         let trendHTML = '';
-        if (isNum && prev && prev[cIdx - 1] != null) {
-          const curNum = typeof cell === 'number' ? cell : parseFloat(String(cell).replace(/[^\d.-]/g, ''));
-          const prevNum = parseFloat(prev[cIdx - 1]);
-          if (!isNaN(curNum) && !isNaN(prevNum) && prevNum !== 0) {
-            const pct = ((curNum - prevNum) / Math.abs(prevNum) * 100);
-            const isUp = pct > 0.05;
-            const isDown = pct < -0.05;
-            const arrow = isUp ? '↑' : (isDown ? '↓' : '→');
-            const color = isUp ? '#10B981' : (isDown ? '#DC2626' : '#94a3b8');
-            const pctStr = (isUp ? '+' : '') + pct.toFixed(1) + '%';
-            trendHTML = ` <span style="font-size:10px;font-weight:600;color:${color};white-space:nowrap;">${arrow}${pctStr}</span>`;
+        if (isNum && prevNums) {
+          const prevNum = prevNums[cIdx - 1];
+          if (prevNum !== null && prevNum !== 0 && !isNaN(prevNum)) {
+            const pct = (curNum - prevNum) / Math.abs(prevNum) * 100;
+            if (Math.abs(pct) > 0.05) {
+              const isUp = pct > 0;
+              const arrow = isUp ? '▲' : '▼';
+              const color = isUp ? '#10B981' : '#DC2626';
+              const pctStr = (isUp ? '+' : '') + pct.toFixed(1) + '%';
+              trendHTML = ` <span style="font-size:9px;font-weight:700;color:${color};white-space:nowrap;letter-spacing:0.2px;">${arrow} ${pctStr}</span>`;
+            }
           }
         }
         return `<td${isNum ? ' class="num"' : ''}>${applyNumHighlight(escapeHTML(cellStr))}${trendHTML}</td>`;
@@ -10232,6 +10249,12 @@ function clearCacheReload() {
 
 let _backExitReady = false;
 let _backExitTimer = null;
+// Save AI history when page closes or user switches away (mobile)
+window.addEventListener('beforeunload', () => { saveAIHistory(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') saveAIHistory();
+});
+
 window.addEventListener('popstate', function(e) {
   // If contact form is open on mobile, close it first
   const contactPage = document.getElementById('page-contact');
