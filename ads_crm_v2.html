@@ -1422,7 +1422,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v2.87</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v2.90</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2122,10 +2122,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="alerts-header">
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-        <span style="font-size:16px;font-weight:600;">Data Alerts</span>
+        <span id="alertsTitleText" style="font-size:16px;font-weight:600;">Data Alerts</span>
         <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;">0</span>
       </div>
-      <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
+      <div style="display:flex;gap:6px;align-items:center;">
+        <div id="alertsLangToggle" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;font-weight:600;">
+          <button type="button" data-lang="en" onclick="setAlertsLang('en')" style="padding:4px 10px;background:var(--purple);color:#fff;border:0;cursor:pointer;">EN</button>
+          <button type="button" data-lang="zh" onclick="setAlertsLang('zh')" style="padding:4px 10px;background:#fff;color:var(--gray);border:0;cursor:pointer;">中</button>
+        </div>
+        <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
+      </div>
     </div>
     <div id="alertsContent" class="alerts-content"></div>
   </div>
@@ -2147,14 +2153,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div id="aiMessages" class="ai-messages"></div>
     <div class="ai-quick-actions" id="aiQuickActions">
-      <button class="ai-chip" onclick="askAIQuick('今日新 lead 多少？')">今日 Lead</button>
-      <button class="ai-chip" onclick="askAIQuick('这个月总销售多少？')">本月销售</button>
-      <button class="ai-chip" onclick="askAIQuick('这个月 ROAS 多少？')">本月 ROAS</button>
-      <button class="ai-chip" onclick="askAIQuick('今日有几单预约？')">今日预约</button>
-      <button class="ai-chip" onclick="askAIQuick('本月 vs 上月对比')">月度对比</button>
-      <button class="ai-chip" onclick="askAIQuick('哪个门店表现最好？')">门店排名</button>
-      <button class="ai-chip" onclick="askAIQuick('哪个渠道 ROAS 最高？')">渠道排名</button>
-      <button class="ai-chip" onclick="askAIQuick('分析最近的销售趋势')">趋势分析</button>
+      <button class="ai-chip" onclick="askAIQuick('本月 vs 上月：营业额、ROAS、Lead、成本全部对比')">📊 本月 vs 上月</button>
+      <button class="ai-chip" onclick="askAIQuick('本季度 vs 上季度对比')">📈 季度对比</button>
+      <button class="ai-chip" onclick="askAIQuick('本月 vs 去年同月对比')">📆 去年同期</button>
+      <button class="ai-chip" onclick="askAIQuick('3 个门店本月全指标排名对比')">🏆 门店对比</button>
+      <button class="ai-chip" onclick="askAIQuick('列出所有月份的营业额（从最早到现在）')">💰 全部月度营业额</button>
+      <button class="ai-chip" onclick="askAIQuick('所有渠道本月 ROAS 对比')">🎯 渠道 ROAS</button>
+      <button class="ai-chip" onclick="askAIQuick('所有门店全年表现（每月营业额）')">📍 门店全年</button>
+      <button class="ai-chip" onclick="askAIQuick('找出历史上营业额最高的前 5 个月')">⭐ 最佳月份</button>
     </div>
     <div class="ai-input-wrap">
       <textarea id="aiInput" placeholder="问我任何数据问题..." rows="1" onkeydown="_aiInputKey(event)"></textarea>
@@ -8445,24 +8451,97 @@ async function gsDelete(sheetName, id) {
 }
 
 // ---------- Data Alerts (Completeness + Anomaly) ----------
+// ---------- Alerts Language ----------
+const ALERTS_LANG_KEY = 'ads-crm-alerts-lang';
+function getAlertsLang() {
+  return localStorage.getItem(ALERTS_LANG_KEY) || 'en';
+}
+function setAlertsLang(lang) {
+  localStorage.setItem(ALERTS_LANG_KEY, lang);
+  document.querySelectorAll('#alertsLangToggle button').forEach(b => {
+    const isActive = b.dataset.lang === lang;
+    b.style.background = isActive ? 'var(--purple)' : '#fff';
+    b.style.color = isActive ? '#fff' : 'var(--gray)';
+  });
+  const titleEl = document.getElementById('alertsTitleText');
+  if (titleEl) titleEl.textContent = lang === 'zh' ? '数据警报' : 'Data Alerts';
+  const bd = document.getElementById('alertsBackdrop');
+  if (bd && bd.classList.contains('open')) renderAlertsContent();
+}
+
+// ---------- Data Alerts ----------
 function computeAlerts() {
   const alerts = [];
-  const today = todayStr(); // YYYY-MM-DD
+  const today = todayStr();
   const thisMonth = today.substring(0, 7);
-  const thisYear = today.substring(0, 4);
   const curDay = parseInt(today.substring(8, 10), 10);
 
-  // Helper: previous month string
   const prevMonth = (m) => {
     const [y, mm] = m.split('-').map(Number);
     const d = new Date(y, mm - 2, 1);
     return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
   };
 
-  // === COMPLETENESS CHECKS ===
+  const daysBetween = (d1, d2) => {
+    const t1 = new Date(d1 + 'T00:00:00').getTime();
+    const t2 = new Date(d2 + 'T00:00:00').getTime();
+    return Math.floor((t2 - t1) / 86400000);
+  };
 
-  // 1. Revenue missing for previous month (after the 5th of current month)
-  if (curDay >= 5) {
+  const DAYS_THRESHOLD = 3;
+
+  // ===== DAYS WITHOUT ENTRY =====
+
+  const allLeadDates = state.leads.map(l => l.leadDate).filter(d => d).sort();
+  const lastLeadDate = allLeadDates[allLeadDates.length - 1];
+  if (lastLeadDate) {
+    const gap = daysBetween(lastLeadDate, today);
+    if (gap > DAYS_THRESHOLD) {
+      alerts.push({
+        severity: gap > 7 ? 'high' : 'med',
+        icon: '📭',
+        title: { en: `No new Lead for ${gap} days overall`, zh: `整体已 ${gap} 天无新 Lead` },
+        desc: { en: `Last Lead was on ${lastLeadDate}. Verify team entry.`, zh: `最后一条 Lead 在 ${lastLeadDate}。请检查团队录入。` },
+        action: () => { closeAlertsModal(); nav('contact'); }
+      });
+    }
+  }
+
+  state.channels.filter(c => c.active !== false).forEach(ch => {
+    const chLeads = state.leads.filter(l => l.channelId === ch.id && l.leadDate);
+    if (chLeads.length === 0) return;
+    const lastDate = chLeads.map(l => l.leadDate).sort().pop();
+    const gap = daysBetween(lastDate, today);
+    if (gap > DAYS_THRESHOLD) {
+      alerts.push({
+        severity: gap > 7 ? 'high' : 'med',
+        icon: '📡',
+        title: { en: `${ch.name} — no Lead for ${gap} days`, zh: `${ch.name} 已 ${gap} 天无 Lead` },
+        desc: { en: `Last ${ch.name} Lead was on ${lastDate}.`, zh: `最后一条 ${ch.name} Lead 在 ${lastDate}。` },
+        action: () => { closeAlertsModal(); state.listChannelId = ch.id; saveState(); nav('contact'); }
+      });
+    }
+  });
+
+  state.locations.filter(l => l.active !== false).forEach(loc => {
+    const locLeads = state.leads.filter(l => l.locationId === loc.id && l.apptDate);
+    if (locLeads.length === 0) return;
+    const lastDate = locLeads.map(l => l.apptDate).sort().pop();
+    const gap = daysBetween(lastDate, today);
+    if (gap > DAYS_THRESHOLD) {
+      alerts.push({
+        severity: gap > 7 ? 'high' : 'med',
+        icon: '🏢',
+        title: { en: `${loc.name} — no appointment for ${gap} days`, zh: `${loc.name} 已 ${gap} 天无新预约` },
+        desc: { en: `Last appointment on ${lastDate}. Check store foot traffic.`, zh: `最后预约日 ${lastDate}。门店客流情况？` },
+        action: () => { closeAlertsModal(); nav('store'); }
+      });
+    }
+  });
+
+  // ===== MONTH-LEVEL COMPLETENESS =====
+
+  if (curDay >= 3) {
     const lastMonth = prevMonth(thisMonth);
     state.locations.filter(l => l.active !== false).forEach(loc => {
       const rec = state.revenue.find(r => r.month === lastMonth && r.locationId === loc.id);
@@ -8470,115 +8549,117 @@ function computeAlerts() {
         alerts.push({
           severity: 'med',
           icon: '📊',
-          title: `${loc.name} — Revenue not filled for ${fmt.monthLabel(lastMonth)}`,
-          desc: `Last month's revenue data for ${loc.name} is missing. Go to Data Entry → Revenue.`,
+          title: { en: `${loc.name} — Revenue missing for ${fmt.monthLabel(lastMonth)}`, zh: `${loc.name} — ${fmt.monthLabel(lastMonth)} Revenue 未填` },
+          desc: { en: `Last month Revenue missing. Go to Data Entry → Revenue.`, zh: `上月 Revenue 缺失。前往 Data Entry → Revenue。` },
           action: () => { closeAlertsModal(); nav('entry'); setTimeout(() => { if (typeof switchEntryTab === 'function') switchEntryTab('rv'); }, 100); }
         });
       }
     });
-  }
 
-  // 2. Ads Spend missing for previous month (after the 5th)
-  if (curDay >= 5) {
-    const lastMonth = prevMonth(thisMonth);
     state.channels.filter(c => c.active !== false && (c.platform === 'meta' || c.platform === 'google')).forEach(ch => {
       const rec = state.adsSpend.find(a => a.month === lastMonth && a.channelId === ch.id);
       if (!rec || rec.amount == null || rec.amount === 0) {
         alerts.push({
           severity: 'med',
           icon: '💰',
-          title: `${ch.name} — Ads Spend not filled for ${fmt.monthLabel(lastMonth)}`,
-          desc: `Cost data missing. Go to Data Entry → Ads Cost.`,
+          title: { en: `${ch.name} — Ads Spend missing for ${fmt.monthLabel(lastMonth)}`, zh: `${ch.name} — ${fmt.monthLabel(lastMonth)} Ads Spend 未填` },
+          desc: { en: `Last month cost missing. Go to Data Entry → Ads Cost.`, zh: `上月成本缺失。前往 Data Entry → Ads Cost。` },
           action: () => { closeAlertsModal(); nav('entry'); setTimeout(() => { if (typeof switchEntryTab === 'function') switchEntryTab('as'); }, 100); }
         });
       }
     });
   }
 
-  // 3. Lead dangling: Booked but appt date > 3 days past and no show-up status
+  // Lead dangling
   state.leads.forEach(l => {
     if (l.status === 'booked' && l.apptDate) {
       const apptTime = new Date(l.apptDate + 'T00:00:00').getTime();
       const daysPast = Math.floor((Date.now() - apptTime) / 86400000);
       if (daysPast > 3 && !l.showUp) {
+        const name = l.name || l.contact || '(no name)';
         alerts.push({
           severity: 'high',
           icon: '⏰',
-          title: `Booked appt past ${daysPast} days — no status`,
-          desc: `${l.name || l.contact || '(no name)'} · Appt was ${l.apptDate}. Update Show Up status.`,
+          title: { en: `Booked appt ${daysPast} days overdue`, zh: `预约逾期 ${daysPast} 天未更新状态` },
+          desc: { en: `${name} · Appt ${l.apptDate}. Update Show Up status.`, zh: `${name} · 预约日 ${l.apptDate}。请更新 Show Up。` },
           action: () => { closeAlertsModal(); nav('contact'); setTimeout(() => editLead(l.id), 100); }
         });
       }
     }
   });
 
-  // 4. No Show/Done without race (customer profile incomplete)
+  // No Show/Done without race
   state.leads.forEach(l => {
     if ((l.status === 'done' || l.status === 'noshow') && !l.race) {
+      const name = l.name || l.contact || '(no name)';
+      const stLabel = l.status === 'noshow' ? 'No Show' : 'Done';
       alerts.push({
         severity: 'low',
         icon: '👥',
-        title: `${l.name || l.contact || '(no name)'} — Race not set`,
-        desc: `Status is ${l.status === 'noshow' ? 'No Show' : 'Done'} but race field is empty.`,
+        title: { en: `${name} — Race not set`, zh: `${name} — Race 未填` },
+        desc: { en: `Status is ${stLabel} but Race is empty.`, zh: `状态 ${stLabel} 但 Race 空白。` },
         action: () => { closeAlertsModal(); nav('contact'); setTimeout(() => editLead(l.id), 100); }
       });
     }
   });
 
-  // === ANOMALY CHECKS ===
+  // ===== ANOMALY =====
 
-  // 5. Revenue anomaly: this month total drops > 50% or jumps > 200% vs prev month
   state.locations.filter(l => l.active !== false).forEach(loc => {
     const prev = state.revenue.find(r => r.month === prevMonth(thisMonth) && r.locationId === loc.id);
     const cur = state.revenue.find(r => r.month === thisMonth && r.locationId === loc.id);
     if (prev && cur && prev.total > 0 && cur.total > 0) {
       const ratio = cur.total / prev.total;
+      const fmtPair = `${fmt.money(prev.total)} → ${fmt.money(cur.total)}`;
       if (ratio < 0.5) {
+        const pct = Math.round((1 - ratio) * 100);
         alerts.push({
           severity: 'high',
           icon: '📉',
-          title: `${loc.name} — Revenue dropped ${Math.round((1 - ratio) * 100)}% vs last month`,
-          desc: `${fmt.money(prev.total)} → ${fmt.money(cur.total)}. Verify the data.`,
+          title: { en: `${loc.name} — Revenue dropped ${pct}% vs last month`, zh: `${loc.name} — 本月 Revenue 较上月下降 ${pct}%` },
+          desc: { en: `${fmtPair}. Please verify.`, zh: `${fmtPair}。请核实。` },
           action: () => { closeAlertsModal(); nav('revenue'); }
         });
       } else if (ratio > 3) {
+        const pct = Math.round(ratio * 100 - 100);
         alerts.push({
           severity: 'high',
           icon: '📈',
-          title: `${loc.name} — Revenue jumped ${Math.round(ratio * 100 - 100)}% vs last month`,
-          desc: `${fmt.money(prev.total)} → ${fmt.money(cur.total)}. Verify the data.`,
+          title: { en: `${loc.name} — Revenue jumped ${pct}% vs last month`, zh: `${loc.name} — 本月 Revenue 较上月上升 ${pct}%` },
+          desc: { en: `${fmtPair}. Please verify.`, zh: `${fmtPair}。请核实。` },
           action: () => { closeAlertsModal(); nav('revenue'); }
         });
       }
     }
   });
 
-  // 6. Revenue input error: New > Total
   state.revenue.forEach(r => {
     if (r.total != null && r.newCustomer != null && r.newCustomer > r.total) {
       const loc = state.locations.find(l => l.id === r.locationId);
+      const locName = loc ? loc.name : 'Store';
       alerts.push({
         severity: 'high',
         icon: '⚠️',
-        title: `${loc ? loc.name : 'Store'} ${fmt.monthLabel(r.month)} — New > Total`,
-        desc: `New customer (${fmt.money(r.newCustomer)}) exceeds total sales (${fmt.money(r.total)}). Input error.`,
+        title: { en: `${locName} ${fmt.monthLabel(r.month)} — New > Total`, zh: `${locName} ${fmt.monthLabel(r.month)} — New > Total` },
+        desc: { en: `New ${fmt.money(r.newCustomer)} exceeds Total ${fmt.money(r.total)}.`, zh: `新客 ${fmt.money(r.newCustomer)} 超过总销售 ${fmt.money(r.total)}。` },
         action: () => { closeAlertsModal(); nav('entry'); setTimeout(() => { if (typeof switchEntryTab === 'function') switchEntryTab('rv'); }, 100); }
       });
     }
   });
 
-  // 7. Ads Spend anomaly: sudden cost spike > 300%
   state.channels.filter(c => c.active !== false).forEach(ch => {
     const prev = state.adsSpend.find(a => a.month === prevMonth(thisMonth) && a.channelId === ch.id);
     const cur = state.adsSpend.find(a => a.month === thisMonth && a.channelId === ch.id);
     if (prev && cur && prev.amount > 0 && cur.amount > 0) {
       const ratio = cur.amount / prev.amount;
       if (ratio > 3) {
+        const pct = Math.round(ratio * 100 - 100);
+        const fmtPair = `${fmt.money(prev.amount)} → ${fmt.money(cur.amount)}`;
         alerts.push({
           severity: 'med',
           icon: '💸',
-          title: `${ch.name} — Ads Cost ${Math.round(ratio * 100 - 100)}% higher than last month`,
-          desc: `${fmt.money(prev.amount)} → ${fmt.money(cur.amount)}. Verify spending.`,
+          title: { en: `${ch.name} — Ads Cost ${pct}% higher than last month`, zh: `${ch.name} — 本月 Ads Cost 较上月高 ${pct}%` },
+          desc: { en: `${fmtPair}. Verify ad spend.`, zh: `${fmtPair}。核实广告花费。` },
           action: () => { closeAlertsModal(); nav('adsspend'); }
         });
       }
@@ -8604,6 +8685,7 @@ function openAlertsModal() {
   const bd = document.getElementById('alertsBackdrop');
   if (!bd) return;
   bd.classList.add('open');
+  setAlertsLang(getAlertsLang()); // Sync toggle buttons + title
   renderAlertsContent();
 }
 
@@ -8619,12 +8701,15 @@ function renderAlertsContent() {
   if (badge) badge.textContent = alerts.length;
   if (!wrap) return;
 
+  const lang = getAlertsLang();
+  const t = (v) => (v && typeof v === 'object') ? (v[lang] || v.en || '') : (v || '');
+
   if (alerts.length === 0) {
     wrap.innerHTML = `
       <div class="alerts-empty">
         <div class="alerts-empty-icon">✅</div>
-        <div class="alerts-empty-title">All clear!</div>
-        <div style="font-size:12px;color:var(--gray);">No data issues detected.</div>
+        <div class="alerts-empty-title">${lang === 'zh' ? '一切正常！' : 'All clear!'}</div>
+        <div style="font-size:12px;color:var(--gray);">${lang === 'zh' ? '未检测到数据问题。' : 'No data issues detected.'}</div>
       </div>
     `;
     return;
@@ -8632,7 +8717,9 @@ function renderAlertsContent() {
 
   // Group by severity
   const order = ['high', 'med', 'low'];
-  const labels = { high: '⚠ Critical', med: 'Needs attention', low: 'Minor' };
+  const labels = lang === 'zh'
+    ? { high: '⚠ 紧急', med: '需关注', low: '次要' }
+    : { high: '⚠ Critical', med: 'Needs attention', low: 'Minor' };
   let html = '';
   order.forEach(sev => {
     const group = alerts.filter(a => a.severity === sev);
@@ -8644,15 +8731,14 @@ function renderAlertsContent() {
         <div class="alert-item sev-${a.severity}" onclick="_alertAct(${origIdx})">
           <div class="alert-icon">${a.icon}</div>
           <div class="alert-body">
-            <div class="alert-title">${a.title}</div>
-            <div class="alert-desc">${a.desc}</div>
+            <div class="alert-title">${t(a.title)}</div>
+            <div class="alert-desc">${t(a.desc)}</div>
           </div>
         </div>
       `;
     });
   });
   wrap.innerHTML = html;
-  // Store for click handler
   window._currentAlerts = alerts;
 }
 
@@ -8874,7 +8960,6 @@ function getGSheetUrl() {
 
 // Build token-efficient context snapshot for AI
 function buildAIContext(question) {
-  const q = question.toLowerCase();
   const today = todayStr();
   const thisMonth = today.substring(0, 7);
   const prevMonth = (() => {
@@ -8887,33 +8972,48 @@ function buildAIContext(question) {
   const dictionary = {
     channels: state.channels.map(c => ({ id: c.id, name: c.name, platform: c.platform, active: c.active !== false })),
     stores: state.locations.map(s => ({ id: s.id, name: s.name, active: s.active !== false })),
-    lead_status: { lead: '初诊 Lead', booked: '已预约', done: '已到诊', noshow: '未到诊' }
+    lead_status: { lead: '初诊 Lead / Initial Lead', booked: '已预约 / Booked', done: '已到诊 / Done', noshow: '未到诊 / No Show' },
+    field_glossary: {
+      revenue_total: '总营业额 Total Revenue (RM)',
+      revenue_new: '新客户营业额 New Customer Revenue (RM)',
+      revenue_old: '老客户营业额 Old Customer Revenue (RM)',
+      ads_cost_meta: 'Meta 广告成本 Meta Ad Cost (RM)',
+      ads_cost_google: 'Google 广告成本 Google Ad Cost (RM)',
+      roas_meta: 'Meta ROAS (MetaSales / MetaCost)',
+      roas_google: 'Google ROAS (GoogleSales / GoogleCost)',
+      roas_total: 'Total ROAS ((Meta+Google+Organic+FU Sales) / (Meta+Google Cost))',
+      leads_total: '总 Lead 数 Total Leads',
+      new_customer_pct: '新客占比 New Customer %'
+    }
   };
 
-  // Always include: today + this month + last month summary
+  // Build ALL months (from earliest data to current) — AI gets full history
+  const allMonthsData = buildAllMonthsHistory();
+
   const snapshot = {
     today: today,
     this_month: thisMonth,
     last_month: prevMonth,
-    summary: {
-      today: buildDaySummary(today),
-      this_month: buildMonthSummary(thisMonth),
-      last_month: buildMonthSummary(prevMonth)
-    }
+    today_summary: buildDaySummary(today),
+    all_months: allMonthsData, // Every month from earliest data
+    this_year_ytd: buildYearSummary(thisMonth.substring(0, 4)),
+    last_year_full: buildYearSummary(String(parseInt(thisMonth.substring(0, 4), 10) - 1)),
+    leads_counts: buildLeadsCount()
   };
 
-  // Keyword-based enrichment
-  if (/趋势|trend|\u8fd1|recent|6 month|history/i.test(q)) {
-    snapshot.last_6_months = buildTrendSummary(6);
-  }
-  if (/year|年|ytd|annual/i.test(q)) {
-    snapshot.this_year = buildYearSummary(thisMonth.substring(0, 4));
-  }
-  if (/lead|询问|咨询/i.test(q)) {
-    snapshot.recent_leads_count = buildLeadsCount();
-  }
-
   return { dictionary, snapshot };
+}
+
+// Build ALL months of history (every month that has any data)
+function buildAllMonthsHistory() {
+  const monthSet = new Set();
+  state.revenue.forEach(r => { if (r.month) monthSet.add(r.month); });
+  state.adsSpend.forEach(a => { if (a.month) monthSet.add(a.month); });
+  state.leads.forEach(l => {
+    if (l.leadDate && l.leadDate.length >= 7) monthSet.add(l.leadDate.substring(0, 7));
+  });
+  const months = Array.from(monthSet).sort(); // oldest to newest
+  return months.map(m => buildMonthSummary(m));
 }
 
 function buildDaySummary(dStr) {
@@ -8958,6 +9058,7 @@ function buildMonthSummary(mStr) {
   const byStatus = { lead: 0, booked: 0, done: 0, noshow: 0 };
   monthLeads.forEach(l => { if (byStatus[l.status] != null) byStatus[l.status]++; });
   return {
+    month: mStr,
     revenue_total: Math.round(totalRev),
     revenue_new: Math.round(newCust),
     revenue_old: Math.round(oldCust),
