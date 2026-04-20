@@ -489,17 +489,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   flex-direction: row-reverse;
 }
 .ai-msg-avatar {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   font-size: 14px;
+  overflow: hidden;
 }
-.ai-msg.user .ai-msg-avatar { background: var(--purple); color: #fff; }
-.ai-msg.assistant .ai-msg-avatar { background: var(--purple-bg); color: var(--purple); }
+.ai-msg.user .ai-msg-avatar { background: var(--purple); color: #fff; width: 28px; height: 28px; }
+.ai-msg.assistant .ai-msg-avatar { background: transparent; }
 .ai-msg-bubble {
   padding: 10px 14px;
   border-radius: 14px;
@@ -518,6 +519,98 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   color: var(--black);
   border-bottom-left-radius: 4px;
   border: 1px solid var(--border);
+  white-space: normal;
+}
+/* Markdown content inside assistant bubble */
+.ai-msg.assistant .ai-msg-bubble p { margin: 0 0 8px 0; }
+.ai-msg.assistant .ai-msg-bubble p:last-child { margin-bottom: 0; }
+.ai-msg.assistant .ai-msg-bubble strong { font-weight: 700; color: var(--black); }
+.ai-msg.assistant .ai-msg-bubble em { font-style: italic; }
+.ai-msg.assistant .ai-msg-bubble ul.ai-ul,
+.ai-msg.assistant .ai-msg-bubble ol.ai-ol {
+  margin: 4px 0 6px 0;
+  padding-left: 20px;
+}
+.ai-msg.assistant .ai-msg-bubble ul.ai-ul li,
+.ai-msg.assistant .ai-msg-bubble ol.ai-ol li {
+  margin-bottom: 3px;
+  line-height: 1.55;
+}
+.ai-msg.assistant .ai-msg-bubble h2.ai-h2,
+.ai-msg.assistant .ai-msg-bubble h3.ai-h3,
+.ai-msg.assistant .ai-msg-bubble h4.ai-h4 {
+  margin: 8px 0 4px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+.ai-msg.assistant .ai-msg-bubble h2.ai-h2 { font-size: 15px; }
+.ai-msg.assistant .ai-msg-bubble h3.ai-h3 { font-size: 14px; color: var(--purple-deep, #5B1ECF); }
+.ai-msg.assistant .ai-msg-bubble h4.ai-h4 { font-size: 13px; color: var(--gray); }
+.ai-msg.assistant .ai-msg-bubble code.ai-code {
+  background: rgba(113,50,245,0.08);
+  color: var(--purple-deep, #5B1ECF);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: 'SF Mono', Consolas, monospace;
+  font-size: 12.5px;
+}
+.ai-msg.assistant .ai-msg-bubble pre.ai-pre {
+  background: #f6f4ff;
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  overflow-x: auto;
+  margin: 4px 0;
+}
+/* Numeric highlights — colored inline pills (readable but distinctive) */
+.ai-msg.assistant .ai-msg-bubble .ai-money {
+  color: #5B1ECF;
+  font-weight: 700;
+  background: rgba(113,50,245,0.08);
+  padding: 1px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.ai-msg.assistant .ai-msg-bubble .ai-pct {
+  color: #D97706;
+  font-weight: 700;
+  background: rgba(217,119,6,0.08);
+  padding: 1px 5px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.ai-msg.assistant .ai-msg-bubble .ai-roas {
+  color: #D97706;
+  font-weight: 700;
+  background: rgba(217,119,6,0.12);
+  padding: 1px 6px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.ai-msg.assistant .ai-msg-bubble .ai-pos {
+  color: #047857;
+  font-weight: 700;
+  background: rgba(16,185,129,0.1);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+.ai-msg.assistant .ai-msg-bubble .ai-pos .ai-pct {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+.ai-msg.assistant .ai-msg-bubble .ai-neg {
+  color: #DC2626;
+  font-weight: 700;
+  background: rgba(220,38,38,0.1);
+  padding: 1px 6px;
+  border-radius: 5px;
+}
+.ai-msg.assistant .ai-msg-bubble .ai-neg .ai-pct {
+  background: transparent;
+  color: inherit;
+  padding: 0;
 }
 .ai-msg.error .ai-msg-bubble {
   background: #fef2f2;
@@ -1327,17 +1420,19 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 <header class="topbar">
   <div class="brand">
     <div class="brand-logo">A</div>
-    <span>Ads CRM</span>
-    <span style="font-size:11px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-left:2px;">v2.82</span>
+    <div style="display:flex;flex-direction:column;line-height:1.1;">
+      <span>Ads CRM</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v2.87</span>
+    </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
-    <!-- Global search (all devices) -->
+    <!-- AI Assistant (first on the left) -->
+    <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" id="aiTopbarBtn" style="width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(113,50,245,0.3);">
+      AI
+    </button>
+    <!-- Global search -->
     <button onclick="openGlobalSearch()" aria-label="Search" title="Search (Ctrl+K)" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-    </button>
-    <!-- AI Assistant -->
-    <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"></path><rect x="2" y="8" width="20" height="14" rx="2" ry="2"></rect><path d="M12 2v2"></path><path d="M8 14h.01"></path><path d="M16 14h.01"></path><path d="M12 18h.01"></path></svg>
     </button>
     <!-- Alerts / Inbox -->
     <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -1424,13 +1519,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 65px; max-height: 845px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 65px; height: 845px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -1982,7 +2077,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <div style="font-size:11px;color:var(--gray);background:var(--surface);padding:8px 10px;border-radius:6px;line-height:1.5;">
               💡 Key 设置在 <strong>Apps Script → Project Settings → Script Properties</strong>，加一条 <code>GEMINI_API_KEY</code> = 你的 key。
             </div>
-            <button type="button" class="btn btn-outline" onclick="openAIChat()">🤖 打开 AI 助手</button>
+            <button type="button" class="btn btn-outline" onclick="openAIChat()">💬 打开 AI 助手</button>
           </div>
         </div>
 
@@ -2041,7 +2136,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="ai-modal">
     <div class="ai-header">
       <div style="display:flex;align-items:center;gap:10px;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"></path><rect x="2" y="8" width="20" height="14" rx="2" ry="2"></rect><path d="M12 2v2"></path><path d="M8 14h.01"></path><path d="M16 14h.01"></path><path d="M12 18h.01"></path></svg>
+        <div style="width:28px;height:28px;" id="aiHeaderAvatar"></div>
         <span style="font-size:16px;font-weight:600;">Ask CRM</span>
         <span id="aiModelLabel" style="font-size:10px;padding:2px 7px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;text-transform:uppercase;">Flash</span>
       </div>
@@ -8596,6 +8691,9 @@ function openAIChat() {
   if (!bd) return;
   bd.classList.add('open');
   setAIModel(getAIModel()); // Sync label
+  // Set header avatar
+  const headerAv = document.getElementById('aiHeaderAvatar');
+  if (headerAv && typeof AI_AVATAR_SVG !== 'undefined') headerAv.innerHTML = AI_AVATAR_SVG;
   renderAIMessages();
   setTimeout(() => { const inp = document.getElementById('aiInput'); if (inp) inp.focus(); }, 100);
 }
@@ -8616,8 +8714,8 @@ function renderAIMessages() {
   if (_aiHistory.length === 0) {
     wrap.innerHTML = `
       <div class="ai-empty">
-        <div class="ai-empty-icon">🤖</div>
-        <div class="ai-empty-title">Ask me anything about your data</div>
+        ${AI_AVATAR_SVG_LARGE}
+        <div class="ai-empty-title">Hi Davy, I'm your CRM assistant</div>
         <div style="font-size:12px;color:var(--gray);">Click a quick action below or type your question</div>
       </div>
     `;
@@ -8626,12 +8724,13 @@ function renderAIMessages() {
   wrap.innerHTML = _aiHistory.map(m => {
     const isUser = m.role === 'user';
     const isErr = m.error;
-    const avatar = isUser ? '👤' : '🤖';
+    const avatar = isUser ? '👤' : AI_AVATAR_SVG;
     const cls = isUser ? 'user' : (isErr ? 'assistant error' : 'assistant');
+    const body = isUser ? escapeHTML(m.text) : renderMarkdown(m.text);
     return `
       <div class="ai-msg ${cls}">
         <div class="ai-msg-avatar">${avatar}</div>
-        <div class="ai-msg-bubble">${escapeHTML(m.text)}</div>
+        <div class="ai-msg-bubble">${body}</div>
       </div>
     `;
   }).join('');
@@ -8639,7 +8738,7 @@ function renderAIMessages() {
   if (_aiBusy) {
     wrap.innerHTML += `
       <div class="ai-msg assistant">
-        <div class="ai-msg-avatar">🤖</div>
+        <div class="ai-msg-avatar">${AI_AVATAR_SVG}</div>
         <div class="ai-msg-bubble"><div class="ai-typing"><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div><div class="ai-typing-dot"></div></div></div>
       </div>
     `;
@@ -8647,6 +8746,50 @@ function renderAIMessages() {
   // Scroll to bottom
   setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
 }
+
+// Minimal Markdown renderer — safe (escapes HTML first, then applies replacements)
+function renderMarkdown(text) {
+  let html = escapeHTML(text);
+  // Code blocks: ```...```
+  html = html.replace(/```([\s\S]*?)```/g, (_, code) => `<pre class="ai-pre">${code.trim()}</pre>`);
+  // Inline code: `...`
+  html = html.replace(/`([^`]+)`/g, '<code class="ai-code">$1</code>');
+  // Bold: **text** or __text__
+  html = html.replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/__([^_\n]+)__/g, '<strong>$1</strong>');
+  // Italic: *text* (but not ** already handled) / _text_
+  html = html.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  // Headings
+  html = html.replace(/^### (.+)$/gm, '<h4 class="ai-h4">$1</h4>');
+  html = html.replace(/^## (.+)$/gm, '<h3 class="ai-h3">$1</h3>');
+  html = html.replace(/^# (.+)$/gm, '<h2 class="ai-h2">$1</h2>');
+  // Highlight money (RM amounts)
+  html = html.replace(/\bRM\s*([\d,]+(?:\.\d+)?)/g, '<span class="ai-money">RM $1</span>');
+  // Highlight ROAS-like multipliers (1.23x, 4.5x)
+  html = html.replace(/(\d+\.\d+)x\b/g, '<span class="ai-roas">$1x</span>');
+  // Highlight percentages — green for positive (+X%, 上升, 增长), red for negative (-X%, 下降, 下滑)
+  html = html.replace(/([+]?\d+(?:\.\d+)?%)/g, '<span class="ai-pct">$1</span>');
+  // Highlight negative markers: "下降 X%" "下滑 X%" "减少 X%" — wrap the whole phrase
+  html = html.replace(/(下降|下滑|减少|降低|低于)\s*<span class="ai-pct">([^<]+)<\/span>/g, '<span class="ai-neg">$1 $2</span>');
+  html = html.replace(/(上升|上涨|增长|提高|高于|增加)\s*<span class="ai-pct">([^<]+)<\/span>/g, '<span class="ai-pos">$1 $2</span>');
+  // Bullet lists
+  html = html.replace(/^\s*[*•-]\s+(.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>[\s\S]*?<\/li>(\s*(?=<li>)|))+/g, m => '<ul class="ai-ul">' + m + '</ul>');
+  // Numbered lists
+  html = html.replace(/^\s*(\d+)\.\s+(.+)$/gm, '<oli data-n="$1">$2</oli>');
+  html = html.replace(/(<oli[^>]*>[\s\S]*?<\/oli>(\s*(?=<oli)|))+/g, m => '<ol class="ai-ol">' + m.replace(/<oli[^>]*>/g, '<li>').replace(/<\/oli>/g, '</li>') + '</ol>');
+  // Paragraphs
+  html = html.split(/\n{2,}/).map(chunk => {
+    if (/^\s*<(ul|ol|pre|h2|h3|h4|li)/.test(chunk)) return chunk;
+    return chunk.trim() ? `<p>${chunk.replace(/\n/g, '<br>')}</p>` : '';
+  }).join('');
+  return html;
+}
+
+// AI avatar (purple gradient circle with "AI" text) — used in chat bubbles and headers
+const AI_AVATAR_SVG = `<div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;letter-spacing:0.3px;">AI</div>`;
+
+const AI_AVATAR_SVG_LARGE = `<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>`;
 
 function escapeHTML(s) {
   return String(s)
