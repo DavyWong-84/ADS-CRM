@@ -1567,7 +1567,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.02</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.03</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2333,7 +2333,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.04'; // bump this to force reload of preloaded data
+const DATA_VERSION = '2.05'; // bump this to force reload of preloaded data
 
 // ---------- State ----------
 let state = {
@@ -8906,6 +8906,17 @@ function onAIModelChange(m) {
 const AI_SETTINGS_KEY = 'ads-crm-ai-model';
 let _aiHistory = []; // Last N turns: [{role, text}]
 let _aiBusy = false;
+const AI_CHAT_HISTORY_KEY = 'ads_crm_ai_history';
+
+function saveAIHistory() {
+  try { localStorage.setItem(AI_CHAT_HISTORY_KEY, JSON.stringify(_aiHistory.slice(-20))); } catch(e) {}
+}
+function loadAIHistory() {
+  try {
+    const raw = localStorage.getItem(AI_CHAT_HISTORY_KEY);
+    if (raw) _aiHistory = JSON.parse(raw) || [];
+  } catch(e) { _aiHistory = []; }
+}
 
 function getAIModel() {
   return localStorage.getItem(AI_SETTINGS_KEY) || 'gemini-2.5-flash';
@@ -8922,6 +8933,7 @@ function openAIChat() {
   if (!bd) return;
   bd.classList.add('open');
   setAIModel(getAIModel()); // Sync label
+  loadAIHistory(); // Restore history from localStorage
   // Set header avatar
   const headerAv = document.getElementById('aiHeaderAvatar');
   if (headerAv && typeof AI_AVATAR_SVG !== 'undefined') headerAv.innerHTML = AI_AVATAR_SVG;
@@ -8936,6 +8948,7 @@ function closeAIChat() {
 
 function clearAIChat() {
   _aiHistory = [];
+  saveAIHistory();
   renderAIMessages();
 }
 
@@ -9180,40 +9193,59 @@ async function sendAIMessage() {
   _aiBusy = true;
   renderAIMessages();
 
-  try {
-    // Build context from state
+  // Helper: single API attempt with given model
+  async function attemptAI(model) {
     const context = buildAIContext(q);
-    const model = getAIModel();
-
-    // Build history for multi-turn (exclude the current question we just pushed)
     const history = _aiHistory.slice(0, -1).slice(-10).map(m => ({
       role: m.role === 'user' ? 'user' : 'model',
       text: m.text
     }));
-
     const res = await fetch(gsUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'text/plain' }, // Apps Script accepts this for CORS
-      body: JSON.stringify({
-        action: 'askAI',
-        question: q,
-        model: model,
-        context: context,
-        history: history
-      })
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'askAI', question: q, model, context, history })
     });
-    const data = await res.json();
+    return await res.json();
+  }
+
+  try {
+    const primaryModel = getAIModel();
+    // Fallback chain: primary → flash → flash-lite
+    const fallbackChain = [primaryModel];
+    if (primaryModel !== 'gemini-2.5-flash') fallbackChain.push('gemini-2.5-flash');
+    if (!fallbackChain.includes('gemini-2.5-flash-lite-preview-06-17')) fallbackChain.push('gemini-2.5-flash-lite-preview-06-17');
+
+    let data = null;
+    let lastErr = '';
+    for (const model of fallbackChain) {
+      data = await attemptAI(model);
+      if (data.success && data.result && data.result.answer) break;
+      const err = data.result?.error || data.error || '';
+      // Only retry on 503/overload
+      if (!err.includes('503') && !err.includes('UNAVAILABLE') && !err.includes('overload')) {
+        lastErr = err; break;
+      }
+      lastErr = err;
+      await new Promise(r => setTimeout(r, 1500)); // wait 1.5s before retry
+    }
+
     _aiBusy = false;
-    if (data.success && data.result && data.result.answer) {
+    if (data && data.success && data.result && data.result.answer) {
       _aiHistory.push({ role: 'model', text: data.result.answer });
     } else {
-      const errMsg = data.result?.error || data.error || 'Unknown error';
-      _aiHistory.push({ role: 'model', text: '❌ ' + errMsg, error: true });
+      const errMsg = lastErr || 'Unknown error';
+      const is503 = errMsg.includes('503') || errMsg.includes('UNAVAILABLE');
+      const friendlyMsg = is503
+        ? '⚠️ Gemini 现在太忙了，稍后再试一下 lah。（503 高峰期）'
+        : '❌ ' + errMsg;
+      _aiHistory.push({ role: 'model', text: friendlyMsg, error: !is503 });
     }
+    saveAIHistory();
     renderAIMessages();
   } catch (err) {
     _aiBusy = false;
     _aiHistory.push({ role: 'model', text: '❌ Network error: ' + err.message, error: true });
+    saveAIHistory();
     renderAIMessages();
   }
 }
