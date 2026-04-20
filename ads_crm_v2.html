@@ -480,12 +480,29 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .ai-msg.assistant .ai-msg-bubble .ai-card { padding: 10px 12px; }
   .ai-card-value { font-size: 22px; }
   .ai-card-label { font-size: 10px; }
-  /* Tighter table on mobile */
-  .ai-msg.assistant .ai-msg-bubble .ai-table { padding: 8px; }
-  .ai-table th, .ai-table td { padding: 4px 6px; font-size: 12px; }
-  .ai-table th { font-size: 10px; }
+  /* v3.23: Tighter table on mobile */
+  .ai-msg.assistant .ai-msg-bubble .ai-table { padding: 6px; position: relative; }
+  .ai-table th, .ai-table td { padding: 4px 5px; font-size: 11px; }
+  .ai-table th { font-size: 9.5px; }
   .ai-table-title { font-size: 11px; }
   .ai-table-bar-cell { min-width: 40px; }
+  /* v3.23 mobile: % trend drops to next line under main number */
+  .ai-table td .ai-pct-trend {
+    display: block;
+    margin-left: 0;
+    margin-top: 1px;
+    font-size: 9px;
+  }
+  /* v3.23 mobile: right-edge scroll hint shadow when table overflows */
+  .ai-msg.assistant .ai-msg-bubble .ai-table::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 18px;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.85));
+    pointer-events: none;
+    border-radius: 0 8px 8px 0;
+  }
   /* Quick action chips smaller */
   .ai-chip { padding: 5px 10px; font-size: 11px; }
   .ai-input-wrap { padding: 10px 12px 12px; }
@@ -756,6 +773,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   border-top: 2px solid var(--purple);
   background: var(--purple-bg);
   font-weight: 700;
+}
+/* v3.23: % trend badge — desktop default (inline, lighter, softer) */
+.ai-pct-trend {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+  opacity: 0.85;
+  margin-left: 2px;
 }
 .ai-copy-btn {
   flex-shrink: 0;
@@ -1604,7 +1630,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.21</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.23</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2327,45 +2353,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
 
     <!-- Inline Settings Panel (collapsible) -->
-    <div id="aiSettingsPanel" style="display:none;border-bottom:1px solid var(--border);background:var(--surface);padding:12px 16px;flex-shrink:0;">
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <!-- Model -->
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:12px;color:var(--gray);white-space:nowrap;min-width:48px;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-            Model
-          </span>
-          <select id="ai_model_inline" onchange="onAIModelChangeInline(this.value)" style="flex:1;font-size:12px;padding:5px 8px;border:1px solid var(--border);border-radius:8px;background:#fff;">
-            <option value="gemini-2.5-pro">Gemini 2.5 Pro · 最聪明</option>
-            <option value="gemini-2.5-flash">Gemini 2.5 Flash · 推荐</option>
-            <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite · 最快</option>
-          </select>
-        </div>
-        <!-- Role / Prompt -->
-        <div>
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <span style="font-size:12px;color:var(--gray);">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:3px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              AI 角色
-            </span>
-            <select id="ai_role_preset_inline" onchange="applyAIRolePresetInline(this.value)" style="font-size:11px;padding:3px 6px;border:1px solid var(--border);border-radius:6px;background:#fff;margin-left:auto;">
-              <option value="">— 套用模板 —</option>
-              <option value="analyst">📊 数据分析师</option>
-              <option value="coach">🎯 营销顾问</option>
-              <option value="concise">⚡ 极简模式</option>
-              <option value="bilingual">🌏 中英双语</option>
-            </select>
-          </div>
-          <textarea id="ai_custom_role_inline" rows="3" placeholder="留空 = 默认角色。可自定义 AI 语气、专注点..." style="width:100%;font-size:12px;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:none;line-height:1.5;box-sizing:border-box;background:#fff;"></textarea>
-          <div style="display:flex;gap:6px;margin-top:6px;">
-            <button class="btn btn-primary" style="font-size:11px;padding:4px 12px;" onclick="saveAISettingsInline()">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-1px;margin-right:3px;"><polyline points="20 6 9 17 4 12"></polyline></svg>保存
-            </button>
-            <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="clearAIRoleInline()">✕ 清除角色</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- v3.23: Settings moved to standalone Modal (see aiSettingsBackdrop below) -->
 
     <div id="aiMessages" class="ai-messages"></div>
     <div class="ai-quick-actions" id="aiQuickActions"></div>
@@ -2374,6 +2362,53 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <button type="button" onclick="sendAIMessage()" class="ai-send" id="aiSendBtn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- v3.23: AI Settings Modal (replaces old inline panel) -->
+<div class="modal-backdrop" id="aiSettingsBackdrop" onclick="if(event.target===this)closeAISettings()" style="display:none;z-index:10002;">
+  <div style="background:#fff;border-radius:16px;width:min(520px,96vw);max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7132f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span style="font-size:16px;font-weight:700;color:#7132f5;">AI 设置</span>
+      </div>
+      <button type="button" onclick="closeAISettings()" class="ai-icon-btn" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div style="padding:18px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:18px;">
+      <!-- Section: Model -->
+      <div>
+        <div style="font-size:12px;color:var(--gray);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">模型</div>
+        <select id="ai_model_inline" onchange="onAIModelChangeInline(this.value)" style="width:100%;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;">
+          <option value="gemini-2.5-pro">Gemini 2.5 Pro · 最聪明</option>
+          <option value="gemini-2.5-flash">Gemini 2.5 Flash · 推荐</option>
+          <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite · 最快</option>
+        </select>
+      </div>
+      <!-- Section: Role -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <div style="font-size:12px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">AI 角色</div>
+          <select id="ai_role_preset_inline" onchange="applyAIRolePresetInline(this.value)" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:#fff;">
+            <option value="">— 套用模板 —</option>
+            <option value="executor">🎯 决策执行官（推荐）</option>
+            <option value="detective">🔍 数据侦探</option>
+            <option value="roi">💰 ROI 优化顾问</option>
+            <option value="report">📊 报告生成器</option>
+            <option value="casual">💬 日常问答</option>
+          </select>
+        </div>
+        <textarea id="ai_custom_role_inline" rows="6" placeholder="留空 = 默认角色（决策执行官）。可自定义 AI 语气、专注点..." style="width:100%;font-size:13px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:vertical;line-height:1.5;box-sizing:border-box;background:#fff;min-height:120px;"></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="btn btn-primary" style="font-size:13px;padding:7px 16px;" onclick="saveAISettingsInline(); closeAISettings();">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-1px;margin-right:3px;"><polyline points="20 6 9 17 4 12"></polyline></svg>保存并关闭
+          </button>
+          <button class="btn btn-ghost" style="font-size:13px;padding:7px 14px;" onclick="clearAIRoleInline()">✕ 清除角色</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -9440,12 +9475,77 @@ function mergeNotes(local, remote) {
 }
 
 const AI_ROLE_KEY = 'ads_crm_ai_custom_role';
+// v3.22: New role system — 5 presets designed for Davy's actual workflow (3-store owner, marketing + HR)
 const AI_ROLE_PRESETS = {
-  analyst: `你是一个专业的数据分析师。回答时优先给表格和数字，简洁直接。每次回答必须包含关键数据对比和趋势分析。用中文回答。`,
-  coach: `你是一个经验丰富的 marketing 顾问，熟悉美容医疗行业。除了给数据，还要主动指出哪里有改善空间，哪个渠道值得加大投入。用中文回答，带点建议性语气。`,
-  concise: `极简模式：直接给数字，不要解释，不要前言，不要客套话。只给表格或一行结论。`,
-  bilingual: `Reply in both Chinese and English. Show the key number first in Chinese, then add English summary below. Keep both concise.`
+  executor: `【决策执行官】你是一位资深数据参谋，服务对象是一个管理 3 家店的老板。他时间宝贵、不看代码、只要能立刻拿去做决策的信息。
+
+铁律（每条都必须遵守）：
+1. 每次回答**第一句必须是 📌 开头的一句话结论**，让对方扫一眼就懂（不要寒暄、不要"好的"、不要"让我看看"）
+2. 专业术语后面用括号翻译成大白话。例：
+   - "ROAS 2.5x（每花 RM1 赚回 RM2.5）"
+   - "CPL RM 45（每拿到一个咨询花 45 块）"
+   - "CPA RM 180（每成交一单花 180 块）"
+3. 数据状态用红绿灯标注：🔴 严重（跌>30%、ROAS<1）/ 🟡 注意（跌10-30%）/ 🟢 正常
+4. 任何负面发现后**必须**跟一条具体行动建议，用 "👉 建议: " 开头。建议必须包含：具体数字 + 时间 + 渠道/门店。
+   - 差例："建议关注 Meta 广告"
+   - 好例："👉 建议: 本周 Sunway 店 Meta 预算从 RM 3000 减到 RM 2000，差额转投 Google"
+5. 任何单个数字必须和基准比较（上月 / 去年同期 / 3 店均值），并用"高于/低于/接近"表达
+6. 不用 emoji 堆砌、不绕弯子、不讲 "让我为您分析"
+7. 用中文回答（专业名词可保留英文：ROAS, ROI, CPL, CPA, Meta, Google）`,
+
+  detective: `【数据侦探】你专门挖藏在数据里的异常和可疑模式。
+
+工作方式：
+1. 听到问题先判断：对方问的 X 是不是他真正想知道的？如果问得模糊，**先反问**："你要找的是 A 还是 B？"列 2-3 个具体方向让他选。
+2. 答完正题后，主动找 3 个他**没问但应该知道**的异常点，用 "🔍 顺便提一下..." 开头
+3. 每个异常点提出 3 个可能原因假设（投放问题 / 门店问题 / 外部环境），让对方判断
+4. 不要给建议，只负责挖问题 —— 让老板自己决定怎么做
+5. 用中文回答，语气像侦探做案情分析，冷静、精准、不煽情`,
+
+  roi: `【ROI 优化顾问】你只关心一件事：**怎么让每一块广告钱赚更多**。
+
+每次回答必须包含这 3 段：
+1. **当前 ROI 诊断**：哪个渠道/哪家店在亏、哪个在赚，用 ROAS 排名
+2. **资金重分配建议**：具体说从 A 挪 X% 到 B，并给出预估 ROAS 提升 Y%（基于历史数据推算）
+3. **止损线**：如果某渠道 ROAS 持续低于 X，第几个月应该停投
+
+铁律：
+- 不讨论 HR、流程、情感、品牌建设，只看钱的效率
+- 每个建议必须能直接执行（带金额、带时间、带渠道名）
+- 如果数据不足以推断，**说清楚不足在哪**，不要编数字
+- 用中文回答`,
+
+  report: `【报告生成器】你是自动化报告机器。对方说"给我本月/本周 summary"或类似请求，你就自动输出完整报告。
+
+报告结构固定（按顺序）：
+1. 📌 **核心结论**（1 句话）
+2. 💰 **营业额表现**（用 [[card]] 展示本期 + trend 对比上期）
+3. 🎯 **ROAS 表现**（用 [[card]]）
+4. 🏪 **3 店对比**（用 [[table]]，列：门店 | 营业额 | ROAS | 新客%，带 prevValues）
+5. 📱 **渠道 ROI 排名**（用 [[table]]，按 ROAS 从高到低排）
+6. 🚨 **需要关注的 3 个问题**（编号列表，每条一句话）
+7. 👉 **建议行动 3 条**（每条带具体金额 + 时间 + 执行人/渠道）
+
+其他时间（对方问具体问题而非 summary 时），不要用报告结构，用普通问答。
+用中文回答。`,
+
+  casual: `【日常问答】聊天式、短句回应，不用结构化。对方随便问，你就简短作答，像和同事快速确认数字一样。
+
+- 不写报告结构、不摆 [[card]] [[table]]，除非问题本身适合
+- 一句话能答完就不用两句
+- 数字直接报，不加太多分析（除非被要求）
+- 用中文`
 };
+// v3.22: Friendly display labels for role dropdown
+const AI_ROLE_LABELS = {
+  executor: '🎯 决策执行官（推荐）',
+  detective: '🔍 数据侦探',
+  roi: '💰 ROI 优化顾问',
+  report: '📊 报告生成器',
+  casual: '💬 日常问答'
+};
+// v3.22: Default role for new users / empty custom_role = executor
+const AI_ROLE_DEFAULT_KEY = 'executor';
 
 function getAICustomRole() {
   return localStorage.getItem(AI_ROLE_KEY) || '';
@@ -9508,11 +9608,8 @@ function closeAIChat() {
   saveAIHistory(); // Always save on close
   const bd = document.getElementById('aiChatBackdrop');
   if (bd) bd.classList.remove('open');
-  // Also close settings panel if open
-  const panel = document.getElementById('aiSettingsPanel');
-  const btn = document.getElementById('aiSettingsBtn');
-  if (panel) panel.style.display = 'none';
-  if (btn) { btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = ''; }
+  // v3.23: Also close settings modal if open
+  closeAISettings();
 }
 
 function clearAIChat() {
@@ -9528,7 +9625,7 @@ function renderAIMessages() {
     wrap.innerHTML = `
       <div class="ai-empty">
         ${AI_AVATAR_SVG_LARGE}
-        <div class="ai-empty-title">Hi Davy, I'm your CRM assistant</div>
+        <div class="ai-empty-title">你的 CRM 分析助手</div>
         <div style="font-size:12px;color:var(--gray);">Click a quick action below or type your question</div>
       </div>
     `;
@@ -9747,9 +9844,10 @@ function renderDataTable(jsonStr) {
             if (Math.abs(pct) > 0.05) {
               const isUp = pct > 0;
               const arrow = isUp ? '▲' : '▼';
-              const color = isUp ? '#10B981' : '#DC2626';
+              const color = isUp ? '#059669' : '#B91C1C'; // v3.23: softer tones
               const pctStr = (isUp ? '+' : '') + pct.toFixed(1) + '%';
-              trendHTML = ` <span style="font-size:9px;font-weight:700;color:${color};white-space:nowrap;letter-spacing:0.2px;">${arrow} ${pctStr}</span>`;
+              // v3.23: lighter weight + softer color, class-based so mobile can wrap it
+              trendHTML = ` <span class="ai-pct-trend" style="color:${color};">${arrow} ${pctStr}</span>`;
             }
           }
         }
@@ -9840,21 +9938,25 @@ function fallbackCopy(text) {
   document.body.removeChild(ta);
 }
 
+// v3.23: Settings now opens as independent Modal
 function toggleAISettings() {
-  const panel = document.getElementById('aiSettingsPanel');
-  const btn = document.getElementById('aiSettingsBtn');
-  if (!panel) return;
-  const isOpen = panel.style.display !== 'none';
-  panel.style.display = isOpen ? 'none' : 'block';
-  btn.style.background = isOpen ? '' : 'var(--purple-bg)';
-  btn.style.borderColor = isOpen ? '' : 'var(--purple)';
-  btn.style.color = isOpen ? '' : 'var(--purple)';
-  if (!isOpen) {
-    const sel = document.getElementById('ai_model_inline');
-    if (sel) sel.value = getAIModel();
-    const ta = document.getElementById('ai_custom_role_inline');
-    if (ta) ta.value = getAICustomRole();
-  }
+  openAISettings();
+}
+
+function openAISettings() {
+  const bd = document.getElementById('aiSettingsBackdrop');
+  if (!bd) return;
+  bd.style.display = 'flex';
+  // Sync current values into modal
+  const sel = document.getElementById('ai_model_inline');
+  if (sel) sel.value = getAIModel();
+  const ta = document.getElementById('ai_custom_role_inline');
+  if (ta) ta.value = getAICustomRole();
+}
+
+function closeAISettings() {
+  const bd = document.getElementById('aiSettingsBackdrop');
+  if (bd) bd.style.display = 'none';
 }
 
 function onAIModelChangeInline(val) {
@@ -9876,10 +9978,6 @@ function saveAISettingsInline() {
   else localStorage.removeItem(AI_ROLE_KEY);
   const ta = document.getElementById('ai_custom_role');
   if (ta) ta.value = val;
-  const panel = document.getElementById('aiSettingsPanel');
-  const btn = document.getElementById('aiSettingsBtn');
-  if (panel) panel.style.display = 'none';
-  if (btn) { btn.style.background = ''; btn.style.borderColor = ''; btn.style.color = ''; }
   toast('设置已保存 ✓');
 }
 
@@ -10170,7 +10268,8 @@ function buildAIContext(question) {
     ai_notes: aiNotes              // Accumulated AI observations over time
   };
 
-  const customRole = getAICustomRole();
+  // v3.22: If user hasn't set a custom role, use 决策执行官 (executor) as default
+  const customRole = getAICustomRole() || AI_ROLE_PRESETS[AI_ROLE_DEFAULT_KEY] || '';
   return { dictionary, snapshot, ...(customRole ? { custom_role: customRole } : {}) };
 }
 
