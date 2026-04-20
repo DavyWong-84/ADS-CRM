@@ -542,8 +542,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   word-wrap: break-word;
 }
 .ai-msg.user .ai-msg-bubble {
-  background: var(--purple);
-  color: #fff;
+  background: #8bb8d4;
+  color: #1a1a1a;
   border-bottom-right-radius: 4px;
 }
 .ai-msg.assistant .ai-msg-bubble {
@@ -1556,7 +1556,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v2.93</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v2.96</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2287,14 +2287,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div id="aiMessages" class="ai-messages"></div>
     <div class="ai-quick-actions" id="aiQuickActions">
-      <button class="ai-chip" onclick="askAIQuick('本月 vs 上月：营业额、ROAS、Lead、成本全部对比')">📊 本月 vs 上月</button>
-      <button class="ai-chip" onclick="askAIQuick('本季度 vs 上季度对比')">📈 季度对比</button>
-      <button class="ai-chip" onclick="askAIQuick('本月 vs 去年同月对比')">📆 去年同期</button>
-      <button class="ai-chip" onclick="askAIQuick('3 个门店本月全指标排名对比')">🏆 门店对比</button>
-      <button class="ai-chip" onclick="askAIQuick('列出所有月份的营业额（从最早到现在）')">💰 全部月度营业额</button>
-      <button class="ai-chip" onclick="askAIQuick('所有渠道本月 ROAS 对比')">🎯 渠道 ROAS</button>
-      <button class="ai-chip" onclick="askAIQuick('所有门店全年表现（每月营业额）')">📍 门店全年</button>
-      <button class="ai-chip" onclick="askAIQuick('找出历史上营业额最高的前 5 个月')">⭐ 最佳月份</button>
+      <button class="ai-chip" onclick="askAIQuick('列出每个月的营业额（含 New 和 Old）')">💰 每月营业额</button>
+      <button class="ai-chip" onclick="askAIQuick('列出每个月的 Ads Spend（Meta + Google 分开显示）')">💸 每月 Ads Spend</button>
+      <button class="ai-chip" onclick="askAIQuick('列出每个月的 Total ROAS、Meta ROAS、Google ROAS')">🎯 每月 ROAS</button>
+      <button class="ai-chip" onclick="askAIQuick('列出每个月的 Lead 数量（按渠道分开）')">📡 每月 Lead</button>
+      <button class="ai-chip" onclick="askAIQuick('3 个门店每月的营业额对比（每月一行）')">🏢 门店月度营业额</button>
+      <button class="ai-chip" onclick="askAIQuick('3 个门店本月表现对比（营业额、新客、Lead）')">🏆 门店本月对比</button>
+      <button class="ai-chip" onclick="askAIQuick('所有渠道本月表现（Lead 数、成本、ROAS）')">🎪 渠道本月对比</button>
+      <button class="ai-chip" onclick="askAIQuick('本月 vs 上月全部指标对比')">📊 本月 vs 上月</button>
     </div>
     <div class="ai-input-wrap">
       <textarea id="aiInput" placeholder="问我任何数据问题..." rows="1" onkeydown="_aiInputKey(event)"></textarea>
@@ -8944,12 +8944,19 @@ function renderAIMessages() {
   wrap.innerHTML = _aiHistory.map(m => {
     const isUser = m.role === 'user';
     const isErr = m.error;
-    const avatar = isUser ? '👤' : AI_AVATAR_SVG;
     const cls = isUser ? 'user' : (isErr ? 'assistant error' : 'assistant');
     const body = isUser ? escapeHTML(m.text) : renderMarkdown(m.text);
+    // User messages: no avatar, just bubble right-aligned. Assistant: keep AI avatar.
+    if (isUser) {
+      return `
+        <div class="ai-msg ${cls}">
+          <div class="ai-msg-bubble">${body}</div>
+        </div>
+      `;
+    }
     return `
       <div class="ai-msg ${cls}">
-        <div class="ai-msg-avatar">${avatar}</div>
+        <div class="ai-msg-avatar">${AI_AVATAR_SVG}</div>
         <div class="ai-msg-bubble">${body}</div>
       </div>
     `;
