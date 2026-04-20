@@ -452,9 +452,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   bottom: 0;
   margin: auto;
   width: calc(100% - 32px);
-  max-width: 620px;
-  height: 80vh;
-  max-height: 720px;
+  max-width: 900px;
+  height: 82vh;
+  max-height: 780px;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 24px 60px rgba(16,17,20,0.28);
@@ -462,6 +462,35 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   display: flex;
   flex-direction: column;
   animation: modalIn 0.2s ease;
+}
+@media (max-width: 767px) {
+  #aiChatBackdrop.open .ai-modal {
+    width: calc(100% - 16px);
+    max-width: none;
+    height: 90vh;
+    max-height: none;
+    border-radius: 14px;
+  }
+  .ai-header { padding: 12px 14px; }
+  .ai-messages { padding: 10px 12px; }
+  .ai-msg { max-width: 95%; }
+  .ai-msg.assistant { max-width: 98%; }
+  .ai-msg-bubble { padding: 8px 10px; font-size: 13.5px; }
+  /* Smaller hero card on mobile */
+  .ai-msg.assistant .ai-msg-bubble .ai-card { padding: 10px 12px; }
+  .ai-card-value { font-size: 22px; }
+  .ai-card-label { font-size: 10px; }
+  /* Tighter table on mobile */
+  .ai-msg.assistant .ai-msg-bubble .ai-table { padding: 8px; }
+  .ai-table th, .ai-table td { padding: 4px 6px; font-size: 12px; }
+  .ai-table th { font-size: 10px; }
+  .ai-table-title { font-size: 11px; }
+  .ai-table-bar-cell { min-width: 40px; }
+  /* Quick action chips smaller */
+  .ai-chip { padding: 5px 10px; font-size: 11px; }
+  .ai-input-wrap { padding: 10px 12px 12px; }
+  .ai-input-wrap textarea { font-size: 13.5px; padding: 8px 12px; }
+  .ai-send { width: 34px; height: 34px; }
 }
 .ai-header {
   padding: 14px 18px;
@@ -474,15 +503,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 16px 18px;
+  padding: 12px 18px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 8px;
 }
 .ai-msg {
-  max-width: 85%;
+  max-width: 88%;
   display: flex;
-  gap: 10px;
+  gap: 8px;
+}
+.ai-msg.assistant {
+  max-width: 95%; /* wider for data display */
 }
 .ai-msg.user {
   align-self: flex-end;
@@ -502,7 +534,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-msg.user .ai-msg-avatar { background: var(--purple); color: #fff; width: 28px; height: 28px; }
 .ai-msg.assistant .ai-msg-avatar { background: transparent; }
 .ai-msg-bubble {
-  padding: 10px 14px;
+  padding: 8px 12px;
   border-radius: 14px;
   font-size: 14px;
   line-height: 1.5;
@@ -522,19 +554,19 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   white-space: normal;
 }
 /* Markdown content inside assistant bubble */
-.ai-msg.assistant .ai-msg-bubble p { margin: 0 0 8px 0; }
+.ai-msg.assistant .ai-msg-bubble p { margin: 0 0 4px 0; }
 .ai-msg.assistant .ai-msg-bubble p:last-child { margin-bottom: 0; }
 .ai-msg.assistant .ai-msg-bubble strong { font-weight: 700; color: var(--black); }
 .ai-msg.assistant .ai-msg-bubble em { font-style: italic; }
 .ai-msg.assistant .ai-msg-bubble ul.ai-ul,
 .ai-msg.assistant .ai-msg-bubble ol.ai-ol {
-  margin: 4px 0 6px 0;
-  padding-left: 20px;
+  margin: 2px 0 4px 0;
+  padding-left: 18px;
 }
 .ai-msg.assistant .ai-msg-bubble ul.ai-ul li,
 .ai-msg.assistant .ai-msg-bubble ol.ai-ol li {
-  margin-bottom: 3px;
-  line-height: 1.55;
+  margin-bottom: 1px;
+  line-height: 1.5;
 }
 .ai-msg.assistant .ai-msg-bubble h2.ai-h2,
 .ai-msg.assistant .ai-msg-bubble h3.ai-h3,
@@ -611,6 +643,108 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   background: transparent;
   color: inherit;
   padding: 0;
+}
+/* === Data Analyst UI: Hero Card (single big number) === */
+.ai-msg.assistant .ai-msg-bubble .ai-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 6px 0;
+  background: linear-gradient(135deg, #faf8ff, #fff);
+}
+.ai-card-label {
+  font-size: 11px;
+  color: var(--gray);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.ai-card-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--purple-deep, #5B1ECF);
+  line-height: 1.1;
+  letter-spacing: -0.3px;
+}
+.ai-card-trend {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.ai-card-trend.up { background: rgba(16,185,129,0.12); color: #047857; }
+.ai-card-trend.down { background: rgba(220,38,38,0.12); color: #DC2626; }
+.ai-card-trend.flat { background: var(--surface); color: var(--gray); }
+.ai-card-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+/* === Data Analyst UI: Comparison Table with bars === */
+.ai-msg.assistant .ai-msg-bubble .ai-table {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  margin: 6px 0;
+  background: #fff;
+  overflow-x: auto;
+}
+.ai-table-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border-light, #eee);
+}
+.ai-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ai-table th {
+  text-align: left;
+  padding: 4px 8px;
+  font-weight: 600;
+  color: var(--gray);
+  font-size: 11px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-light, #eee);
+  white-space: nowrap;
+}
+.ai-table th.num { text-align: right; }
+.ai-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f5f5f5;
+  line-height: 1.4;
+}
+.ai-table td.num { text-align: right; font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ai-table tr:last-child td { border-bottom: none; }
+.ai-table-bar-cell {
+  position: relative;
+  padding-left: 2px;
+  min-width: 60px;
+}
+.ai-table-bar {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--purple), #9b5fff);
+  min-width: 2px;
+}
+.ai-table-bar.meta { background: linear-gradient(90deg, #1877F2, #4a9bff); }
+.ai-table-bar.google { background: linear-gradient(90deg, #CA8A04, #f5b40c); }
+.ai-table-bar.neg { background: linear-gradient(90deg, #DC2626, #f87171); }
+.ai-table-row-total td {
+  border-top: 2px solid var(--purple);
+  background: var(--purple-bg);
+  font-weight: 700;
 }
 .ai-msg.error .ai-msg-bubble {
   background: #fef2f2;
@@ -1422,7 +1556,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v2.90</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v2.93</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -8835,6 +8969,19 @@ function renderAIMessages() {
 
 // Minimal Markdown renderer — safe (escapes HTML first, then applies replacements)
 function renderMarkdown(text) {
+  // Extract [[card]]...[[/card]] and [[table]]...[[/table]] blocks BEFORE escaping
+  const blocks = [];
+  text = text.replace(/\[\[card\]\]([\s\S]*?)\[\[\/card\]\]/g, (_, content) => {
+    const idx = blocks.length;
+    blocks.push({ type: 'card', content: content.trim() });
+    return `\n§§BLOCK${idx}§§\n`;
+  });
+  text = text.replace(/\[\[table\]\]([\s\S]*?)\[\[\/table\]\]/g, (_, content) => {
+    const idx = blocks.length;
+    blocks.push({ type: 'table', content: content.trim() });
+    return `\n§§BLOCK${idx}§§\n`;
+  });
+
   let html = escapeHTML(text);
   // Code blocks: ```...```
   html = html.replace(/```([\s\S]*?)```/g, (_, code) => `<pre class="ai-pre">${code.trim()}</pre>`);
@@ -8853,9 +9000,9 @@ function renderMarkdown(text) {
   html = html.replace(/\bRM\s*([\d,]+(?:\.\d+)?)/g, '<span class="ai-money">RM $1</span>');
   // Highlight ROAS-like multipliers (1.23x, 4.5x)
   html = html.replace(/(\d+\.\d+)x\b/g, '<span class="ai-roas">$1x</span>');
-  // Highlight percentages — green for positive (+X%, 上升, 增长), red for negative (-X%, 下降, 下滑)
+  // Highlight percentages
   html = html.replace(/([+]?\d+(?:\.\d+)?%)/g, '<span class="ai-pct">$1</span>');
-  // Highlight negative markers: "下降 X%" "下滑 X%" "减少 X%" — wrap the whole phrase
+  // Trend phrases
   html = html.replace(/(下降|下滑|减少|降低|低于)\s*<span class="ai-pct">([^<]+)<\/span>/g, '<span class="ai-neg">$1 $2</span>');
   html = html.replace(/(上升|上涨|增长|提高|高于|增加)\s*<span class="ai-pct">([^<]+)<\/span>/g, '<span class="ai-pos">$1 $2</span>');
   // Bullet lists
@@ -8869,6 +9016,106 @@ function renderMarkdown(text) {
     if (/^\s*<(ul|ol|pre|h2|h3|h4|li)/.test(chunk)) return chunk;
     return chunk.trim() ? `<p>${chunk.replace(/\n/g, '<br>')}</p>` : '';
   }).join('');
+
+  // Replace block placeholders with rendered cards/tables
+  html = html.replace(/§§BLOCK(\d+)§§/g, (_, i) => {
+    const b = blocks[+i];
+    if (!b) return '';
+    if (b.type === 'card') return renderDataCard(b.content);
+    if (b.type === 'table') return renderDataTable(b.content);
+    return '';
+  });
+  // Clean up empty paragraphs wrapping block placeholders
+  html = html.replace(/<p>(\s*<div class="ai-(?:card|table)">[\s\S]*?<\/div>\s*)<\/p>/g, '$1');
+  return html;
+}
+
+// Render a hero card block
+// Expected JSON: { "label": "本月销售", "value": "RM 96,608", "trend": "-30.7%", "sub": "vs 上月 139,320" }
+function renderDataCard(jsonStr) {
+  try {
+    const d = JSON.parse(jsonStr);
+    const label = escapeHTML(d.label || '');
+    const value = escapeHTML(d.value || '');
+    let trendHTML = '';
+    if (d.trend) {
+      const t = String(d.trend);
+      const isUp = /^[+\u4e0a\u589e\u6da8]/.test(t) || (/^[+-]/.test(t) && t.startsWith('+'));
+      const isDown = t.startsWith('-') || /[下\u964d\u51cf]/.test(t);
+      const cls = isUp ? 'up' : (isDown ? 'down' : 'flat');
+      const arrow = isUp ? '↑' : (isDown ? '↓' : '→');
+      trendHTML = `<span class="ai-card-trend ${cls}">${arrow} ${escapeHTML(t)}</span>`;
+    }
+    const sub = d.sub ? `<div class="ai-card-sub">${escapeHTML(d.sub)}</div>` : '';
+    return `<div class="ai-card"><div class="ai-card-label">${label}</div><div class="ai-card-value">${value}</div>${trendHTML}${sub}</div>`;
+  } catch (err) {
+    return `<div class="ai-card"><div class="ai-card-sub">Card parse error: ${escapeHTML(err.message)}</div><pre class="ai-pre">${escapeHTML(jsonStr)}</pre></div>`;
+  }
+}
+
+// Render a data table block with horizontal bars
+// Expected JSON: { "title": "Store Revenue", "columns": ["Store", "Revenue", ""], "rows": [["Sunway", "RM 54,345", 54345], ...], "barColor": "purple|meta|google|neg" }
+// Last column (if numeric) will be treated as value for bar width
+function renderDataTable(jsonStr) {
+  try {
+    const d = JSON.parse(jsonStr);
+    const title = d.title ? `<div class="ai-table-title">${escapeHTML(d.title)}</div>` : '';
+    const cols = d.columns || [];
+    const rows = d.rows || [];
+    const barColor = d.barColor || 'purple';
+    const totalRow = d.totalRow || null; // Optional TOTAL row
+
+    // Determine bar max (use numeric values from last column OR separate barValues)
+    const barValues = d.barValues || rows.map(r => {
+      const last = r[r.length - 1];
+      return typeof last === 'number' ? last : parseFloat(String(last).replace(/[^\d.-]/g, '')) || 0;
+    });
+    const barMax = Math.max(...barValues.map(Math.abs), 1);
+
+    const ths = cols.map((c, i) => {
+      const numCls = (i > 0 && i < cols.length - 1) ? ' class="num"' : '';
+      return `<th${numCls}>${escapeHTML(c)}</th>`;
+    }).join('') + '<th class="num"></th>';
+
+    const trs = rows.map((r, rIdx) => {
+      const tds = r.map((cell, cIdx) => {
+        const isNum = cIdx > 0 && (typeof cell === 'number' || /^[\s\-+]*(?:RM\s*)?[\d,]+(\.\d+)?(\s*%|x)?\s*$/.test(String(cell)));
+        const cellStr = typeof cell === 'number' ? formatNumDisplay(cell) : String(cell);
+        return `<td${isNum ? ' class="num"' : ''}>${applyNumHighlight(escapeHTML(cellStr))}</td>`;
+      }).join('');
+      const bw = Math.round(Math.abs(barValues[rIdx]) / barMax * 100);
+      const barTd = `<td class="ai-table-bar-cell"><span class="ai-table-bar ${barColor}" style="width:${bw}%;"></span></td>`;
+      return `<tr>${tds}${barTd}</tr>`;
+    }).join('');
+
+    let totalTR = '';
+    if (totalRow && Array.isArray(totalRow)) {
+      const tds = totalRow.map((cell, cIdx) => {
+        const isNum = cIdx > 0 && (typeof cell === 'number' || /^[\s\-+]*(?:RM\s*)?[\d,]+(\.\d+)?(\s*%|x)?\s*$/.test(String(cell)));
+        const cellStr = typeof cell === 'number' ? formatNumDisplay(cell) : String(cell);
+        return `<td${isNum ? ' class="num"' : ''}>${applyNumHighlight(escapeHTML(cellStr))}</td>`;
+      }).join('');
+      totalTR = `<tr class="ai-table-row-total">${tds}<td></td></tr>`;
+    }
+
+    return `<div class="ai-table">${title}<table><thead><tr>${ths}</tr></thead><tbody>${trs}${totalTR}</tbody></table></div>`;
+  } catch (err) {
+    return `<div class="ai-table"><div class="ai-table-title">Table parse error</div><pre class="ai-pre">${escapeHTML(jsonStr)}</pre></div>`;
+  }
+}
+
+function formatNumDisplay(n) {
+  if (n == null) return '';
+  if (Math.abs(n) >= 1000) return 'RM ' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+  return String(n);
+}
+
+// Apply number highlights to already-escaped text (for use inside table cells)
+function applyNumHighlight(text) {
+  let html = text;
+  html = html.replace(/\bRM\s*([\d,]+(?:\.\d+)?)/g, '<span class="ai-money">RM $1</span>');
+  html = html.replace(/(\d+\.\d+)x\b/g, '<span class="ai-roas">$1x</span>');
+  html = html.replace(/([+]?\d+(?:\.\d+)?%)/g, '<span class="ai-pct">$1</span>');
   return html;
 }
 
