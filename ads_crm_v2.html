@@ -1604,7 +1604,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.20</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.21</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2307,6 +2307,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <span id="aiModelLabel" style="font-size:10px;padding:2px 7px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;text-transform:uppercase;">Flash</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
+        <button type="button" onclick="openAINotebook()" class="ai-icon-btn" id="aiNotebookBtn" aria-label="笔记本" title="笔记本" style="position:relative;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+          <span id="aiNotebookBadge" style="display:none;position:absolute;top:-2px;right:-2px;background:#DC2626;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:8px;min-width:14px;text-align:center;line-height:1.2;"></span>
+        </button>
         <button type="button" onclick="toggleAISettings()" class="ai-icon-btn" id="aiSettingsBtn" aria-label="Settings" title="设置">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
@@ -2373,6 +2377,107 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
   </div>
 </div>
+
+<!-- v3.21: AI Notebook Modal -->
+<div class="modal-backdrop" id="aiNotebookBackdrop" onclick="if(event.target===this)closeAINotebook()" style="display:none;z-index:10002;">
+  <div style="background:#fff;border-radius:16px;width:min(560px,96vw);max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7132f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        <span style="font-size:16px;font-weight:700;color:#7132f5;">AI 笔记本</span>
+        <span id="aiNotebookCount" style="font-size:11px;color:var(--gray);"></span>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button type="button" onclick="pullNotebookFromSheet()" class="ai-icon-btn" title="从 Google Sheet 拉取">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.2-8.5"></path><polyline points="21 3 21 9 15 9"></polyline></svg>
+        </button>
+        <button type="button" onclick="closeAINotebook()" class="ai-icon-btn" aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Tag filter bar -->
+    <div id="aiNotebookTags" style="padding:10px 16px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:6px;flex-shrink:0;"></div>
+    <!-- Notes list -->
+    <div id="aiNotebookList" style="flex:1;overflow-y:auto;padding:12px 16px;"></div>
+  </div>
+</div>
+
+<!-- v3.21: Important insight notification (right-side toast) -->
+<div id="aiInsightToast" style="display:none;position:fixed;top:80px;right:20px;width:min(340px, 85vw);background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(113,50,245,0.25);border:2px solid #7132f5;padding:14px 16px;z-index:10003;animation:slideInRight 0.3s ease;"></div>
+<style>
+@keyframes slideInRight { from { transform: translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+@keyframes slideOutRight { from { transform: translateX(0); opacity:1; } to { transform:translateX(100%); opacity:0; } }
+.ai-toast-closing { animation: slideOutRight 0.3s ease forwards; }
+@media (max-width: 767px) {
+  #aiInsightToast { top: 70px; right: 10px; left: 10px; width: auto; }
+}
+/* Note pending recommendation under each AI message */
+.ai-note-rec {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #fffbeb, #fff4d1);
+  border: 1px solid #f5d77a;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #6b4e0d;
+}
+.ai-note-rec-text { flex: 1; line-height: 1.4; }
+.ai-note-rec-star {
+  background: #fff;
+  border: 1.5px solid #f5b400;
+  color: #f5b400;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.ai-note-rec-star:hover { background: #f5b400; color:#fff; transform: scale(1.1); }
+.ai-note-rec-star.saved { background: #10B981; border-color: #10B981; color: #fff; cursor: default; }
+.ai-note-rec-dismiss {
+  background: transparent; border: none; color: #aaa;
+  width: 20px; height: 20px; cursor: pointer; font-size: 14px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.ai-note-rec-dismiss:hover { color: #DC2626; }
+/* Notebook item */
+.ai-nb-item {
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  position: relative;
+}
+.ai-nb-item.high { border-left: 3px solid #DC2626; }
+.ai-nb-item-date { font-size: 10px; color: var(--gray); margin-bottom: 4px; }
+.ai-nb-item-summary { font-size: 13px; font-weight: 600; color: #222; margin-bottom: 6px; line-height: 1.4; }
+.ai-nb-item-full { font-size: 12px; color: #555; line-height: 1.5; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); display: none; }
+.ai-nb-item.expanded .ai-nb-item-full { display: block; }
+.ai-nb-tag-chip { display:inline-block; background:var(--purple-bg); color:var(--purple); padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; margin-right:4px; margin-bottom:2px; }
+.ai-nb-item-actions { position: absolute; top: 8px; right: 8px; display:flex; gap:4px; }
+.ai-nb-item-actions button { background:transparent; border:none; color:var(--gray); cursor:pointer; padding:2px 6px; border-radius:4px; font-size:12px; }
+.ai-nb-item-actions button:hover { background:var(--hover); color:#222; }
+.ai-nb-item-actions .del:hover { background:#fee; color:#DC2626; }
+.ai-nb-tag-filter {
+  padding: 3px 10px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  font-size: 11px;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.15s;
+}
+.ai-nb-tag-filter.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+.ai-nb-tag-filter:hover { border-color: var(--purple); }
+</style>
 
 <!-- Chips Editor Modal -->
 <div class="modal-backdrop" id="chipsEditorBackdrop" onclick="if(event.target===this)closeChipsEditor()" style="display:none;z-index:10001;">
@@ -8977,12 +9082,23 @@ const AI_SETTINGS_KEY = 'ads-crm-ai-model';
 let _aiHistory = []; // Last N turns: [{role, text}]
 let _aiBusy = false;
 const AI_NOTES_KEY = 'ads_crm_ai_notes';
-const AI_NOTES_MAX = 50; // keep latest 50 notes
+const AI_NOTES_MAX = 100; // keep latest 100 notes
+const AI_CHAT_HISTORY_KEY = 'ads_crm_ai_chat_history'; // v3.21: FIXED - was undefined, chat history wasn't persisting
+const AI_NOTES_PENDING_KEY = 'ads_crm_ai_notes_pending'; // v3.21: AI recommendations awaiting user ⭐ approval
 
 function getAINotes() {
   try {
     const raw = localStorage.getItem(AI_NOTES_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const notes = raw ? JSON.parse(raw) : [];
+    // v3.21: auto-migrate legacy notes (add id if missing)
+    let changed = false;
+    notes.forEach((n, i) => {
+      if (!n.id) { n.id = 'n_legacy_' + i + '_' + (n.date || ''); changed = true; }
+      if (!n.summary && n.content) { n.summary = n.content; changed = true; }
+      if (!n.tags) { n.tags = []; changed = true; }
+    });
+    if (changed) { try { localStorage.setItem(AI_NOTES_KEY, JSON.stringify(notes)); } catch(e) {} }
+    return notes;
   } catch(e) { return []; }
 }
 
@@ -8990,28 +9106,337 @@ function saveAINotes(notes) {
   try { localStorage.setItem(AI_NOTES_KEY, JSON.stringify(notes.slice(-AI_NOTES_MAX))); } catch(e) {}
 }
 
-// Called after every AI response — AI may append [[note]]...[[/note]] blocks
+// v3.21: AI notes now have TWO paths:
+// 1. PENDING: AI推荐（appears as ⭐ button under message, NOT saved yet）
+// 2. SAVED: User clicked ⭐ to save into permanent notebook
+//
+// Note structure (v3.21):
+//   { id, date, summary, full, tags[], importance: 'high'|'normal', data? }
+
+function getAINotesPending() {
+  try {
+    const raw = localStorage.getItem(AI_NOTES_PENDING_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveAINotesPending(notes) {
+  try { localStorage.setItem(AI_NOTES_PENDING_KEY, JSON.stringify(notes.slice(-50))); } catch(e) {}
+}
+
+// Called after every AI response — AI may append [[note]]...[[/note]] blocks (now PENDING not auto-saved)
 function extractAndSaveAINotes(responseText) {
-  const notePattern = /\[\[note\]\]([\s\S]*?)\[\[\/note\]\]/g;
+  // v3.21: Tolerate both [[/note]] and [/note]
+  const notePattern = /\[\[note\]\]([\s\S]*?)\[\[?\/note\]\]/g;
   let match;
-  const newNotes = [];
+  const newPending = [];
   while ((match = notePattern.exec(responseText)) !== null) {
     try {
       const n = JSON.parse(match[1].trim());
-      if (n.content) {
-        newNotes.push({
-          date: n.date || new Date().toISOString().substring(0, 10),
-          type: n.type || 'insight',
-          content: n.content,
-          data: n.data || ''
-        });
-      }
+      // Accept either new format (summary/full) or legacy format (content)
+      const summary = n.summary || n.content;
+      if (!summary) continue;
+      newPending.push({
+        id: 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+        date: n.date || new Date().toISOString().substring(0, 10),
+        summary: summary,
+        full: n.full || n.content || summary,
+        tags: Array.isArray(n.tags) ? n.tags : [],
+        importance: n.importance === 'high' ? 'high' : 'normal',
+        data: n.data || '',
+        type: n.type || 'insight'
+      });
     } catch(e) {}
   }
-  if (newNotes.length > 0) {
-    const existing = getAINotes();
-    saveAINotes([...existing, ...newNotes]);
+  if (newPending.length > 0) {
+    const existing = getAINotesPending();
+    saveAINotesPending([...existing, ...newPending]);
   }
+  return newPending; // return for UI to show immediately
+}
+
+// v3.21: Approve a pending note → move it to saved notes
+function approveAINote(pendingId) {
+  const pending = getAINotesPending();
+  const note = pending.find(n => n.id === pendingId);
+  if (!note) return false;
+  const saved = getAINotes();
+  // de-dupe by summary
+  if (saved.some(s => s.summary === note.summary)) {
+    toast('⚠️ 这条笔记已经存在了');
+    return false;
+  }
+  saveAINotes([...saved, note]);
+  // remove from pending
+  saveAINotesPending(pending.filter(n => n.id !== pendingId));
+  // Sync to Google Sheet if configured
+  pushNoteToSheet(note);
+  return true;
+}
+
+function dismissAINote(pendingId) {
+  const pending = getAINotesPending();
+  saveAINotesPending(pending.filter(n => n.id !== pendingId));
+}
+
+function deleteAINote(savedId) {
+  const saved = getAINotes();
+  const note = saved.find(n => n.id === savedId);
+  saveAINotes(saved.filter(n => n.id !== savedId));
+  if (note) pushNoteDeleteToSheet(note);
+}
+
+// v3.21: Match notes by tags for context injection (max 5)
+function matchNotesByQuery(query) {
+  const saved = getAINotes();
+  if (saved.length === 0) return [];
+  const q = query.toLowerCase();
+  // Score each note by tag match count + recency
+  const scored = saved.map(n => {
+    let score = 0;
+    (n.tags || []).forEach(t => {
+      if (q.includes(t.toLowerCase())) score += 10;
+    });
+    // Also match summary keywords
+    if (n.summary && q.split(/\s+/).some(w => w.length > 1 && n.summary.toLowerCase().includes(w))) {
+      score += 3;
+    }
+    return { note: n, score };
+  });
+  // If no tag matches at all, don't inject random notes
+  const matched = scored.filter(s => s.score > 0).sort((a,b) => b.score - a.score).slice(0, 5);
+  return matched.map(m => m.note);
+}
+
+// ====== v3.21: AI Notebook UI ======
+let _nbTagFilter = 'all';
+
+function updateNotebookBadge() {
+  const pending = getAINotesPending();
+  const badge = document.getElementById('aiNotebookBadge');
+  if (!badge) return;
+  if (pending.length > 0) {
+    badge.style.display = 'inline-block';
+    badge.textContent = pending.length;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function openAINotebook() {
+  _nbTagFilter = 'all';
+  document.getElementById('aiNotebookBackdrop').style.display = 'flex';
+  renderNotebook();
+}
+
+function closeAINotebook() {
+  document.getElementById('aiNotebookBackdrop').style.display = 'none';
+}
+
+function renderNotebook() {
+  const saved = getAINotes();
+  const countEl = document.getElementById('aiNotebookCount');
+  if (countEl) countEl.textContent = saved.length > 0 ? `· ${saved.length} 条笔记` : '';
+
+  // Tag filter bar
+  const allTags = new Set();
+  saved.forEach(n => (n.tags || []).forEach(t => allTags.add(t)));
+  const tagBar = document.getElementById('aiNotebookTags');
+  if (tagBar) {
+    const tagBtns = ['all', ...Array.from(allTags).sort()].map(t => {
+      const label = t === 'all' ? `全部 (${saved.length})` : t;
+      const cls = _nbTagFilter === t ? 'ai-nb-tag-filter active' : 'ai-nb-tag-filter';
+      return `<button type="button" class="${cls}" onclick="filterNotebookByTag('${escapeHTML(t).replace(/'/g,"\\'")}')">${escapeHTML(label)}</button>`;
+    }).join('');
+    tagBar.innerHTML = tagBtns;
+    tagBar.style.display = saved.length > 0 ? 'flex' : 'none';
+  }
+
+  // Notes list (filtered, newest first)
+  const filtered = _nbTagFilter === 'all' ? saved : saved.filter(n => (n.tags || []).includes(_nbTagFilter));
+  const sorted = [...filtered].reverse();
+  const listEl = document.getElementById('aiNotebookList');
+  if (!listEl) return;
+  if (sorted.length === 0) {
+    listEl.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--gray);font-size:13px;">
+      <div style="font-size:36px;margin-bottom:8px;">📓</div>
+      ${saved.length === 0 ? '还没有笔记。<br>AI 推荐时点 ⭐ 就能保存到这里。' : '这个标签下暂无笔记'}
+    </div>`;
+    return;
+  }
+  listEl.innerHTML = sorted.map(n => {
+    const imp = n.importance === 'high' ? 'high' : '';
+    const tags = (n.tags || []).map(t => `<span class="ai-nb-tag-chip">${escapeHTML(t)}</span>`).join('');
+    const fullTxt = n.full && n.full !== n.summary ? `<div class="ai-nb-item-full">${escapeHTML(n.full)}</div>` : '';
+    return `<div class="ai-nb-item ${imp}" data-id="${n.id}" onclick="toggleNotebookItem(this)">
+      <div class="ai-nb-item-actions">
+        <button type="button" class="del" onclick="event.stopPropagation(); confirmDeleteNote('${n.id}')" title="删除">✕</button>
+      </div>
+      <div class="ai-nb-item-date">${escapeHTML(n.date || '')} ${n.importance === 'high' ? '· <span style="color:#DC2626;font-weight:700;">重要</span>' : ''}</div>
+      <div class="ai-nb-item-summary">${escapeHTML(n.summary || '')}</div>
+      <div>${tags}</div>
+      ${fullTxt}
+    </div>`;
+  }).join('');
+}
+
+function toggleNotebookItem(el) {
+  el.classList.toggle('expanded');
+}
+
+function filterNotebookByTag(t) {
+  _nbTagFilter = t;
+  renderNotebook();
+}
+
+function confirmDeleteNote(id) {
+  if (!confirm('删除这条笔记？')) return;
+  deleteAINote(id);
+  renderNotebook();
+  toast('已删除 ✓');
+}
+
+// User clicks ⭐ to approve a pending recommendation
+function approveAINoteUI(pendingId, btnEl) {
+  if (btnEl && btnEl.classList.contains('saved')) return;
+  const ok = approveAINote(pendingId);
+  if (ok && btnEl) {
+    btnEl.classList.add('saved');
+    btnEl.innerHTML = '✓';
+    btnEl.title = '已保存到笔记本';
+    updateNotebookBadge();
+    toast('已加入笔记本 ⭐');
+  }
+}
+
+function dismissAINoteUI(pendingId, btnEl) {
+  dismissAINote(pendingId);
+  updateNotebookBadge();
+  if (btnEl) {
+    const rec = btnEl.closest('.ai-note-rec');
+    if (rec) rec.remove();
+  }
+}
+
+// Show important insight as right-side toast (3s auto-dismiss)
+function showInsightToast(note) {
+  const toastEl = document.getElementById('aiInsightToast');
+  if (!toastEl) return;
+  const tags = (note.tags || []).slice(0, 3).map(t => `<span class="ai-nb-tag-chip">${escapeHTML(t)}</span>`).join('');
+  toastEl.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:10px;">
+      <div style="font-size:20px;flex-shrink:0;">⚠️</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:700;color:#7132f5;margin-bottom:4px;">重要发现</div>
+        <div style="font-size:12px;color:#333;line-height:1.5;margin-bottom:6px;">${escapeHTML(note.summary || '')}</div>
+        <div style="margin-bottom:8px;">${tags}</div>
+        <div style="display:flex;gap:6px;">
+          <button type="button" onclick="approveInsightToast('${note.id}')" style="background:#7132f5;color:#fff;border:none;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">⭐ 保存</button>
+          <button type="button" onclick="dismissInsightToast()" style="background:#fff;color:#888;border:1px solid var(--border);padding:5px 10px;border-radius:6px;font-size:11px;cursor:pointer;">忽略</button>
+        </div>
+      </div>
+    </div>
+  `;
+  toastEl.classList.remove('ai-toast-closing');
+  toastEl.style.display = 'block';
+  toastEl.dataset.noteId = note.id;
+  // Auto-dismiss after 5s
+  clearTimeout(window._insightToastTimer);
+  window._insightToastTimer = setTimeout(() => dismissInsightToast(), 5000);
+}
+
+function dismissInsightToast() {
+  const toastEl = document.getElementById('aiInsightToast');
+  if (!toastEl) return;
+  toastEl.classList.add('ai-toast-closing');
+  setTimeout(() => { toastEl.style.display = 'none'; }, 300);
+  clearTimeout(window._insightToastTimer);
+}
+
+function approveInsightToast(noteId) {
+  const ok = approveAINote(noteId);
+  if (ok) toast('已加入笔记本 ⭐');
+  // Also update inline ⭐ star on the message if present
+  const star = document.querySelector(`[data-note-pending="${noteId}"]`);
+  if (star) {
+    star.classList.add('saved');
+    star.innerHTML = '✓';
+  }
+  updateNotebookBadge();
+  dismissInsightToast();
+}
+
+// Render the pending recommendation row under an AI message
+function renderPendingNoteRec(noteId) {
+  const pending = getAINotesPending();
+  const saved = getAINotes();
+  const note = pending.find(n => n.id === noteId) || saved.find(n => n.id === noteId);
+  if (!note) return '';
+  const isSaved = saved.some(s => s.id === noteId || s.summary === note.summary);
+  const starCls = isSaved ? 'ai-note-rec-star saved' : 'ai-note-rec-star';
+  const starTxt = isSaved ? '✓' : '⭐';
+  const dismissBtn = isSaved ? '' : `<button type="button" class="ai-note-rec-dismiss" onclick="dismissAINoteUI('${noteId}', this)" title="忽略">✕</button>`;
+  return `<div class="ai-note-rec">
+    <div style="font-size:13px;flex-shrink:0;">💡</div>
+    <div class="ai-note-rec-text">建议存笔记：${escapeHTML(note.summary)}</div>
+    <button type="button" class="${starCls}" data-note-pending="${noteId}" onclick="approveAINoteUI('${noteId}', this)" title="${isSaved ? '已保存' : '点击保存到笔记本'}">${starTxt}</button>
+    ${dismissBtn}
+  </div>`;
+}
+
+// ====== v3.21: Google Sheet sync for notes ======
+function pushNoteToSheet(note) {
+  const url = getGsUrl();
+  if (!url) return; // no sheet configured, localStorage only
+  try {
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'saveAINote', note: note })
+    }).catch(() => {}); // fire and forget
+  } catch(e) {}
+}
+
+function pushNoteDeleteToSheet(note) {
+  const url = getGsUrl();
+  if (!url || !note || !note.id) return;
+  try {
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'deleteAINote', id: note.id })
+    }).catch(() => {});
+  } catch(e) {}
+}
+
+async function pullNotebookFromSheet() {
+  const url = getGsUrl();
+  if (!url) {
+    toast('⚠️ 请先在 Settings 配置 Google Sheet');
+    return;
+  }
+  toast('正在从 Sheet 拉取笔记...');
+  try {
+    const res = await fetch(url + '?action=pullAINotes');
+    const data = await res.json();
+    if (data && Array.isArray(data.notes)) {
+      const merged = mergeNotes(getAINotes(), data.notes);
+      saveAINotes(merged);
+      renderNotebook();
+      toast(`已同步 ${data.notes.length} 条笔记 ✓`);
+    } else {
+      toast('⚠️ 未收到笔记数据');
+    }
+  } catch(e) {
+    toast('❌ 拉取失败：' + e.message);
+  }
+}
+
+function mergeNotes(local, remote) {
+  const map = {};
+  local.forEach(n => { if (n.id) map[n.id] = n; });
+  remote.forEach(n => { if (n.id) map[n.id] = n; }); // remote wins on conflict
+  return Object.values(map).sort((a,b) => (a.date || '').localeCompare(b.date || ''));
 }
 
 const AI_ROLE_KEY = 'ads_crm_ai_custom_role';
@@ -9075,6 +9500,7 @@ function openAIChat() {
   if (headerAv && typeof AI_AVATAR_SVG !== 'undefined') headerAv.innerHTML = AI_AVATAR_SVG;
   renderChips();
   renderAIMessages();
+  updateNotebookBadge(); // v3.21: show pending count
   setTimeout(() => { const inp = document.getElementById('aiInput'); if (inp) inp.focus(); }, 100);
 }
 
@@ -9128,7 +9554,10 @@ function renderAIMessages() {
     return `
       <div class="ai-msg ${cls}">
         <div class="ai-msg-avatar">${AI_AVATAR_SVG}</div>
-        <div class="ai-msg-bubble">${body}</div>
+        <div class="ai-msg-bubble">
+          ${body}
+          ${(m.noteIds || []).map(nid => renderPendingNoteRec(nid)).join('')}
+        </div>
         ${copyBtn}
       </div>
     `;
@@ -9152,7 +9581,7 @@ function renderAIMessages() {
     const idx = parseInt(btn.dataset.copyIdx, 10);
     const msg = _aiHistory[idx];
     if (!msg) return;
-    const text = msg.text.replace(/\[\[note\]\][\s\S]*?\[\[\/note\]\]/g, '').trim();
+    const text = msg.text.replace(/\[\[note\]\][\s\S]*?\[\[?\/note\]\]/g, '').trim();
     copyAIMsg(btn, text);
   };
   // Re-attach each render (innerHTML reset clears old listener)
@@ -9162,24 +9591,26 @@ function renderAIMessages() {
     const idx = parseInt(btn.dataset.copyIdx, 10);
     const msg = _aiHistory[idx];
     if (!msg) return;
-    const text = msg.text.replace(/\[\[note\]\][\s\S]*?\[\[\/note\]\]/g, '').trim();
+    const text = msg.text.replace(/\[\[note\]\][\s\S]*?\[\[?\/note\]\]/g, '').trim();
     copyAIMsg(btn, text);
   };
 }
 
 // Minimal Markdown renderer — safe (escapes HTML first, then applies replacements)
 function renderMarkdown(text) {
-  // Strip [[note]] blocks — extracted silently, never shown in UI
-  text = text.replace(/\[\[note\]\][\s\S]*?\[\[\/note\]\]/g, '').trim();
+  // v3.21: Strip [[note]] blocks — extracted silently, never shown in UI (tolerate [/note] too)
+  text = text.replace(/\[\[note\]\][\s\S]*?\[\[?\/note\]\]/g, '').trim();
 
   // Extract [[card]]...[[/card]] and [[table]]...[[/table]] blocks BEFORE escaping
   const blocks = [];
-  text = text.replace(/\[\[card\]\]([\s\S]*?)\[\[\/card\]\]/g, (_, content) => {
+  // v3.21: tolerate both [[/card]] and [/card]
+  text = text.replace(/\[\[card\]\]([\s\S]*?)\[\[?\/card\]\]/g, (_, content) => {
     const idx = blocks.length;
     blocks.push({ type: 'card', content: content.trim() });
     return `\n§§BLOCK${idx}§§\n`;
   });
-  text = text.replace(/\[\[table\]\]([\s\S]*?)\[\[\/table\]\]/g, (_, content) => {
+  // v3.21: tolerate both [[/table]] (correct) and [/table] (AI sometimes writes this)
+  text = text.replace(/\[\[table\]\]([\s\S]*?)\[\[?\/table\]\]/g, (_, content) => {
     const idx = blocks.length;
     blocks.push({ type: 'table', content: content.trim() });
     return `\n§§BLOCK${idx}§§\n`;
@@ -9283,15 +9714,16 @@ function renderDataTable(jsonStr) {
     };
 
     const trs = rows.map((r, rIdx) => {
-      // Build prev numbers from previous row (auto row-over-row comparison)
+      // v3.21: Prioritize explicit prevValues from AI (authoritative), fallback to previous row
+      // prevValues semantic: "period-over-period comparison" (e.g., last month same row vs this month same row)
       let prevNums = null;
-      if (rIdx > 0) {
+      if (prevValues && prevValues[rIdx]) {
+        const expl = prevValues[rIdx].map(v => typeof v === 'number' ? v : extractNum(v));
+        if (expl.some(v => v !== null && v !== 0)) prevNums = expl;
+      }
+      // Fallback: compare to PREVIOUS ROW (only if no explicit prevValues)
+      if (!prevNums && rIdx > 0) {
         prevNums = rows[rIdx - 1].slice(1).map(extractNum);
-        // Override with explicit prevValues if provided and non-zero
-        if (prevValues && prevValues[rIdx]) {
-          const expl = prevValues[rIdx].map(v => typeof v === 'number' ? v : extractNum(v));
-          if (expl.some(v => v !== null && v !== 0)) prevNums = expl;
-        }
       }
 
       const tds = r.map((cell, cIdx) => {
@@ -9631,8 +10063,14 @@ async function sendAIMessage() {
     _aiBusy = false;
     if (data && data.success && data.result && data.result.answer) {
       const answer = data.result.answer;
-      extractAndSaveAINotes(answer); // Auto-save any [[note]] blocks
-      _aiHistory.push({ role: 'model', text: answer });
+      // v3.21: Notes are now PENDING (not auto-saved). UI shows ⭐ recommendation under each message.
+      const pending = extractAndSaveAINotes(answer);
+      const noteIds = pending.map(n => n.id);
+      _aiHistory.push({ role: 'model', text: answer, noteIds: noteIds });
+      updateNotebookBadge();
+      // Pop right-side toast for HIGH importance insights
+      const highNote = pending.find(n => n.importance === 'high');
+      if (highNote) showInsightToast(highNote);
     } else {
       const errMsg = lastErr || 'Unknown error';
       const is503 = errMsg.includes('503') || errMsg.includes('UNAVAILABLE');
@@ -9712,8 +10150,8 @@ function buildAIContext(question) {
     }
   }
 
-  // AI notes (auto-written by AI, stored in localStorage)
-  const aiNotes = getAINotes();
+  // v3.21: AI notes — get relevant ones by tag match (max 5), not all
+  const aiNotes = question ? matchNotesByQuery(question) : getAINotes().slice(-5);
 
   const snapshot = {
     today: today,
