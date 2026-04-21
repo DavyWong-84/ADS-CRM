@@ -92,7 +92,7 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
     flex: none;
     min-height: auto;
     overflow-y: visible;
-    padding: 53px 16px 160px;  /* v4.01: bottom 160 to clear + button (bottom:80 + 52h) and bottom-nav */
+    padding: 53px 16px 180px;  /* v4.06: more bottom room so pagination always visible */
     margin: 0;
     max-width: none;
   }
@@ -388,7 +388,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* Mobile list */
-.lead-list { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.lead-list { display: flex; flex-direction: column; gap: 8px; padding-top: 8px; }
 .lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; transition: all 0.15s; cursor: pointer; border-left: 3px solid var(--border); }
 .lead-item:hover { border-color: var(--purple); box-shadow: var(--shadow-sm); }
 
@@ -561,7 +561,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .pagination button.active { background: var(--purple); color: white; border-color: var(--purple); }
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
 @media (max-width: 767px) {
-  #listPagination { padding-bottom: 20px; }  /* v3.90: bar no longer fixed, less needed */
+  #listPagination { padding-bottom: 40px; }  /* v4.06 */
 }
 
 /* Search */
@@ -2251,7 +2251,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.04</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.06</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
