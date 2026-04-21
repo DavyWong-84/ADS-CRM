@@ -428,6 +428,30 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .filter-tab { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; }
 .filter-tab.active { background: var(--purple); color: white; border-color: var(--purple); }
 .filter-tab .count { opacity: 0.7; margin-left: 4px; font-size: 12px; }
+/* v3.28: 紧凑双吸顶 — tabs sticky right below unified-header */
+.filter-tabs-sticky {
+  position: sticky;
+  top: 105px; /* mobile: match unified-header-spacer height */
+  z-index: 30;
+  background: var(--white);
+  padding: 8px 0 6px;
+  margin: 0 -16px 10px; /* extend to page edges for clean look */
+  padding-left: 16px;
+  padding-right: 16px;
+  border-bottom: 0.5px solid var(--border);
+}
+@media (min-width: 768px) {
+  .filter-tabs-sticky {
+    top: 115px;
+    margin-left: -28px;
+    margin-right: -28px;
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+}
+@media (max-width: 767px) {
+  #page-contact .filter-tabs-sticky { top: 160px; }
+}
 
 /* Quick period chips (today/yesterday/month/year) */
 .quick-chip { padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; cursor: pointer; }
@@ -736,19 +760,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   font-size: 11px;
   text-transform: uppercase;
   border-bottom: 1px solid var(--border);
-  border-right: 1px solid var(--border-light, #eee);
   white-space: nowrap;
 }
 .ai-table th:first-child { text-align: left; }
-.ai-table th:last-child { border-right: none; }
 .ai-table th.num { text-align: center; }
 .ai-table td {
   padding: 8px 10px;
   border-bottom: 1px solid #f5f5f5;
-  border-right: 1px solid #f5f5f5;
   line-height: 1.5;
 }
-.ai-table td:last-child { border-right: none; }
 .ai-table td.num { text-align: center; font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .ai-table tr:last-child td { border-bottom: none; }
 .ai-table-bar-cell {
@@ -1641,7 +1661,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.27</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.28</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -1733,18 +1753,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
     </div>
 
-    <!-- Status tabs (All / Lead / Booked / Pending / Done / No show) -->
-    <div class="filter-tabs" id="listFilters" style="margin-bottom:14px;"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
+    <!-- v3.28: Status tabs sticky below unified-header (紧凑双吸顶) -->
+    <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -1778,10 +1798,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-04-20</span>
+                      <span id="f_leadDate_label">2026-04-21</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-04-20">
+                    <input type="hidden" id="f_leadDate" value="2026-04-21">
                   </div>
                 </div>
               </div>
@@ -3820,9 +3840,32 @@ function refreshStoreSelect() {
    ============================================================ */
 
 // ---------- Lead form ----------
+// v3.28: Auto-clean phone numbers — strip all non-digits
+// Accepts "+60 16-646 4564", "(016) 646-4564", "60 16 646 4564" etc., outputs "60166464564"
+function normalizePhone(raw) {
+  if (!raw) return '';
+  let digits = String(raw).replace(/\D/g, '');
+  // Malaysian convention: if starts with 0, convert to 60
+  if (digits.startsWith('0')) digits = '60' + digits.substring(1);
+  return digits;
+}
+
+// v3.28: Real-time phone cleaning — strip non-digits on input/paste for BOTH add and edit forms
+document.addEventListener('input', e => {
+  if (e.target && (e.target.id === 'f_contact' || e.target.id === 'df_contact')) {
+    const cleaned = normalizePhone(e.target.value);
+    if (e.target.value !== cleaned) {
+      const pos = cleaned.length; // cursor at end after cleaning
+      e.target.value = cleaned;
+      try { e.target.setSelectionRange(pos, pos); } catch(_) {}
+    }
+  }
+});
+
 document.getElementById('leadForm').addEventListener('submit', e => {
   e.preventDefault();
-  const contact = document.getElementById('f_contact').value.trim();
+  const contact = normalizePhone(document.getElementById('f_contact').value);
+  document.getElementById('f_contact').value = contact; // reflect cleaned value
   const channelId = document.getElementById('f_channel').value;
   const leadDate = document.getElementById('f_leadDate').value;
   if (!contact || !channelId || !leadDate) { toast('Please fill contact, channel, lead date'); return; }
@@ -4065,7 +4108,10 @@ function renderDetailPanel(l) {
           <div style="font-size:16px;font-weight:600;color:var(--black);margin-top:2px;">${l.name || '(no name)'}</div>
           <div style="font-size:13px;color:var(--purple-deep);margin-top:2px;">${l.contact || ''} · ${ch?.name || ''}</div>
         </div>
-        <button type="button" class="btn" style="font-size:13px;padding:6px 14px;border-radius:9px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="closeDetailPanel()">Close</button>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button type="button" class="btn" style="font-size:13px;padding:6px 12px;border-radius:9px;border:1px solid #FCA5A5;background:var(--white);color:#B91C1C;" onclick="deleteLeadFromDetail('${l.id}')" title="删除这个 Lead">🗑️ 删除</button>
+          <button type="button" class="btn" style="font-size:13px;padding:6px 14px;border-radius:9px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="closeDetailPanel()">Close</button>
+        </div>
       </div>
       <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-top:12px;">
         ${stepDots}
@@ -4110,7 +4156,8 @@ function renderDetailPanel(l) {
 }
 
 function saveDetailLead() {
-  const contact = document.getElementById('df_contact').value.trim();
+  const contact = normalizePhone(document.getElementById('df_contact').value);
+  document.getElementById('df_contact').value = contact;
   const channelId = document.getElementById('df_channel').value;
   const leadDate = document.getElementById('df_leadDate').value;
   if (!contact || !channelId || !leadDate) { toast('Please fill contact, channel, lead date'); return; }
@@ -4160,6 +4207,20 @@ function closeDetailPanel() {
   if (dp) { dp.style.display = 'none'; dp.innerHTML = '<div class="list-detail-empty">Click a lead to edit</div>'; }
   currentEditingId = null;
   document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+}
+
+// v3.28: Delete Lead from detail panel
+function deleteLeadFromDetail(leadId) {
+  const l = state.leads.find(x => x.id === leadId);
+  if (!l) return;
+  const name = l.name || l.contact || '(no name)';
+  if (!confirm(`确定删除这个 Lead 吗？\n\n${name}\n\n此操作无法撤销。`)) return;
+  state.leads = state.leads.filter(x => x.id !== leadId);
+  saveState();
+  gsDelete('Leads', leadId);
+  closeDetailPanel();
+  renderList();
+  toast('已删除 ✓');
 }
 
 function renderLeadStepper(lead) {
@@ -9771,7 +9832,20 @@ function renderAIMessages() {
     `;
   }
   // Scroll to bottom
-  setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+  // v3.28: Scroll to start of LATEST message (not bottom) so Davy reads from the top
+  setTimeout(() => {
+    const msgs = wrap.querySelectorAll('.ai-msg');
+    if (msgs.length === 0) return;
+    // Find latest assistant (non-user) message to scroll to its start
+    let target = null;
+    for (let i = msgs.length - 1; i >= 0; i--) {
+      if (msgs[i].classList.contains('assistant')) { target = msgs[i]; break; }
+    }
+    if (!target) target = msgs[msgs.length - 1]; // fallback
+    // Scroll so the top of this message sits near the top of the chat viewport
+    const offset = target.offsetTop - wrap.offsetTop - 8;
+    wrap.scrollTo({ top: Math.max(0, offset), behavior: 'smooth' });
+  }, 50);
   // v3.27: detect which tables actually overflow → show scroll shadow
   setTimeout(() => {
     wrap.querySelectorAll('.ai-table').forEach(t => {
