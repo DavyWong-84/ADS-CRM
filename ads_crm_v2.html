@@ -73,11 +73,11 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
 /* Layout */
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .topbar { position: sticky; top: 0; z-index: 50; background: var(--white); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
-/* v3.82: On mobile, switch topbar to position:fixed so iOS keyboard can't push it
-   off-screen. Mobile unified-header-spacer also grows by 53px to compensate for the
-   topbar's lost flow height (topbar is fixed, doesn't occupy flow anymore). */
+/* v3.85: On mobile, topbar is fixed (no flow height). Add padding-top to .main
+   so the first child (unified-header sticky) starts below the topbar. */
 @media (max-width: 767px) {
   .topbar { position: fixed; top: 0; left: 0; right: 0; }
+  .main { padding-top: 53px; }  /* topbar height */
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.3px; }
 .brand-logo { width: 28px; height: 28px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; letter-spacing: -0.5px; }
@@ -672,7 +672,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
 }
 @media (max-width: 767px) {
-  #page-contact .filter-tabs-sticky { top: 178px; } /* v3.82: topbar(54) + unified-header(124) */
+  .filter-tabs-sticky { top: calc(54px + var(--uheader-h, 100px)); }  /* v3.86: topbar + unified-header actual height (set by JS) */
 }
 
 /* v3.61: Pill tabs inside unified-header — sits inline with filters, scrolls with header */
@@ -1656,8 +1656,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   transition: border-color 0.15s, background 0.15s;
 }
 #mobileActionBar .mab-search input:focus {
-  border-color: var(--purple);
-  background: #fff;
+  background: #fff;  /* v3.85: no purple border on focus — keep it neutral */
 }
 #mobileActionBar #contactFab {
   flex: 0 0 auto;
@@ -1920,7 +1919,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .sticky-filter { position: sticky; top: 54px; z-index: 40; background: var(--white); padding: 10px 16px; margin: 0 -16px 14px; border-bottom: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.04); }
 @media (min-width: 768px) { .sticky-filter { top: 60px; padding: 10px 28px; margin: 0 -28px 14px; } }
 
-/* Unified page header — fixed to viewport for rock-solid no-jitter behavior */
+/* Unified page header — desktop stays fixed (works well); mobile uses sticky
+   so heights auto-adapt and nothing needs manual spacer math. v3.85 redesign. */
 .unified-header {
   position: fixed;
   top: 54px; /* mobile topbar height */
@@ -1940,26 +1940,29 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     padding: 16px 28px;
   }
 }
-.unified-header .compact-filter { margin-top: 10px; }
-/* Spacer to prevent content from hiding under the fixed header */
-.unified-header-spacer {
-  height: 105px; /* mobile: title + filters + padding */
-}
-@media (min-width: 768px) {
-  .unified-header-spacer {
-    height: 115px;
+/* v3.85: On mobile, switch to sticky so height is auto-measured by the browser.
+   Filter-tabs below it auto-stack via sticky top:0 — no manual alignment math. */
+@media (max-width: 767px) {
+  .unified-header {
+    position: sticky;
+    top: 54px;  /* sits directly under the fixed topbar */
+    left: auto;
+    right: auto;
+    padding: 10px 16px;
+    margin: 0 -16px;  /* extend to page edges for clean bar look */
   }
 }
-/* v3.82: On mobile, topbar is position:fixed (no flow height), so spacer grows by 53px
-   to keep content starting below the topbar. Desktop unchanged (topbar stays sticky). */
-@media (max-width: 767px) {
-  .unified-header-spacer { height: 158px; }  /* 105 + 53 */
-  #page-contact .unified-header-spacer { height: 177px; }  /* 124 + 53 */
+.unified-header .compact-filter { margin-top: 10px; }
+/* Spacer: only needed on desktop where header is position:fixed */
+.unified-header-spacer {
+  height: 105px; /* desktop only now */
 }
-/* Other spacer variants */
+@media (min-width: 768px) {
+  .unified-header-spacer { height: 115px; }
+}
+/* Mobile: header is sticky (occupies flow) → spacer collapses to 0 */
 @media (max-width: 767px) {
-  .unified-header-spacer-tall { padding-top: 53px; }
-  .unified-header-spacer-single { padding-top: 53px; }
+  .unified-header-spacer { height: 0; }
 }
 
 /* v3.54: Custom Popover Dropdown — replaces native <select> */
@@ -2158,7 +2161,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.84</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.86</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3262,7 +3265,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.38'; // v3.84: collapse bottom padding when keyboard up
+const DATA_VERSION = '2.40'; // v3.86: measure unified-header height dynamically, align filter-tabs
 
 // ---------- State ----------
 let state = {
@@ -3414,6 +3417,19 @@ function fixContactPanelTop() {
   if (listPanel) { listPanel.style.top = h + 'px'; listPanel.style.maxHeight = (window.innerHeight - h) + 'px'; }
 }
 
+// v3.86: Measure the active unified-header height on mobile and expose as a CSS
+// variable so filter-tabs-sticky can align underneath it without hard-coded numbers.
+function syncHeaderHeight() {
+  if (window.innerWidth >= 768) {
+    document.documentElement.style.removeProperty('--uheader-h');
+    return;
+  }
+  const header = document.querySelector('.page.active .unified-header');
+  if (!header) return;
+  const h = Math.ceil(header.getBoundingClientRect().height);
+  document.documentElement.style.setProperty('--uheader-h', h + 'px');
+}
+
 // ---------- Navigation ----------
 function nav(page) {
   // Map old page names to contact
@@ -3449,6 +3465,8 @@ function nav(page) {
   try { if (typeof maybeTriggerAIGuide === 'function') maybeTriggerAIGuide(page); } catch(e) { console.warn('[AI Guide] skipped:', e.message); }
   // v3.58: Upgrade any native selects to popover UI
   setTimeout(() => { if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects(); }, 20);
+  // v3.86: After any page change, sync header height for mobile filter-tabs alignment
+  setTimeout(() => { if (typeof syncHeaderHeight === 'function') syncHeaderHeight(); }, 40);
 }
 
 function setSalesPctBase(btn, base) {
@@ -12254,6 +12272,9 @@ function init() {
   nav('contact');
   setTimeout(fixContactPanelTop, 200);
   window.addEventListener('resize', fixContactPanelTop);
+  // v3.86: Also re-measure unified-header height on resize (orientation change)
+  window.addEventListener('resize', () => { if (typeof syncHeaderHeight === 'function') syncHeaderHeight(); });
+  setTimeout(() => { if (typeof syncHeaderHeight === 'function') syncHeaderHeight(); }, 200);
   // v3.69: Show pending queue badge on boot if there are unsynced ops
   if (typeof updatePendingBadge === 'function') updatePendingBadge();
   // Auto-pull from Sheet (flushPendingQueue runs inside gsPullSilent first)
