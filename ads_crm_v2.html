@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 910px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -709,7 +709,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
 }
 @media (max-width: 767px) {
-  .filter-tabs-sticky { top: var(--uheader-h, 140px); }  /* v3.90: main is scroll container now — no need to add topbar */
+  /* v3.98: Status tabs live INSIDE unified-header now — no sticky, no negative margin */
+  .unified-header .filter-tabs-sticky {
+    position: static;
+    margin: 8px 0 0;
+    padding: 0;
+    border-bottom: none;
+    box-shadow: none;
+  }
 }
 
 /* v3.61: Pill tabs inside unified-header — sits inline with filters, scrolls with header */
@@ -1663,25 +1670,34 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   display: none;  /* hidden on desktop */
 }
 @media (max-width: 767px) {
+  /* v3.99: title-inline search */
+  .contact-title-search { display: block !important; }
+  /* v3.99: inside mobileActionBar, hide search input — only keep + button */
+  #mobileActionBar .mab-search { display: none !important; }
   body.on-contact-page #mobileActionBar {
     display: flex !important;
     position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 72px;   /* above bottom-nav (~66px tall) */
+    left: auto;
+    right: 16px;
+    bottom: 80px;
     z-index: 30;
     align-items: center;
-    gap: 8px;
-    padding: 8px;
-    background: #fff;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    box-shadow: 0 4px 16px rgba(16, 24, 40, 0.08);
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
   }
-  /* When keyboard is up, hide bottom-nav and move bar to bottom edge */
+  #mobileActionBar #contactFab {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    box-shadow: 0 6px 20px rgba(113, 50, 245, 0.35);
+    font-size: 28px;
+  }
+  /* When keyboard is up, hide bottom-nav */
   body.on-contact-page.search-focused .bottom-nav { display: none !important; }
-  body.on-contact-page.search-focused #mobileActionBar { bottom: 8px; }
-  /* Also give the list bottom room so bar doesn't cover last card */
+  /* Bottom room for last card */
   body.on-contact-page #page-contact { padding-bottom: 80px; }
 }
 #mobileActionBar .mab-search {
@@ -2211,7 +2227,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.96</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.99</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2258,9 +2274,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <section class="page" id="page-contact">
     <!-- Unified sticky header: page title + actions + filters in one white bar -->
     <div class="unified-header">
-      <!-- Row 1: page title + actions -->
+      <!-- Row 1: page title + inline search (mobile) + actions -->
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
         <h1 class="page-title" style="margin:0;">Contact</h1>
+        <!-- v3.99: Inline search box (mobile) right of title -->
+        <div class="contact-title-search" style="display:none;position:relative;flex:1 1 0;min-width:0;">
+          <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <input type="text" id="searchInputTitle" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value)" style="width:100%;height:34px;padding:0 10px 0 32px;font-size:13px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);outline:none;">
+        </div>
         <div class="contact-top-actions" style="display:flex;gap:8px;align-items:center;">
           <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
         </div>
@@ -2300,6 +2321,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <input type="text" id="searchInputDesktop" name="q_search_desktop" autocomplete="off" placeholder="Search name, contact, remark..." style="padding-left:30px;" oninput="onSearchInputChange(this.value)">
         </div>
       </div>
+      <!-- v3.98: Status tabs moved INSIDE unified-header (mobile flows naturally, desktop still sticky via class) -->
+      <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
     </div>
     <div class="unified-header-spacer"></div>
 
@@ -2310,18 +2333,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
     </div>
 
-    <!-- v3.28: Status tabs sticky below unified-header (紧凑双吸顶) -->
-    <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
-
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -5943,7 +5963,7 @@ function toggleLeadFlag(event, leadId, flagColor) {
 }
 
 // ---------- Search (v3.79: inline desktop + mobile bottom bar) ----------
-const SEARCH_INPUT_IDS = ['searchInputDesktop', 'searchInputMobile'];
+const SEARCH_INPUT_IDS = ['searchInputDesktop', 'searchInputMobile', 'searchInputTitle'];
 
 function clearSearchQuery() {
   state.listSearch = '';
@@ -5994,26 +6014,51 @@ function onSearchInputChange(value) {
   });
 })();
 
-// v3.90: Mobile keyboard detection — simplified, since body uses 100dvh flex layout,
-// the action bar naturally rides above the keyboard. We only need to add the
-// search-focused class so .bottom-nav hides, giving the bar more room.
+// v3.97: Keyboard detection — use Visual Viewport as the authoritative source.
+// The class is added only when keyboard is ACTUALLY open (height diff > 150px)
+// and removed the moment it closes, regardless of focus state. This fixes the
+// case where Android back-button dismisses keyboard without firing blur.
 (function setupKeyboardDetection() {
-  const mobInp = document.getElementById('searchInputMobile');
-  if (!mobInp) return;
-  mobInp.addEventListener('focus', () => document.body.classList.add('search-focused'));
-  mobInp.addEventListener('blur', () => document.body.classList.remove('search-focused'));
-  // Insurance: also listen on visual viewport (back button dismissing keyboard)
+  const titleInp = document.getElementById('searchInputTitle');
+  if (!titleInp) return;
+
+  function syncKeyboardState() {
+    if (window.innerWidth >= 768) {
+      document.body.classList.remove('search-focused');
+      return;
+    }
+    const vv = window.visualViewport;
+    const heightDiff = vv ? (window.innerHeight - vv.height) : 0;
+    const kbOpen = heightDiff > 150;
+    document.body.classList.toggle('search-focused', kbOpen);
+  }
+
+  // Primary: visual viewport resize (keyboard open/close always fires this)
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      if (window.innerWidth >= 768) return;
-      const heightDiff = window.innerHeight - window.visualViewport.height;
-      const kbOpen = heightDiff > 150;
-      const stillFocused = document.activeElement?.id === 'searchInputMobile';
-      if (!kbOpen && !stillFocused) {
+    window.visualViewport.addEventListener('resize', syncKeyboardState);
+  }
+  // Fallback: focus event (triggers immediately on iOS before VV resize)
+  titleInp.addEventListener('focus', () => {
+    setTimeout(syncKeyboardState, 50);  // give keyboard time to appear
+    setTimeout(syncKeyboardState, 300); // double-check
+  });
+  // Multiple blur paths to guarantee class removal
+  titleInp.addEventListener('blur', () => {
+    setTimeout(syncKeyboardState, 50);
+    setTimeout(() => {
+      // Force-remove as last resort — keyboard def closed if nothing focused
+      if (!document.activeElement || document.activeElement === document.body ||
+          document.activeElement.tagName === 'BODY') {
         document.body.classList.remove('search-focused');
       }
-    });
-  }
+    }, 300);
+  });
+  // Page visibility change (app switch) also clears
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) setTimeout(syncKeyboardState, 100);
+  });
+  // Window resize fallback (orientation change)
+  window.addEventListener('resize', syncKeyboardState);
 })();
 
 // ESC on Lead form = close form
