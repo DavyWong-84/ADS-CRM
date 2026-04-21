@@ -383,6 +383,28 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .swipe-card.is-swiping { transition: none; }
 .swipe-card.revealed { transform: translateX(-64px); }
+
+/* v3.38: Desktop-only delete button in detail panel (mobile uses swipe instead) */
+.btn-delete-lead-v38 {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 9px;
+  border: 1px solid #DC2626;
+  background: #DC2626;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+  box-shadow: 0 1px 3px rgba(220,38,38,0.2);
+}
+.btn-delete-lead-v38:hover { background: #B91C1C; border-color: #B91C1C; box-shadow: 0 2px 6px rgba(220,38,38,0.3); }
+.btn-delete-lead-v38:active { transform: scale(0.97); }
+@media (max-width: 767px) {
+  .btn-delete-lead-v38 { display: none; }
+}
 .lead-item.today-appt { border-left-color: var(--amber) !important; }
 .lead-item.overdue { border-left-color: var(--red) !important; background: rgba(212,21,59,0.02); }
 .lead-item.lc-lead { border-left-color: #AFA9EC; }
@@ -1818,7 +1840,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.37</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.38</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4285,6 +4307,10 @@ function renderDetailPanel(l) {
           <div style="font-size:13px;color:var(--purple-deep);margin-top:2px;">${l.contact || ''} · ${ch?.name || ''}</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
+          <button type="button" class="btn-delete-lead-v38" onclick="confirmDeleteLead('${l.id}')" title="删除这个 Lead">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+            <span>删除</span>
+          </button>
           <button type="button" class="btn" style="font-size:13px;padding:7px 14px;border-radius:9px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="closeDetailPanel()">Close</button>
         </div>
       </div>
@@ -4401,10 +4427,10 @@ function confirmDeleteLead(leadId) {
 // v3.33: Swipe-to-delete handler for Lead cards
 // Threshold: drag 40px+ to reveal. Tap outside to close.
 (function setupSwipeDelete() {
-  const START_DEADZONE = 15; // v3.37: must move >15px before card follows finger (prevents accidental swipe on tap)
-  const THRESHOLD = 80; // v3.37: 60 → 80 (need to drag further to confirm delete reveal)
+  const START_DEADZONE = 15;
+  const THRESHOLD = 80;
   const REVEAL_PX = 64;
-  let _active = null; // { card, startX, startY, currentX, startTime, swiping }
+  let _active = null;
 
   function closeAllRevealed(except) {
     document.querySelectorAll('.swipe-card.revealed').forEach(c => {
@@ -4416,31 +4442,29 @@ function confirmDeleteLead(leadId) {
     const card = e.target.closest('.swipe-card');
     if (!card) { closeAllRevealed(); return; }
     if (e.target.closest('.swipe-delete-btn')) return;
-    const touch = e.touches ? e.touches[0] : e;
+    const touch = e.touches[0];
     _active = {
       card,
       startX: touch.clientX,
       startY: touch.clientY,
       currentX: touch.clientX,
       startTime: Date.now(),
-      swiping: false // v3.37: not swiping until deadzone crossed
+      swiping: false
     };
   }
 
   function onMove(e) {
     if (!_active) return;
-    const touch = e.touches ? e.touches[0] : e;
+    const touch = e.touches[0];
     const dx = touch.clientX - _active.startX;
     const dy = touch.clientY - _active.startY;
-    // v3.37: wait for deadzone + horizontal direction dominance
     if (!_active.swiping) {
-      if (Math.abs(dx) < START_DEADZONE) return; // still within deadzone
-      if (Math.abs(dy) > Math.abs(dx)) { _active = null; return; } // vertical scroll, abort swipe
+      if (Math.abs(dx) < START_DEADZONE) return;
+      if (Math.abs(dy) > Math.abs(dx)) { _active = null; return; }
       _active.swiping = true;
       _active.card.classList.add('is-swiping');
     }
     _active.currentX = touch.clientX;
-    // Cap between -REVEAL_PX and +10 for spring
     const offset = Math.max(-REVEAL_PX, Math.min(10, dx - (dx > 0 ? START_DEADZONE : -START_DEADZONE)));
     _active.card.style.transform = `translateX(${offset}px)`;
     if (e.cancelable) e.preventDefault();
@@ -4463,17 +4487,19 @@ function confirmDeleteLead(leadId) {
     _active = null;
   }
 
+  // v3.38: Touch-only (mobile). Desktop uses the "删除" button in detail panel.
   document.addEventListener('touchstart', onStart, { passive: true });
   document.addEventListener('touchmove', onMove, { passive: false });
   document.addEventListener('touchend', onEnd);
   document.addEventListener('touchcancel', onEnd);
-  document.addEventListener('mousedown', (e) => {
-    if (e.target.closest('.swipe-card')) onStart(e);
-  });
-  document.addEventListener('mousemove', (e) => { if (_active) onMove(e); });
-  document.addEventListener('mouseup', onEnd);
+
+  // v3.38: Click anywhere (including the red zone) when a card is revealed → close it
   document.addEventListener('click', (e) => {
-    if (!e.target.closest('.swipe-wrapper')) closeAllRevealed();
+    const revealed = document.querySelectorAll('.swipe-card.revealed');
+    if (revealed.length === 0) return;
+    // Don't close if clicking the delete button itself
+    if (e.target.closest('.swipe-delete-btn')) return;
+    closeAllRevealed();
   });
 })();
 
