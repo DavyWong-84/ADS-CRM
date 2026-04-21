@@ -497,17 +497,19 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .lead-item.lead-compact-v2 .lc-name { font-size: 14px; }
 .lead-item.lead-compact-v2 .lc-foot { margin-top: 0; font-size: 12px; }
 
-/* Lead flag stars (yellow / red / green) — click to toggle */
+/* Lead flag stars (yellow / blue / green) — click to toggle
+   Note: data-flag key stays as "red" for backward compatibility with saved data,
+   but visually rendered as sky blue since v3.76 */
 .lc-flags { display: inline-flex; gap: 4px; margin-left: 6px; }
 .lc-flag { cursor: pointer; width: 22px; height: 22px; font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s, color 0.15s; }
 .lc-flag:hover { transform: scale(1.2); }
 /* Unlit stars = very light pastel of their own color */
 .lc-flag:not(.active)[data-flag="yellow"] { color: #fef3c7; }
-.lc-flag:not(.active)[data-flag="red"]    { color: #fee2e2; }
+.lc-flag:not(.active)[data-flag="red"]    { color: #dbeafe; }
 .lc-flag:not(.active)[data-flag="green"]  { color: #d1fae5; }
 /* Lit stars = saturated color */
 .lc-flag.active[data-flag="yellow"] { color: #eab308; }
-.lc-flag.active[data-flag="red"]    { color: #ef4444; }
+.lc-flag.active[data-flag="red"]    { color: #0ea5e9; }
 .lc-flag.active[data-flag="green"]  { color: #10b981; }
 
 /* Pagination */
@@ -2071,7 +2073,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.74</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.76</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3186,7 +3188,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.28'; // bump this to force reload of preloaded data (v3.74: flags beside name/contact)
+const DATA_VERSION = '2.30'; // bump this to force reload of preloaded data (v3.76: star color yellow/blue/green)
 
 // ---------- State ----------
 let state = {
@@ -5674,8 +5676,10 @@ function renderList() {
       const selected = l.id === currentEditingId ? ' selected' : '';
       const statusLabel = l.status === 'noshow' ? 'No show' : (l.status.charAt(0).toUpperCase() + l.status.slice(1));
       const flags = l.flags || {};
+      // v3.76: tooltip label uses 'blue' for the second star while the data key stays 'red' (backward compat)
+      const flagTitle = { yellow: 'yellow', red: 'blue', green: 'green' };
       const starHTML = ['yellow', 'red', 'green'].map(c =>
-        `<span class="lc-flag ${flags[c] ? 'active' : ''}" data-flag="${c}" onclick="toggleLeadFlag(event, '${l.id}', '${c}')" title="${c}">★</span>`
+        `<span class="lc-flag ${flags[c] ? 'active' : ''}" data-flag="${c}" onclick="toggleLeadFlag(event, '${l.id}', '${c}')" title="${flagTitle[c]}">★</span>`
       ).join('');
       // Lead = same layout as booked, but more compact (no appt date, no amount)
       if (l.status === 'lead') {
@@ -5695,11 +5699,11 @@ function renderList() {
         }
         return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-lead lead-compact-v2${selected ? ' selected' : ''} swipe-card" onclick="editLead('${esc(l.id)}')">
           <div class="lc-head">
-            <div class="lc-name" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-              <span>${esc(l.name || l.contact || '(no contact)')}</span>
+            <div class="lc-name">${esc(l.name || l.contact || '(no contact)')}</div>
+            <div style="display:flex;align-items:center;gap:4px;">
               <span class="lc-flags">${starHTML}</span>
+              <span class="badge badge-lead">Lead</span>
             </div>
-            <span class="badge badge-lead">Lead</span>
           </div>
           <div class="lc-foot">
             <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong>${timeStr ? ` <span style="color:var(--silver);font-weight:400;">${timeStr}</span>` : ''}</span>
@@ -5723,11 +5727,11 @@ function renderList() {
       }
       return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${esc(l.id)}')">
         <div class="lc-head">
-          <div class="lc-name" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            <span>${esc(l.name || l.contact || '(no data)')}</span>
+          <div class="lc-name">${esc(l.name || l.contact || '(no data)')}</div>
+          <div style="display:flex;align-items:center;gap:4px;">
             <span class="lc-flags">${starHTML}</span>
+            <span class="badge badge-${l.status}">${statusLabel}</span>
           </div>
-          <span class="badge badge-${l.status}">${statusLabel}</span>
         </div>
         <div class="lc-body">
           <span class="lc-contact">${esc(l.contact || '')}</span>
