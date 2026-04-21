@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 791px;"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1853,6 +1853,71 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   width: auto;
   white-space: nowrap;
 }
+/* v3.58: Toggle Pill — Active/Inactive 2-way switch (replaces native select) */
+.toggle-pill {
+  display: inline-flex;
+  background: #F1EFE8;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 1px;
+  font-family: inherit;
+}
+.toggle-pill button {
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+  font-family: inherit;
+}
+.toggle-pill button:hover { color: #222; }
+.toggle-pill button.active-on { background: #fff; color: #065F46; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.toggle-pill button.active-off { background: #fff; color: #64748B; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+@media (max-width: 767px) {
+  .toggle-pill { width: 100%; }
+  .toggle-pill button { flex: 1; padding: 8px 10px; font-size: 12.5px; }
+}
+
+/* v3.58: Platform picker cards (in Add Channel modal) */
+.platform-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--black);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  font-family: inherit;
+}
+.platform-card:hover { border-color: var(--purple-subtle); }
+.platform-card:active { transform: scale(0.98); }
+.platform-card.active {
+  border-color: var(--purple);
+  background: rgba(113,50,245,0.05);
+  color: var(--purple-deep);
+  box-shadow: 0 0 0 3px rgba(113,50,245,0.08);
+}
+.pop-trigger.pop-trigger-field {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  border-radius: 10px;
+  white-space: normal;
+  min-width: 0;
+}
+.pop-trigger-field.is-empty .pop-trigger-label { color: var(--silver); }
 .pop-trigger:hover { border-color: var(--purple-subtle); }
 .pop-trigger.is-open { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(113,50,245,0.08); }
 .pop-trigger-chevron { color: #888; font-size: 10px; flex-shrink: 0; }
@@ -1964,7 +2029,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.57</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.58</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2045,7 +2110,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <!-- Chips + channel (row 2 on mobile) -->
         <div class="quick-chips mobile-only-chips" id="listQuickChips" style="display:none;gap:4px;flex-wrap:wrap;"><button class="quick-chip " onclick="setListQuickPeriod('all')">All</button><button class="quick-chip active" onclick="setListQuickPeriod('today')">Today</button><button class="quick-chip " onclick="setListQuickPeriod('yesterday')">Yday</button></div>
         <select id="listChannelFilter" class="cf-select" onchange="setListChannelFilter(this.value)" style="min-width:130px;display:none;"><option value="">All channels</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
-        <span id="listChannelWrap"><button type="button" id="pop-listChannel" class="pop-trigger" onclick="openPopover(event, 'listChannel')" aria-haspopup="listbox">
+        <span id="listChannelWrap"><button type="button" id="pop-listChannel" class="pop-trigger is-empty" onclick="openPopover(event, 'listChannel')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>All channels</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span>
@@ -2069,13 +2134,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 724.812px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 724.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -2104,7 +2169,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <div class="form-row" style="margin-top:12px;">
                   <div>
                     <label>Channel <span style="color:var(--red)">*</span></label>
-                    <select id="f_channel"><option value=""></option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
+                    <span id="popWrap_popSel_f_channel" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_channel" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_channel')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg><span>Simply 5</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="f_channel" data-pop="1" data-pop-icon="channel" data-pop-placeholder="Select channel" data-pop-upgraded="1" data-pop-id="popSel_f_channel" data-pop-field="1" style="display: none;"><option value=""></option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
                   </div>
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
@@ -2133,7 +2201,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <div class="form-row" style="margin-top:12px;">
                   <div>
                     <label>Location</label>
-                    <select id="f_location"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
+                    <span id="popWrap_popSel_f_location" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_location" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_location')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="f_location" data-pop="1" data-pop-icon="location" data-pop-placeholder="Select location" data-pop-upgraded="1" data-pop-id="popSel_f_location" data-pop-field="1" style="display: none;"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
                   </div>
                   <div>
                     <label>Appt Date</label>
@@ -2157,7 +2228,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               <div class="step-body">
                 <div>
                   <label>Show Up Status</label>
-                  <select id="f_showUp">
+                  <span id="popWrap_popSel_f_showUp" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_showUp" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_showUp')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Show up</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="f_showUp" data-pop="1" data-pop-placeholder="Select status" data-pop-upgraded="1" data-pop-id="popSel_f_showUp" data-pop-field="1" style="display: none;">
                     <option value=""></option>
                     <option value="Show up">Show up</option>
                     <option value="No Show up">No Show up</option>
@@ -2166,7 +2240,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <div class="form-row" style="margin-top:12px;">
                   <div>
                     <label>Race</label>
-                    <select id="f_race">
+                    <span id="popWrap_popSel_f_race" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_race" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_race')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Chinese</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="f_race" data-pop="1" data-pop-placeholder="Select race" data-pop-upgraded="1" data-pop-id="popSel_f_race" data-pop-field="1" style="display: none;">
                       <option value=""></option>
                       <option value="Chinese">Chinese</option>
                       <option value="Malay">Malay</option>
@@ -2274,7 +2351,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span class="date-btn-icon">📅</span>
         </button>
         <input type="hidden" id="storeToMonth">
-        <select id="storeSelect" class="cf-select"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
+        <span id="popWrap_popSel_storeSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_storeSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_storeSelect')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#10B981;">A</span><span>All outlets</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="storeSelect" data-pop="1" data-pop-icon="location" class="cf-select" data-pop-placeholder="All stores" data-pop-upgraded="1" data-pop-id="popSel_storeSelect" style="display: none;"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
     </div>
     <div class="unified-header-spacer"></div>
@@ -2301,13 +2381,19 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="adsYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <select id="adsPlatformSelect" class="cf-select" onchange="setAdsTab(this.value)">
+        <span id="popWrap_popSel_adsPlatformSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_adsPlatformSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_adsPlatformSelect')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">A</span><span>All channels</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="adsPlatformSelect" data-pop="1" data-pop-icon="channel" class="cf-select" onchange="setAdsTab(this.value)" data-pop-placeholder="All" data-pop-upgraded="1" data-pop-id="popSel_adsPlatformSelect" style="display: none;">
           <option value="all">All channels</option>
           <option value="meta">Meta</option>
           <option value="google">Google</option>
           <option value="ofu">Organic+FU</option>
         </select>
-        <select id="adsSubSelect" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)">
+        <span id="popWrap_popSel_adsSubSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_adsSubSelect" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_adsSubSelect')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>All</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
         </select>
       </div>
     </div>
@@ -2381,7 +2467,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="revYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <select id="revOutletSelect" class="cf-select" onchange="renderRevenue()"><option value="all">All Outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
+        <span id="popWrap_popSel_revOutletSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_revOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_revOutletSelect')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#8B5CF6;">A</span><span>All Outlets</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="revOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" onchange="renderRevenue()" data-pop-placeholder="All outlets" data-pop-upgraded="1" data-pop-id="popSel_revOutletSelect" style="display: none;"><option value="all">All Outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
     </div>
     <div class="unified-header-spacer"></div>
@@ -2419,7 +2508,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <select id="rv_entryOutlet" style="width:100%;font-size:13px;"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
+          <span id="popWrap_popSel_rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
@@ -2431,7 +2523,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
-          <select id="as_entryChannel" style="width:100%;font-size:13px;"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
+          <span id="popWrap_popSel_as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg><span>Simply 5</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="as_entryChannel" data-pop="1" data-pop-icon="channel" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select channel" data-pop-upgraded="1" data-pop-id="popSel_as_entryChannel"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
@@ -2443,7 +2538,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
-          <select id="fee_entryName" style="width:100%;font-size:13px;"><option value=""></option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
+          <span id="popWrap_popSel_fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>+ Add fee name...</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="fee_entryName" data-pop="1" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select fee name" data-pop-upgraded="1" data-pop-id="popSel_fee_entryName"><option value=""></option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
           <input type="hidden" id="fee_entryYear" value="2026">
         </div>
         <div id="fee_entryCustomRow" style="display:none;"></div>
@@ -2477,10 +2575,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div><strong>Simply 5</strong> <span style="color:var(--gray);font-size:12px;">· meta · from 2026-01</span></div>
       </div>
       <div>
-        <select class="status-select" data-ch-id="ch-simply5" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
-          <option value="active" selected="">● Active</option>
-          <option value="inactive">○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="active-on" onclick="setChannelActive('ch-simply5', true)">● Active</button>
+          <button type="button" class="" onclick="setChannelActive('ch-simply5', false)">○ Inactive</button>
+        </div>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -2488,10 +2586,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div><strong>Google Ads</strong> <span style="color:var(--gray);font-size:12px;">· google · from 2026-01</span></div>
       </div>
       <div>
-        <select class="status-select" data-ch-id="ch-google" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
-          <option value="active" selected="">● Active</option>
-          <option value="inactive">○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="active-on" onclick="setChannelActive('ch-google', true)">● Active</button>
+          <button type="button" class="" onclick="setChannelActive('ch-google', false)">○ Inactive</button>
+        </div>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -2499,10 +2597,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div><strong>Organic</strong> <span style="color:var(--gray);font-size:12px;">· organic · from 2026-01</span></div>
       </div>
       <div>
-        <select class="status-select" data-ch-id="ch-organic" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
-          <option value="active" selected="">● Active</option>
-          <option value="inactive">○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="active-on" onclick="setChannelActive('ch-organic', true)">● Active</button>
+          <button type="button" class="" onclick="setChannelActive('ch-organic', false)">○ Inactive</button>
+        </div>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -2510,10 +2608,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div><strong>Follow Up</strong> <span style="color:var(--gray);font-size:12px;">· followup · from 2026-01</span></div>
       </div>
       <div>
-        <select class="status-select" data-ch-id="ch-followup" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
-          <option value="active" selected="">● Active</option>
-          <option value="inactive">○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="active-on" onclick="setChannelActive('ch-followup', true)">● Active</button>
+          <button type="button" class="" onclick="setChannelActive('ch-followup', false)">○ Inactive</button>
+        </div>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -2521,10 +2619,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div><strong>Chia FB</strong> <span style="color:var(--gray);font-size:12px;">· meta · from 2026-01</span></div>
       </div>
       <div>
-        <select class="status-select" data-ch-id="ch-chia" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(100, 116, 139, 0.1);color:var(--gray);cursor:pointer;">
-          <option value="active">● Active</option>
-          <option value="inactive" selected="">○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="" onclick="setChannelActive('ch-chia', true)">● Active</button>
+          <button type="button" class="active-off" onclick="setChannelActive('ch-chia', false)">○ Inactive</button>
+        </div>
       </div>
     </div></div>
           <form id="channelForm" class="settings-form" style="margin-top:14px;">
@@ -2552,10 +2650,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div><strong>Sunway</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
       </div>
       <div>
-        <select class="status-select" data-loc-id="st-sunway" onchange="changeLocationStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
-          <option value="active" selected="">● Active</option>
-          <option value="inactive">○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="active-on" onclick="setLocationActive('st-sunway', true)">● Active</button>
+          <button type="button" class="" onclick="setLocationActive('st-sunway', false)">○ Inactive</button>
+        </div>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -2563,10 +2661,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div><strong>Cheras</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
       </div>
       <div>
-        <select class="status-select" data-loc-id="st-cheras" onchange="changeLocationStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
-          <option value="active" selected="">● Active</option>
-          <option value="inactive">○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="active-on" onclick="setLocationActive('st-cheras', true)">● Active</button>
+          <button type="button" class="" onclick="setLocationActive('st-cheras', false)">○ Inactive</button>
+        </div>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -2574,10 +2672,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div><strong>ECO</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
       </div>
       <div>
-        <select class="status-select" data-loc-id="st-eco" onchange="changeLocationStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
-          <option value="active" selected="">● Active</option>
-          <option value="inactive">○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="active-on" onclick="setLocationActive('st-eco', true)">● Active</button>
+          <button type="button" class="" onclick="setLocationActive('st-eco', false)">○ Inactive</button>
+        </div>
       </div>
     </div></div>
           <form id="locationForm" class="settings-form" style="margin-top:14px;">
@@ -2629,7 +2727,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull</button>
               <button class="btn btn-ghost" onclick="gsTest()">🔗 Test</button>
             </div>
-            <div id="gs_log" style="font-size: 12px; color: var(--adscost-color); min-height: 16px;">Please enter Apps Script URL</div>
+            <div id="gs_log" style="font-size:12px;color:var(--gray);min-height:16px;"></div>
           </div>
         </div>
 
@@ -3205,6 +3303,8 @@ function nav(page) {
   if (page === 'settings') renderSettings();
   // v3.34: AI Guide tooltip — wrapped in try-catch so any failure doesn't break nav
   try { if (typeof maybeTriggerAIGuide === 'function') maybeTriggerAIGuide(page); } catch(e) { console.warn('[AI Guide] skipped:', e.message); }
+  // v3.58: Upgrade any native selects to popover UI
+  setTimeout(() => { if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects(); }, 20);
 }
 
 function setSalesPctBase(btn, base) {
@@ -3982,6 +4082,8 @@ function refreshSelects() {
       '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option>';
     if (curVal && activeLocations.some(l => l.id === curVal)) rvOutlet.value = curVal;
   }
+  // v3.58: Upgrade to popover UI after options are populated
+  if (typeof upgradeAllPopSelects === 'function') setTimeout(upgradeAllPopSelects, 0);
 }
 
 // ---------- Entry pill tabs ----------
@@ -4425,6 +4527,8 @@ function populateLeadForm(l) {
   document.getElementById('f_race').value = l.race || '';
   document.getElementById('f_spend').value = l.spend || '';
   document.getElementById('f_remark').value = l.remark || '';
+  // v3.58: Upgrade native selects in the form to popover UI
+  if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects();
 }
 
 function renderDetailPanel(l) {
@@ -4480,7 +4584,7 @@ function renderDetailPanel(l) {
         <div class="step-body">
           <div><label>Contact <span style="color:var(--red)">*</span></label><input type="tel" id="df_contact" value="${l.contact || ''}" inputmode="tel"></div>
           <div class="form-row" style="margin-top:12px;">
-            <div><label>Channel <span style="color:var(--red)">*</span></label><select id="df_channel">${channelOpts}</select></div>
+            <div><label>Channel <span style="color:var(--red)">*</span></label><select id="df_channel" data-pop="1" data-pop-icon="channel" data-pop-placeholder="Select channel">${channelOpts}</select></div>
             <div><label>Lead Date <span style="color:var(--red)">*</span></label><input type="date" id="df_leadDate" value="${l.leadDate || ''}"></div>
           </div>
         </div>
@@ -4490,7 +4594,7 @@ function renderDetailPanel(l) {
         <div class="step-body">
           <div><label>Name</label><input type="text" id="df_name" value="${l.name || ''}" placeholder="Customer name"></div>
           <div class="form-row" style="margin-top:12px;">
-            <div><label>Location</label><select id="df_location"><option value=""></option>${locationOpts}</select></div>
+            <div><label>Location</label><select id="df_location" data-pop="1" data-pop-icon="location" data-pop-placeholder="Select location"><option value=""></option>${locationOpts}</select></div>
             <div><label>Appt Date</label><input type="date" id="df_apptDate" value="${l.apptDate || ''}"></div>
           </div>
         </div>
@@ -4498,9 +4602,9 @@ function renderDetailPanel(l) {
       <div class="step-card step-3">
         <div class="step-header"><span class="step-num">3</span><div><div class="step-title">After Visit</div></div></div>
         <div class="step-body">
-          <div><label>Show Up</label><select id="df_showUp"><option value=""></option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
+          <div><label>Show Up</label><select id="df_showUp" data-pop="1" data-pop-placeholder="Select status"><option value=""></option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
           <div class="form-row" style="margin-top:12px;">
-            <div><label>Race</label><select id="df_race"><option value=""></option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
+            <div><label>Race</label><select id="df_race" data-pop="1" data-pop-placeholder="Select race"><option value=""></option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
             <div><label>Spend (RM)</label><input type="number" id="df_spend" value="${l.spend || ''}" step="0.01" min="0"></div>
           </div>
           <input type="hidden" id="df_remark" value="${l.remark || ''}">
@@ -4510,6 +4614,8 @@ function renderDetailPanel(l) {
       <div id="detail_lastSaved" class="last-saved-time"></div>
     </form>
   `;
+  // v3.58: Upgrade detail panel selects to popover UI
+  if (typeof upgradeAllPopSelects === 'function') setTimeout(upgradeAllPopSelects, 0);
 }
 
 function saveDetailLead() {
@@ -5082,7 +5188,9 @@ function renderPopTrigger(popId) {
   if (!cfg) return '';
   const selectedItem = cfg.items.find(it => it.value === cfg.selected) || cfg.items[0];
   const label = cfg.triggerFormatter ? cfg.triggerFormatter(selectedItem) : (selectedItem?.label || '');
-  return `<button type="button" id="pop-${popId}" class="pop-trigger" onclick="openPopover(event, '${popId}')" aria-haspopup="listbox">
+  const isField = cfg.fieldStyle ? ' pop-trigger-field' : '';
+  const isEmpty = (!cfg.selected || cfg.selected === '') ? ' is-empty' : '';
+  return `<button type="button" id="pop-${popId}" class="pop-trigger${isField}${isEmpty}" onclick="openPopover(event, '${popId}')" aria-haspopup="listbox">
     <span class="pop-trigger-label">${label}</span>
     <span class="pop-trigger-chevron">▾</span>
   </button>`;
@@ -5159,6 +5267,100 @@ document.addEventListener('keydown', (e) => {
 });
 // Re-position on resize/scroll — just close to avoid weird positioning
 window.addEventListener('resize', () => { if (window._popOpen) closePopover(); });
+
+// v3.58: Helper — upgrade an existing <select> into a popover automatically
+// Keeps the original select (hidden) as the source of truth; popover is pure UI layer
+function upgradeSelectToPopover(selectEl, options) {
+  if (!selectEl) return;
+  if (selectEl.dataset.popUpgraded === '1') {
+    // Already upgraded — just re-render trigger with current value
+    refreshSelectPopover(selectEl, options);
+    return;
+  }
+  selectEl.dataset.popUpgraded = '1';
+  const popId = 'popSel_' + (selectEl.id || ('s' + Math.random().toString(36).slice(2, 8)));
+  selectEl.dataset.popId = popId;
+  // Detect if inside a form field (has a <label> sibling or is in .form-row)
+  const isFormField = !!(selectEl.closest('.step-card') || selectEl.closest('.form-row') || selectEl.closest('form'));
+  if (isFormField) selectEl.dataset.popField = '1';
+  // Create trigger element right after the select
+  const wrap = document.createElement('span');
+  wrap.id = 'popWrap_' + popId;
+  wrap.style.display = isFormField ? 'block' : 'inline-block';
+  wrap.style.width = isFormField ? '100%' : 'auto';
+  selectEl.parentNode.insertBefore(wrap, selectEl);
+  selectEl.style.display = 'none';
+  refreshSelectPopover(selectEl, options);
+}
+
+function refreshSelectPopover(selectEl, options) {
+  const popId = selectEl.dataset.popId;
+  if (!popId) return;
+  const opts = options || {};
+  const isField = selectEl.dataset.popField === '1';
+  const placeholder = selectEl.dataset.popPlaceholder || opts.placeholder || 'Select...';
+  // Build items from <option> tags; treat empty-value option as placeholder (skip from list, show in trigger when selected)
+  const items = Array.from(selectEl.options)
+    .filter(o => o.value !== '' || o.textContent.trim() !== '')  // drop pure placeholder options
+    .map(o => ({
+      value: o.value,
+      label: o.textContent.trim(),
+      disabled: o.disabled
+    }));
+  registerPopover(popId, {
+    items: items,
+    selected: selectEl.value,
+    fieldStyle: isField,
+    triggerFormatter: (it) => {
+      if (!it || !it.value) return `<span>${placeholder}</span>`;
+      if (opts.itemIcon) {
+        const ic = opts.itemIcon(it);
+        return `${ic}<span>${it.label}</span>`;
+      }
+      return `<span>${it.label}</span>`;
+    },
+    itemFormatter: (it) => {
+      if (opts.itemIcon) {
+        const ic = opts.itemIcon(it);
+        return `<span class="pop-item-icon">${ic}</span><span>${it.label}</span>`;
+      }
+      return `<span>${it.label}</span>`;
+    },
+    onChange: (v) => {
+      selectEl.value = v;
+      // Fire native change event so any existing onchange handler works
+      selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+      refreshSelectPopover(selectEl, options); // re-render trigger to show new value
+    }
+  });
+  const wrap = document.getElementById('popWrap_' + popId);
+  if (wrap) wrap.innerHTML = renderPopTrigger(popId);
+}
+
+// v3.58: Auto-upgrade all <select> elements marked with data-pop="1"
+// Call this after any render that rebuilds <select> options
+function upgradeAllPopSelects() {
+  document.querySelectorAll('select[data-pop="1"]').forEach(sel => {
+    // Attach icon formatter if specified via data-pop-icon
+    const iconKind = sel.dataset.popIcon;
+    const options = {};
+    if (iconKind === 'channel') {
+      options.itemIcon = (it) => {
+        if (!it.value) return '';
+        const ch = state.channels?.find(c => c.id === it.value || c.name === it.label);
+        return (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, ch?.color) : '';
+      };
+    } else if (iconKind === 'location') {
+      options.itemIcon = (it) => {
+        if (!it.value) return '';
+        const loc = state.locations?.find(l => l.id === it.value || l.name === it.label);
+        return (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, loc?.color) : '';
+      };
+    }
+    if (sel.dataset.popPlaceholder) options.placeholder = sel.dataset.popPlaceholder;
+    upgradeSelectToPopover(sel, options);
+  });
+}
 
 // v3.43: Smart channel/location chip logos — preset for 6 popular channels, auto-fallback for custom ones
 const CHANNEL_LOGO_SVG = {
@@ -5244,10 +5446,7 @@ function renderList() {
       selected: state.listSort || 'updated',
       triggerFormatter: (it) => `<span style="font-size:13px;">${it.icon}</span><span>${it.label === 'Updated' ? 'Updated' : (it.label === 'Lead Date' ? 'Lead' : 'Appt')}</span>`,
       itemFormatter: (it) => `<span class="pop-item-icon" style="font-size:14px;">${it.icon}</span><span>${it.label}</span>`,
-      onChange: (v) => { 
-        console.log('[listSort onChange] received', v, 'typeof setListSort=', typeof setListSort); 
-        if (typeof setListSort === 'function') { setListSort(v); } else { console.error('[ERR] setListSort is not a function!'); }
-      }
+      onChange: (v) => { setListSort(v); }
     });
     const sortWrap = document.getElementById('listSortWrap');
     if (sortWrap) sortWrap.innerHTML = renderPopTrigger('listSort');
@@ -5270,10 +5469,7 @@ function renderList() {
         const logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, it.color) : '';
         return `<span class="pop-item-icon">${logo}</span><span>${it.label}</span>`;
       },
-      onChange: (v) => { 
-        console.log('[listChannel onChange] received', v, 'typeof setListChannelFilter=', typeof setListChannelFilter);
-        if (typeof setListChannelFilter === 'function') { setListChannelFilter(v); } else { console.error('[ERR] setListChannelFilter is not a function!'); }
-      }
+      onChange: (v) => { setListChannelFilter(v); }
     });
     const chWrap = document.getElementById('listChannelWrap');
     if (chWrap) chWrap.innerHTML = renderPopTrigger('listChannel');
@@ -5320,7 +5516,6 @@ function renderList() {
   const today = todayStr();
   // v3.39: Sort by user choice — default: updatedAt (most recently modified first)
   const sortMode = state.listSort || 'updated';
-  console.log('[renderList] sortMode=', sortMode, 'state.listSort=', state.listSort, 'listFilter=', state.listFilter, 'listLen=', list.length);
   list.sort((a, b) => {
     // Priority 1: Today's appointments always on top (across all sort modes)
     const aToday = a.apptDate === today && (a.status === 'booked') ? 1 : 0;
@@ -5462,7 +5657,7 @@ function setListFilter(f) { state.listFilter = f; state.listPage = 1; saveState(
 function setListPage(p) { state.listPage = p; renderList(); window.scrollTo(0, 0); }
 function setListChannelFilter(v) { state.listChannelId = v; state.listPage = 1; saveState(); renderList(); }
 // v3.39: sort by updated / lead / appt
-function setListSort(v) { console.log('[setListSort] called with', v, 'prev=', state.listSort); state.listSort = v; state.listPage = 1; saveState(); renderList(); }
+function setListSort(v) { state.listSort = v; state.listPage = 1; saveState(); renderList(); }
 
 // Toggle a star flag on a lead (red/yellow/green). Synced across devices via Sheet.
 function toggleLeadFlag(event, leadId, flagColor) {
@@ -7749,25 +7944,36 @@ function submitQuickOutlet(targetSelectId) {
 
 function openAddChannelModal(targetSelectId) {
   const html = `
-    <div class="modal-header"><h3 style="margin:0;">Add New Channel</h3></div>
-    <div class="modal-body" style="padding:16px;">
-      <div style="margin-bottom:12px;">
-        <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Channel Name</label>
-        <input type="text" id="quickCh_name" placeholder="e.g. TikTok Ads" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
-      </div>
+    <div class="modal-header" style="padding:16px 20px;background:var(--purple-bg);">
+      <h3 style="margin:0;color:var(--purple-deep);">+ New Channel</h3>
+    </div>
+    <div class="modal-body" style="padding:18px 20px;">
       <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Platform</label>
-        <select id="quickCh_platform" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
-          <option value="meta">Meta</option>
-          <option value="google">Google</option>
-          <option value="organic">Organic</option>
-          <option value="followup">Follow Up</option>
-        </select>
-        <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">Meta/Google 会计入广告花费 ROAS，Organic/Follow Up 不计入</div>
+        <label style="display:block;font-size:11px;color:var(--gray);margin-bottom:6px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;">Name</label>
+        <input type="text" id="quickCh_name" placeholder="e.g. TikTok Ads" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;">
+      </div>
+      <div style="margin-bottom:18px;">
+        <label style="display:block;font-size:11px;color:var(--gray);margin-bottom:6px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;">Platform</label>
+        <div id="quickCh_platform_cards" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <button type="button" data-platform="meta" onclick="pickPlatformCard(this)" class="platform-card active">
+            <span style="font-size:18px;">🔵</span><span>Meta</span>
+          </button>
+          <button type="button" data-platform="google" onclick="pickPlatformCard(this)" class="platform-card">
+            <span style="font-size:18px;">🔴</span><span>Google</span>
+          </button>
+          <button type="button" data-platform="organic" onclick="pickPlatformCard(this)" class="platform-card">
+            <span style="font-size:18px;">🟢</span><span>Organic</span>
+          </button>
+          <button type="button" data-platform="followup" onclick="pickPlatformCard(this)" class="platform-card">
+            <span style="font-size:18px;">🟠</span><span>Follow Up</span>
+          </button>
+        </div>
+        <input type="hidden" id="quickCh_platform" value="meta">
+        <div style="font-size:11px;color:var(--gray);margin-top:8px;line-height:1.5;">Meta/Google 计入广告花费 ROAS<br>Organic/Follow Up 不计入</div>
       </div>
       <div style="display:flex;gap:8px;">
         <button type="button" class="btn" onclick="closeModal()" style="flex:1;">Cancel</button>
-        <button type="button" class="btn btn-primary" onclick="submitQuickChannel('${targetSelectId}')" style="flex:1;">Add</button>
+        <button type="button" class="btn btn-primary" onclick="submitQuickChannel('${targetSelectId}')" style="flex:1;">Add Channel</button>
       </div>
     </div>`;
   showModal(html);
@@ -7775,6 +7981,15 @@ function openAddChannelModal(targetSelectId) {
   // Reset target select back to first option (so user sees nothing selected while modal open)
   const sel = document.getElementById(targetSelectId);
   if (sel && sel.options.length > 0) sel.selectedIndex = 0;
+}
+
+// v3.58: Platform card click handler
+function pickPlatformCard(btn) {
+  const container = btn.parentElement;
+  container.querySelectorAll('.platform-card').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const hidden = document.getElementById('quickCh_platform');
+  if (hidden) hidden.value = btn.dataset.platform;
 }
 
 function submitQuickChannel(targetSelectId) {
@@ -8931,10 +9146,10 @@ function renderSettings() {
         <div><strong>${c.name}</strong> <span style="color:var(--gray);font-size:12px;">· ${c.platform}${c.addedMonth ? ' · from ' + c.addedMonth : ''}</span></div>
       </div>
       <div>
-        <select class="status-select" data-ch-id="${c.id}" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:${statusBg};color:${statusColor};cursor:pointer;">
-          <option value="active" ${isActive ? 'selected' : ''}>● Active</option>
-          <option value="inactive" ${!isActive ? 'selected' : ''}>○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="${isActive ? 'active-on' : ''}" onclick="setChannelActive('${c.id}', true)">● Active</button>
+          <button type="button" class="${!isActive ? 'active-off' : ''}" onclick="setChannelActive('${c.id}', false)">○ Inactive</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -8949,10 +9164,10 @@ function renderSettings() {
         <div><strong>${l.name}</strong>${l.addedMonth ? ` <span style="color:var(--gray);font-size:12px;">· from ${l.addedMonth}</span>` : ''}</div>
       </div>
       <div>
-        <select class="status-select" data-loc-id="${l.id}" onchange="changeLocationStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:${statusBg};color:${statusColor};cursor:pointer;">
-          <option value="active" ${isActive ? 'selected' : ''}>● Active</option>
-          <option value="inactive" ${!isActive ? 'selected' : ''}>○ Inactive</option>
-        </select>
+        <div class="toggle-pill" role="group" aria-label="Status">
+          <button type="button" class="${isActive ? 'active-on' : ''}" onclick="setLocationActive('${l.id}', true)">● Active</button>
+          <button type="button" class="${!isActive ? 'active-off' : ''}" onclick="setLocationActive('${l.id}', false)">○ Inactive</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -9058,6 +9273,25 @@ function changeLocationStatus(selectEl) {
   loc.active = selectEl.value === 'active';
   saveState(); renderSettings(); refreshSelects();
   toast(`${loc.name} ${loc.active ? 'activated' : 'deactivated'}`);
+}
+
+// v3.58: Toggle Pill handlers — direct active toggle
+function setChannelActive(id, active) {
+  const c = getChannel(id);
+  if (!c) return;
+  if (c.active === active || (c.active !== false) === active) return;
+  c.active = active;
+  saveState(); renderSettings(); refreshSelects();
+  toast(`${c.name} ${active ? 'activated' : 'deactivated'}`);
+}
+
+function setLocationActive(id, active) {
+  const loc = state.locations.find(l => l.id === id);
+  if (!loc) return;
+  if (loc.active === active || (loc.active !== false) === active) return;
+  loc.active = active;
+  saveState(); renderSettings(); refreshSelects();
+  toast(`${loc.name} ${active ? 'activated' : 'deactivated'}`);
 }
 
 // ---------- GitHub Sync (Push Only) ----------
