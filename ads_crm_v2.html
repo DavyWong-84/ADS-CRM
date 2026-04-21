@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 910px;"><head>
+<html lang="en" style="--app-vh: 911px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1739,18 +1739,29 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .contact-form-panel {
     display: block !important;
     padding-left: 20px;
-    padding-bottom: 60px; /* v4.20: extra room so Save Lead button isn't clipped */
+    padding-bottom: 20px;
     position: sticky;
     top: 130px;
     height: calc(100vh - 130px);
-    overflow-y: auto;
+    overflow: hidden;  /* v4.34: fixed — no scroll on right panel */
     align-self: start;
   }
   .contact-form-panel::-webkit-scrollbar { width: 4px; }
   .contact-form-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
   .contact-form-panel .form-grid { display: block; max-width: 100%; }
-  .contact-form-panel input, .contact-form-panel select, .contact-form-panel textarea { padding: 8px 11px; font-size: 14px; }
-  .contact-form-panel .step-body { padding: 10px 12px; }
+  .contact-form-panel input, .contact-form-panel select, .contact-form-panel textarea { padding: 6px 10px; font-size: 13px; }
+  .contact-form-panel .step-body { padding: 8px 10px; }
+  /* v4.34: Desktop form compact mode — shrink fonts/spacing so form fits on one screen */
+  .contact-form-panel .step-card { margin-bottom: 8px; }
+  .contact-form-panel .step-header { padding: 6px 10px; }
+  .contact-form-panel .step-title { font-size: 13px; }
+  .contact-form-panel .step-num { width: 20px; height: 20px; font-size: 11px; }
+  .contact-form-panel label { font-size: 11px; margin-bottom: 3px; }
+  .contact-form-panel .form-row { gap: 8px; }
+  .contact-form-panel .form-row > div { margin-top: 0; }
+  .contact-form-panel textarea { min-height: 48px; }
+  /* Save button area — stays at bottom, doesn't shrink */
+  .contact-form-panel .last-saved-time { margin: 4px 0; padding: 0; font-size: 10px; min-height: 0; }
 
   /* v4.22: Welcome page big + button — shown when no lead is selected */
   .contact-form-empty {
@@ -2046,6 +2057,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .grid-md-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .page-title { font-size: 26px; }
   .hero-value { font-size: 48px; }
+
+  /* v4.34: DESKTOP ONLY — On Contact page, lock whole page from scrolling.
+     Only the lead list inside .contact-list-panel can scroll. */
+  body.on-contact-page { overflow: hidden; height: 100vh; }
+  body.on-contact-page .main {
+    height: 100vh;
+    overflow: hidden;
+    padding-top: 24px;
+    padding-bottom: 0;
+    box-sizing: border-box;
+  }
 
   /* v4.21: Sidebar collapse toggle button — sits at bottom of .nav */
   .nav-toggle {
@@ -2488,7 +2510,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.33</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.35</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2570,7 +2592,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <div class="list-search contact-search-row" style="position:relative;margin-bottom:10px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -2620,7 +2642,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -3622,7 +3644,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.58'; // keep — don't force reload of user data
+const DATA_VERSION = '2.60'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
@@ -6330,9 +6352,39 @@ function updateSearchActiveBar() {
   }
 }
 
+// v4.35: If the input is a phone number (digits with +, spaces, dashes only),
+// auto-normalize to match stored format (e.g. "+60 164 473 698" → "60164473698",
+// "0164473698" → "60164473698"). Text queries (letters) pass through untouched.
+function looksLikePhone(str) {
+  if (!str) return false;
+  const s = String(str).trim();
+  // Only +, digits, spaces, dashes, parentheses — no letters
+  return /^[+\d\s\-()]+$/.test(s) && /\d/.test(s);
+}
+
 // Single handler for both inputs
 function onSearchInputChange(value) {
-  state.listSearch = value;
+  let finalValue = value;
+  // v4.35: Auto-format phone-like input to stored format
+  if (looksLikePhone(value)) {
+    const normalized = normalizePhone(value);
+    if (normalized && normalized !== value) {
+      finalValue = normalized;
+      // Update all search inputs to reflect normalized value
+      SEARCH_INPUT_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value !== normalized) {
+          // Preserve cursor at end after reformat
+          const wasActive = document.activeElement === el;
+          el.value = normalized;
+          if (wasActive) {
+            try { el.setSelectionRange(normalized.length, normalized.length); } catch(_) {}
+          }
+        }
+      });
+    }
+  }
+  state.listSearch = finalValue;
   state.listPage = 1;
   renderList();
 }
