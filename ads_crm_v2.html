@@ -1826,11 +1826,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 @media (max-width: 767px) {
   #contactBackBar { display: none; }
-  /* v4.25: Mobile — inline filters not sticky (whole page + unified-header is sticky already) */
+  /* v4.27: Mobile — filters sticky just below the sticky unified-header.
+     No border-bottom/shadow here — unified-header already has one, avoid doubled line. */
   .contact-filters-inline {
-    padding: 8px 0 6px;
-    margin-bottom: 6px;
+    position: sticky;
+    top: calc(54px + var(--uheader-h, 70px));
+    z-index: 30;
     background: var(--white);
+    padding: 10px 16px 8px;
+    margin: 0 -16px 6px;
   }
 }
 /* Mobile: form open = full screen */
@@ -2481,7 +2485,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.26</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.28</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2764,7 +2768,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="" onclick="openMonthPicker('summaryMonth')">
+        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">Apr 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -2773,69 +2777,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="summaryContent">
-    <div class="dash-row-2">
-      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
-        <div class="dash-kpi-label">Revenue →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">Apr 2026</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
-        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
-      </div>
-    </div>
-    <div class="dash-row-3">
-      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
-        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
-        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Meta — · G —</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
-        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">— shows</div>
-      </div>
-    </div>
-    <div class="dash-row-3">
-      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
-        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — leads</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
-        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — appt</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
-        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — shows</div>
-      </div>
-    </div>
-    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
-      <div class="dash-section-label">Funnel — Apr 2026 →</div>
-      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
-        <div style="flex:4;background:var(--purple-bg);border-radius:6px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">—</div>
-          <div style="font-size:11px;color:var(--purple);">Leads</div>
-        </div>
-        <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:18px;font-weight:500;color:#0C447C;">—</div>
-          <div style="font-size:11px;color:#185FA5;">Appt</div>
-        </div>
-        <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:18px;font-weight:500;color:#085041;">—</div>
-          <div style="font-size:11px;color:#0F6E56;">Show</div>
-        </div>
-        <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:18px;font-weight:500;color:#633806;">RM 0</div>
-          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
-        </div>
-      </div>
-    </div>
-    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
-      <div class="dash-section-label">Revenue trend — 2026 →</div>
-      <div id="chart_dash_rev" style="margin-top:8px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1104 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
-      <rect width="1104" height="260" fill="white"></rect>
-      <line x1="58" y1="218.0" x2="1090" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1090" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1090" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1090" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1090" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1090" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1090" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1090" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1090" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1090" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1090" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1090" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="101.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="187.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="273.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="359.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="445.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="531.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="617.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="703.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="789.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="875.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="961.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1047.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="530" y="20" width="11" height="11" fill="#7132f5" rx="2"></rect><text x="546" y="29" font-size="10" fill="#334155">Revenue</text>
-    </svg></div></div>
-    </div>
-  </div>
+    <div id="summaryContent"></div>
   </section>
 
   <!-- STORE PAGE -->
@@ -2845,17 +2787,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <h1 class="page-title" style="margin:0;">Appt Report</h1>
       </div>
       <div class="compact-filter">
-        <div class="toggle-group" style="display: none;">
+        <div class="toggle-group">
           <button class="toggle active" data-mode="month" onclick="setStoreMode('month')">Month</button>
           <button class="toggle" data-mode="year" onclick="setStoreMode('year')">Year</button>
           <button class="toggle" data-mode="custom" onclick="setStoreMode('custom')">Custom</button>
         </div>
         <select id="storeYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
-        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="" onclick="openYearPicker('storeYear', this)">
+        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="display:none;" onclick="openYearPicker('storeYear', this)">
           <span id="storeYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')" style="display: none;">
+        <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')">
           <span id="storeMonth_label">Apr 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -2885,70 +2827,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer unified-header-spacer-tall"></div>
 
-    <div id="storeContent"><div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">By Platform</div><div class="section-title"><h3>All Outlets — All Platforms 2026</h3></div>
-            <div class="table-wrap"><table class="data data-t">
-              <thead><tr><th>Metric</th><th class="num">Jan</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Apr</th><th class="num">May</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Aug</th><th class="num">Sep</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Dec</th><th class="num">TOTAL</th></tr></thead>
-              <tbody>
-                <tr><td>Lead</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>Appt</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>No Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td style="font-weight:600;">Sales</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>AVG/Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
-              </tbody>
-            </table></div>
-            <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1121 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
-      <rect width="1121" height="260" fill="white"></rect>
-      <text x="561" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="#7132f5">All Platforms — Appt &amp; Show Up</text><line x1="58" y1="218.0" x2="1107" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1107" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1107" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1107" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1107" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1107" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1107" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1107" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1107" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1107" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1107" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1107" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="101.7" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="189.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="276.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="364.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="451.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="538.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="626.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="713.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="801.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="888.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="975.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1063.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="450.5" y="20" width="11" height="11" fill="#94a3b8" rx="2"></rect><text x="466.5" y="29" font-size="10" fill="#334155">Lead</text><rect x="538.5" y="20" width="11" height="11" fill="#7132f5" rx="2"></rect><text x="554.5" y="29" font-size="10" fill="#334155">Appt</text><rect x="626.5" y="20" width="11" height="11" fill="#10B981" rx="2"></rect><text x="642.5" y="29" font-size="10" fill="#334155">Show Up</text>
-    </svg></div></div><div class="section-title"><h3>All Outlets — Meta 2026</h3></div>
-            <div class="table-wrap"><table class="data data-t">
-              <thead><tr><th>Metric</th><th class="num">Jan</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Apr</th><th class="num">May</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Aug</th><th class="num">Sep</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Dec</th><th class="num">TOTAL</th></tr></thead>
-              <tbody>
-                <tr><td>Lead</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>Appt</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>No Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td style="font-weight:600;">Sales</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>AVG/Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
-              </tbody>
-            </table></div>
-            <div style="font-size:11px;color:var(--gray);margin-top:6px;">* Appt % = Appt ÷ Lead &nbsp;·&nbsp; No Show % = No Show ÷ Appt</div>
-            <div id="chart_plat_meta" style="margin-top:14px;margin-bottom:24px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1121 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
-      <rect width="1121" height="260" fill="white"></rect>
-      <text x="561" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="#7132f5">Meta — Appt &amp; Show Up</text><line x1="58" y1="218.0" x2="1107" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1107" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1107" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1107" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1107" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1107" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1107" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1107" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1107" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1107" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1107" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1107" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="101.7" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="189.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="276.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="364.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="451.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="538.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="626.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="713.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="801.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="888.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="975.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1063.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="450.5" y="20" width="11" height="11" fill="#94a3b8" rx="2"></rect><text x="466.5" y="29" font-size="10" fill="#334155">Lead</text><rect x="538.5" y="20" width="11" height="11" fill="#1877F2" rx="2"></rect><text x="554.5" y="29" font-size="10" fill="#334155">Appt</text><rect x="626.5" y="20" width="11" height="11" fill="#93c5fd" rx="2"></rect><text x="642.5" y="29" font-size="10" fill="#334155">Show Up</text>
-    </svg></div></div><div class="section-title"><h3>All Outlets — Google 2026</h3></div>
-            <div class="table-wrap"><table class="data data-t">
-              <thead><tr><th>Metric</th><th class="num">Jan</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Apr</th><th class="num">May</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Aug</th><th class="num">Sep</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Dec</th><th class="num">TOTAL</th></tr></thead>
-              <tbody>
-                <tr><td>Lead</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>Appt</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>No Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td style="font-weight:600;">Sales</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>AVG/Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
-              </tbody>
-            </table></div>
-            <div style="font-size:11px;color:var(--gray);margin-top:6px;">* Appt % = Appt ÷ Lead &nbsp;·&nbsp; No Show % = No Show ÷ Appt</div>
-            <div id="chart_plat_google" style="margin-top:14px;margin-bottom:24px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1121 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
-      <rect width="1121" height="260" fill="white"></rect>
-      <text x="561" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="#7132f5">Google — Appt &amp; Show Up</text><line x1="58" y1="218.0" x2="1107" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1107" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1107" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1107" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1107" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1107" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1107" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1107" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1107" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1107" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1107" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1107" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="101.7" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="189.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="276.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="364.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="451.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="538.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="626.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="713.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="801.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="888.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="975.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1063.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="450.5" y="20" width="11" height="11" fill="#94a3b8" rx="2"></rect><text x="466.5" y="29" font-size="10" fill="#334155">Lead</text><rect x="538.5" y="20" width="11" height="11" fill="#CA8A04" rx="2"></rect><text x="554.5" y="29" font-size="10" fill="#334155">Appt</text><rect x="626.5" y="20" width="11" height="11" fill="#fde68a" rx="2"></rect><text x="642.5" y="29" font-size="10" fill="#334155">Show Up</text>
-    </svg></div></div><div class="section-title"><h3>All Outlets — Organic + Follow Up 2026</h3></div>
-            <div class="table-wrap"><table class="data data-t">
-              <thead><tr><th>Metric</th><th class="num">Jan</th><th class="num">Feb</th><th class="num">Mar</th><th class="num">Apr</th><th class="num">May</th><th class="num">Jun</th><th class="num">Jul</th><th class="num">Aug</th><th class="num">Sep</th><th class="num">Oct</th><th class="num">Nov</th><th class="num">Dec</th><th class="num">TOTAL</th></tr></thead>
-              <tbody>
-                <tr><td>Lead</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>Appt</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>No Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td style="font-weight:600;">Sales</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:600;">—</td><td class="num" style="font-weight:700;">—</td></tr>
-                <tr><td>AVG/Show</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
-              </tbody>
-            </table></div>
-            <div style="font-size:11px;color:var(--gray);margin-top:6px;">* Appt % = Appt ÷ Lead &nbsp;·&nbsp; No Show % = No Show ÷ Appt</div>
-            <div id="chart_plat_ofu" style="margin-top:14px;margin-bottom:24px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1121 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
-      <rect width="1121" height="260" fill="white"></rect>
-      <text x="561" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="#7132f5">Organic + Follow Up — Appt &amp; Show Up</text><line x1="58" y1="218.0" x2="1107" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1107" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1107" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1107" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1107" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1107" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1107" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1107" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1107" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1107" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1107" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1107" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="101.7" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="189.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="276.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="364.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="451.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="538.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="626.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="713.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="801.0" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="888.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="975.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1063.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="450.5" y="20" width="11" height="11" fill="#94a3b8" rx="2"></rect><text x="466.5" y="29" font-size="10" fill="#334155">Lead</text><rect x="538.5" y="20" width="11" height="11" fill="#059669" rx="2"></rect><text x="554.5" y="29" font-size="10" fill="#334155">Appt</text><rect x="626.5" y="20" width="11" height="11" fill="#6ee7b7" rx="2"></rect><text x="642.5" y="29" font-size="10" fill="#334155">Show Up</text>
-    </svg></div></div></div>
+    <div id="storeContent"></div>
   </section>
 
   <!-- ADS SPEND PAGE -->
@@ -3736,7 +3615,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.51'; // keep — don't force reload of user data
+const DATA_VERSION = '2.53'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
