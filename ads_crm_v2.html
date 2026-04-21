@@ -1801,11 +1801,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .welcome-plus-label { font-size: 17px; font-weight: 600; color: var(--purple); }
   .welcome-plus-hint { font-size: 12px; color: var(--gray); white-space: normal; word-break: normal; max-width: 240px; }
 
-  /* v4.23+v4.25: Inline filters section — fixed top of left panel (no scroll) */
+  /* v4.23+v4.25+v4.42: Inline filters section — fixed top of left panel (no scroll) */
   .contact-filters-inline {
     flex: 0 0 auto;  /* v4.25: don't grow/shrink */
     background: var(--white);
-    padding: 6px 0 4px;  /* v4.36: reduced from 12/10 — tighter filter area */
+    padding: 14px 0 6px;  /* v4.42: more top padding to separate from Contact title */
     margin-bottom: 0;
     border-bottom: 1px solid var(--border);
   }
@@ -1835,12 +1835,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
   #page-contact .lead-list::-webkit-scrollbar { width: 4px; }
   #page-contact .lead-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-  /* v4.39: Rollback to v4.36 stable — Load more fixed at bottom of left panel, not inside list */
+  /* v4.42: Load more fixed at bottom of left panel, with more bottom space */
   #page-contact #loadMoreWrap {
     flex: 0 0 auto;
     position: static;
     padding: 8px 0 8px;
-    margin: 0 0 32px;
+    margin: 0 0 60px;  /* v4.42: 60px — more space above viewport bottom */
     border-top: 1px solid var(--border);
     background: var(--white);
   }
@@ -2516,7 +2516,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.41</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.42</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2653,7 +2653,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
+        <div class="contact-form-empty" id="contactFormEmpty">
           <!-- v4.22: Click-to-create welcome area — big round + button in the middle -->
           <button type="button" onclick="openNewLead()" class="welcome-new-lead-btn" aria-label="Create new lead">
             <span class="welcome-plus-circle">
@@ -2663,7 +2663,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <span class="welcome-plus-hint">or select a lead from the list</span>
           </button>
         </div>
-        <div id="contactFormWrap" style="display: block;">
+        <div id="contactFormWrap" style="display:none;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -2724,7 +2724,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label"></span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate" value="">
+                    <input type="hidden" id="f_apptDate">
                   </div>
                 </div>
               </div>
@@ -3238,7 +3238,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull</button>
               <button class="btn btn-ghost" onclick="gsTest()">🔗 Test</button>
             </div>
-            <div id="gs_log" style="font-size:12px;color:var(--gray);min-height:16px;"></div>
+            <div id="gs_log" style="font-size: 12px; color: var(--adscost-color); min-height: 16px;">Please enter Apps Script URL</div>
           </div>
         </div>
 
@@ -3654,7 +3654,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.66'; // keep — don't force reload of user data
+const DATA_VERSION = '2.67'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
