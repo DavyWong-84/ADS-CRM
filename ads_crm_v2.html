@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 911px;"><head>
+<html lang="en" style="--app-vh: 792px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2071,7 +2071,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.64</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.68</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2176,13 +2176,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 726px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 726px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -4407,6 +4407,10 @@ function saveLead(base) {
     status = (spend && race) ? 'done' : 'booked';
   }
 
+  // v3.65: Preserve flags (star markers) from the existing lead when editing
+  const existingLead = currentEditingId ? state.leads.find(l => l.id === currentEditingId) : null;
+  const preservedFlags = existingLead?.flags || {};
+
   const lead = {
     id: currentEditingId || uid('L'),
     week: isoWeek(base.leadDate),
@@ -4425,6 +4429,7 @@ function saveLead(base) {
     showUp: showUp || '',
     status,
     remark,
+    flags: preservedFlags,
     updatedAt: new Date().toISOString()
   };
 
@@ -4689,12 +4694,16 @@ function saveDetailLead() {
   if (name && apptDate) status = 'booked';
   if (showUp === 'No Show up') status = 'noshow';
   else if (showUp === 'Show up') { status = (spend && race) ? 'done' : 'booked'; }
+  // v3.65: Preserve flags (star markers) from existing lead
+  const existing = state.leads.find(x => x.id === currentEditingId);
+  const preservedFlags = existing?.flags || {};
   const lead = {
     id: currentEditingId, week: isoWeek(leadDate), leadDate, channelId,
     channel: ch?.name || '', channelName: ch?.name || '', platform: ch?.platform || '', contact,
     apptDate: apptDate || null, name, race: race || null,
     locationId: locationId || null, location: loc?.name || null,
     spend, showUp: showUp || '', status, remark,
+    flags: preservedFlags,
     updatedAt: new Date().toISOString()
   };
   const idx = state.leads.findIndex(x => x.id === currentEditingId);
@@ -8669,28 +8678,19 @@ function renderRevenueOutlet(mArr, locId) {
   </div>`;
   wrap.innerHTML = html;
 
-  // Draw outlet revenue chart — Total Sales + Ads New Sales
+  // Draw outlet revenue chart
   setTimeout(() => {
     const labels = mArr.map(m => fmt.monthShort(m));
+    const yFmt = v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0);
     const totalVals = mArr.map(m => {
       const r = state.revenue.find(x => x.month === m && x.locationId === locId);
       return r && r.total ? r.total : null;
     });
+
     const adsVals = mArr.map(m => {
       const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
       return v > 0 ? v : null;
     });
-    AdsChart.render('chart_rev_outlet', {
-      title: locName + ' — Revenue',
-      labels,
-      series: [
-        { label: 'Total Sales', color: AdsChart.C.purple, data: totalVals },
-        { label: 'Ads New Sales', color: AdsChart.C.meta, data: adsVals },
-      ],
-      yFmt: v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0),
-    });
-
-    // Add New / Old chart below
     const newVals2 = mArr.map(m => {
       const r = state.revenue.find(x => x.month === m && x.locationId === locId);
       return r && r.newCustomer ? r.newCustomer : null;
@@ -8699,22 +8699,18 @@ function renderRevenueOutlet(mArr, locId) {
       const r = state.revenue.find(x => x.month === m && x.locationId === locId);
       return r && r.total ? Math.max(0, r.total - (r.newCustomer||0)) : null;
     });
-    const el = document.getElementById('chart_rev_outlet');
-    if (el) {
-      const div2 = document.createElement('div');
-      div2.id = 'chart_rev_outlet2';
-      div2.style.marginTop = '12px';
-      el.parentNode.insertBefore(div2, el.nextSibling);
-      AdsChart.render('chart_rev_outlet2', {
-        title: locName + ' — New vs Old Customer',
-        labels,
-        series: [
-          { label: 'New Customer', color: AdsChart.C.green, data: newVals2 },
-          { label: 'Old Customer', color: AdsChart.C.purple2, data: oldVals2 },
-        ],
-        yFmt: v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0),
-      });
-    }
+    // v3.67: Combined chart — 4 lines matching table column colors
+    AdsChart.render('chart_rev_outlet', {
+      title: locName + ' — Revenue Breakdown',
+      labels,
+      series: [
+        { label: 'New Customer', color: AdsChart.C.green, type: 'line', data: newVals2 },
+        { label: 'Old Customer', color: AdsChart.C.gray, type: 'line', data: oldVals2 },
+        { label: 'Ads New Sales', color: AdsChart.C.meta, type: 'line', data: adsVals },
+        { label: 'Total Sales', color: '#000000', type: 'line', data: totalVals },
+      ],
+      yFmt,
+    });
   }, 30);
 }
 
@@ -8858,7 +8854,7 @@ function renderRevenueSummary(mArr) {
     </div>`;
   }
 
-  html += `<div id="chart_rev_total_bar" style="margin-top:14px;"></div><div id="chart_rev_all" style="margin-top:14px;"></div></div>`;
+  html += `<div id="chart_rev_all" style="margin-top:14px;"></div></div>`;
 
   wrap.innerHTML = html;
 
@@ -8872,31 +8868,10 @@ function renderRevenueSummary(mArr) {
       return t > 0 ? t : null;
     });
 
-    // v3.64: Top chart — pure monthly total revenue (12 months, bar-style)
-    AdsChart.render('chart_rev_total_bar', {
-      title: 'Monthly Total Revenue',
-      labels,
-      series: [
-        { label: 'Total Revenue', color: AdsChart.C.purple, data: totalData },
-      ],
-      yFmt,
-    });
-
     const adsData = mArr.map(m => {
       const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
       return v > 0 ? v : null;
     });
-    AdsChart.render('chart_rev_all', {
-      title: 'All Outlets — Revenue',
-      labels,
-      series: [
-        { label: 'Total Sales', color: AdsChart.C.purple, data: totalData },
-        { label: 'Ads New Sales', color: AdsChart.C.meta, data: adsData },
-      ],
-      yFmt,
-    });
-
-    // New vs Old chart below
     const newData = mArr.map(m => {
       const v = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s+(r?.newCustomer||0); }, 0);
       return v > 0 ? v : null;
@@ -8905,22 +8880,18 @@ function renderRevenueSummary(mArr) {
       const t = totalData[i]; const n = newData[i];
       return t != null ? Math.max(0, (t||0) - (n||0)) : null;
     });
-    const el = document.getElementById('chart_rev_all');
-    if (el) {
-      const div2 = document.createElement('div');
-      div2.id = 'chart_rev_all2';
-      div2.style.marginTop = '12px';
-      el.parentNode.insertBefore(div2, el.nextSibling);
-      AdsChart.render('chart_rev_all2', {
-        title: 'All Outlets — New vs Old Customer',
-        labels,
-        series: [
-          { label: 'New Customer', color: AdsChart.C.green, data: newData },
-          { label: 'Old Customer', color: AdsChart.C.purple2, data: oldData },
-        ],
-        yFmt,
-      });
-    }
+    // v3.67: Combined chart — 4 lines matching table column colors
+    AdsChart.render('chart_rev_all', {
+      title: 'All Outlets — Revenue Breakdown',
+      labels,
+      series: [
+        { label: 'New Customer', color: AdsChart.C.green, type: 'line', data: newData },
+        { label: 'Old Customer', color: AdsChart.C.gray, type: 'line', data: oldData },
+        { label: 'Ads New Sales', color: AdsChart.C.meta, type: 'line', data: adsData },
+        { label: 'Total Sales', color: '#000000', type: 'line', data: totalData },
+      ],
+      yFmt,
+    });
   }, 30);
 }
 
