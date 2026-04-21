@@ -434,10 +434,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   background: #fff !important;
   transition: transform 0.25s ease;
   touch-action: pan-y;
-  will-change: transform;
   margin-bottom: 0;
 }
-.swipe-card.is-swiping { transition: none; }
+/* v4.28: will-change only during active swipe — global will-change caused
+   half-transparent rendering artifacts on scrolling lists in Chrome/Safari
+   when combined with sticky filter bar creating a stacking context. */
+.swipe-card.is-swiping { transition: none; will-change: transform; }
 .swipe-card.revealed { transform: translateX(-64px); }
 /* v3.46: Selected state — opaque purple tint, never let delete bg leak through */
 .lead-item.swipe-card.selected { background: #F4F1FE !important; border-color: var(--purple) !important; }
@@ -2485,7 +2487,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.28</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.29</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3615,7 +3617,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.53'; // keep — don't force reload of user data
+const DATA_VERSION = '2.54'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
