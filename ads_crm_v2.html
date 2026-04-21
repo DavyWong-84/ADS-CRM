@@ -1964,7 +1964,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.55</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.56</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3039,6 +3039,7 @@ let state = {
   listSearch: '',
   listPeriod: 'today',
   listChannelId: '',
+  listSort: 'updated',
   listMode: 'month',
   listMonth: new Date().toISOString().substring(0, 7),
   listYear: String(new Date().getFullYear()),
@@ -5115,11 +5116,10 @@ function openPopover(event, popId) {
   // Click handler
   menu.addEventListener('click', (e) => {
     const row = e.target.closest('.pop-item');
-    console.log('[popover] click', { target: e.target, row, val: row?.getAttribute('data-value') });
     if (!row) return;
     const val = row.getAttribute('data-value');
     closePopover();
-    if (cfg.onChange) { console.log('[popover] onChange', val); cfg.onChange(val); }
+    if (cfg.onChange) cfg.onChange(val);
   });
 
   document.body.appendChild(backdrop);
@@ -5314,6 +5314,7 @@ function renderList() {
   const today = todayStr();
   // v3.39: Sort by user choice — default: updatedAt (most recently modified first)
   const sortMode = state.listSort || 'updated';
+  console.log('[renderList] sortMode=', sortMode, 'state.listSort=', state.listSort, 'listFilter=', state.listFilter, 'listLen=', list.length);
   list.sort((a, b) => {
     // Priority 1: Today's appointments always on top (across all sort modes)
     const aToday = a.apptDate === today && (a.status === 'booked') ? 1 : 0;
@@ -5455,7 +5456,7 @@ function setListFilter(f) { state.listFilter = f; state.listPage = 1; saveState(
 function setListPage(p) { state.listPage = p; renderList(); window.scrollTo(0, 0); }
 function setListChannelFilter(v) { state.listChannelId = v; state.listPage = 1; saveState(); renderList(); }
 // v3.39: sort by updated / lead / appt
-function setListSort(v) { state.listSort = v; state.listPage = 1; saveState(); renderList(); }
+function setListSort(v) { console.log('[setListSort] called with', v, 'prev=', state.listSort); state.listSort = v; state.listPage = 1; saveState(); renderList(); }
 
 // Toggle a star flag on a lead (red/yellow/green). Synced across devices via Sheet.
 function toggleLeadFlag(event, leadId, flagColor) {
