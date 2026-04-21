@@ -92,7 +92,7 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
     flex: none;
     min-height: auto;
     overflow-y: visible;
-    padding: 53px 16px 220px;  /* v4.09: more bottom room for pagination */
+    padding: 53px 16px 260px;  /* v4.15: more bottom for pagination */
     margin: 0;
     max-width: none;
   }
@@ -1652,8 +1652,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     border-right: 1px solid var(--border);
     padding-right: 20px;
     position: sticky;
-    top: 165px;
-    height: calc(100vh - 180px);
+    top: 185px;
+    height: calc(100vh - 200px);
     overflow-y: auto;
   }
   .contact-list-panel::-webkit-scrollbar { width: 4px; }
@@ -1662,8 +1662,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     display: block !important;
     padding-left: 20px;
     position: sticky;
-    top: 165px;
-    height: calc(100vh - 180px);
+    top: 185px;
+    height: calc(100vh - 200px);
     overflow-y: auto;
     align-self: start;
   }
@@ -2269,7 +2269,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.13</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.15</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2416,7 +2416,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Channel <span style="color:var(--red)">*</span></label>
                     <span id="popWrap_popSel_f_channel" data-pop-wrap-for="f_channel" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_channel" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_channel')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg><span>Simply 5</span></span>
+    <span class="pop-trigger-label"><span>Select...</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="f_channel" data-pop="1" data-pop-icon="channel" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_channel" data-pop-field="1" style="display: none;"><option value=""></option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
                   </div>
@@ -2448,7 +2448,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Location</label>
                     <span id="popWrap_popSel_f_location" data-pop-wrap-for="f_location" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_location" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_location')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+    <span class="pop-trigger-label"><span>Select...</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="f_location" data-pop="1" data-pop-icon="location" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_location" data-pop-field="1" style="display: none;"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
                   </div>
@@ -2475,7 +2475,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <div>
                   <label>Show Up Status</label>
                   <span id="popWrap_popSel_f_showUp" data-pop-wrap-for="f_showUp" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_showUp" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_showUp')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Show up</span></span>
+    <span class="pop-trigger-label"><span>Select...</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="f_showUp" data-pop="1" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_showUp" data-pop-field="1" style="display: none;">
                     <option value=""></option>
@@ -2487,7 +2487,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Race</label>
                     <span id="popWrap_popSel_f_race" data-pop-wrap-for="f_race" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_race" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_race')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Chinese</span></span>
+    <span class="pop-trigger-label"><span>Select...</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="f_race" data-pop="1" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_race" data-pop-field="1" style="display: none;">
                       <option value=""></option>
@@ -2750,7 +2750,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+    <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -2780,7 +2780,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>+ Add fee name...</span></span>
+    <span class="pop-trigger-label"><span>Select fee name</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="fee_entryName" data-pop="1" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select fee name" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_fee_entryName"><option value=""></option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
           <input type="hidden" id="fee_entryYear" value="2026">
@@ -5487,10 +5487,13 @@ function registerPopover(popId, config) {
 function renderPopTrigger(popId) {
   const cfg = window.POP_CONFIG[popId];
   if (!cfg) return '';
-  const selectedItem = cfg.items.find(it => it.value === cfg.selected) || cfg.items[0];
-  const label = cfg.triggerFormatter ? cfg.triggerFormatter(selectedItem) : (selectedItem?.label || '');
+  // v4.15: If nothing selected, use an "empty" item (value:'') so formatters don't crash on null access
+  const hasSelection = cfg.selected !== undefined && cfg.selected !== null && cfg.selected !== '';
+  const selectedItem = hasSelection ? cfg.items.find(it => it.value === cfg.selected) : null;
+  const safeItem = selectedItem || { value: '', label: '', icon: '' };  // never null — formatters may access .value/.icon
+  const label = cfg.triggerFormatter ? cfg.triggerFormatter(safeItem) : (safeItem.label || '');
   const isField = cfg.fieldStyle ? ' pop-trigger-field' : '';
-  const isEmpty = (!cfg.selected || cfg.selected === '') ? ' is-empty' : '';
+  const isEmpty = !hasSelection ? ' is-empty' : '';
   return `<button type="button" id="pop-${popId}" class="pop-trigger${isField}${isEmpty}" onclick="openPopover(event, '${popId}')" aria-haspopup="listbox">
     <span class="pop-trigger-label">${label}</span>
     <span class="pop-trigger-chevron">▾</span>
@@ -5629,7 +5632,14 @@ function setPopoverSelectHidden(selectEl, hidden) {
 function refreshSelectPopover(selectEl, options) {
   const popId = selectEl.dataset.popId;
   if (!popId) return;
-  const opts = options || {};
+  // v4.15: cache options so later calls without args still keep itemIcon etc.
+  window._popOpts = window._popOpts || {};
+  if (options) {
+    window._popOpts[popId] = options;
+  } else {
+    options = window._popOpts[popId] || {};
+  }
+  const opts = options;
   const isField = selectEl.dataset.popField === '1';
   const placeholder = selectEl.dataset.popPlaceholder || opts.placeholder || 'Select...';
   // Build items from <option> tags; treat empty-value option as placeholder (skip from list, show in trigger when selected)
