@@ -73,11 +73,40 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
 /* Layout */
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .topbar { position: sticky; top: 0; z-index: 50; background: var(--white); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
-/* v3.85: On mobile, topbar is fixed (no flow height). Add padding-top to .main
-   so the first child (unified-header sticky) starts below the topbar. */
+
+/* v3.90: WhatsApp-style mobile layout — full-screen flex column on <body>.
+   - body fills the dynamic viewport (100dvh), shrinks with keyboard
+   - .main is the ONLY scrollable area
+   - #mobileActionBar is a flex sibling so it naturally sits above bottom-nav
+   - No position:fixed on bar → no "phantom gap" between bar and keyboard
+*/
 @media (max-width: 767px) {
-  .topbar { position: fixed; top: 0; left: 0; right: 0; }
-  .main { padding-top: 53px; }  /* topbar height */
+  html { height: 100%; }
+  body {
+    height: 100dvh;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .topbar { position: static; flex: 0 0 auto; }
+  nav.nav { flex: 0 0 auto; }
+  .main {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 16px 16px;
+    margin: 0;
+    max-width: none;
+  }
+  /* v3.96: breathing room between sticky unified-header and page content */
+  .page.active > .unified-header + *,
+  .page.active > .unified-header + .unified-header-spacer + * {
+    margin-top: 14px;
+  }
+  .bottom-nav { position: static; flex: 0 0 auto; }
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.3px; }
 .brand-logo { width: 28px; height: 28px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; letter-spacing: -0.5px; }
@@ -103,7 +132,10 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
 .nav-item.active { color: var(--purple); border-bottom-color: var(--purple); background: transparent; }
 
 /* Main content */
-.main { flex: 1; padding: 16px; padding-bottom: 88px; max-width: 1400px; margin: 0 auto; width: 100%; }
+.main { flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; }
+@media (min-width: 768px) {
+  .main { padding: 16px; padding-bottom: 88px; }
+}
 .page { display: none; }
 .page.active { display: block; animation: fadein 0.2s ease; }
 @keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
@@ -297,6 +329,10 @@ table.data th.bg-newcust { background: var(--newcust-bg); color: var(--newcust-c
 .table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 table.data { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 100%; }
 table.data th { text-align: left; padding: 10px 12px; color: var(--purple-deep); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid var(--border); background: var(--purple-bg); white-space: nowrap; position: sticky; top: 0; z-index: 1; }
+/* v3.94: On mobile, table th sticky must sit below the unified-header (which is also sticky at top:0 of .main) */
+@media (max-width: 767px) {
+  table.data th { position: static; }  /* don't sticky on mobile — avoids collision with unified-header */
+}
 table.data td { padding: 11px 12px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
 table.data th:not(:last-child), table.data td:not(:last-child) { border-right: 1px solid var(--border-light); }
 /* First column sticky + thicker right border */
@@ -525,7 +561,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .pagination button.active { background: var(--purple); color: white; border-color: var(--purple); }
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
 @media (max-width: 767px) {
-  #listPagination { padding-bottom: 140px; }
+  #listPagination { padding-bottom: 20px; }  /* v3.90: bar no longer fixed, less needed */
 }
 
 /* Search */
@@ -673,7 +709,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
 }
 @media (max-width: 767px) {
-  .filter-tabs-sticky { top: calc(54px + var(--uheader-h, 140px)); }  /* v3.86: topbar + unified-header actual height (set by JS) */
+  .filter-tabs-sticky { top: var(--uheader-h, 140px); }  /* v3.90: main is scroll container now — no need to add topbar */
 }
 
 /* v3.61: Pill tabs inside unified-header — sits inline with filters, scrolls with header */
@@ -716,6 +752,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .unified-header-spacer-tall {
     height: 185px;
   }
+}
+/* v3.90: Mobile — all spacers collapse since unified-header is sticky (occupies flow) */
+@media (max-width: 767px) {
+  .unified-header-spacer-tall { height: 0; }
 }
 
 /* Quick period chips (today/yesterday/month/year) */
@@ -1513,11 +1553,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .mobile-only-search-bar { display: none !important; }
   .mobile-only-chips { display: none !important; }
 }
-/* Mobile: show chips + force row break. Search input is now persistent on both mobile and desktop. */
+/* v3.91: Mobile — drop the second filter row (Today/Yday chips + All channels),
+   status tabs move up to fill its place. Search input is persistent on both mobile and desktop. */
 @media (max-width: 767px) {
   .desktop-only-hint { display: none !important; }
-  .mobile-only-chips { display: flex !important; }
-  .mobile-line-break { display: block !important; }
+  .mobile-only-chips { display: none !important; }         /* v3.91: was flex, now hidden */
+  .mobile-line-break { display: none !important; }         /* v3.91: no 2nd row needed */
+  #page-contact #listChannelWrap { display: none !important; }  /* v3.91: hide channel filter */
 }
 
 /* Modal */
@@ -1616,21 +1658,31 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .list-search { display: none !important; }
 }
 
-/* v3.79: Mobile bottom floating action bar (search + new lead button) */
+/* v3.94: Mobile bottom action bar — fixed above bottom-nav. Simple, reliable. */
 #mobileActionBar {
-  position: fixed;
-  left: 12px;
-  right: 12px;
-  bottom: 72px;  /* Above bottom nav (which is ~68px tall) */
-  z-index: 20;
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(16, 24, 40, 0.08), 0 1px 3px rgba(16, 24, 40, 0.04);
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  display: none;  /* hidden on desktop */
+}
+@media (max-width: 767px) {
+  body.on-contact-page #mobileActionBar {
+    display: flex !important;
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 72px;   /* above bottom-nav (~66px tall) */
+    z-index: 30;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 4px 16px rgba(16, 24, 40, 0.08);
+  }
+  /* When keyboard is up, hide bottom-nav and move bar to bottom edge */
+  body.on-contact-page.search-focused .bottom-nav { display: none !important; }
+  body.on-contact-page.search-focused #mobileActionBar { bottom: 8px; }
+  /* Also give the list bottom room so bar doesn't cover last card */
+  body.on-contact-page #page-contact { padding-bottom: 80px; }
 }
 #mobileActionBar .mab-search {
   position: relative;
@@ -1654,10 +1706,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   border-radius: 10px;
   background: var(--surface-2);
   outline: none;
-  transition: border-color 0.15s, background 0.15s;
+  transition: background 0.15s;
 }
 #mobileActionBar .mab-search input:focus {
-  background: #fff;  /* v3.85: no purple border on focus — keep it neutral */
+  background: #fff;
 }
 #mobileActionBar #contactFab {
   flex: 0 0 auto;
@@ -1675,24 +1727,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   align-items: center;
   justify-content: center;
   padding: 0;
-  box-shadow: none;
   position: static;
 }
 #mobileActionBar #contactFab:active { background: var(--purple-dark); }
 
-/* v3.80: When search input is focused (mobile keyboard up) — hide the bottom nav
-   and move the action bar down to bottom:0 so it sits directly above the keyboard */
+/* v3.90: When keyboard is up, hide bottom-nav so the action bar sits right above
+   the keyboard (no more dead space). No magic numbers — 100dvh handles position. */
 @media (max-width: 767px) {
   body.search-focused .bottom-nav { display: none !important; }
-  body.search-focused #mobileActionBar { bottom: 8px; }
-  /* v3.84: collapse the bottom paddings that were reserved for bottom-nav + FAB,
-     otherwise the list has ~228px of empty space above the keyboard */
-  body.search-focused .main { padding-bottom: 70px !important; }  /* just enough for the bar itself */
-  body.search-focused #listPagination { padding-bottom: 0 !important; }
-}
-/* Show the bar only on mobile, only while on Contact page */
-@media (max-width: 767px) {
-  body.on-contact-page #mobileActionBar { display: flex !important; }
 }
 /* Hide when contact form is fully open */
 .contact-form-open #mobileActionBar { display: none !important; }
@@ -1927,7 +1969,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   top: 54px; /* mobile topbar height */
   left: 0;
   right: 0;
-  z-index: 40;
+  z-index: 45;
   background: var(--white);
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
@@ -1941,17 +1983,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     padding: 16px 28px;
   }
 }
-/* v3.85: On mobile, switch to sticky so height is auto-measured by the browser.
-   Filter-tabs below it auto-stack via sticky top:0 — no manual alignment math. */
+/* v3.90: On mobile, main is the scroll container now. Sticky top:0 means
+   "stick to the top of .main" — which is already below the fixed-flex topbar. */
 @media (max-width: 767px) {
   .unified-header {
     position: sticky;
-    top: 54px;  /* sits directly under the fixed topbar */
+    top: 0;
     left: auto;
     right: auto;
-    padding: 10px 16px;
-    margin: 0 -16px;  /* extend to page edges for clean bar look */
+    padding: 10px 16px 14px;
+    margin: 0 -16px;
+    z-index: 45;
   }
+  /* v3.95: force first-child of .page to stick to .main top — no gap */
+  .page.active > .unified-header:first-child { margin-top: 0; }
 }
 .unified-header .compact-filter { margin-top: 10px; }
 /* Spacer: only needed on desktop where header is position:fixed */
@@ -2118,6 +2163,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     height: 70px;
   }
 }
+/* v3.90: Mobile — unified-header is sticky (occupies flow), spacer collapses */
+@media (max-width: 767px) {
+  .unified-header-spacer-single { height: 0; }
+}
 
 /* Compact filter row (single-line for mobile) */
 .compact-filter { display: flex; column-gap: 6px; row-gap: 6px; align-items: center; flex-wrap: wrap; padding-bottom: 2px; }
@@ -2162,7 +2211,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.88</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.96</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2240,7 +2289,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <!-- Mobile line break: force chips to row 2 -->
         <div class="mobile-line-break" style="flex-basis:100%;height:0;display:none;"></div>
         <!-- Chips + channel (row 2 on mobile) -->
-        <div class="quick-chips mobile-only-chips" id="listQuickChips" style="display:none;gap:4px;flex-wrap:wrap;"><button class="quick-chip " onclick="setListQuickPeriod('all')">All</button><button class="quick-chip active" onclick="setListQuickPeriod('today')">Today</button><button class="quick-chip " onclick="setListQuickPeriod('yesterday')">Yday</button></div>
+        <div class="quick-chips mobile-only-chips" id="listQuickChips" style="display:none;gap:4px;flex-wrap:wrap;"><button class="quick-chip active" onclick="setListQuickPeriod('all')">All</button><button class="quick-chip " onclick="setListQuickPeriod('today')">Today</button><button class="quick-chip " onclick="setListQuickPeriod('yesterday')">Yday</button></div>
         <select id="listChannelFilter" class="cf-select" onchange="setListChannelFilter(this.value)" style="min-width:130px;display:none;"><option value="">All channels</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
         <span id="listChannelWrap"><button type="button" id="pop-listChannel" class="pop-trigger is-empty" onclick="openPopover(event, 'listChannel')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>All channels</span></span>
@@ -2402,15 +2451,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
     </div>
 
-    <!-- Mobile Bottom Floating Bar (v3.79: search in middle + New Lead on the right) -->
+    <!-- Mobile bottom action bar moved out of .main for WhatsApp-style flex layout (v3.90) -->
     <div id="contactFormBackdrop" onclick="closeContactForm()"></div>
-    <div id="mobileActionBar" style="display:none;">
-      <div class="mab-search">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-        <input type="text" id="searchInputMobile" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value)">
-      </div>
-      <button type="button" id="contactFab" onclick="openNewLead()" aria-label="New Lead">+</button>
-    </div>
 
   </section>
 
@@ -2895,6 +2937,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </section>
 </main>
 
+<!-- v3.90: Mobile bottom action bar — now a flex child of .app (outside .main)
+     so it naturally sits between the scroll area and bottom-nav, and rides above
+     the keyboard when it opens (via 100dvh viewport shrinking). -->
+<div id="mobileActionBar">
+  <div class="mab-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+    <input type="text" id="searchInputMobile" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value)">
+  </div>
+  <button type="button" id="contactFab" onclick="openNewLead()" aria-label="New Lead">+</button>
+</div>
+
 <!-- Global Quick Switcher / Search Modal -->
 <div class="modal-backdrop" id="globalSearchBackdrop" onclick="if(event.target===this) closeGlobalSearch()">
   <div class="gs-modal">
@@ -3266,7 +3319,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.42'; // v3.88: ResizeObserver for header, shadow on filter-tabs, larger fallback
+const DATA_VERSION = '2.44'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
@@ -3281,7 +3334,7 @@ let state = {
   listPage: 1,
   listFilter: 'all',
   listSearch: '',
-  listPeriod: 'today',
+  listPeriod: 'all',
   listChannelId: '',
   listSort: 'updated',
   listMode: 'month',
@@ -3308,6 +3361,9 @@ function loadState() {
       // Only trust saved state if it has leads AND matches version
       if (parsed.version === DATA_VERSION && parsed.leads && parsed.leads.length > 0) {
         state = { ...state, ...parsed };
+        // v3.91: migrate — Today/Yday chips and channel filter removed from mobile UI.
+        // Reset their state so users can still see all leads.
+        if (state.listPeriod && state.listPeriod !== 'all') state.listPeriod = 'all';
         return;
       }
     }
@@ -5938,66 +5994,26 @@ function onSearchInputChange(value) {
   });
 })();
 
-// v3.87: Detect mobile keyboard using Visual Viewport API — more reliable than
-// focus/blur on any input, covers keyboard dismissal via back button, OS-level
-// keyboard hide, and cases where blur doesn't fire. Also corrects topbar position
-// on Android Chrome where position:fixed can misbehave when keyboard opens.
+// v3.90: Mobile keyboard detection — simplified, since body uses 100dvh flex layout,
+// the action bar naturally rides above the keyboard. We only need to add the
+// search-focused class so .bottom-nav hides, giving the bar more room.
 (function setupKeyboardDetection() {
-  if (!window.visualViewport) {
-    // Fallback for old browsers: use focus/blur
-    const mobInp = document.getElementById('searchInputMobile');
-    if (!mobInp) return;
-    mobInp.addEventListener('focus', () => document.body.classList.add('search-focused'));
-    mobInp.addEventListener('blur', () => document.body.classList.remove('search-focused'));
-    return;
+  const mobInp = document.getElementById('searchInputMobile');
+  if (!mobInp) return;
+  mobInp.addEventListener('focus', () => document.body.classList.add('search-focused'));
+  mobInp.addEventListener('blur', () => document.body.classList.remove('search-focused'));
+  // Insurance: also listen on visual viewport (back button dismissing keyboard)
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      if (window.innerWidth >= 768) return;
+      const heightDiff = window.innerHeight - window.visualViewport.height;
+      const kbOpen = heightDiff > 150;
+      const stillFocused = document.activeElement?.id === 'searchInputMobile';
+      if (!kbOpen && !stillFocused) {
+        document.body.classList.remove('search-focused');
+      }
+    });
   }
-  const vv = window.visualViewport;
-  let wasOpen = false;
-  const THRESHOLD = 150; // px of viewport height reduction = keyboard open
-  const topbarEl = document.querySelector('.topbar');
-  const mobileBarEl = document.getElementById('mobileActionBar');
-  function check() {
-    if (window.innerWidth >= 768) {
-      // Reset any mobile overrides if resized to desktop
-      if (topbarEl) topbarEl.style.transform = '';
-      if (mobileBarEl) mobileBarEl.style.transform = '';
-      return;
-    }
-    const ae = document.activeElement;
-    const focusedOnSearch = ae && ae.id === 'searchInputMobile';
-    const heightDiff = window.innerHeight - vv.height;
-    const isOpen = focusedOnSearch && heightDiff > THRESHOLD;
-    if (isOpen !== wasOpen) {
-      document.body.classList.toggle('search-focused', isOpen);
-      wasOpen = isOpen;
-    }
-    // Pin topbar to visual-viewport top (fixes Android Chrome drifting fixed element when keyboard opens)
-    if (topbarEl) {
-      topbarEl.style.transform = isOpen ? `translateY(${vv.offsetTop}px)` : '';
-    }
-    // Pin action bar to visual-viewport bottom when keyboard is up
-    if (mobileBarEl && isOpen) {
-      const bottomOffset = window.innerHeight - vv.height - vv.offsetTop;
-      mobileBarEl.style.transform = `translateY(${-bottomOffset}px)`;
-    } else if (mobileBarEl) {
-      mobileBarEl.style.transform = '';
-    }
-  }
-  vv.addEventListener('resize', check);
-  vv.addEventListener('scroll', check);
-  // Also hook blur as insurance — always remove class when input loses focus
-  document.addEventListener('focusout', e => {
-    if (e.target && e.target.id === 'searchInputMobile') {
-      setTimeout(() => {
-        if (document.activeElement?.id !== 'searchInputMobile') {
-          document.body.classList.remove('search-focused');
-          wasOpen = false;
-          if (topbarEl) topbarEl.style.transform = '';
-          if (mobileBarEl) mobileBarEl.style.transform = '';
-        }
-      }, 100);
-    }
-  });
 })();
 
 // ESC on Lead form = close form
