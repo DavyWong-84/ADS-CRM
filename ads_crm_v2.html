@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 911px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -389,7 +389,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .swipe-card {
   position: relative;
   z-index: 2;
-  background: var(--white);
+  background: #fff !important;
   transition: transform 0.25s ease;
   touch-action: pan-y;
   will-change: transform;
@@ -397,6 +397,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .swipe-card.is-swiping { transition: none; }
 .swipe-card.revealed { transform: translateX(-64px); }
+/* v3.46: Selected state — opaque purple tint, never let delete bg leak through */
+.lead-item.swipe-card.selected { background: #F4F1FE !important; border-color: var(--purple) !important; }
 
 /* v3.38: Desktop-only delete button in detail panel (mobile uses swipe instead) */
 .btn-delete-lead-v38 {
@@ -1879,7 +1881,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.45</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.46</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -1981,13 +1983,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
