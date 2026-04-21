@@ -1673,6 +1673,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   position: static;
 }
 #mobileActionBar #contactFab:active { background: var(--purple-dark); }
+
+/* v3.80: When search input is focused (mobile keyboard up) — hide the bottom nav
+   and move the action bar down to bottom:0 so it sits directly above the keyboard */
+@media (max-width: 767px) {
+  body.search-focused .bottom-nav { display: none !important; }
+  body.search-focused #mobileActionBar { bottom: 8px; }
+}
 /* Show the bar only on mobile, only while on Contact page */
 @media (max-width: 767px) {
   body.on-contact-page #mobileActionBar { display: flex !important; }
@@ -2136,7 +2143,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.79</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.80</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3240,7 +3247,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.33'; // bump this to force reload of preloaded data (v3.79: mobile bottom bar, clear Lead placeholders)
+const DATA_VERSION = '2.34'; // bump this to force reload of preloaded data (v3.80: hide bottom nav when search focused)
 
 // ---------- State ----------
 let state = {
@@ -5885,6 +5892,11 @@ function onSearchInputChange(value) {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('input', e => onSearchInputChange(e.target.value));
+    // v3.80: on mobile, hide bottom nav when keyboard is up (search focused)
+    if (id === 'searchInputMobile') {
+      el.addEventListener('focus', () => document.body.classList.add('search-focused'));
+      el.addEventListener('blur', () => document.body.classList.remove('search-focused'));
+    }
   });
 })();
 
