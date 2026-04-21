@@ -1828,16 +1828,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 @media (max-width: 767px) {
   #contactBackBar { display: none; }
-  /* v4.27: Mobile — filters sticky just below the sticky unified-header.
-     No border-bottom/shadow here — unified-header already has one, avoid doubled line. */
+  /* v4.30: Mobile — filters are moved INSIDE unified-header by JS, so they inherit
+     the header's sticky behavior. No own sticky/margin/shadow needed. */
   .contact-filters-inline {
-    position: sticky;
-    top: calc(54px + var(--uheader-h, 70px));
-    z-index: 30;
-    background: var(--white);
-    padding: 10px 16px 8px;
-    margin: 0 -16px 6px;
+    padding: 8px 0 0;
+    margin: 0;
+    background: transparent;
   }
+  .contact-filters-inline .compact-filter { margin-bottom: 6px; }
 }
 /* Mobile: form open = full screen */
 .contact-form-open .contact-list-panel { display: none !important; }
@@ -2487,7 +2485,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.29</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.32</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2538,7 +2536,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- CONTACT PAGE (merged Lead + List) -->
   <section class="page" id="page-contact">
     <!-- v4.23: Unified header now only contains page title + "+ New Lead" button (spans full width).
-         Filter/search/status-tab rows moved INSIDE .contact-list-panel to occupy left half only. -->
+         Filter/search/status-tab rows moved INSIDE .contact-list-panel to occupy left half only.
+         v4.30: On mobile, JS moves .contact-filters-inline INTO #contactFiltersMobileSlot below
+         so it becomes part of the sticky unified-header and stays pinned when list scrolls. -->
     <div class="unified-header">
       <!-- Row 1: page title + inline search (mobile) + actions -->
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
@@ -2553,6 +2553,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
         </div>
       </div>
+      <!-- v4.30: Slot where filters go on mobile (JS moves .contact-filters-inline here when < 768px) -->
+      <div id="contactFiltersMobileSlot"></div>
     </div>
     <div class="unified-header-spacer"></div>
 
@@ -2565,9 +2567,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;">
-        <!-- v4.23: Filters moved here from unified-header -->
-        <div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <div class="list-search contact-search-row" style="position:relative;margin-bottom:10px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -2609,6 +2609,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
         </div>
+        <!-- v4.23: Filters moved here from unified-header -->
+        
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <!-- v4.20: Mobile-only "Load More" button (hidden on desktop via CSS) -->
         <div id="loadMoreWrap"></div>
@@ -3617,7 +3619,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.54'; // keep — don't force reload of user data
+const DATA_VERSION = '2.57'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
@@ -3760,6 +3762,27 @@ function toast(msg) {
   setTimeout(() => t.remove(), 2000);
 }
 function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+// v4.30: Move .contact-filters-inline between mobile slot (inside sticky unified-header)
+// and desktop home (top of .contact-list-panel) based on viewport width.
+// On mobile → filters pinned with the header. On desktop → filters pinned at top of left panel.
+function syncContactFiltersPlacement() {
+  const filters = document.querySelector('.contact-filters-inline');
+  const mobileSlot = document.getElementById('contactFiltersMobileSlot');
+  const listPanel = document.getElementById('contactListPanel');
+  if (!filters || !mobileSlot || !listPanel) return;
+  const isMobile = window.innerWidth < 768;
+  if (isMobile) {
+    if (filters.parentElement !== mobileSlot) mobileSlot.appendChild(filters);
+  } else {
+    // Desktop: make sure filters are the first child of the list panel
+    if (filters.parentElement !== listPanel) {
+      listPanel.insertBefore(filters, listPanel.firstChild);
+    } else if (listPanel.firstChild !== filters) {
+      listPanel.insertBefore(filters, listPanel.firstChild);
+    }
+  }
+}
 
 function fixContactPanelTop() {
   if (window.innerWidth < 768) return;
@@ -12755,8 +12778,11 @@ function init() {
   if (listYearEl) listYearEl.addEventListener('change', e => { state.listYear = e.target.value; state.listPage = 1; saveState(); renderList(); });
   // Default to Contact page
   nav('contact');
+  // v4.30: Move filters to the right container (mobile slot or list panel) based on viewport
+  syncContactFiltersPlacement();
   setTimeout(fixContactPanelTop, 200);
   window.addEventListener('resize', fixContactPanelTop);
+  window.addEventListener('resize', syncContactFiltersPlacement);
   // v3.86: Also re-measure unified-header height on resize (orientation change)
   window.addEventListener('resize', () => { if (typeof syncHeaderHeight === 'function') syncHeaderHeight(); });
   setTimeout(() => { if (typeof syncHeaderHeight === 'function') syncHeaderHeight(); }, 200);
