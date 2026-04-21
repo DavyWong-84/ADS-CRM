@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 910px;"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -74,39 +74,29 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .topbar { position: sticky; top: 0; z-index: 50; background: var(--white); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
 
-/* v3.90: WhatsApp-style mobile layout — full-screen flex column on <body>.
-   - body fills the dynamic viewport (100dvh), shrinks with keyboard
-   - .main is the ONLY scrollable area
-   - #mobileActionBar is a flex sibling so it naturally sits above bottom-nav
-   - No position:fixed on bar → no "phantom gap" between bar and keyboard
-*/
+/* v4.00: Reverted WhatsApp-style layout — body scrolls natively so Chrome's
+   pull-to-refresh works. Topbar + bottom-nav + action bar are position:fixed
+   with compensating padding on .main. Keyboard behavior is browser-default. */
 @media (max-width: 767px) {
-  html { height: 100%; }
+  html { height: auto; }
   body {
-    height: 100dvh;
-    min-height: 0;
+    height: auto;
+    min-height: 100vh;
     margin: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    overflow: visible;
+    display: block;
   }
-  .topbar { position: static; flex: 0 0 auto; }
-  nav.nav { flex: 0 0 auto; }
+  .topbar { position: fixed; top: 0; left: 0; right: 0; flex: none; }
+  nav.nav { flex: none; }
   .main {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 0 16px 16px;
+    flex: none;
+    min-height: auto;
+    overflow-y: visible;
+    padding: 53px 16px 140px;  /* top: topbar height; bottom: bar + nav */
     margin: 0;
     max-width: none;
   }
-  /* v3.96: breathing room between sticky unified-header and page content */
-  .page.active > .unified-header + *,
-  .page.active > .unified-header + .unified-header-spacer + * {
-    margin-top: 14px;
-  }
-  .bottom-nav { position: static; flex: 0 0 auto; }
+  .bottom-nav { position: fixed; flex: none; }
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.3px; }
 .brand-logo { width: 28px; height: 28px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; letter-spacing: -0.5px; }
@@ -2004,14 +1994,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (max-width: 767px) {
   .unified-header {
     position: sticky;
-    top: 0;
+    top: 54px;  /* v4.00: sit below fixed topbar */
     left: auto;
     right: auto;
     padding: 10px 16px 14px;
     margin: 0 -16px;
     z-index: 45;
   }
-  /* v3.95: force first-child of .page to stick to .main top — no gap */
   .page.active > .unified-header:first-child { margin-top: 0; }
 }
 .unified-header .compact-filter { margin-top: 10px; }
@@ -2227,7 +2216,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.99</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.00</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2335,13 +2324,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
