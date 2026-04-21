@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 911px;"><head>
+<html lang="en" style="--app-vh: 910px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -790,6 +790,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     margin-right: -28px;
     padding-left: 28px;
     padding-right: 28px;
+  }
+  /* v4.23: Inside contact-filters-inline (in left panel), reset the sticky + negative margins */
+  #page-contact .contact-filters-inline .filter-tabs-sticky {
+    position: static;
+    top: auto;
+    margin: 0;
+    padding: 4px 0 0;
+    border-bottom: none;
+    box-shadow: none;
+    background: transparent;
   }
 }
 @media (max-width: 767px) {
@@ -1738,26 +1748,35 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .contact-form-panel .step-body { padding: 10px 12px; }
 
   /* v4.22: Welcome page big + button — shown when no lead is selected */
-  .contact-form-empty { height: 100%; display: flex; align-items: center; justify-content: center; min-height: 400px; }
+  .contact-form-empty {
+    min-height: calc(100vh - 180px);  /* fills the form panel's scroll area */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
   .welcome-new-lead-btn {
     display: flex; flex-direction: column; align-items: center; gap: 14px;
-    background: transparent; border: none; cursor: pointer; padding: 40px;
+    background: transparent; border: none; cursor: pointer; padding: 32px 20px;
     border-radius: 16px; transition: background 0.15s;
+    max-width: 100%;
+    text-align: center;
   }
   .welcome-new-lead-btn:hover { background: var(--purple-bg); }
   .welcome-plus-circle {
-    width: 96px; height: 96px; border-radius: 50%;
+    width: 80px; height: 80px; border-radius: 50%;
     background: var(--purple-bg); color: var(--purple);
     display: flex; align-items: center; justify-content: center;
     transition: transform 0.15s, box-shadow 0.15s;
+    flex-shrink: 0;
   }
   .welcome-new-lead-btn:hover .welcome-plus-circle {
     background: var(--purple); color: #fff;
     transform: scale(1.05);
     box-shadow: 0 8px 24px rgba(113, 50, 245, 0.3);
   }
-  .welcome-plus-label { font-size: 18px; font-weight: 600; color: var(--purple); }
-  .welcome-plus-hint { font-size: 13px; color: var(--gray); }
+  .welcome-plus-label { font-size: 17px; font-weight: 600; color: var(--purple); }
+  .welcome-plus-hint { font-size: 12px; color: var(--gray); white-space: normal; word-break: normal; max-width: 240px; }
 
   /* v4.23: Inline filters section inside the list panel — sticks to top of scrollable list */
   .contact-filters-inline {
@@ -2438,7 +2457,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.23</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.24</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2516,7 +2535,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;">
         <!-- v4.23: Filters moved here from unified-header -->
         <div class="contact-filters-inline">
           <!-- Filter row 1: Month/Year + date + sort + channel + search -->
@@ -2565,7 +2584,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -3567,7 +3586,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.48'; // keep — don't force reload of user data
+const DATA_VERSION = '2.49'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
