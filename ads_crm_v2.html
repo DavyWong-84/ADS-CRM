@@ -102,6 +102,11 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
   .page.active > .unified-header + .unified-header-spacer + * {
     margin-top: 14px;
   }
+  /* v4.04: Contact page — tighter gap, no extra margin */
+  #page-contact.active > .unified-header + *,
+  #page-contact.active > .unified-header + .unified-header-spacer + * {
+    margin-top: 0;
+  }
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.3px; }
 .brand-logo { width: 28px; height: 28px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; letter-spacing: -0.5px; }
@@ -383,7 +388,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* Mobile list */
-.lead-list { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; }
+.lead-list { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
 .lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; transition: all 0.15s; cursor: pointer; border-left: 3px solid var(--border); }
 .lead-item:hover { border-color: var(--purple); box-shadow: var(--shadow-sm); }
 
@@ -573,7 +578,32 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .list-search::before { content: ''; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; background: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23686b82' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") center no-repeat; pointer-events: none; }
 
 /* Filter tabs */
-.filter-tabs { display: flex; gap: 4px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
+/* v4.03: Hide scrollbar + fade edges to hint scrollable */
+.filter-tabs { display: flex; gap: 4px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; -ms-overflow-style: none; }
+.filter-tabs::-webkit-scrollbar { display: none; }
+/* Wrapper with fade-out masks on left & right to hint there's more */
+.filter-tabs-wrap { position: relative; }
+.filter-tabs-wrap::before,
+.filter-tabs-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 10px;
+  width: 20px;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.15s;
+}
+.filter-tabs-wrap::before {
+  left: 0;
+  background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0) 100%);
+}
+.filter-tabs-wrap::after {
+  right: 0;
+  background: linear-gradient(270deg, #fff 0%, rgba(255,255,255,0) 100%);
+}
+.filter-tabs-wrap.at-start::before { opacity: 0; }
+.filter-tabs-wrap.at-end::after { opacity: 0; }
 .filter-tab { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; }
 .filter-tab.active { background: var(--purple); color: white; border-color: var(--purple); }
 
@@ -2221,7 +2251,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.02</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.04</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2316,7 +2346,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
       </div>
       <!-- v3.98: Status tabs moved INSIDE unified-header (mobile flows naturally, desktop still sticky via class) -->
-      <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
+      <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
+        <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
+      </div>
     </div>
     <div class="unified-header-spacer"></div>
 
@@ -5784,6 +5816,8 @@ function renderList() {
   document.getElementById('listFilters').innerHTML = filters.map(f =>
     `<button class="filter-tab ${state.listFilter === f.id ? 'active' : ''}" onclick="setListFilter('${f.id}')">${f.label}<span class="count">${counts[f.id]}</span></button>`
   ).join('');
+  // v4.03: Update fade-edge indicators for horizontal scroll hint
+  if (typeof updateFilterFadeEdges === 'function') updateFilterFadeEdges();
 
   // Filter + sort
   let list = filteredLeads.slice();
@@ -5834,7 +5868,7 @@ function renderList() {
 
   // sub text removed (was showing record count)
 
-  const pageSize = 30;
+  const pageSize = 15;
   const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
   if (state.listPage > totalPages) state.listPage = 1;
   const slice = list.slice((state.listPage - 1) * pageSize, state.listPage * pageSize);
@@ -6006,6 +6040,23 @@ function onSearchInputChange(value) {
     if (!el) return;
     el.addEventListener('input', e => onSearchInputChange(e.target.value));
   });
+})();
+
+// v4.03: Fade-edge indicators for horizontally scrollable filter tabs
+function updateFilterFadeEdges() {
+  const tabs = document.getElementById('listFilters');
+  const wrap = document.getElementById('listFiltersWrap');
+  if (!tabs || !wrap) return;
+  const atStart = tabs.scrollLeft <= 1;
+  const atEnd = tabs.scrollLeft + tabs.clientWidth >= tabs.scrollWidth - 1;
+  wrap.classList.toggle('at-start', atStart);
+  wrap.classList.toggle('at-end', atEnd);
+}
+(function bindFilterFadeEdges() {
+  const tabs = document.getElementById('listFilters');
+  if (!tabs) return;
+  tabs.addEventListener('scroll', updateFilterFadeEdges);
+  window.addEventListener('resize', updateFilterFadeEdges);
 })();
 
 // v3.97: Keyboard detection — use Visual Viewport as the authoritative source.
