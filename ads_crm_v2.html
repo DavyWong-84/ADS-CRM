@@ -73,6 +73,12 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
 /* Layout */
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .topbar { position: sticky; top: 0; z-index: 50; background: var(--white); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+/* v3.81: On mobile, switch topbar to position:fixed so iOS keyboard can't push it
+   off-screen. Compensate with padding-top on .app so content isn't hidden underneath. */
+@media (max-width: 767px) {
+  .topbar { position: fixed; top: 0; left: 0; right: 0; }
+  .app { padding-top: 53px; }  /* topbar ≈ 12px + 28px content + 12px + 1px border = 53px */
+}
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.3px; }
 .brand-logo { width: 28px; height: 28px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; letter-spacing: -0.5px; }
 @media (min-width: 768px) {
@@ -2143,7 +2149,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.80</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.81</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3247,7 +3253,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.34'; // bump this to force reload of preloaded data (v3.80: hide bottom nav when search focused)
+const DATA_VERSION = '2.35'; // bump this to force reload of preloaded data (v3.81: mobile topbar fixed)
 
 // ---------- State ----------
 let state = {
@@ -12494,10 +12500,14 @@ history.pushState(null, '', location.href);
 
 <script>
 // Auto-scroll input into view when keyboard appears (mobile)
+// v3.81: Exclude inputs inside #mobileActionBar — the bar is already pinned to the bottom,
+// and scrollIntoView would yank the page upward, pushing topbar + filters off-screen.
 (function() {
   const fix = e => {
     const el = e.target;
     if (!['INPUT','TEXTAREA','SELECT'].includes(el.tagName)) return;
+    // Skip floating bottom bar — it's already above the keyboard by design
+    if (el.closest('#mobileActionBar')) return;
     setTimeout(() => {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 320);
