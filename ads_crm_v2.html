@@ -667,6 +667,39 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   #page-contact .filter-tabs-sticky { top: 124px; }
 }
 
+/* v3.61: Pill tabs inside unified-header — sits inline with filters, scrolls with header */
+.pill-tabs-inheader {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 10px;
+  padding-bottom: 2px;
+}
+.pill-tabs-inheader::-webkit-scrollbar { display: none; }
+.pill-tab {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--gray);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.pill-tab:hover { border-color: var(--purple-subtle); color: var(--black); }
+.pill-tab.active {
+  background: var(--purple);
+  color: #fff;
+  border-color: var(--purple);
+  font-weight: 600;
+}
+
 /* Quick period chips (today/yesterday/month/year) */
 .quick-chip { padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; cursor: pointer; }
 .quick-chip:hover { border-color: var(--purple-light, #b99afa); color: var(--purple); }
@@ -2029,7 +2062,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.59</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.61</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2134,13 +2167,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
+      <div class="contact-list-panel" id="contactListPanel">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
+      <div class="contact-form-panel" id="contactFormPanel">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -2356,15 +2389,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="storeSelect" data-pop="1" data-pop-icon="location" class="cf-select" data-pop-placeholder="All stores" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_storeSelect" style="display: none;"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
+      <!-- v3.61: Pill tabs inside header — flows with topbar white area -->
+      <div class="pill-tabs-inheader">
+        <button type="button" id="storePill_platform" onclick="switchStoreTab('platform')" class="pill-tab active">By Platform</button>
+        <button type="button" id="storePill_race" onclick="switchStoreTab('race')" class="pill-tab">By Race</button>
+        <button type="button" id="storePill_weekly" onclick="switchStoreTab('weekly')" class="pill-tab">Head Count &amp; Weekly</button>
+      </div>
     </div>
-    <div class="unified-header-spacer"></div>
-
-    <!-- Pill tabs -->
-    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
-      <button type="button" id="storePill_platform" onclick="switchStoreTab('platform')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--purple);background:var(--purple);color:#fff;font-size:13px;font-weight:600;cursor:pointer;">By Platform</button>
-      <button type="button" id="storePill_race" onclick="switchStoreTab('race')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">By Race</button>
-      <button type="button" id="storePill_weekly" onclick="switchStoreTab('weekly')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Head Count &amp; Weekly</button>
-    </div>
+    <div class="unified-header-spacer" style="height:auto;"></div>
 
     <div id="storeContent"></div>
   </section>
@@ -2396,17 +2428,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
         </select>
       </div>
+      <!-- v3.61: Pill tabs inside header -->
+      <div class="pill-tabs-inheader">
+        <button type="button" id="adsPill_cost" onclick="switchAdsTab('cost')" class="pill-tab active">Ads Cost</button>
+        <button type="button" id="adsPill_roas" onclick="switchAdsTab('roas')" class="pill-tab">Sales &amp; ROAS</button>
+        <button type="button" id="adsPill_funnel" onclick="switchAdsTab('funnel')" class="pill-tab">Funnel</button>
+        <button type="button" id="adsPill_cpl" onclick="switchAdsTab('cpl')" class="pill-tab">CPL / CPA / CPS</button>
+        <button type="button" id="adsPill_tmkt" onclick="switchAdsTab('tmkt')" class="pill-tab">Marketing Cost</button>
+      </div>
     </div>
-    <div class="unified-header-spacer"></div>
-
-    <!-- Pill tabs -->
-    <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
-      <button type="button" id="adsPill_cost" onclick="switchAdsTab('cost')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--purple);background:var(--purple);color:#fff;font-size:13px;font-weight:600;cursor:pointer;">Ads Cost</button>
-      <button type="button" id="adsPill_roas" onclick="switchAdsTab('roas')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Sales &amp; ROAS</button>
-      <button type="button" id="adsPill_funnel" onclick="switchAdsTab('funnel')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Funnel</button>
-      <button type="button" id="adsPill_cpl" onclick="switchAdsTab('cpl')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">CPL / CPA / CPS</button>
-      <button type="button" id="adsPill_tmkt" onclick="switchAdsTab('tmkt')" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Marketing Cost</button>
-    </div>
+    <div class="unified-header-spacer" style="height:auto;"></div>
 
     <div id="adsspend_content">
       <!-- Ads Cost panel -->
@@ -6922,11 +6953,12 @@ function switchStoreTab(key) {
   ['platform', 'race', 'weekly'].forEach(k => {
     const pill = document.getElementById('storePill_' + k);
     if (pill) {
-      const active = k === key;
-      pill.style.background = active ? 'var(--purple)' : '#fff';
-      pill.style.color = active ? '#fff' : 'var(--gray)';
-      pill.style.borderColor = active ? 'var(--purple)' : 'var(--border)';
-      pill.style.fontWeight = active ? '600' : '500';
+      pill.classList.toggle('active', k === key);
+      // Clear inline styles that might override the class
+      pill.style.background = '';
+      pill.style.color = '';
+      pill.style.borderColor = '';
+      pill.style.fontWeight = '';
     }
   });
   // Race tab always uses year mode — show year selector, hide month/custom toggles
@@ -7547,10 +7579,11 @@ function switchAdsTab(key) {
     const active = k === key;
     if (panel) panel.style.display = active ? 'block' : 'none';
     if (pill) {
-      pill.style.background = active ? 'var(--purple)' : '#fff';
-      pill.style.color = active ? '#fff' : 'var(--gray)';
-      pill.style.borderColor = active ? 'var(--purple)' : 'var(--border)';
-      pill.style.fontWeight = active ? '600' : '500';
+      pill.classList.toggle('active', active);
+      pill.style.background = '';
+      pill.style.color = '';
+      pill.style.borderColor = '';
+      pill.style.fontWeight = '';
     }
   });
   // Re-render only the active section for performance
@@ -7585,10 +7618,11 @@ function renderAdsSpend() {
     const panel = document.getElementById('adsPanel_' + k);
     if (pill) {
       const active = k === currentAdsTab;
-      pill.style.background = active ? 'var(--purple)' : '#fff';
-      pill.style.color = active ? '#fff' : 'var(--gray)';
-      pill.style.borderColor = active ? 'var(--purple)' : 'var(--border)';
-      pill.style.fontWeight = active ? '600' : '500';
+      pill.classList.toggle('active', active);
+      pill.style.background = '';
+      pill.style.color = '';
+      pill.style.borderColor = '';
+      pill.style.fontWeight = '';
     }
     if (panel) panel.style.display = k === currentAdsTab ? 'block' : 'none';
   });
