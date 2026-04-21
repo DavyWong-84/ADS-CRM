@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 911px;"><head>
+<html lang="en" style="--app-vh: 910px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1726,9 +1726,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; }
   /* v4.23: Contact page now has a slim header (title only, no filters) — reduce spacer and sticky offsets */
   #page-contact .unified-header-spacer { height: 70px; }
-  /* v4.41: Contact layout fills remaining space below header/spacer, panels inherit full height.
-     No more magic 130px offset — use dynamic height via calc(100vh - actualOffset). */
-  body.on-contact-page #page-contact { height: calc(100vh - 64px); display: flex; flex-direction: column; }
+  /* v4.43: #page-contact height = viewport - topbar (~64px) - main padding-top (24px) */
+  body.on-contact-page #page-contact { height: calc(100vh - 88px); display: flex; flex-direction: column; }
   body.on-contact-page #page-contact .contact-layout {
     flex: 1 1 auto;
     min-height: 0;  /* allow children overflow to work */
@@ -2065,15 +2064,25 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .page-title { font-size: 26px; }
   .hero-value { font-size: 48px; }
 
-  /* v4.34+v4.41: DESKTOP ONLY — On Contact page, lock whole page from scrolling.
-     Only the lead list inside .contact-list-panel can scroll.
-     v4.41: .main keeps natural flow, only body has overflow:hidden.
-            This avoids conflicting height calcs between main/layout/panel. */
+  /* v4.34+v4.41+v4.43: DESKTOP ONLY — On Contact page, lock whole page from scrolling.
+     v4.43: Make Contact page's unified-header normal flow (not fixed) so panels naturally
+            start below it. Eliminates misalignment from spacer-vs-header-height mismatch. */
   body.on-contact-page { overflow: hidden; }
   body.on-contact-page .main {
     overflow: hidden;
     padding-bottom: 0;
   }
+  /* Override the global fixed unified-header only for Contact page */
+  #page-contact .unified-header {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    margin: 0 -28px 0;  /* extend to main's padding edges */
+    padding: 16px 28px;
+  }
+  /* Spacer not needed when header is in normal flow */
+  #page-contact .unified-header-spacer { height: 0 !important; }
 
   /* v4.21: Sidebar collapse toggle button — sits at bottom of .nav */
   .nav-toggle {
@@ -2516,7 +2525,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.42</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.43</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2598,7 +2607,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <div class="list-search contact-search-row" style="position:relative;margin-bottom:4px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -2648,7 +2657,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -3238,7 +3247,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull</button>
               <button class="btn btn-ghost" onclick="gsTest()">🔗 Test</button>
             </div>
-            <div id="gs_log" style="font-size: 12px; color: var(--adscost-color); min-height: 16px;">Please enter Apps Script URL</div>
+            <div id="gs_log" style="font-size:12px;color:var(--gray);min-height:16px;"></div>
           </div>
         </div>
 
@@ -3654,7 +3663,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.67'; // keep — don't force reload of user data
+const DATA_VERSION = '2.68'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
