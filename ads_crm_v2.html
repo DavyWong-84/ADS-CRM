@@ -1726,7 +1726,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; }
   /* v4.23: Contact page now has a slim header (title only, no filters) — reduce spacer and sticky offsets */
   #page-contact .unified-header-spacer { height: 70px; }
-  /* v4.43: #page-contact height = viewport - topbar (~64px) - main padding-top (24px) */
+  /* v4.46: #page-contact fills space inside .main, accounting for topbar (64px) + main padding-top (24px) */
   body.on-contact-page #page-contact { height: calc(100vh - 88px); display: flex; flex-direction: column; }
   body.on-contact-page #page-contact .contact-layout {
     flex: 1 1 auto;
@@ -2064,25 +2064,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .page-title { font-size: 26px; }
   .hero-value { font-size: 48px; }
 
-  /* v4.34+v4.41+v4.43: DESKTOP ONLY — On Contact page, lock whole page from scrolling.
-     v4.43: Make Contact page's unified-header normal flow (not fixed) so panels naturally
-            start below it. Eliminates misalignment from spacer-vs-header-height mismatch. */
+  /* v4.34+v4.46: DESKTOP ONLY — On Contact page, lock whole page from scrolling.
+     v4.46: Keep .unified-header fixed (like Dashboard) — don't break it.
+            Solve the "top cut off" by correctly sizing the spacer to match real header height. */
   body.on-contact-page { overflow: hidden; }
   body.on-contact-page .main {
     overflow: hidden;
     padding-bottom: 0;
   }
-  /* Override the global fixed unified-header only for Contact page */
-  #page-contact .unified-header {
-    position: static !important;
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-    margin: 0 -28px 0;  /* extend to main's padding edges */
-    padding: 16px 28px;
-  }
-  /* Spacer not needed when header is in normal flow */
-  #page-contact .unified-header-spacer { height: 0 !important; }
 
   /* v4.21: Sidebar collapse toggle button — sits at bottom of .nav */
   .nav-toggle {
@@ -2525,7 +2514,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.43</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.46</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3663,7 +3652,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.68'; // keep — don't force reload of user data
+const DATA_VERSION = '2.71'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
