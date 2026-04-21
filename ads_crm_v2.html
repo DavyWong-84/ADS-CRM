@@ -1528,22 +1528,40 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 #contactFab { display: block !important; }
 @media (min-width: 768px) {
   .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: start; }
+  /* v3.48: Independent scroll containers — list and detail each scroll on their own */
   .contact-list-panel {
     border-right: 1px solid var(--border);
     padding-right: 20px;
     position: sticky;
-    top: 57px;
-    max-height: calc(100vh - 80px);
+    top: 165px; /* below unified-header + status tabs */
+    height: calc(100vh - 180px);
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
   .contact-list-panel::-webkit-scrollbar { width: 4px; }
   .contact-list-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  /* v3.48: Inside list panel — lead list scrolls, pagination stays fixed at bottom */
+  .contact-list-panel .lead-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .contact-list-panel .lead-list::-webkit-scrollbar { width: 4px; }
+  .contact-list-panel .lead-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  .contact-list-panel .pagination {
+    flex-shrink: 0;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-light);
+    margin-top: 8px;
+    background: var(--white);
+  }
   .contact-form-panel {
     display: block !important;
     padding-left: 20px;
     position: sticky;
-    top: 57px;
-    max-height: calc(100vh - 80px);
+    top: 165px;
+    height: calc(100vh - 180px);
     overflow-y: auto;
     align-self: start;
   }
@@ -1881,7 +1899,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.47</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.48</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
