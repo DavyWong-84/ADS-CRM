@@ -1881,7 +1881,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.46</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.47</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -1994,13 +1994,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty">
+        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
           <div style="text-align:center;color:var(--gray);padding:40px 20px;">
             <div style="font-size:32px;margin-bottom:8px;">👤</div>
             <div style="font-size:14px;">Select a lead to edit<br>or click <strong>+ New Lead</strong></div>
           </div>
         </div>
-        <div id="contactFormWrap" style="display:none;">
+        <div id="contactFormWrap" style="display: block;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -2055,7 +2055,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label"></span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate">
+                    <input type="hidden" id="f_apptDate" value="">
                   </div>
                 </div>
               </div>
@@ -4259,9 +4259,8 @@ function editLead(id) {
   const isMobile = window.innerWidth < 768;
   if (isMobile) {
     document.getElementById('page-contact').classList.add('contact-form-open');
-  } else {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+  // v3.47: Desktop — do NOT scroll the list back to top. User stays at their position.
 }
 
 function openNewLead() {
@@ -4369,7 +4368,7 @@ function renderDetailPanel(l) {
   const locationOpts = state.locations.filter(lo => lo.active !== false).map(lo => `<option value="${lo.id}" ${lo.id === l.locationId ? 'selected' : ''}>${lo.name}</option>`).join('');
 
   dp.innerHTML = `
-    <div style="background:var(--purple-bg);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+    <div style="background:var(--purple-bg);border-radius:12px;padding:14px 16px;margin-bottom:14px;position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
         <div>
           <div style="font-size:11px;color:var(--purple);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Editing</div>
