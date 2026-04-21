@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 910px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1727,8 +1727,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
   /* When keyboard is up, hide bottom-nav */
   body.on-contact-page.search-focused .bottom-nav { display: none !important; }
-  /* Bottom room for last card */
-  body.on-contact-page #page-contact { padding-bottom: 80px; }
+  /* Bottom room for last card — needs to clear bottom-nav (~56px) + safe-area + FAB */
+  body.on-contact-page #page-contact { padding-bottom: 120px; }
 }
 #mobileActionBar .mab-search {
   position: relative;
@@ -2269,14 +2269,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.17</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.18</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <!-- v3.69: Pending sync badge (only shows when there are queued offline writes) -->
     <span id="pendingSyncBadge" onclick="flushPendingQueueManual()" style="display:none;align-items:center;gap:4px;padding:5px 10px;background:rgba(217,119,6,0.12);color:var(--amber);border:1px solid rgba(217,119,6,0.3);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;" title="点击立即重试同步"></span>
     <!-- AI Assistant (first on the left) -->
-    <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" id="aiTopbarBtn" style="width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(113,50,245,0.3);">
+    <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" id="aiTopbarBtn" style="width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(113,50,245,0.3);" class="">
       AI
     </button>
     <!-- Global search -->
@@ -2380,13 +2380,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;">
         <div class="pagination" id="listPagination"></div>
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -2537,7 +2537,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
+        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">Apr 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -2546,7 +2546,69 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="summaryContent"></div>
+    <div id="summaryContent">
+    <div class="dash-row-2">
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Revenue →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">Apr 2026</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
+        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Meta — · G —</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">— shows</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — leads</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — appt</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — shows</div>
+      </div>
+    </div>
+    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
+      <div class="dash-section-label">Funnel — Apr 2026 →</div>
+      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
+        <div style="flex:4;background:var(--purple-bg);border-radius:6px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">—</div>
+          <div style="font-size:11px;color:var(--purple);">Leads</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#0C447C;">—</div>
+          <div style="font-size:11px;color:#185FA5;">Appt</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#085041;">—</div>
+          <div style="font-size:11px;color:#0F6E56;">Show</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#633806;">RM 0</div>
+          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
+      <div class="dash-section-label">Revenue trend — 2026 →</div>
+      <div id="chart_dash_rev" style="margin-top:8px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 650 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="650" height="260" fill="white"></rect>
+      <line x1="58" y1="218.0" x2="636" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="636" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="636" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="636" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="636" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="636" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="636" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="636" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="636" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="636" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="636" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="636" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="82.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="130.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="178.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="226.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="274.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="322.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="371.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="419.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="467.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="515.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="563.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="611.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="303" y="20" width="11" height="11" fill="#7132f5" rx="2"></rect><text x="319" y="29" font-size="10" fill="#334155">Revenue</text>
+    </svg></div></div>
+    </div>
+  </div>
   </section>
 
   <!-- STORE PAGE -->
@@ -5989,8 +6051,8 @@ function renderList() {
   if (totalPages <= 1) { pag.innerHTML = ''; }
   else {
     let html = `<button ${state.listPage === 1 ? 'disabled' : ''} onclick="setListPage(${state.listPage - 1})">‹</button>`;
-    const showPages = Math.min(7, totalPages);
-    let startP = Math.max(1, state.listPage - 3);
+    const showPages = Math.min(5, totalPages);
+    let startP = Math.max(1, state.listPage - 2);
     let endP = Math.min(totalPages, startP + showPages - 1);
     if (endP - startP + 1 < showPages) startP = Math.max(1, endP - showPages + 1);
     for (let i = startP; i <= endP; i++) {
