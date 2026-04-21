@@ -1964,7 +1964,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.56</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.57</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2629,7 +2629,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull</button>
               <button class="btn btn-ghost" onclick="gsTest()">🔗 Test</button>
             </div>
-            <div id="gs_log" style="font-size:12px;color:var(--gray);min-height:16px;"></div>
+            <div id="gs_log" style="font-size: 12px; color: var(--adscost-color); min-height: 16px;">Please enter Apps Script URL</div>
           </div>
         </div>
 
@@ -5244,7 +5244,10 @@ function renderList() {
       selected: state.listSort || 'updated',
       triggerFormatter: (it) => `<span style="font-size:13px;">${it.icon}</span><span>${it.label === 'Updated' ? 'Updated' : (it.label === 'Lead Date' ? 'Lead' : 'Appt')}</span>`,
       itemFormatter: (it) => `<span class="pop-item-icon" style="font-size:14px;">${it.icon}</span><span>${it.label}</span>`,
-      onChange: (v) => { setListSort(v); }
+      onChange: (v) => { 
+        console.log('[listSort onChange] received', v, 'typeof setListSort=', typeof setListSort); 
+        if (typeof setListSort === 'function') { setListSort(v); } else { console.error('[ERR] setListSort is not a function!'); }
+      }
     });
     const sortWrap = document.getElementById('listSortWrap');
     if (sortWrap) sortWrap.innerHTML = renderPopTrigger('listSort');
@@ -5267,7 +5270,10 @@ function renderList() {
         const logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, it.color) : '';
         return `<span class="pop-item-icon">${logo}</span><span>${it.label}</span>`;
       },
-      onChange: (v) => { setListChannelFilter(v); }
+      onChange: (v) => { 
+        console.log('[listChannel onChange] received', v, 'typeof setListChannelFilter=', typeof setListChannelFilter);
+        if (typeof setListChannelFilter === 'function') { setListChannelFilter(v); } else { console.error('[ERR] setListChannelFilter is not a function!'); }
+      }
     });
     const chWrap = document.getElementById('listChannelWrap');
     if (chWrap) chWrap.innerHTML = renderPopTrigger('listChannel');
