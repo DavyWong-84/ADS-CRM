@@ -352,7 +352,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* Mobile list */
-.lead-list { display: flex; flex-direction: column; gap: 8px; }
+.lead-list { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
 .lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; transition: all 0.15s; cursor: pointer; border-left: 3px solid var(--border); }
 .lead-item:hover { border-color: var(--purple); box-shadow: var(--shadow-sm); }
 
@@ -2161,7 +2161,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.86</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.87</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3265,7 +3265,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.40'; // v3.86: measure unified-header height dynamically, align filter-tabs
+const DATA_VERSION = '2.41'; // v3.87: visual-viewport keyboard detection, pin topbar/bar
 
 // ---------- State ----------
 let state = {
@@ -5925,10 +5925,67 @@ function onSearchInputChange(value) {
     const el = document.getElementById(id);
     if (!el) return;
     el.addEventListener('input', e => onSearchInputChange(e.target.value));
-    // v3.80: on mobile, hide bottom nav when keyboard is up (search focused)
-    if (id === 'searchInputMobile') {
-      el.addEventListener('focus', () => document.body.classList.add('search-focused'));
-      el.addEventListener('blur', () => document.body.classList.remove('search-focused'));
+  });
+})();
+
+// v3.87: Detect mobile keyboard using Visual Viewport API — more reliable than
+// focus/blur on any input, covers keyboard dismissal via back button, OS-level
+// keyboard hide, and cases where blur doesn't fire. Also corrects topbar position
+// on Android Chrome where position:fixed can misbehave when keyboard opens.
+(function setupKeyboardDetection() {
+  if (!window.visualViewport) {
+    // Fallback for old browsers: use focus/blur
+    const mobInp = document.getElementById('searchInputMobile');
+    if (!mobInp) return;
+    mobInp.addEventListener('focus', () => document.body.classList.add('search-focused'));
+    mobInp.addEventListener('blur', () => document.body.classList.remove('search-focused'));
+    return;
+  }
+  const vv = window.visualViewport;
+  let wasOpen = false;
+  const THRESHOLD = 150; // px of viewport height reduction = keyboard open
+  const topbarEl = document.querySelector('.topbar');
+  const mobileBarEl = document.getElementById('mobileActionBar');
+  function check() {
+    if (window.innerWidth >= 768) {
+      // Reset any mobile overrides if resized to desktop
+      if (topbarEl) topbarEl.style.transform = '';
+      if (mobileBarEl) mobileBarEl.style.transform = '';
+      return;
+    }
+    const ae = document.activeElement;
+    const focusedOnSearch = ae && ae.id === 'searchInputMobile';
+    const heightDiff = window.innerHeight - vv.height;
+    const isOpen = focusedOnSearch && heightDiff > THRESHOLD;
+    if (isOpen !== wasOpen) {
+      document.body.classList.toggle('search-focused', isOpen);
+      wasOpen = isOpen;
+    }
+    // Pin topbar to visual-viewport top (fixes Android Chrome drifting fixed element when keyboard opens)
+    if (topbarEl) {
+      topbarEl.style.transform = isOpen ? `translateY(${vv.offsetTop}px)` : '';
+    }
+    // Pin action bar to visual-viewport bottom when keyboard is up
+    if (mobileBarEl && isOpen) {
+      const bottomOffset = window.innerHeight - vv.height - vv.offsetTop;
+      mobileBarEl.style.transform = `translateY(${-bottomOffset}px)`;
+    } else if (mobileBarEl) {
+      mobileBarEl.style.transform = '';
+    }
+  }
+  vv.addEventListener('resize', check);
+  vv.addEventListener('scroll', check);
+  // Also hook blur as insurance — always remove class when input loses focus
+  document.addEventListener('focusout', e => {
+    if (e.target && e.target.id === 'searchInputMobile') {
+      setTimeout(() => {
+        if (document.activeElement?.id !== 'searchInputMobile') {
+          document.body.classList.remove('search-focused');
+          wasOpen = false;
+          if (topbarEl) topbarEl.style.transform = '';
+          if (mobileBarEl) mobileBarEl.style.transform = '';
+        }
+      }, 100);
     }
   });
 })();
