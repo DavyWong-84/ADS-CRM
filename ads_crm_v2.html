@@ -92,11 +92,16 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
     flex: none;
     min-height: auto;
     overflow-y: visible;
-    padding: 53px 16px 140px;  /* top: topbar height; bottom: bar + nav */
+    padding: 53px 16px 160px;  /* v4.01: bottom 160 to clear + button (bottom:80 + 52h) and bottom-nav */
     margin: 0;
     max-width: none;
   }
   .bottom-nav { position: fixed; flex: none; }
+  /* v4.02: breathing room between sticky unified-header and first content block */
+  .page.active > .unified-header + *,
+  .page.active > .unified-header + .unified-header-spacer + * {
+    margin-top: 14px;
+  }
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.3px; }
 .brand-logo { width: 28px; height: 28px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; letter-spacing: -0.5px; }
@@ -2216,7 +2221,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.00</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.02</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
