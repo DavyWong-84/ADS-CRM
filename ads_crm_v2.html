@@ -397,6 +397,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   position: relative;
   overflow: hidden;
   border-radius: 10px;
+  flex-shrink: 0;  /* v4.32: MUST NOT shrink inside .lead-list (flex column).
+                      Without this, 16+ cards get squashed to fit panel height,
+                      slicing text in half on desktop narrow window. */
 }
 /* v3.36: Softer delete reveal — light red surface + round compact button */
 .swipe-delete-bg {
@@ -2485,7 +2488,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.32</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.33</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3619,7 +3622,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.57'; // keep — don't force reload of user data
+const DATA_VERSION = '2.58'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
