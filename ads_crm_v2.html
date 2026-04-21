@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 911px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -698,6 +698,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   color: #fff;
   border-color: var(--purple);
   font-weight: 600;
+}
+/* v3.62: Tall spacer for pages that have pill tabs inside header */
+.unified-header-spacer-tall {
+  height: 195px;
+}
+@media (min-width: 768px) {
+  .unified-header-spacer-tall {
+    height: 185px;
+  }
 }
 
 /* Quick period chips (today/yesterday/month/year) */
@@ -2062,7 +2071,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.61</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.64</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2167,13 +2176,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -2396,7 +2405,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <button type="button" id="storePill_weekly" onclick="switchStoreTab('weekly')" class="pill-tab">Head Count &amp; Weekly</button>
       </div>
     </div>
-    <div class="unified-header-spacer" style="height:auto;"></div>
+    <div class="unified-header-spacer unified-header-spacer-tall"></div>
 
     <div id="storeContent"></div>
   </section>
@@ -2437,38 +2446,49 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <button type="button" id="adsPill_tmkt" onclick="switchAdsTab('tmkt')" class="pill-tab">Marketing Cost</button>
       </div>
     </div>
-    <div class="unified-header-spacer" style="height:auto;"></div>
+    <div class="unified-header-spacer unified-header-spacer-tall"></div>
 
     <div id="adsspend_content">
       <!-- Ads Cost panel -->
       <div id="adsPanel_cost" style="display:block;">
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Ads Cost by Month</div>
         <div class="table-wrap">
           <table class="data" id="adsSpendReport"></table>
         </div>
-        <div id="chart_cost" style="margin-top:16px;"></div>
-        <div id="chart_avgday" style="margin-top:16px;"></div>
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Monthly Trend</div>
+        <div id="chart_cost"></div>
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Avg per Day</div>
+        <div id="chart_avgday"></div>
       </div>
 
       <!-- Sales & ROAS panel -->
       <div id="adsPanel_roas" style="display:none;">
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Sales by Month</div>
         <div id="salesWrap"></div>
         <div id="chart_sales" style="margin-top:16px;"></div>
-        <div id="roasWrap" style="margin-top:20px;"></div>
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">ROAS by Month</div>
+        <div id="roasWrap"></div>
         <div id="chart_roas" style="margin-top:16px;"></div>
       </div>
 
       <!-- Funnel panel -->
       <div id="adsPanel_funnel" style="display:none;">
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Leads</div>
         <div id="funnelLeadsWrap"></div>
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">Visits</div>
         <div id="funnelVisitsWrap"></div>
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">Conversion Rates</div>
         <div id="funnelRatesWrap"></div>
         <div id="chart_funnel" style="margin-top:16px;"></div>
       </div>
 
       <!-- CPL/CPA/CPS panel -->
       <div id="adsPanel_cpl" style="display:none;">
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Cost per Lead (CPL)</div>
         <div id="cplTableWrap"></div>
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">Cost per Appointment (CPA)</div>
         <div id="cpaTableWrap"></div>
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">Cost per Sale (CPS)</div>
         <div id="cpsTableWrap"></div>
         <div id="chart_cpl" style="margin-top:16px;"></div>
         <div id="chart_cpl_total" style="margin-top:16px;"></div>
@@ -2476,6 +2496,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
       <!-- Marketing Cost panel (includes 3rd Party Fees + full marketing cost summary) -->
       <div id="adsPanel_tmkt" style="display:none;">
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Total Marketing Cost</div>
         <div id="chart_tmkt" style="margin-bottom:16px;"></div>
         <div id="tmktTable"></div>
         <div style="margin-top:24px;">
@@ -7051,7 +7072,15 @@ function renderStore() {
 
     const tab = _storeTab || 'overview';
 
-    let html = '';
+    // v3.63: Section title per tab
+    const tabTitles = {
+      overview: 'Monthly Overview',
+      platform: 'By Platform',
+      race: 'By Race',
+      weekly: 'Head Count & Weekly'
+    };
+    const sectionTitle = tabTitles[tab] || '';
+    let html = sectionTitle ? `<div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">${sectionTitle}</div>` : '';
     if (tab === 'overview') {
       const ovYear = document.getElementById('storeYear').value || String(new Date().getFullYear());
       const ovMonths = Array.from({length:12}, (_, i) => `${ovYear}-${String(i+1).padStart(2,'0')}`);
@@ -8829,7 +8858,7 @@ function renderRevenueSummary(mArr) {
     </div>`;
   }
 
-  html += `<div id="chart_rev_all" style="margin-top:14px;"></div></div>`;
+  html += `<div id="chart_rev_total_bar" style="margin-top:14px;"></div><div id="chart_rev_all" style="margin-top:14px;"></div></div>`;
 
   wrap.innerHTML = html;
 
@@ -8842,6 +8871,17 @@ function renderRevenueSummary(mArr) {
       const t = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s+(r?.total||0); }, 0);
       return t > 0 ? t : null;
     });
+
+    // v3.64: Top chart — pure monthly total revenue (12 months, bar-style)
+    AdsChart.render('chart_rev_total_bar', {
+      title: 'Monthly Total Revenue',
+      labels,
+      series: [
+        { label: 'Total Revenue', color: AdsChart.C.purple, data: totalData },
+      ],
+      yFmt,
+    });
+
     const adsData = mArr.map(m => {
       const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
       return v > 0 ? v : null;
