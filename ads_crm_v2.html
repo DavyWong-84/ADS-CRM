@@ -322,6 +322,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
 .badge-lead { background: var(--surface-2); color: var(--gray); }
 .badge-booked { background: rgba(113,50,245,0.12); color: var(--purple-deep); }
+/* v3.40: Appointment day chip — shows Today / in X days / overdue */
+.appt-day-chip {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+.appt-day-chip.appt-today { background: #FEF3C7; color: #B45309; border: 0.5px solid #FCD34D; }
+.appt-day-chip.appt-upcoming { background: #E6F1FB; color: #185FA5; }
+.appt-day-chip.appt-overdue { background: #FEE2E2; color: #B91C1C; }
 .badge-pending { background: var(--amber-subtle); color: var(--amber); }
 .badge-done { background: var(--green-subtle); color: var(--green-dark); }
 .badge-noshow { background: var(--red-subtle); color: var(--red); }
@@ -1840,7 +1854,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.38</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.40</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -1917,6 +1931,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <!-- Chips + channel (row 2 on mobile) -->
         <div class="quick-chips mobile-only-chips" id="listQuickChips" style="display:none;gap:4px;flex-wrap:wrap;"><button class="quick-chip " onclick="setListQuickPeriod('all')">All</button><button class="quick-chip active" onclick="setListQuickPeriod('today')">Today</button><button class="quick-chip " onclick="setListQuickPeriod('yesterday')">Yday</button></div>
         <select id="listChannelFilter" class="cf-select" onchange="setListChannelFilter(this.value)" style="min-width:130px;"><option value="">All channels</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
+        <select id="listSortSelect" class="cf-select" onchange="setListSort(this.value)" style="min-width:140px;" title="排序方式">
+          <option value="updated">🕐 最近更新</option>
+          <option value="lead">📅 Lead Date</option>
+          <option value="appt">📌 Appt Date</option>
+        </select>
         <div class="list-search desktop-search" style="position:relative;flex:1 1 180px;min-width:160px;">
           <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
           <input type="text" id="searchInputDesktop" name="q_search_desktop" autocomplete="off" placeholder="Search name, contact, remark..." style="padding-left:30px;" oninput="onSearchInputChange(this.value)">
@@ -4938,6 +4957,9 @@ function renderList() {
     chSel.innerHTML = '<option value="">All channels</option>' +
       activeChannels.map(c => `<option value="${c.id}" ${c.id === state.listChannelId ? 'selected' : ''}>${c.name}</option>`).join('');
   }
+  // v3.39: sync sort dropdown to state
+  const sortSel = document.getElementById('listSortSelect');
+  if (sortSel) sortSel.value = state.listSort || 'updated';
 
   // Filter logic:
   // - Mobile: chips override picker (if chip = today/yesterday, use chip; if chip = all, use picker)
@@ -4978,17 +5000,38 @@ function renderList() {
     );
   }
   const today = todayStr();
+  // v3.39: Sort by user choice — default: updatedAt (most recently modified first)
+  const sortMode = state.listSort || 'updated';
   list.sort((a, b) => {
+    // Priority 1: Today's appointments always on top (across all sort modes)
     const aToday = a.apptDate === today && (a.status === 'booked') ? 1 : 0;
     const bToday = b.apptDate === today && (b.status === 'booked') ? 1 : 0;
     if (aToday !== bToday) return bToday - aToday;
+    // Priority 2: Overdue booked appointments second
     const aOver = a.status === 'booked' && a.apptDate && a.apptDate < today ? 1 : 0;
     const bOver = b.status === 'booked' && b.apptDate && b.apptDate < today ? 1 : 0;
     if (aOver !== bOver) return bOver - aOver;
-    // Primary: lead date descending (newest day first)
-    const dateCompare = (b.leadDate || '').localeCompare(a.leadDate || '');
-    if (dateCompare !== 0) return dateCompare;
-    // Secondary: id descending (newer leads have bigger id, so newest first)
+    // Priority 3: User-selected sort
+    if (sortMode === 'updated') {
+      // Most recent update first; fallback to leadDate for legacy data
+      const aU = a.updatedAt || a.leadDate || '';
+      const bU = b.updatedAt || b.leadDate || '';
+      const cmp = bU.localeCompare(aU);
+      if (cmp !== 0) return cmp;
+    } else if (sortMode === 'appt') {
+      // Appt Date descending; leads without appt go to bottom
+      const aA = a.apptDate || '';
+      const bA = b.apptDate || '';
+      if (aA && !bA) return -1;
+      if (!aA && bA) return 1;
+      const cmp = bA.localeCompare(aA);
+      if (cmp !== 0) return cmp;
+    } else {
+      // 'lead' — Lead Date descending (original behavior)
+      const cmp = (b.leadDate || '').localeCompare(a.leadDate || '');
+      if (cmp !== 0) return cmp;
+    }
+    // Tiebreaker: id descending
     return (b.id || '').localeCompare(a.id || '');
   });
 
@@ -5045,12 +5088,27 @@ function renderList() {
       }
       // Booked / Done / No show — same standard layout
       const showAmt = l.status === 'done' && l.spend;
+      // v3.40: Appt day badge — only for Booked status with apptDate
+      let apptDayBadge = '';
+      if (l.status === 'booked' && l.apptDate) {
+        const today0 = new Date(); today0.setHours(0,0,0,0);
+        const appt0 = new Date(l.apptDate + 'T00:00:00');
+        const diff = Math.round((appt0 - today0) / 86400000);
+        let text, cls2;
+        if (diff === 0) { text = 'Today'; cls2 = 'appt-today'; }
+        else if (diff > 0) { text = `in ${diff} day${diff > 1 ? 's' : ''}`; cls2 = 'appt-upcoming'; }
+        else { const ov = -diff; text = `${ov} day${ov > 1 ? 's' : ''} overdue`; cls2 = 'appt-overdue'; }
+        apptDayBadge = `<span class="appt-day-chip ${cls2}">${text}</span>`;
+      }
       return `<div class="swipe-wrapper" data-lead-id="${l.id}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${l.id}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${l.id}')">
         <div class="lc-head">
           <div class="lc-name">${l.name || l.contact || '(no data)'}</div>
-          <div style="display:flex;align-items:center;gap:4px;">
-            <span class="lc-flags">${starHTML}</span>
-            <span class="badge badge-${l.status}">${statusLabel}</span>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+            <div style="display:flex;align-items:center;gap:4px;">
+              <span class="lc-flags">${starHTML}</span>
+              <span class="badge badge-${l.status}">${statusLabel}</span>
+            </div>
+            ${apptDayBadge}
           </div>
         </div>
         <div class="lc-body">
@@ -5086,6 +5144,8 @@ function renderList() {
 function setListFilter(f) { state.listFilter = f; state.listPage = 1; saveState(); renderList(); }
 function setListPage(p) { state.listPage = p; renderList(); window.scrollTo(0, 0); }
 function setListChannelFilter(v) { state.listChannelId = v; state.listPage = 1; saveState(); renderList(); }
+// v3.39: sort by updated / lead / appt
+function setListSort(v) { state.listSort = v; state.listPage = 1; saveState(); renderList(); }
 
 // Toggle a star flag on a lead (red/yellow/green). Synced across devices via Sheet.
 function toggleLeadFlag(event, leadId, flagColor) {
