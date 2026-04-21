@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 911px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -342,38 +342,36 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   overflow: hidden;
   border-radius: 10px;
 }
+/* v3.36: Softer delete reveal — light red surface + round compact button */
 .swipe-delete-bg {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 84px;
-  background: #DC2626;
+  width: 64px;
+  background: #FEF2F2;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
 }
 .swipe-delete-btn {
-  background: transparent;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #DC2626;
   color: #fff;
   border: none;
-  font-size: 14px;
-  font-weight: 600;
   cursor: pointer;
-  padding: 0;
-  width: 100%;
-  height: 100%;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  box-shadow: 0 2px 8px rgba(220,38,38,0.3);
+  transition: transform 0.15s, box-shadow 0.15s;
+  padding: 0;
 }
-.swipe-delete-btn::before {
-  content: '🗑️';
-  font-size: 18px;
-}
+.swipe-delete-btn:hover { transform: scale(1.05); box-shadow: 0 3px 12px rgba(220,38,38,0.4); }
+.swipe-delete-btn:active { transform: scale(0.95); }
 .swipe-card {
   position: relative;
   z-index: 2;
@@ -384,7 +382,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   margin-bottom: 0;
 }
 .swipe-card.is-swiping { transition: none; }
-.swipe-card.revealed { transform: translateX(-84px); }
+.swipe-card.revealed { transform: translateX(-64px); }
 .lead-item.today-appt { border-left-color: var(--amber) !important; }
 .lead-item.overdue { border-left-color: var(--red) !important; background: rgba(212,21,59,0.02); }
 .lead-item.lc-lead { border-left-color: #AFA9EC; }
@@ -1820,7 +1818,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.35</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.36</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -1917,13 +1915,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -4403,8 +4401,8 @@ function confirmDeleteLead(leadId) {
 // v3.33: Swipe-to-delete handler for Lead cards
 // Threshold: drag 40px+ to reveal. Tap outside to close.
 (function setupSwipeDelete() {
-  const THRESHOLD = 40;
-  const REVEAL_PX = 84;
+  const THRESHOLD = 60; // v3.36: 40 → 60 (less sensitive, fewer accidental reveals)
+  const REVEAL_PX = 64; // v3.36: match new 64px delete bg width
   let _active = null; // { card, startX, currentX, startTime }
 
   function closeAllRevealed(except) {
@@ -4992,7 +4990,7 @@ function renderList() {
             timeStr = `(${h}:${m} ${ampm})`;
           }
         }
-        return `<div class="swipe-wrapper" data-lead-id="${l.id}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${l.id}')">删除</button></div><div class="lead-item lc-lead lead-compact-v2${selected ? ' selected' : ''} swipe-card" onclick="editLead('${l.id}')">
+        return `<div class="swipe-wrapper" data-lead-id="${l.id}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${l.id}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-lead lead-compact-v2${selected ? ' selected' : ''} swipe-card" onclick="editLead('${l.id}')">
           <div class="lc-head">
             <div class="lc-name">${l.name || l.contact || '(no contact)'}</div>
             <div style="display:flex;align-items:center;gap:4px;">
@@ -5008,7 +5006,7 @@ function renderList() {
       }
       // Booked / Done / No show — same standard layout
       const showAmt = l.status === 'done' && l.spend;
-      return `<div class="swipe-wrapper" data-lead-id="${l.id}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${l.id}')">删除</button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${l.id}')">
+      return `<div class="swipe-wrapper" data-lead-id="${l.id}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${l.id}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${l.id}')">
         <div class="lc-head">
           <div class="lc-name">${l.name || l.contact || '(no data)'}</div>
           <div style="display:flex;align-items:center;gap:4px;">
