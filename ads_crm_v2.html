@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 910px;"><head>
+<html lang="en" style="--app-vh: 911px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -560,8 +560,60 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .pagination button:hover:not(:disabled) { border-color: var(--purple); color: var(--purple); }
 .pagination button.active { background: var(--purple); color: white; border-color: var(--purple); }
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+/* v4.20: Desktop — make pagination sticky at top of the list-panel scroll area so it's always visible */
+@media (min-width: 768px) {
+  #listPagination:not(:empty) {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--white);
+    padding: 8px 0 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+}
+/* v4.20: Mobile — hide the numeric pagination entirely, replaced by Load More button in renderList */
 @media (max-width: 767px) {
-  #listPagination { margin-bottom: 10px; padding-bottom: 0; }  /* v4.16: pagination is now ABOVE the list, not below */
+  #listPagination { display: none !important; }
+}
+
+/* v4.20: Load More button (mobile only) */
+.load-more-btn {
+  display: none;
+}
+@media (max-width: 767px) {
+  .load-more-btn {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin: 8px 0 12px;
+    background: var(--white);
+    border: 1px dashed var(--purple);
+    border-radius: 12px;
+    color: var(--purple);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .load-more-btn:hover,
+  .load-more-btn:active {
+    background: var(--purple-bg);
+  }
+  .load-more-btn.disabled {
+    border-style: solid;
+    border-color: var(--border);
+    color: var(--gray);
+    cursor: default;
+    background: var(--white);
+  }
+  .load-more-count {
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.75;
+    display: block;
+    margin-top: 2px;
+  }
 }
 
 /* Search */
@@ -1662,7 +1714,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .contact-form-panel {
     display: block !important;
     padding-left: 20px;
-    padding-bottom: 24px;
+    padding-bottom: 60px; /* v4.20: extra room so Save Lead button isn't clipped */
     position: sticky;
     top: 175px;
     height: calc(100vh - 175px);
@@ -1730,7 +1782,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   /* When keyboard is up, hide bottom-nav */
   body.on-contact-page.search-focused .bottom-nav { display: none !important; }
   /* Bottom room for last card — clears bottom-nav (~56px) + FAB + safe-area */
-  body.on-contact-page #leadList { padding-bottom: 140px; }
+  body.on-contact-page #leadList { padding-bottom: 12px; }
+  body.on-contact-page #loadMoreWrap { padding-bottom: 140px; }  /* v4.20: clears bottom-nav + FAB */
   body.on-contact-page .pagination#listPagination { margin-bottom: 0; }
 }
 #mobileActionBar .mab-search {
@@ -2272,7 +2325,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.19</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.20</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2383,24 +2436,26 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;">
         <div class="pagination" id="listPagination"></div>
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
+        <!-- v4.20: Mobile-only "Load More" button (hidden on desktop via CSS) -->
+        <div id="loadMoreWrap"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
+        <div class="contact-form-empty" id="contactFormEmpty">
           <div style="text-align:center;color:var(--gray);padding:40px 20px;">
             <div style="font-size:32px;margin-bottom:8px;">👤</div>
             <div style="font-size:14px;">Select a lead to edit<br>or click <strong>+ New Lead</strong></div>
           </div>
         </div>
-        <div id="contactFormWrap" style="display: block;">
+        <div id="contactFormWrap" style="display:none;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -2461,7 +2516,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label"></span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate" value="">
+                    <input type="hidden" id="f_apptDate">
                   </div>
                 </div>
               </div>
@@ -3387,7 +3442,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.44'; // keep — don't force reload of user data
+const DATA_VERSION = '2.45'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
@@ -5902,7 +5957,12 @@ function renderList() {
   const pageSize = 15;
   const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
   if (state.listPage > totalPages) state.listPage = 1;
-  const slice = list.slice((state.listPage - 1) * pageSize, state.listPage * pageSize);
+  // v4.20: Mobile uses cumulative "Load More" pattern (shows 1..page*size).
+  // Desktop keeps page-by-page slicing (pagination buttons visible).
+  const isMobilePaging = window.matchMedia && window.matchMedia('(max-width: 767px)').matches;
+  const slice = isMobilePaging
+    ? list.slice(0, state.listPage * pageSize)
+    : list.slice((state.listPage - 1) * pageSize, state.listPage * pageSize);
 
   if (slice.length === 0) {
     document.getElementById('leadList').innerHTML = '<div class="empty"><div>No leads found</div></div>';
@@ -5987,7 +6047,7 @@ function renderList() {
     }).join('');
   }
 
-  // Pagination
+  // Pagination (desktop: numeric pages; mobile: "Load More" button)
   const pag = document.getElementById('listPagination');
   if (totalPages <= 1) { pag.innerHTML = ''; }
   else {
@@ -6002,9 +6062,27 @@ function renderList() {
     html += `<button ${state.listPage === totalPages ? 'disabled' : ''} onclick="setListPage(${state.listPage + 1})">›</button>`;
     pag.innerHTML = html;
   }
+
+  // v4.20: Mobile "Load More" button — shows remaining count, disabled when all loaded
+  const loadMoreWrap = document.getElementById('loadMoreWrap');
+  if (loadMoreWrap) {
+    const shown = slice.length;
+    const total = list.length;
+    const remaining = Math.max(0, total - shown);
+    if (total === 0) {
+      loadMoreWrap.innerHTML = '';
+    } else if (remaining === 0) {
+      loadMoreWrap.innerHTML = `<button class="load-more-btn disabled" disabled>All ${total} shown</button>`;
+    } else {
+      const nextBatch = Math.min(pageSize, remaining);
+      loadMoreWrap.innerHTML = `<button class="load-more-btn" onclick="loadMoreLeads()">Load ${nextBatch} more<span class="load-more-count">${shown} of ${total} shown · ${remaining} remaining</span></button>`;
+    }
+  }
 }
 function setListFilter(f) { state.listFilter = f; state.listPage = 1; saveState(); renderList(); }
 function setListPage(p) { state.listPage = p; renderList(); window.scrollTo(0, 0); }
+// v4.20: Mobile "Load More" — bump page to accumulate next batch, no scroll-to-top
+function loadMoreLeads() { state.listPage = (state.listPage || 1) + 1; renderList(); }
 function setListChannelFilter(v) { state.listChannelId = v; state.listPage = 1; saveState(); renderList(); }
 // v3.39: sort by updated / lead / appt
 function setListSort(v) { state.listSort = v; state.listPage = 1; saveState(); renderList(); }
