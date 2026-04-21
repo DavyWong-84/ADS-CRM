@@ -664,7 +664,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
 }
 @media (max-width: 767px) {
-  #page-contact .filter-tabs-sticky { top: 138px; }
+  #page-contact .filter-tabs-sticky { top: 124px; }
 }
 
 /* Quick period chips (today/yesterday/month/year) */
@@ -1826,10 +1826,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     height: 115px;
   }
 }
-/* v3.51: Contact page mobile — match actual header height (3 rows: filters + chips/channel + ... ) */
+/* v3.53: Contact page mobile — tighter row gap → smaller spacer */
 @media (max-width: 767px) {
   #page-contact .unified-header-spacer {
-    height: 138px;
+    height: 124px;
   }
 }
 /* Single-row variant (title only, no filter) */
@@ -1843,7 +1843,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 
 /* Compact filter row (single-line for mobile) */
-.compact-filter { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding-bottom: 2px; }
+.compact-filter { display: flex; column-gap: 6px; row-gap: 6px; align-items: center; flex-wrap: wrap; padding-bottom: 2px; }
+@media (max-width: 767px) {
+  .compact-filter { row-gap: 4px; }
+}
 .compact-filter::-webkit-scrollbar { display: none; }
 .compact-filter .toggle-group { flex-shrink: 0; }
 .compact-filter .toggle-group .toggle { padding: 6px 10px; font-size: 12.5px; }
@@ -1882,7 +1885,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.51</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.53</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
