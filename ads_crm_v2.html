@@ -1843,8 +1843,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .compact-filter { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; padding-bottom: 2px; }
 .compact-filter::-webkit-scrollbar { display: none; }
 .compact-filter .toggle-group { flex-shrink: 0; }
-.compact-filter .toggle-group .toggle { padding: 7px 11px; font-size: 13px; }
-.cf-select { flex: 0 0 auto; padding: 8px 26px 8px 11px; font-size: 13px; background-color: var(--white); border: 1px solid var(--border); border-radius: 9px; font-weight: 500; width: auto; min-width: 70px; background-position: right 8px center; }
+.compact-filter .toggle-group .toggle { padding: 6px 10px; font-size: 12.5px; }
+.compact-filter .date-btn.cf-select { padding: 7px 24px 7px 10px; font-size: 12.5px; width: auto; min-width: 70px; }
+.cf-select { flex: 0 0 auto; padding: 7px 24px 7px 10px; font-size: 12.5px; background-color: var(--white); border: 1px solid var(--border); border-radius: 9px; font-weight: 500; width: auto; min-width: 70px; background-position: right 7px center; }
 .cf-select:focus { border-color: var(--purple); box-shadow: 0 0 0 2px var(--purple-subtle); }
 
 /* Inputs compact */
@@ -1878,7 +1879,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.44</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.45</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -1950,10 +1951,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span class="date-btn-icon">📅</span>
         </button>
         <input type="hidden" id="listYear" value="2026">
-        <select id="listSortSelect" class="cf-select" onchange="setListSort(this.value)" style="min-width:140px;" title="Sort by">
-          <option value="updated">🕐 Last updated</option>
-          <option value="lead">📅 Lead Date</option>
-          <option value="appt">📌 Appt Date</option>
+        <select id="listSortSelect" class="cf-select" onchange="setListSort(this.value)" style="min-width:105px;" title="Sort by">
+          <option value="updated">🕐 Updated</option>
+          <option value="lead">📅 Lead</option>
+          <option value="appt">📌 Appt</option>
         </select>
         <!-- Mobile line break: force chips to row 2 -->
         <div class="mobile-line-break" style="flex-basis:100%;height:0;display:none;"></div>
