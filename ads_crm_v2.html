@@ -352,7 +352,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
 /* Mobile list */
-.lead-list { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+.lead-list { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; }
 .lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; transition: all 0.15s; cursor: pointer; border-left: 3px solid var(--border); }
 .lead-item:hover { border-color: var(--purple); box-shadow: var(--shadow-sm); }
 
@@ -657,10 +657,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   z-index: 30;
   background: var(--white);
   padding: 8px 0 6px;
-  margin: 0 -16px 10px; /* extend to page edges for clean look */
+  margin: 0 -16px 16px;
   padding-left: 16px;
   padding-right: 16px;
   border-bottom: 0.5px solid var(--border);
+  box-shadow: 0 4px 8px -4px rgba(0, 0, 0, 0.08);  /* v3.88: soft shadow so cards sliding under feel layered */
 }
 @media (min-width: 768px) {
   .filter-tabs-sticky {
@@ -672,7 +673,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
 }
 @media (max-width: 767px) {
-  .filter-tabs-sticky { top: calc(54px + var(--uheader-h, 100px)); }  /* v3.86: topbar + unified-header actual height (set by JS) */
+  .filter-tabs-sticky { top: calc(54px + var(--uheader-h, 140px)); }  /* v3.86: topbar + unified-header actual height (set by JS) */
 }
 
 /* v3.61: Pill tabs inside unified-header — sits inline with filters, scrolls with header */
@@ -2161,7 +2162,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.87</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.88</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3265,7 +3266,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.41'; // v3.87: visual-viewport keyboard detection, pin topbar/bar
+const DATA_VERSION = '2.42'; // v3.88: ResizeObserver for header, shadow on filter-tabs, larger fallback
 
 // ---------- State ----------
 let state = {
@@ -3429,6 +3430,15 @@ function syncHeaderHeight() {
   const h = Math.ceil(header.getBoundingClientRect().height);
   document.documentElement.style.setProperty('--uheader-h', h + 'px');
 }
+
+// v3.88: Continuously track unified-header size changes with ResizeObserver — handles
+// font loading, filter-row wrapping, dropdown expansion, orientation change, etc.
+(function setupHeaderSizeObserver() {
+  if (!window.ResizeObserver) return;
+  const ro = new ResizeObserver(() => { syncHeaderHeight(); });
+  // Observe every unified-header we find (not just active, since nav swaps them)
+  document.querySelectorAll('.unified-header').forEach(h => ro.observe(h));
+})();
 
 // ---------- Navigation ----------
 function nav(page) {
