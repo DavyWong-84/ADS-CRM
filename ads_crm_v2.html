@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 792px;"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1820,7 +1820,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.34</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.35</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -1917,13 +1917,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 726px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 726px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -11318,7 +11318,7 @@ window.AI_GUIDE_STORAGE = {
 
 window.AI_GUIDE_DAILY_MAX = 3;
 window.AI_GUIDE_DWELL_MS = 10000;
-window.AI_GUIDE_FADE_MS = 3000;
+window.AI_GUIDE_FADE_MS = 8000;    // v3.35: 8s visible (was 3s — too fast to read)
 
 // v3.33 hotfix: use window property to avoid TDZ (Temporal Dead Zone)
 // because nav() can fire at app startup before this script block's let declarations init
