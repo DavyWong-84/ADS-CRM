@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -427,6 +427,24 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .filter-tabs { display: flex; gap: 4px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
 .filter-tab { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; }
 .filter-tab.active { background: var(--purple); color: white; border-color: var(--purple); }
+/* v3.30: Prominent delete button in Lead detail header — red fill, easy to spot */
+.btn-delete-lead {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 9px;
+  border: 1px solid #DC2626;
+  background: #DC2626;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+  box-shadow: 0 1px 3px rgba(220,38,38,0.2);
+}
+.btn-delete-lead:hover { background: #B91C1C; border-color: #B91C1C; box-shadow: 0 2px 6px rgba(220,38,38,0.3); }
+.btn-delete-lead:active { transform: scale(0.97); }
 .filter-tab .count { opacity: 0.7; margin-left: 4px; font-size: 12px; }
 /* v3.28: 紧凑双吸顶 — tabs sticky right below unified-header */
 .filter-tabs-sticky {
@@ -477,7 +495,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   margin: auto;
   width: calc(100% - 32px);
   max-width: 900px;
-  height: 82vh;
+  height: 82vh; /* fallback for very old browsers */
+  height: 82dvh; /* modern browsers — shrinks when keyboard appears */
+  height: calc(var(--app-vh, 82vh) * 0.82); /* v3.29: JS-tracked visualViewport fallback for iOS */
   max-height: 780px;
   background: #fff;
   border-radius: 16px;
@@ -492,6 +512,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     width: calc(100% - 16px);
     max-width: none;
     height: 90vh;
+    height: 90dvh;
+    height: calc(var(--app-vh, 90vh) * 0.90); /* v3.29 */
     max-height: none;
     border-radius: 14px;
   }
@@ -549,6 +571,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .ai-messages {
   flex: 1;
+  min-height: 0; /* v3.29: critical — allow keyboard to compress this area instead of pushing whole modal */
   overflow-y: auto;
   padding: 20px 22px;
   display: flex;
@@ -1661,7 +1684,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.28</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.31</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -1793,7 +1816,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <div class="form-row" style="margin-top:12px;">
                   <div>
                     <label>Channel <span style="color:var(--red)">*</span></label>
-                    <select id="f_channel"><option value="">— select channel —</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
+                    <select id="f_channel"><option value=""></option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
                   </div>
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
@@ -1822,12 +1845,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <div class="form-row" style="margin-top:12px;">
                   <div>
                     <label>Location</label>
-                    <select id="f_location"><option value="">— select store —</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
+                    <select id="f_location"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
                   </div>
                   <div>
                     <label>Appt Date</label>
                     <button type="button" class="date-btn empty" id="f_apptDate_btn" onclick="openDatePicker('f_apptDate')">
-                      <span id="f_apptDate_label">Select date</span>
+                      <span id="f_apptDate_label"></span>
                       <span class="date-btn-icon">📅</span>
                     </button>
                     <input type="hidden" id="f_apptDate">
@@ -1847,7 +1870,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                 <div>
                   <label>Show Up Status</label>
                   <select id="f_showUp">
-                    <option value="">— select —</option>
+                    <option value=""></option>
                     <option value="Show up">Show up</option>
                     <option value="No Show up">No Show up</option>
                   </select>
@@ -1856,7 +1879,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Race</label>
                     <select id="f_race">
-                      <option value="">— select —</option>
+                      <option value=""></option>
                       <option value="Chinese">Chinese</option>
                       <option value="Malay">Malay</option>
                       <option value="Indian">Indian</option>
@@ -2108,7 +2131,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <select id="rv_entryOutlet" style="width:100%;font-size:13px;"><option value="">— select outlet —</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
+          <select id="rv_entryOutlet" style="width:100%;font-size:13px;"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
@@ -2132,7 +2155,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
-          <select id="fee_entryName" style="width:100%;font-size:13px;"><option value="">— select fee name —</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
+          <select id="fee_entryName" style="width:100%;font-size:13px;"><option value=""></option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
           <input type="hidden" id="fee_entryYear" value="2026">
         </div>
         <div id="fee_entryCustomRow" style="display:none;"></div>
@@ -2403,7 +2426,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 <!-- v3.23: AI Settings Modal (replaces old inline panel) -->
 <div class="modal-backdrop" id="aiSettingsBackdrop" onclick="if(event.target===this)closeAISettings()" style="display:none;z-index:10002;">
-  <div style="background:#fff;border-radius:16px;width:min(520px,96vw);max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+  <div style="background:#fff;border-radius:16px;width:min(520px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7132f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -2450,7 +2473,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 <!-- v3.21: AI Notebook Modal -->
 <div class="modal-backdrop" id="aiNotebookBackdrop" onclick="if(event.target===this)closeAINotebook()" style="display:none;z-index:10002;">
-  <div style="background:#fff;border-radius:16px;width:min(560px,96vw);max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+  <div style="background:#fff;border-radius:16px;width:min(560px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7132f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
@@ -2478,7 +2501,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 <!-- v3.26: Add/Correct Note Dialog -->
 <div class="modal-backdrop" id="aiAddNoteBackdrop" onclick="if(event.target===this)closeAddNoteDialog()" style="display:none;z-index:10004;">
-  <div style="background:#fff;border-radius:16px;width:min(520px,96vw);max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+  <div style="background:#fff;border-radius:16px;width:min(520px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
         <span id="aiAddNoteIcon" style="font-size:18px;">➕</span>
@@ -2643,7 +2666,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 <!-- Chips Editor Modal -->
 <div class="modal-backdrop" id="chipsEditorBackdrop" onclick="if(event.target===this)closeChipsEditor()" style="display:none;z-index:10001;">
-  <div style="background:#fff;border-radius:16px;width:min(480px,96vw);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+  <div style="background:#fff;border-radius:16px;width:min(480px,96vw);max-height:80vh;max-height:80dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
       <span style="font-size:15px;font-weight:700;">✏️ 编辑快捷问题</span>
       <button type="button" onclick="closeChipsEditor()" class="gs-close">✕</button>
@@ -3589,9 +3612,9 @@ function refreshSelects() {
   // Only show ACTIVE channels in Lead entry page
   const activeChannels = state.channels.filter(c => c.active !== false);
   const activeLocations = state.locations.filter(l => l.active !== false);
-  chSel.innerHTML = '<option value="">— select channel —</option>' +
+  chSel.innerHTML = '<option value=""></option>' +
     activeChannels.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-  document.getElementById('f_location').innerHTML = '<option value="">— select store —</option>' +
+  document.getElementById('f_location').innerHTML = '<option value=""></option>' +
     activeLocations.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
 
   // Data Entry: Ads Cost channel dropdown (Meta/Google, both active + inactive with marker)
@@ -3600,7 +3623,7 @@ function refreshSelects() {
     // Include ALL Meta/Google channels (active + inactive) so historical data stays editable
     const adCh = state.channels.filter(c => c.platform === 'meta' || c.platform === 'google');
     const curVal = asCh.value;
-    asCh.innerHTML = (adCh.length === 0 ? '<option value="">— no channels yet —</option>' :
+    asCh.innerHTML = (adCh.length === 0 ? '<option value=""></option>' :
       adCh.map(c => {
         const label = c.active === false ? `${c.name} (inactive)` : c.name;
         return `<option value="${c.id}">${label}</option>`;
@@ -3615,7 +3638,7 @@ function refreshSelects() {
   if (feeName) {
     const existingFeeNames = [...new Set(state.thirdPartyFees.map(f => f.name))].sort();
     const curVal = feeName.value;
-    feeName.innerHTML = '<option value="">— select fee name —</option>' +
+    feeName.innerHTML = '<option value=""></option>' +
       existingFeeNames.map(n => `<option value="${n}">${n}</option>`).join('') +
       '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option>';
     if (curVal && (existingFeeNames.includes(curVal))) feeName.value = curVal;
@@ -3625,7 +3648,7 @@ function refreshSelects() {
   const rvOutlet = document.getElementById('rv_entryOutlet');
   if (rvOutlet) {
     const curVal = rvOutlet.value;
-    rvOutlet.innerHTML = '<option value="">— select outlet —</option>' +
+    rvOutlet.innerHTML = '<option value=""></option>' +
       activeLocations.map(l => `<option value="${l.id}">${l.name}</option>`).join('') +
       '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option>';
     if (curVal && activeLocations.some(l => l.id === curVal)) rvOutlet.value = curVal;
@@ -3951,7 +3974,7 @@ function resetLeadForm() {
   document.getElementById('f_apptDate').value = '';
   const adLabel = document.getElementById('f_apptDate_label');
   const adBtn = document.getElementById('f_apptDate_btn');
-  if (adLabel && adBtn) { adLabel.textContent = 'Select date'; adBtn.classList.add('empty'); }
+  if (adLabel && adBtn) { adLabel.textContent = ''; adBtn.classList.add('empty'); }
   const wasEditing = !!currentEditingId;
   currentEditingId = null;
   renderLeadStepper(null);
@@ -4010,7 +4033,7 @@ function openNewLead() {
   if (ldBtn) ldBtn.classList.remove('empty');
   const adLabel = document.getElementById('f_apptDate_label');
   const adBtn = document.getElementById('f_apptDate_btn');
-  if (adLabel) adLabel.textContent = 'Select date';
+  if (adLabel) adLabel.textContent = '';
   if (adBtn) adBtn.classList.add('empty');
   const avs = document.getElementById('afterVisitSection');
   if (avs) avs.style.display = 'none';
@@ -4056,7 +4079,7 @@ function populateLeadForm(l) {
   const ldBtn = document.getElementById('f_leadDate_btn');
   if (ldLabel && ldBtn) {
     if (l.leadDate) { ldLabel.textContent = l.leadDate; ldBtn.classList.remove('empty'); }
-    else { ldLabel.textContent = 'Select date'; ldBtn.classList.add('empty'); }
+    else { ldLabel.textContent = ''; ldBtn.classList.add('empty'); }
   }
   document.getElementById('f_name').value = l.name || '';
   document.getElementById('f_apptDate').value = l.apptDate || '';
@@ -4064,7 +4087,7 @@ function populateLeadForm(l) {
   const adBtn = document.getElementById('f_apptDate_btn');
   if (adLabel && adBtn) {
     if (l.apptDate) { adLabel.textContent = l.apptDate; adBtn.classList.remove('empty'); }
-    else { adLabel.textContent = 'Select date'; adBtn.classList.add('empty'); }
+    else { adLabel.textContent = ''; adBtn.classList.add('empty'); }
   }
   document.getElementById('f_location').value = l.locationId || '';
   document.getElementById('f_showUp').value = l.showUp || '';
@@ -4109,8 +4132,11 @@ function renderDetailPanel(l) {
           <div style="font-size:13px;color:var(--purple-deep);margin-top:2px;">${l.contact || ''} · ${ch?.name || ''}</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <button type="button" class="btn" style="font-size:13px;padding:6px 12px;border-radius:9px;border:1px solid #FCA5A5;background:var(--white);color:#B91C1C;" onclick="deleteLeadFromDetail('${l.id}')" title="删除这个 Lead">🗑️ 删除</button>
-          <button type="button" class="btn" style="font-size:13px;padding:6px 14px;border-radius:9px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="closeDetailPanel()">Close</button>
+          <button type="button" class="btn-delete-lead" onclick="deleteLeadFromDetail('${l.id}')" title="删除这个 Lead">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
+            <span>删除</span>
+          </button>
+          <button type="button" class="btn" style="font-size:13px;padding:7px 14px;border-radius:9px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="closeDetailPanel()">Close</button>
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-top:12px;">
@@ -4133,7 +4159,7 @@ function renderDetailPanel(l) {
         <div class="step-body">
           <div><label>Name</label><input type="text" id="df_name" value="${l.name || ''}" placeholder="Customer name"></div>
           <div class="form-row" style="margin-top:12px;">
-            <div><label>Location</label><select id="df_location"><option value="">— select store —</option>${locationOpts}</select></div>
+            <div><label>Location</label><select id="df_location"><option value=""></option>${locationOpts}</select></div>
             <div><label>Appt Date</label><input type="date" id="df_apptDate" value="${l.apptDate || ''}"></div>
           </div>
         </div>
@@ -4141,9 +4167,9 @@ function renderDetailPanel(l) {
       <div class="step-card step-3">
         <div class="step-header"><span class="step-num">3</span><div><div class="step-title">After Visit</div></div></div>
         <div class="step-body">
-          <div><label>Show Up</label><select id="df_showUp"><option value="">— select —</option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
+          <div><label>Show Up</label><select id="df_showUp"><option value=""></option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
           <div class="form-row" style="margin-top:12px;">
-            <div><label>Race</label><select id="df_race"><option value="">— select —</option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
+            <div><label>Race</label><select id="df_race"><option value=""></option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
             <div><label>Spend (RM)</label><input type="number" id="df_spend" value="${l.spend || ''}" step="0.01" min="0"></div>
           </div>
           <input type="hidden" id="df_remark" value="${l.remark || ''}">
@@ -4473,7 +4499,7 @@ function applyDate(dateStr) {
       label.textContent = dateStr;
       btn.classList.remove('empty');
     } else {
-      label.textContent = 'Select date';
+      label.textContent = '';
       btn.classList.add('empty');
     }
   }
@@ -11025,6 +11051,24 @@ function clearCacheReload() {
 let _backExitReady = false;
 let _backExitTimer = null;
 // Save AI history when page closes or user switches away (mobile)
+// v3.29: Keyboard-aware modal sizing — using visualViewport API
+// When mobile keyboard pops up, dvh alone may not be enough on older iOS/Android.
+// We track visualViewport.height and set CSS var --keyboard-aware-vh.
+(function() {
+  if (!window.visualViewport) return; // older browsers — CSS dvh fallback will handle it
+  const root = document.documentElement;
+  function updateVh() {
+    const h = window.visualViewport.height;
+    root.style.setProperty('--app-vh', h + 'px');
+  }
+  updateVh();
+  window.visualViewport.addEventListener('resize', updateVh);
+  window.visualViewport.addEventListener('scroll', updateVh);
+  // Keyboard detection: listen for focus on inputs inside any open modal
+  // User wants option B: keep scroll position when keyboard appears.
+  // So we ONLY resize the modal, we DO NOT scroll messages.
+})();
+
 window.addEventListener('beforeunload', () => { saveAIHistory(); });
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') saveAIHistory();
