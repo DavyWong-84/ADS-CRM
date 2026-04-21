@@ -73,11 +73,11 @@ label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); m
 /* Layout */
 .app { min-height: 100vh; display: flex; flex-direction: column; }
 .topbar { position: sticky; top: 0; z-index: 50; background: var(--white); border-bottom: 1px solid var(--border); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
-/* v3.81: On mobile, switch topbar to position:fixed so iOS keyboard can't push it
-   off-screen. Compensate with padding-top on .app so content isn't hidden underneath. */
+/* v3.82: On mobile, switch topbar to position:fixed so iOS keyboard can't push it
+   off-screen. Mobile unified-header-spacer also grows by 53px to compensate for the
+   topbar's lost flow height (topbar is fixed, doesn't occupy flow anymore). */
 @media (max-width: 767px) {
   .topbar { position: fixed; top: 0; left: 0; right: 0; }
-  .app { padding-top: 53px; }  /* topbar ≈ 12px + 28px content + 12px + 1px border = 53px */
 }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.3px; }
 .brand-logo { width: 28px; height: 28px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; letter-spacing: -0.5px; }
@@ -672,7 +672,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
 }
 @media (max-width: 767px) {
-  #page-contact .filter-tabs-sticky { top: 124px; }
+  #page-contact .filter-tabs-sticky { top: 178px; } /* v3.82: topbar(54) + unified-header(124) */
 }
 
 /* v3.61: Pill tabs inside unified-header — sits inline with filters, scrolls with header */
@@ -1685,6 +1685,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (max-width: 767px) {
   body.search-focused .bottom-nav { display: none !important; }
   body.search-focused #mobileActionBar { bottom: 8px; }
+  /* v3.84: collapse the bottom paddings that were reserved for bottom-nav + FAB,
+     otherwise the list has ~228px of empty space above the keyboard */
+  body.search-focused .main { padding-bottom: 70px !important; }  /* just enough for the bar itself */
+  body.search-focused #listPagination { padding-bottom: 0 !important; }
 }
 /* Show the bar only on mobile, only while on Contact page */
 @media (max-width: 767px) {
@@ -1946,11 +1950,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     height: 115px;
   }
 }
-/* v3.53: Contact page mobile — tighter row gap → smaller spacer */
+/* v3.82: On mobile, topbar is position:fixed (no flow height), so spacer grows by 53px
+   to keep content starting below the topbar. Desktop unchanged (topbar stays sticky). */
 @media (max-width: 767px) {
-  #page-contact .unified-header-spacer {
-    height: 124px;
-  }
+  .unified-header-spacer { height: 158px; }  /* 105 + 53 */
+  #page-contact .unified-header-spacer { height: 177px; }  /* 124 + 53 */
+}
+/* Other spacer variants */
+@media (max-width: 767px) {
+  .unified-header-spacer-tall { padding-top: 53px; }
+  .unified-header-spacer-single { padding-top: 53px; }
 }
 
 /* v3.54: Custom Popover Dropdown — replaces native <select> */
@@ -2149,7 +2158,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.81</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.84</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3253,7 +3262,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.35'; // bump this to force reload of preloaded data (v3.81: mobile topbar fixed)
+const DATA_VERSION = '2.38'; // v3.84: collapse bottom padding when keyboard up
 
 // ---------- State ----------
 let state = {
