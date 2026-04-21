@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 910px;"><head>
+<html lang="en" style="--app-vh: 911px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1723,18 +1723,24 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 #contactFab { display: block !important; }
 @media (min-width: 768px) {
   /* v4.22: Half-split — equal 50/50 columns. List filters/status tabs stay in left half, title spans full width above. */
-  .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: start; }
+  .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; }
   /* v4.23: Contact page now has a slim header (title only, no filters) — reduce spacer and sticky offsets */
   #page-contact .unified-header-spacer { height: 70px; }
-  /* v4.25: Left panel = 3-section flex (filters固定 / list滚动 / load-more固定). Only middle scrolls. */
+  /* v4.41: Contact layout fills remaining space below header/spacer, panels inherit full height.
+     No more magic 130px offset — use dynamic height via calc(100vh - actualOffset). */
+  body.on-contact-page #page-contact { height: calc(100vh - 64px); display: flex; flex-direction: column; }
+  body.on-contact-page #page-contact .contact-layout {
+    flex: 1 1 auto;
+    min-height: 0;  /* allow children overflow to work */
+    overflow: hidden;
+  }
+  /* v4.41: Panels fill the layout height naturally */
   .contact-list-panel {
     border-right: 1px solid var(--border);
     padding-right: 20px;
     padding-bottom: 0;
-    position: sticky;
-    top: 130px;
-    height: calc(100vh - 130px);
-    overflow: hidden;  /* v4.25: no panel-level scroll — inner list scrolls instead */
+    height: 100%;  /* v4.41: fill .contact-layout height */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
   }
@@ -1744,11 +1750,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     display: block !important;
     padding-left: 20px;
     padding-bottom: 20px;
-    position: sticky;
-    top: 130px;
-    height: calc(100vh - 130px);
-    overflow: hidden;  /* v4.34: fixed — no scroll on right panel */
-    align-self: start;
+    height: 100%;  /* v4.41: fill .contact-layout height */
+    overflow: hidden;
   }
   .contact-form-panel::-webkit-scrollbar { width: 4px; }
   .contact-form-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -2062,15 +2065,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .page-title { font-size: 26px; }
   .hero-value { font-size: 48px; }
 
-  /* v4.34: DESKTOP ONLY — On Contact page, lock whole page from scrolling.
-     Only the lead list inside .contact-list-panel can scroll. */
-  body.on-contact-page { overflow: hidden; height: 100vh; }
+  /* v4.34+v4.41: DESKTOP ONLY — On Contact page, lock whole page from scrolling.
+     Only the lead list inside .contact-list-panel can scroll.
+     v4.41: .main keeps natural flow, only body has overflow:hidden.
+            This avoids conflicting height calcs between main/layout/panel. */
+  body.on-contact-page { overflow: hidden; }
   body.on-contact-page .main {
-    height: 100vh;
     overflow: hidden;
-    padding-top: 24px;
     padding-bottom: 0;
-    box-sizing: border-box;
   }
 
   /* v4.21: Sidebar collapse toggle button — sits at bottom of .nav */
@@ -2514,7 +2516,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.40</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.41</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2596,7 +2598,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <div class="list-search contact-search-row" style="position:relative;margin-bottom:4px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -2646,12 +2648,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty">
+        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
           <!-- v4.22: Click-to-create welcome area — big round + button in the middle -->
           <button type="button" onclick="openNewLead()" class="welcome-new-lead-btn" aria-label="Create new lead">
             <span class="welcome-plus-circle">
@@ -2661,7 +2663,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <span class="welcome-plus-hint">or select a lead from the list</span>
           </button>
         </div>
-        <div id="contactFormWrap" style="display:none;">
+        <div id="contactFormWrap" style="display: block;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -2722,7 +2724,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label"></span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate">
+                    <input type="hidden" id="f_apptDate" value="">
                   </div>
                 </div>
               </div>
@@ -3652,7 +3654,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.65'; // keep — don't force reload of user data
+const DATA_VERSION = '2.66'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
@@ -6344,19 +6346,12 @@ function renderList() {
       const nextBatch = Math.min(pageSize, remaining);
       loadMoreWrap.innerHTML = `<button class="load-more-btn" onclick="loadMoreLeads()">Load ${nextBatch} more<span class="load-more-count">${shown} of ${total} shown · ${remaining} remaining</span></button>`;
     }
-    // v4.40: DESKTOP — loadMoreWrap is direct child of .contact-list-panel (fixed at bottom, flex layout).
-    //         MOBILE  — loadMoreWrap inside .lead-list as last child (scrolls with cards, whole page scroll).
-    const isDesktop = window.innerWidth >= 768;
+    // v4.41: loadMoreWrap always goes in .contact-list-panel (as sibling after #leadList).
+    //        Desktop: panel is flex column, so it sits below list (fixed-bottom via flex: 0 0 auto).
+    //        Mobile: panel is normal block, page scrolls, button appears at bottom of list.
     const listPanelEl = document.getElementById('contactListPanel');
-    const leadListEl = document.getElementById('leadList');
-    if (isDesktop) {
-      if (listPanelEl && loadMoreWrap.parentElement !== listPanelEl) {
-        listPanelEl.appendChild(loadMoreWrap);
-      }
-    } else {
-      if (leadListEl && loadMoreWrap.parentElement !== leadListEl) {
-        leadListEl.appendChild(loadMoreWrap);
-      }
+    if (listPanelEl && loadMoreWrap.parentElement !== listPanelEl) {
+      listPanelEl.appendChild(loadMoreWrap);
     }
   }
 }
