@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 792px;"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2071,10 +2071,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.68</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.73</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
+    <!-- v3.69: Pending sync badge (only shows when there are queued offline writes) -->
+    <span id="pendingSyncBadge" onclick="flushPendingQueueManual()" style="display:none;align-items:center;gap:4px;padding:5px 10px;background:rgba(217,119,6,0.12);color:var(--amber);border:1px solid rgba(217,119,6,0.3);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;" title="点击立即重试同步"></span>
     <!-- AI Assistant (first on the left) -->
     <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" id="aiTopbarBtn" style="width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(113,50,245,0.3);">
       AI
@@ -2176,13 +2178,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 726px;">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;">
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <div class="pagination" id="listPagination"></div>
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 726px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -2497,8 +2499,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <!-- Marketing Cost panel (includes 3rd Party Fees + full marketing cost summary) -->
       <div id="adsPanel_tmkt" style="display:none;">
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Total Marketing Cost</div>
-        <div id="chart_tmkt" style="margin-bottom:16px;"></div>
-        <div id="tmktTable"></div>
+        <div id="tmktTable" style="margin-bottom:16px;"></div>
+        <div id="chart_tmkt"></div>
         <div style="margin-top:24px;">
           <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">3rd Party Fees Breakdown</div>
           <div id="feesTable"></div>
@@ -3170,9 +3172,21 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
    Ads CRM v2.0 — Application Logic
    ============================================================ */
 
+// v3.69: Global HTML escape — used by all render functions to prevent XSS
+// when user-entered data (name/contact/remark/location/channelName) is
+// injected into innerHTML. Defined here so all <script> blocks can use it.
+function escapeHTML(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+// Shorthand alias for readability in templates
+const esc = escapeHTML;
+
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.22'; // bump this to force reload of preloaded data
+const DATA_VERSION = '2.27'; // bump this to force reload of preloaded data (v3.73: persist updatedAt to Sheet)
 
 // ---------- State ----------
 let state = {
@@ -3585,19 +3599,19 @@ function renderRoasChart(mArr, tab, monthData, fullData) {
   const labels = mArr.map(m => fmt.monthShort(m));
   const yFmtMoney = v => v>=1000?'RM'+(v/1000).toFixed(1)+'k':'RM'+v.toFixed(0);
 
-  // Sales chart (bars only)
+  // Sales chart (v3.70: changed from bars to lines for better trend visibility)
   if (document.getElementById('chart_sales')) {
     let salesSeries;
     if (tab === 'ofu') {
-      salesSeries = [{ label:'Sales', color:AdsChart.C.green, data: monthData.map(d => d.spend) }];
+      salesSeries = [{ label:'Sales', color:AdsChart.C.green, type:'line', data: monthData.map(d => d.spend) }];
     } else if (tab === 'all') {
       salesSeries = [
-        { label:'Meta Sales',   color:AdsChart.C.meta,   data: fullData.map(d => d.spendByPlatform.meta) },
-        { label:'Google Sales', color:AdsChart.C.google, data: fullData.map(d => d.spendByPlatform.google) },
-        { label:'Organic+FU',   color:AdsChart.C.green,  data: fullData.map(d => (d.spendByPlatform.organic||0)+(d.spendByPlatform.followup||0)) },
+        { label:'Meta Sales',   color:AdsChart.C.meta,   type:'line', data: fullData.map(d => d.spendByPlatform.meta) },
+        { label:'Google Sales', color:AdsChart.C.google, type:'line', data: fullData.map(d => d.spendByPlatform.google) },
+        { label:'Organic+FU',   color:AdsChart.C.green,  type:'line', data: fullData.map(d => (d.spendByPlatform.organic||0)+(d.spendByPlatform.followup||0)) },
       ];
     } else {
-      salesSeries = [{ label:'Sales', color:AdsChart.C.green, data: monthData.map(d => d.spend) }];
+      salesSeries = [{ label:'Sales', color:AdsChart.C.green, type:'line', data: monthData.map(d => d.spend) }];
     }
     AdsChart.render('chart_sales', { title:'Sales by Month', labels, series: salesSeries, yFmt: yFmtMoney });
   }
@@ -4094,9 +4108,9 @@ function refreshSelects() {
   const activeChannels = state.channels.filter(c => c.active !== false);
   const activeLocations = state.locations.filter(l => l.active !== false);
   chSel.innerHTML = '<option value=""></option>' +
-    activeChannels.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    activeChannels.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
   document.getElementById('f_location').innerHTML = '<option value=""></option>' +
-    activeLocations.map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+    activeLocations.map(l => `<option value="${esc(l.id)}">${esc(l.name)}</option>`).join('');
 
   // Data Entry: Ads Cost channel dropdown (Meta/Google, both active + inactive with marker)
   const asCh = document.getElementById('as_entryChannel');
@@ -4107,7 +4121,7 @@ function refreshSelects() {
     asCh.innerHTML = (adCh.length === 0 ? '<option value=""></option>' :
       adCh.map(c => {
         const label = c.active === false ? `${c.name} (inactive)` : c.name;
-        return `<option value="${c.id}">${label}</option>`;
+        return `<option value="${esc(c.id)}">${esc(label)}</option>`;
       }).join('')) +
       '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option>';
     // Restore previous selection if still valid
@@ -4120,7 +4134,7 @@ function refreshSelects() {
     const existingFeeNames = [...new Set(state.thirdPartyFees.map(f => f.name))].sort();
     const curVal = feeName.value;
     feeName.innerHTML = '<option value=""></option>' +
-      existingFeeNames.map(n => `<option value="${n}">${n}</option>`).join('') +
+      existingFeeNames.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('') +
       '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option>';
     if (curVal && (existingFeeNames.includes(curVal))) feeName.value = curVal;
   }
@@ -4130,7 +4144,7 @@ function refreshSelects() {
   if (rvOutlet) {
     const curVal = rvOutlet.value;
     rvOutlet.innerHTML = '<option value=""></option>' +
-      activeLocations.map(l => `<option value="${l.id}">${l.name}</option>`).join('') +
+      activeLocations.map(l => `<option value="${esc(l.id)}">${esc(l.name)}</option>`).join('') +
       '<option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option>';
     if (curVal && activeLocations.some(l => l.id === curVal)) rvOutlet.value = curVal;
   }
@@ -4335,7 +4349,7 @@ function refreshStoreSelect() {
   const sel = document.getElementById('storeSelect');
   if (!sel) return;
   const cur = sel.value || state.storeSelected || 'all';
-  sel.innerHTML = '<option value="all">All outlets</option>' + state.locations.map(l => `<option value="${l.id}" ${l.id === cur ? 'selected' : ''}>${l.name}</option>`).join('');
+  sel.innerHTML = '<option value="all">All outlets</option>' + state.locations.map(l => `<option value="${esc(l.id)}" ${l.id === cur ? 'selected' : ''}>${esc(l.name)}</option>`).join('');
 }
 
 /* MORE SCRIPT CONTINUED IN PART 2 */
@@ -4612,19 +4626,19 @@ function renderDetailPanel(l) {
   }).join('');
 
   const activeChannels = state.channels.filter(c => c.active !== false);
-  const channelOpts = activeChannels.map(c => `<option value="${c.id}" ${c.id === l.channelId ? 'selected' : ''}>${c.name}</option>`).join('');
-  const locationOpts = state.locations.filter(lo => lo.active !== false).map(lo => `<option value="${lo.id}" ${lo.id === l.locationId ? 'selected' : ''}>${lo.name}</option>`).join('');
+  const channelOpts = activeChannels.map(c => `<option value="${esc(c.id)}" ${c.id === l.channelId ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
+  const locationOpts = state.locations.filter(lo => lo.active !== false).map(lo => `<option value="${esc(lo.id)}" ${lo.id === l.locationId ? 'selected' : ''}>${esc(lo.name)}</option>`).join('');
 
   dp.innerHTML = `
     <div style="background:var(--purple-bg);border-radius:12px;padding:14px 16px;margin-bottom:14px;position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
         <div>
           <div style="font-size:11px;color:var(--purple);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Editing</div>
-          <div style="font-size:16px;font-weight:600;color:var(--black);margin-top:2px;">${l.name || '(no name)'}</div>
-          <div style="font-size:13px;color:var(--purple-deep);margin-top:2px;">${l.contact || ''} · ${ch?.name || ''}</div>
+          <div style="font-size:16px;font-weight:600;color:var(--black);margin-top:2px;">${esc(l.name || '(no name)')}</div>
+          <div style="font-size:13px;color:var(--purple-deep);margin-top:2px;">${esc(l.contact || '')} · ${esc(ch?.name || '')}</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
-          <button type="button" class="btn-delete-lead-v38" onclick="confirmDeleteLead('${l.id}')" title="删除这个 Lead">
+          <button type="button" class="btn-delete-lead-v38" onclick="confirmDeleteLead('${esc(l.id)}')" title="删除这个 Lead">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
             <span>删除</span>
           </button>
@@ -4639,7 +4653,7 @@ function renderDetailPanel(l) {
       <div class="step-card step-1">
         <div class="step-header"><span class="step-num">1</span><div><div class="step-title">Lead Info</div></div></div>
         <div class="step-body">
-          <div><label>Contact <span style="color:var(--red)">*</span></label><input type="tel" id="df_contact" value="${l.contact || ''}" inputmode="tel"></div>
+          <div><label>Contact <span style="color:var(--red)">*</span></label><input type="tel" id="df_contact" value="${esc(l.contact || '')}" inputmode="tel"></div>
           <div class="form-row" style="margin-top:12px;">
             <div><label>Channel <span style="color:var(--red)">*</span></label><select id="df_channel" data-pop="1" data-pop-icon="channel" data-pop-placeholder="Select channel">${channelOpts}</select></div>
             <div><label>Lead Date <span style="color:var(--red)">*</span></label><input type="date" id="df_leadDate" value="${l.leadDate || ''}"></div>
@@ -4649,7 +4663,7 @@ function renderDetailPanel(l) {
       <div class="step-card step-2">
         <div class="step-header"><span class="step-num">2</span><div><div class="step-title">Booking</div></div></div>
         <div class="step-body">
-          <div><label>Name</label><input type="text" id="df_name" value="${l.name || ''}" placeholder="Customer name"></div>
+          <div><label>Name</label><input type="text" id="df_name" value="${esc(l.name || '')}" placeholder="Customer name"></div>
           <div class="form-row" style="margin-top:12px;">
             <div><label>Location</label><select id="df_location" data-pop="1" data-pop-icon="location" data-pop-placeholder="Select location"><option value=""></option>${locationOpts}</select></div>
             <div><label>Appt Date</label><input type="date" id="df_apptDate" value="${l.apptDate || ''}"></div>
@@ -4664,7 +4678,7 @@ function renderDetailPanel(l) {
             <div><label>Race</label><select id="df_race" data-pop="1" data-pop-placeholder="Select race"><option value=""></option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
             <div><label>Spend (RM)</label><input type="number" id="df_spend" value="${l.spend || ''}" step="0.01" min="0"></div>
           </div>
-          <input type="hidden" id="df_remark" value="${l.remark || ''}">
+          <input type="hidden" id="df_remark" value="${esc(l.remark || '')}">
         </div>
       </div>
       <button type="submit" class="btn btn-primary btn-full" style="font-size:15px;padding:14px;">Save</button>
@@ -5478,20 +5492,20 @@ function hashColor(str) {
 function chipLogoHTML(name, customColor) {
   if (!name) return '';
   const n = String(name).toLowerCase();
-  // v3.44: If user set a custom color, ALWAYS use initial circle (not SVG) so custom color shows
-  if (customColor) {
-    const letter = name.trim().charAt(0).toUpperCase();
-    return `<span class="chip-initial" style="background:${customColor};">${letter}</span>`;
-  }
-  // Match against preset logos
+  // v3.72: Official brand logos ALWAYS take priority over custom color
+  // (so Google/Meta/TikTok/IG/WA/XHS stay recognizable across devices
+  //  even if a custom color was accidentally set on the channel)
   if (n.includes('meta') || n.includes('facebook') || n.includes('fb') || n.includes('simply')) return CHANNEL_LOGO_SVG.meta;
   if (n.includes('google')) return CHANNEL_LOGO_SVG.google;
   if (n.includes('tiktok') || n.includes('tt ads') || n.includes('抖音')) return CHANNEL_LOGO_SVG.tiktok;
   if (n.includes('instagram') || n === 'ig' || n.startsWith('ig ')) return CHANNEL_LOGO_SVG.instagram;
   if (n.includes('whatsapp') || n === 'wa' || n.startsWith('wa ')) return CHANNEL_LOGO_SVG.whatsapp;
   if (n.includes('xhs') || n.includes('小红书') || n.includes('redbook')) return CHANNEL_LOGO_SVG.xhs;
-  // Fallback: initial letter circle with auto color
+  // Non-brand channels: use custom color if set, else auto-hashed color
   const letter = name.trim().charAt(0).toUpperCase();
+  if (customColor) {
+    return `<span class="chip-initial" style="background:${customColor};">${letter}</span>`;
+  }
   const color = hashColor(name);
   return `<span class="chip-initial" style="background:${color};">${letter}</span>`;
 }
@@ -5679,9 +5693,9 @@ function renderList() {
             timeStr = `(${h}:${m} ${ampm})`;
           }
         }
-        return `<div class="swipe-wrapper" data-lead-id="${l.id}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${l.id}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-lead lead-compact-v2${selected ? ' selected' : ''} swipe-card" onclick="editLead('${l.id}')">
+        return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-lead lead-compact-v2${selected ? ' selected' : ''} swipe-card" onclick="editLead('${esc(l.id)}')">
           <div class="lc-head">
-            <div class="lc-name">${l.name || l.contact || '(no contact)'}</div>
+            <div class="lc-name">${esc(l.name || l.contact || '(no contact)')}</div>
             <div style="display:flex;align-items:center;gap:4px;">
               <span class="lc-flags">${starHTML}</span>
               <span class="badge badge-lead">Lead</span>
@@ -5689,7 +5703,7 @@ function renderList() {
           </div>
           <div class="lc-foot">
             <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong>${timeStr ? ` <span style="color:var(--silver);font-weight:400;">${timeStr}</span>` : ''}</span>
-            ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${l.channelName}</span>`;})() : ''}
+            ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
           </div>
         </div></div>`;
       }
@@ -5707,24 +5721,24 @@ function renderList() {
         else { const ov = -diff; text = `${ov} day${ov > 1 ? 's' : ''} overdue`; cls2 = 'appt-overdue'; }
         apptDayBadge = `<span class="appt-day-chip ${cls2}">${text}</span>`;
       }
-      return `<div class="swipe-wrapper" data-lead-id="${l.id}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${l.id}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${l.id}')">
+      return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${esc(l.id)}')">
         <div class="lc-head">
-          <div class="lc-name">${l.name || l.contact || '(no data)'}</div>
+          <div class="lc-name">${esc(l.name || l.contact || '(no data)')}</div>
           <div style="display:flex;align-items:center;gap:4px;">
             <span class="lc-flags">${starHTML}</span>
             <span class="badge badge-${l.status}">${statusLabel}</span>
           </div>
         </div>
         <div class="lc-body">
-          <span class="lc-contact">${l.contact || ''}</span>
+          <span class="lc-contact">${esc(l.contact || '')}</span>
           ${apptDayBadge}
           ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : ''}
         </div>
         <div class="lc-foot">
           <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
           <span class="${l.apptDate ? '' : 'muted'}">Appt: <strong>${l.apptDate ? fmt.monthDay(l.apptDate) : '—'}</strong></span>
-          ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${l.channelName}</span>`;})() : ''}
-          ${l.location ? (()=>{const loc=state.locations.find(x=>x.id===l.locationId); return `<span class="lc-location">${chipLogoHTML(l.location, loc && loc.color)}${l.location}</span>`;})() : ''}
+          ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
+          ${l.location ? (()=>{const loc=state.locations.find(x=>x.id===l.locationId); return `<span class="lc-location">${chipLogoHTML(l.location, loc && loc.color)}${esc(l.location)}</span>`;})() : ''}
         </div>
       </div></div>`;
     }).join('');
@@ -9029,7 +9043,7 @@ function populateRevOutletSelect() {
   if (!sel) return;
   const cur = sel.value;
   sel.innerHTML = '<option value="all">All Outlets</option>' +
-    state.locations.filter(l => l.active !== false).map(l => `<option value="${l.id}">${l.name}</option>`).join('');
+    state.locations.filter(l => l.active !== false).map(l => `<option value="${esc(l.id)}">${esc(l.name)}</option>`).join('');
   if (cur && sel.querySelector(`option[value="${cur}"]`)) sel.value = cur;
 }
 
@@ -9223,13 +9237,13 @@ function renderSettings() {
     const color = c.color || (typeof hashColor === 'function' ? hashColor(c.name) : '#888');
     return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'channel', '${c.id}')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:${color};cursor:pointer;padding:0;flex-shrink:0;"></button>
-        <div><strong>${c.name}</strong> <span style="color:var(--gray);font-size:12px;">· ${c.platform}${c.addedMonth ? ' · from ' + c.addedMonth : ''}</span></div>
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'channel', '${esc(c.id)}')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:${color};cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>${esc(c.name)}</strong> <span style="color:var(--gray);font-size:12px;">· ${esc(c.platform)}${c.addedMonth ? ' · from ' + esc(c.addedMonth) : ''}</span></div>
       </div>
       <div>
         <div class="toggle-pill" role="group" aria-label="Status">
-          <button type="button" class="${isActive ? 'active-on' : ''}" onclick="setChannelActive('${c.id}', true)">● Active</button>
-          <button type="button" class="${!isActive ? 'active-off' : ''}" onclick="setChannelActive('${c.id}', false)">○ Inactive</button>
+          <button type="button" class="${isActive ? 'active-on' : ''}" onclick="setChannelActive('${esc(c.id)}', true)">● Active</button>
+          <button type="button" class="${!isActive ? 'active-off' : ''}" onclick="setChannelActive('${esc(c.id)}', false)">○ Inactive</button>
         </div>
       </div>
     </div>`;
@@ -9241,13 +9255,13 @@ function renderSettings() {
     const color = l.color || (typeof hashColor === 'function' ? hashColor(l.name) : '#888');
     return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', '${l.id}')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:${color};cursor:pointer;padding:0;flex-shrink:0;"></button>
-        <div><strong>${l.name}</strong>${l.addedMonth ? ` <span style="color:var(--gray);font-size:12px;">· from ${l.addedMonth}</span>` : ''}</div>
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', '${esc(l.id)}')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:${color};cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>${esc(l.name)}</strong>${l.addedMonth ? ` <span style="color:var(--gray);font-size:12px;">· from ${esc(l.addedMonth)}</span>` : ''}</div>
       </div>
       <div>
         <div class="toggle-pill" role="group" aria-label="Status">
-          <button type="button" class="${isActive ? 'active-on' : ''}" onclick="setLocationActive('${l.id}', true)">● Active</button>
-          <button type="button" class="${!isActive ? 'active-off' : ''}" onclick="setLocationActive('${l.id}', false)">○ Inactive</button>
+          <button type="button" class="${isActive ? 'active-on' : ''}" onclick="setLocationActive('${esc(l.id)}', true)">● Active</button>
+          <button type="button" class="${!isActive ? 'active-off' : ''}" onclick="setLocationActive('${esc(l.id)}', false)">○ Inactive</button>
         </div>
       </div>
     </div>`;
@@ -9607,6 +9621,9 @@ async function gsPushAll() {
 async function gsPullSilent() {
   const url = getGsUrl();
   if (!url) return; // No URL configured — skip silently
+  // v3.69: CRITICAL — flush pending local writes BEFORE pulling, otherwise
+  // this pull would overwrite leads/revenue that haven't made it to Sheet yet.
+  try { await flushPendingQueue(); } catch (e) { console.warn('[Auto-pull] flush pending failed:', e); }
   try {
     const r = await fetch(url + '?action=pull');
     const d = await r.json();
@@ -9620,7 +9637,7 @@ async function gsPullSilent() {
     // skip that table to prevent accidental data loss (checked at state assignment below)
 
     // Safety: reject unexpected lead columns (same check as manual Pull)
-    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags']);
+    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags','updatedAt']);
     const suspiciousLead = sheetLeads.find(l => {
       const keys = Object.keys(l);
       return keys.some(k => !EXPECTED_LEAD_KEYS.has(k)) || keys.length !== new Set(keys).size;
@@ -9705,6 +9722,10 @@ async function gsPullSilent() {
       }
       return localFlags || {};
     };
+    // v3.73: Preserve local updatedAt across pulls — prevents Updated-sort from
+    // resetting when Sheet hasn't yet learned about the updatedAt column.
+    const updatedMap = {};
+    (state.leads || []).forEach(l => { if (l.id && l.updatedAt) updatedMap[l.id] = l.updatedAt; });
     const normalizedLeads = sheetLeads.map(l => ({
       id: l.id || '', contact: String(l.contact || ''), channelId: l.channelId || '',
       channelName: l.channelName || '', platform: l.platform || '',
@@ -9712,7 +9733,9 @@ async function gsPullSilent() {
       locationId: l.locationId || '', location: locMap[l.locationId] || l.locationName || l.location || '',
       showUp: l.showUp || '', race: l.race || '', spend: toNum(l.spend),
       status: l.status || '', remark: l.remark || '',
-      flags: parseFlags(l.flags, flagsMap[l.id])
+      flags: parseFlags(l.flags, flagsMap[l.id]),
+      // Prefer Sheet's updatedAt (cross-device); fall back to local; else empty
+      updatedAt: l.updatedAt || updatedMap[l.id] || ''
     }));
     const normalizedAds = sheetAds.map(a => ({
       id: a.id || '', month: toMonthStr(a.month),
@@ -9796,7 +9819,7 @@ async function gsPull() {
     // --- Safety check 1: reject if Sheet data looks corrupted ---
     // Detect duplicate/unexpected columns by checking if any lead has unusual keys
     // Allow both current fields and legacy 'remark' (for backward compatibility with older Sheet data)
-    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags']);
+    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags','updatedAt']);
     const suspiciousLead = sheetLeads.find(l => {
       const keys = Object.keys(l);
       // Any unknown key, or any duplicate-looking key pattern
@@ -9914,6 +9937,9 @@ async function gsPull() {
       }
       return localFlags || {};
     };
+    // v3.73: Preserve local updatedAt across manual pulls
+    const updatedMapManual = {};
+    (state.leads || []).forEach(l => { if (l.id && l.updatedAt) updatedMapManual[l.id] = l.updatedAt; });
     // Normalize Leads: spend must be number; dates must be YYYY-MM-DD
     const normalizedLeads = sheetLeads.map(l => ({
       id: l.id || '',
@@ -9931,7 +9957,8 @@ async function gsPull() {
       spend: toNum(l.spend),
       status: l.status || '',
       remark: l.remark || '',
-      flags: parseFlagsManual(l.flags, flagsMapManual[l.id])
+      flags: parseFlagsManual(l.flags, flagsMapManual[l.id]),
+      updatedAt: l.updatedAt || updatedMapManual[l.id] || ''
     }));
     // --- Safety check 2: auto-backup current CRM state before overwrite ---
     try {
@@ -9996,24 +10023,126 @@ function gsLeadForSheet(l) {
     spend: l.spend != null ? l.spend : 0,
     remark: l.remark || '',
     status: l.status || '',
-    flags: l.flags && Object.keys(l.flags).some(k => l.flags[k]) ? JSON.stringify(l.flags) : ''
+    flags: l.flags && Object.keys(l.flags).some(k => l.flags[k]) ? JSON.stringify(l.flags) : '',
+    // v3.73: persist updatedAt so Updated-sort survives refresh/pull cycles
+    updatedAt: l.updatedAt || ''
   };
+}
+
+// ============================================================
+// v3.69: Pending Sync Queue — prevents silent data loss when
+// gsUpsert/gsDelete fails (network down, Apps Script error, etc).
+// Failed operations are saved to localStorage and retried on next
+// page load (before gsPullSilent overwrites local state).
+// ============================================================
+const PENDING_QUEUE_KEY = 'ads_crm_pending_queue';
+
+function getPendingQueue() {
+  try {
+    const raw = localStorage.getItem(PENDING_QUEUE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) { return []; }
+}
+
+function setPendingQueue(q) {
+  try { localStorage.setItem(PENDING_QUEUE_KEY, JSON.stringify(q)); } catch (e) {}
+  // Update badge if UI helper is available
+  if (typeof updatePendingBadge === 'function') updatePendingBadge();
+}
+
+function addToPendingQueue(op) {
+  const q = getPendingQueue();
+  // Dedupe: if same sheet+id+action already queued, replace with newer record
+  const key = `${op.action}:${op.sheet}:${op.action === 'delete' ? op.id : (op.record && op.record.id)}`;
+  const filtered = q.filter(x => {
+    const xk = `${x.action}:${x.sheet}:${x.action === 'delete' ? x.id : (x.record && x.record.id)}`;
+    return xk !== key;
+  });
+  filtered.push({ ...op, ts: Date.now() });
+  setPendingQueue(filtered);
+}
+
+function updatePendingBadge() {
+  const q = getPendingQueue();
+  const el = document.getElementById('pendingSyncBadge');
+  if (!el) return;
+  if (q.length === 0) {
+    el.style.display = 'none';
+  } else {
+    el.style.display = 'inline-flex';
+    el.textContent = `⚠️ ${q.length} 待同步`;
+    el.title = `${q.length} 条记录未同步到 Sheet，网络恢复后会自动重试`;
+  }
+}
+
+// Retry all pending ops. Called before gsPullSilent so queued writes
+// hit the Sheet before we read from it. Returns true if queue is now empty.
+async function flushPendingQueue() {
+  const url = getGsUrl();
+  if (!url) return false;
+  const q = getPendingQueue();
+  if (q.length === 0) return true;
+  console.log(`[Pending Queue] Flushing ${q.length} operation(s)`);
+  const remaining = [];
+  for (const op of q) {
+    try {
+      const body = op.action === 'delete'
+        ? { action: 'delete', sheet: op.sheet, id: op.id }
+        : { action: 'upsert', sheet: op.sheet, record: op.record };
+      const r = await fetch(url, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'text/plain' } });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      // Try parsing response; Apps Script may return {success:true}
+      try {
+        const d = await r.json();
+        if (d && d.success === false) throw new Error(d.error || 'upstream failure');
+      } catch (e) { /* non-JSON response — treat 2xx as success */ }
+    } catch (e) {
+      console.warn('[Pending Queue] retry failed:', op, e.message);
+      remaining.push(op);
+    }
+  }
+  setPendingQueue(remaining);
+  if (remaining.length === 0) {
+    console.log('[Pending Queue] All synced');
+    if (typeof toast === 'function') toast('✅ 已同步全部待处理记录');
+    return true;
+  }
+  return false;
 }
 
 async function gsUpsert(sheetName, record) {
   const url = getGsUrl();
   if (!url) return;
   try {
-    await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'upsert', sheet: sheetName, record }), headers: { 'Content-Type': 'text/plain' } });
-  } catch (e) { console.warn('GS upsert failed:', e); }
+    const r = await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'upsert', sheet: sheetName, record }), headers: { 'Content-Type': 'text/plain' } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    // Optional: check JSON success flag if server returns one
+    try {
+      const d = await r.json();
+      if (d && d.success === false) throw new Error(d.error || 'upstream failure');
+    } catch (e) { /* non-JSON is fine */ }
+  } catch (e) {
+    console.warn('GS upsert failed, queuing:', sheetName, record && record.id, e.message);
+    addToPendingQueue({ action: 'upsert', sheet: sheetName, record });
+    if (typeof toast === 'function') toast('⚠️ 保存到本地，待网络恢复同步');
+  }
 }
 
 async function gsDelete(sheetName, id) {
   const url = getGsUrl();
   if (!url) return;
   try {
-    await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'delete', sheet: sheetName, id }), headers: { 'Content-Type': 'text/plain' } });
-  } catch (e) { console.warn('GS delete failed:', e); }
+    const r = await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'delete', sheet: sheetName, id }), headers: { 'Content-Type': 'text/plain' } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    try {
+      const d = await r.json();
+      if (d && d.success === false) throw new Error(d.error || 'upstream failure');
+    } catch (e) { /* non-JSON is fine */ }
+  } catch (e) {
+    console.warn('GS delete failed, queuing:', sheetName, id, e.message);
+    addToPendingQueue({ action: 'delete', sheet: sheetName, id });
+    if (typeof toast === 'function') toast('⚠️ 删除操作暂存，待网络恢复同步');
+  }
 }
 
 // ---------- Data Alerts (Completeness + Anomaly) ----------
@@ -11139,7 +11268,10 @@ const AI_AVATAR_SVG = `<div style="width:100%;height:100%;border-radius:50%;back
 
 const AI_AVATAR_SVG_LARGE = `<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>`;
 
+// v3.69: escapeHTML is now defined globally in the first script block.
+// This duplicate is kept for safety — function declarations allow re-definition.
 function escapeHTML(s) {
+  if (s == null) return '';
   return String(s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -11931,7 +12063,7 @@ function renderGlobalSearchResults(query) {
     wrap.innerHTML = q
       ? `<div class="gs-empty">
           <div class="gs-empty-icon">🔎</div>
-          <div class="gs-empty-title">No results for "${q}"</div>
+          <div class="gs-empty-title">No results for "${esc(q)}"</div>
           <div class="gs-empty-sub">Try a lead name, contact number, or page name</div>
         </div>`
       : `<div class="gs-empty">
@@ -11950,15 +12082,15 @@ function renderGlobalSearchResults(query) {
   typeOrder.forEach(t => {
     const group = results.filter(r => r.type === t);
     if (group.length === 0) return;
-    html += `<div class="gs-section-label">${typeLabels[t]}</div>`;
+    html += `<div class="gs-section-label">${esc(typeLabels[t])}</div>`;
     group.forEach(r => {
       const origIdx = results.indexOf(r);
       html += `
         <div class="gs-item${origIdx === _gsSelectedIdx ? ' active' : ''}" onclick="_gsSelectAndGo(${origIdx})">
           <span class="gs-item-icon">${r.icon}</span>
           <div class="gs-item-content">
-            <div class="gs-item-label">${r.label}</div>
-            <div class="gs-item-sub">${r.sub}</div>
+            <div class="gs-item-label">${esc(r.label)}</div>
+            <div class="gs-item-sub">${esc(r.sub)}</div>
           </div>
           <span class="gs-item-badge">${r.type === 'lead' ? 'Lead' : (r.sub === 'Section' ? 'Go' : 'Page')}</span>
         </div>
@@ -12052,8 +12184,26 @@ function init() {
   nav('contact');
   setTimeout(fixContactPanelTop, 200);
   window.addEventListener('resize', fixContactPanelTop);
-  // Auto-pull from Sheet (with diagnostic logs in v2.03)
+  // v3.69: Show pending queue badge on boot if there are unsynced ops
+  if (typeof updatePendingBadge === 'function') updatePendingBadge();
+  // Auto-pull from Sheet (flushPendingQueue runs inside gsPullSilent first)
   setTimeout(() => { try { gsPullSilent(); } catch (e) { console.warn('[Auto-pull] outer error:', e); } }, 800);
+  // v3.69: Retry pending queue when network returns
+  window.addEventListener('online', async () => {
+    console.log('[Network] back online — flushing queue');
+    try { await flushPendingQueue(); } catch (e) { console.warn('[Network] flush error:', e); }
+  });
+}
+
+// v3.69: Manual trigger — clicking the pending badge forces an immediate retry
+async function flushPendingQueueManual() {
+  if (typeof toast === 'function') toast('🔄 正在重试同步...');
+  try {
+    const done = await flushPendingQueue();
+    if (done && typeof toast === 'function') toast('✅ 已同步');
+  } catch (e) {
+    if (typeof toast === 'function') toast('⚠️ 同步失败，将继续自动重试');
+  }
 }
 
 // Start app directly (no password lock)
