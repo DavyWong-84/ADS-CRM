@@ -2251,7 +2251,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.06</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.08</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2301,10 +2301,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <!-- Row 1: page title + inline search (mobile) + actions -->
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
         <h1 class="page-title" style="margin:0;">Contact</h1>
-        <!-- v3.99: Inline search box (mobile) right of title -->
-        <div class="contact-title-search" style="display:none;position:relative;flex:1 1 0;min-width:0;">
+        <!-- v4.07: Inline search box (mobile) — narrower + clear (x) button -->
+        <div class="contact-title-search" style="display:none;position:relative;flex:0 1 180px;min-width:0;">
           <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-          <input type="text" id="searchInputTitle" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value)" style="width:100%;height:34px;padding:0 10px 0 32px;font-size:13px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);outline:none;">
+          <input type="text" id="searchInputTitle" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value);toggleSearchClearBtn()" style="width:100%;height:34px;padding:0 30px 0 32px;font-size:13px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);outline:none;">
+          <button type="button" id="searchClearBtn" onclick="clearTitleSearch()" aria-label="Clear" style="display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:none;background:var(--border);color:var(--gray);cursor:pointer;align-items:center;justify-content:center;padding:0;font-size:12px;line-height:1;">✕</button>
         </div>
         <div class="contact-top-actions" style="display:flex;gap:8px;align-items:center;">
           <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
@@ -4748,7 +4749,7 @@ function openNewLead() {
   if (adLabel) adLabel.textContent = '';
   if (adBtn) adBtn.classList.add('empty');
   const avs = document.getElementById('afterVisitSection');
-  if (avs) avs.style.display = 'none';
+  if (avs) avs.style.display = 'block';  /* v4.07: always show so 3 sections are on one page */
   renderLeadStepper(null);
   // Populate channel dropdown
   refreshSelects();
@@ -5054,37 +5055,11 @@ function deleteLeadFromDetail(leadId) { return confirmDeleteLead(leadId); }
 function renderLeadStepper(lead) {
   const el = document.getElementById('leadStepper');
   if (!lead) { el.innerHTML = ''; return; }
-  const steps = [
-    { key: 'lead', label: 'Lead', done: !!lead.contact },
-    { key: 'booked', label: 'Booked', done: !!(lead.name && lead.apptDate) },
-    { key: 'show', label: 'Show up', done: lead.status === 'done' || lead.status === 'noshow' },
-    { key: 'done', label: 'Done', done: lead.status === 'done' }
-  ];
-  const check = '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  const stepDots = steps.map((s, i) => {
-    const dot = s.done
-      ? `<div style="width:24px;height:24px;border-radius:50%;background:var(--purple);display:flex;align-items:center;justify-content:center;">${check}</div>`
-      : `<div style="width:24px;height:24px;border-radius:50%;background:var(--white);border:2px solid var(--border);"></div>`;
-    const lbl = `<span style="font-size:11px;color:${s.done ? 'var(--purple-deep)' : 'var(--gray)'};font-weight:500;margin-top:3px;">${s.label}</span>`;
-    const line = i < steps.length - 1
-      ? `<div style="flex:1;height:2px;background:${steps[i+1].done ? 'var(--purple)' : 'var(--border)'};margin:0 -6px;margin-bottom:18px;"></div>`
-      : '';
-    return `<div style="display:flex;flex-direction:column;align-items:center;flex:0 0 auto;z-index:1;">${dot}${lbl}</div>${line}`;
-  }).join('');
-
+  // v4.07: removed status progress bar + "Editing" header. All 3 sections show flat.
+  // Keep a minimal Cancel button for desktop (mobile has its own back bar).
   el.innerHTML = `
-    <div style="background:var(--purple-bg);border-radius:12px;padding:10px 14px;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
-        <div>
-          <div style="font-size:10px;color:var(--purple);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Editing</div>
-          <div style="font-size:15px;font-weight:600;color:var(--black);margin-top:1px;">${lead.name || '(no name)'}</div>
-          <div style="font-size:12px;color:var(--purple-deep);margin-top:1px;font-variant-numeric:tabular-nums;">${lead.contact || '—'} · ${lead.channel || '—'}</div>
-        </div>
-        <button type="button" class="btn" style="font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="cancelEdit()">Cancel</button>
-      </div>
-      <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-top:10px;position:relative;">
-        ${stepDots}
-      </div>
+    <div class="desktop-only-hint" style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+      <button type="button" class="btn" style="font-size:12px;padding:5px 12px;border-radius:8px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="cancelEdit()">Cancel</button>
     </div>
   `;
 }
@@ -6031,6 +6006,26 @@ function onSearchInputChange(value) {
   state.listSearch = value;
   state.listPage = 1;
   renderList();
+}
+
+// v4.07: Clear button toggle + clear handler
+function toggleSearchClearBtn() {
+  const inp = document.getElementById('searchInputTitle');
+  const btn = document.getElementById('searchClearBtn');
+  if (!inp || !btn) return;
+  btn.style.display = inp.value ? 'flex' : 'none';
+}
+function clearTitleSearch() {
+  const inp = document.getElementById('searchInputTitle');
+  if (!inp) return;
+  inp.value = '';
+  onSearchInputChange('');
+  toggleSearchClearBtn();
+  // Sync the other inputs
+  SEARCH_INPUT_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el !== inp) el.value = '';
+  });
 }
 
 // Bind listeners on both inputs so they stay in lockstep
