@@ -446,20 +446,44 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .lead-item .lc-foot .lc-location {
   color: var(--silver);
   font-size: 11px;
-  padding: 2px 8px;
+  padding: 2px 8px 2px 6px;
   background: var(--surface-2);
   border-radius: 10px;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 .lead-item .lc-foot .lc-channel { margin-left: auto; }
+/* v3.43: Inline logo + initial circle */
+.chip-logo {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+.chip-initial {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
 /* Compact card (Lead status) — channel chip */
 .lead-compact .lc-channel {
   font-size: 11px;
-  padding: 2px 8px;
+  padding: 2px 8px 2px 6px;
   background: var(--surface-2);
   color: var(--silver);
   border-radius: 10px;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 /* Legacy class aliases (backward compat — kept minimal) */
@@ -1854,7 +1878,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.40</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.44</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -1926,16 +1950,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span class="date-btn-icon">📅</span>
         </button>
         <input type="hidden" id="listYear" value="2026">
+        <select id="listSortSelect" class="cf-select" onchange="setListSort(this.value)" style="min-width:140px;" title="Sort by">
+          <option value="updated">🕐 Last updated</option>
+          <option value="lead">📅 Lead Date</option>
+          <option value="appt">📌 Appt Date</option>
+        </select>
         <!-- Mobile line break: force chips to row 2 -->
         <div class="mobile-line-break" style="flex-basis:100%;height:0;display:none;"></div>
         <!-- Chips + channel (row 2 on mobile) -->
         <div class="quick-chips mobile-only-chips" id="listQuickChips" style="display:none;gap:4px;flex-wrap:wrap;"><button class="quick-chip " onclick="setListQuickPeriod('all')">All</button><button class="quick-chip active" onclick="setListQuickPeriod('today')">Today</button><button class="quick-chip " onclick="setListQuickPeriod('yesterday')">Yday</button></div>
         <select id="listChannelFilter" class="cf-select" onchange="setListChannelFilter(this.value)" style="min-width:130px;"><option value="">All channels</option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
-        <select id="listSortSelect" class="cf-select" onchange="setListSort(this.value)" style="min-width:140px;" title="排序方式">
-          <option value="updated">🕐 最近更新</option>
-          <option value="lead">📅 Lead Date</option>
-          <option value="appt">📌 Appt Date</option>
-        </select>
         <div class="list-search desktop-search" style="position:relative;flex:1 1 180px;min-width:160px;">
           <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
           <input type="text" id="searchInputDesktop" name="q_search_desktop" autocomplete="off" placeholder="Search name, contact, remark..." style="padding-left:30px;" oninput="onSearchInputChange(this.value)">
@@ -2359,7 +2383,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div class="card">
           <div class="section-title"><h3>Channels</h3></div>
           <div id="channelsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>Simply 5</strong> <span style="color:var(--gray);font-size:12px;">· meta · from 2026-01</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'channel', 'ch-simply5')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#6366F1;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>Simply 5</strong> <span style="color:var(--gray);font-size:12px;">· meta · from 2026-01</span></div>
+      </div>
       <div>
         <select class="status-select" data-ch-id="ch-simply5" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
           <option value="active" selected="">● Active</option>
@@ -2367,7 +2394,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </select>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>Google Ads</strong> <span style="color:var(--gray);font-size:12px;">· google · from 2026-01</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'channel', 'ch-google')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#6366F1;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>Google Ads</strong> <span style="color:var(--gray);font-size:12px;">· google · from 2026-01</span></div>
+      </div>
       <div>
         <select class="status-select" data-ch-id="ch-google" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
           <option value="active" selected="">● Active</option>
@@ -2375,7 +2405,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </select>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>Organic</strong> <span style="color:var(--gray);font-size:12px;">· organic · from 2026-01</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'channel', 'ch-organic')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#8B5CF6;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>Organic</strong> <span style="color:var(--gray);font-size:12px;">· organic · from 2026-01</span></div>
+      </div>
       <div>
         <select class="status-select" data-ch-id="ch-organic" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
           <option value="active" selected="">● Active</option>
@@ -2383,7 +2416,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </select>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>Follow Up</strong> <span style="color:var(--gray);font-size:12px;">· followup · from 2026-01</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'channel', 'ch-followup')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#3B82F6;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>Follow Up</strong> <span style="color:var(--gray);font-size:12px;">· followup · from 2026-01</span></div>
+      </div>
       <div>
         <select class="status-select" data-ch-id="ch-followup" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
           <option value="active" selected="">● Active</option>
@@ -2391,7 +2427,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </select>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>Chia FB</strong> <span style="color:var(--gray);font-size:12px;">· meta · from 2026-01</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'channel', 'ch-chia')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#6366F1;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>Chia FB</strong> <span style="color:var(--gray);font-size:12px;">· meta · from 2026-01</span></div>
+      </div>
       <div>
         <select class="status-select" data-ch-id="ch-chia" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(100, 116, 139, 0.1);color:var(--gray);cursor:pointer;">
           <option value="active">● Active</option>
@@ -2419,7 +2458,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div class="card">
           <div class="section-title"><h3>Stores</h3></div>
           <div id="locationsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>Sunway</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', 'st-sunway')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#6366F1;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>Sunway</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
+      </div>
       <div>
         <select class="status-select" data-loc-id="st-sunway" onchange="changeLocationStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
           <option value="active" selected="">● Active</option>
@@ -2427,7 +2469,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </select>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>Cheras</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', 'st-cheras')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#F97316;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>Cheras</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
+      </div>
       <div>
         <select class="status-select" data-loc-id="st-cheras" onchange="changeLocationStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
           <option value="active" selected="">● Active</option>
@@ -2435,7 +2480,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </select>
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>ECO</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', 'st-eco')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#8B5CF6;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>ECO</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
+      </div>
       <div>
         <select class="status-select" data-loc-id="st-eco" onchange="changeLocationStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:rgba(5, 150, 105, 0.1);color:var(--green-dark);cursor:pointer;">
           <option value="active" selected="">● Active</option>
@@ -4930,6 +4978,47 @@ function renderQuickChips() {
   ).join('');
 }
 
+// v3.43: Smart channel/location chip logos — preset for 6 popular channels, auto-fallback for custom ones
+const CHANNEL_LOGO_SVG = {
+  meta: '<svg class="chip-logo" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+  google: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>',
+  tiktok: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FE2C55" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/></svg>',
+  instagram: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ig-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F58529"/><stop offset="50%" stop-color="#DD2A7B"/><stop offset="100%" stop-color="#8134AF"/></linearGradient></defs><path fill="url(#ig-grad)" d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63 3.35.94 2.68 1.34 2.01 2.01 1.34 2.68.94 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.71 1.46 1.38 2.13.67.67 1.34 1.07 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.31 1.46-.71 2.13-1.38.67-.67 1.07-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.31-.79-.71-1.46-1.38-2.13C21.32 1.34 20.65.94 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 12 18.16 6.16 6.16 0 0 0 12 5.84zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>',
+  whatsapp: '<svg class="chip-logo" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>',
+  xhs: '<svg class="chip-logo" viewBox="0 0 24 24" fill="#FF2442" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm-2.5 5.5v7l6-3.5-6-3.5z"/></svg>'
+};
+
+// Auto-color palette for unknown channels (by name hash)
+const INITIAL_COLORS = ['#7132f5', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1'];
+function hashColor(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+  return INITIAL_COLORS[Math.abs(h) % INITIAL_COLORS.length];
+}
+
+// Main helper: returns SVG or initial circle for a channel/location name
+// v3.44: optional `customColor` overrides the auto-hashed color for initial circle
+function chipLogoHTML(name, customColor) {
+  if (!name) return '';
+  const n = String(name).toLowerCase();
+  // v3.44: If user set a custom color, ALWAYS use initial circle (not SVG) so custom color shows
+  if (customColor) {
+    const letter = name.trim().charAt(0).toUpperCase();
+    return `<span class="chip-initial" style="background:${customColor};">${letter}</span>`;
+  }
+  // Match against preset logos
+  if (n.includes('meta') || n.includes('facebook') || n.includes('fb') || n.includes('simply')) return CHANNEL_LOGO_SVG.meta;
+  if (n.includes('google')) return CHANNEL_LOGO_SVG.google;
+  if (n.includes('tiktok') || n.includes('tt ads') || n.includes('抖音')) return CHANNEL_LOGO_SVG.tiktok;
+  if (n.includes('instagram') || n === 'ig' || n.startsWith('ig ')) return CHANNEL_LOGO_SVG.instagram;
+  if (n.includes('whatsapp') || n === 'wa' || n.startsWith('wa ')) return CHANNEL_LOGO_SVG.whatsapp;
+  if (n.includes('xhs') || n.includes('小红书') || n.includes('redbook')) return CHANNEL_LOGO_SVG.xhs;
+  // Fallback: initial letter circle with auto color
+  const letter = name.trim().charAt(0).toUpperCase();
+  const color = hashColor(name);
+  return `<span class="chip-initial" style="background:${color};">${letter}</span>`;
+}
+
 function renderList() {
   updateSearchActiveBar();
   renderQuickChips();
@@ -5082,7 +5171,7 @@ function renderList() {
           </div>
           <div class="lc-foot">
             <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong>${timeStr ? ` <span style="color:var(--silver);font-weight:400;">${timeStr}</span>` : ''}</span>
-            ${l.channelName ? `<span class="lc-channel">${l.channelName}</span>` : ''}
+            ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${l.channelName}</span>`;})() : ''}
           </div>
         </div></div>`;
       }
@@ -5103,23 +5192,21 @@ function renderList() {
       return `<div class="swipe-wrapper" data-lead-id="${l.id}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${l.id}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${l.id}')">
         <div class="lc-head">
           <div class="lc-name">${l.name || l.contact || '(no data)'}</div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-            <div style="display:flex;align-items:center;gap:4px;">
-              <span class="lc-flags">${starHTML}</span>
-              <span class="badge badge-${l.status}">${statusLabel}</span>
-            </div>
-            ${apptDayBadge}
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span class="lc-flags">${starHTML}</span>
+            <span class="badge badge-${l.status}">${statusLabel}</span>
           </div>
         </div>
         <div class="lc-body">
           <span class="lc-contact">${l.contact || ''}</span>
+          ${apptDayBadge}
           ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : ''}
         </div>
         <div class="lc-foot">
           <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
           <span class="${l.apptDate ? '' : 'muted'}">Appt: <strong>${l.apptDate ? fmt.monthDay(l.apptDate) : '—'}</strong></span>
-          ${l.channelName ? `<span class="lc-channel">${l.channelName}</span>` : ''}
-          ${l.location ? `<span class="lc-location">${l.location}</span>` : ''}
+          ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${l.channelName}</span>`;})() : ''}
+          ${l.location ? (()=>{const loc=state.locations.find(x=>x.id===l.locationId); return `<span class="lc-location">${chipLogoHTML(l.location, loc && loc.color)}${l.location}</span>`;})() : ''}
         </div>
       </div></div>`;
     }).join('');
@@ -8606,8 +8693,13 @@ function renderSettings() {
     const statusColor = isActive ? 'var(--green-dark)' : 'var(--gray)';
     const statusBg = isActive ? 'rgba(5, 150, 105, 0.1)' : 'rgba(100, 116, 139, 0.1)';
     const statusLabel = isActive ? 'Active' : 'Inactive';
+    // v3.44: show current color (custom or auto-assigned by hash)
+    const color = c.color || (typeof hashColor === 'function' ? hashColor(c.name) : '#888');
     return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>${c.name}</strong> <span style="color:var(--gray);font-size:12px;">· ${c.platform}${c.addedMonth ? ' · from ' + c.addedMonth : ''}</span></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'channel', '${c.id}')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:${color};cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>${c.name}</strong> <span style="color:var(--gray);font-size:12px;">· ${c.platform}${c.addedMonth ? ' · from ' + c.addedMonth : ''}</span></div>
+      </div>
       <div>
         <select class="status-select" data-ch-id="${c.id}" onchange="changeChannelStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:${statusBg};color:${statusColor};cursor:pointer;">
           <option value="active" ${isActive ? 'selected' : ''}>● Active</option>
@@ -8620,8 +8712,12 @@ function renderSettings() {
     const isActive = l.active !== false;
     const statusColor = isActive ? 'var(--green-dark)' : 'var(--gray)';
     const statusBg = isActive ? 'rgba(5, 150, 105, 0.1)' : 'rgba(100, 116, 139, 0.1)';
+    const color = l.color || (typeof hashColor === 'function' ? hashColor(l.name) : '#888');
     return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
-      <div><strong>${l.name}</strong>${l.addedMonth ? ` <span style="color:var(--gray);font-size:12px;">· from ${l.addedMonth}</span>` : ''}</div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', '${l.id}')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:${color};cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <div><strong>${l.name}</strong>${l.addedMonth ? ` <span style="color:var(--gray);font-size:12px;">· from ${l.addedMonth}</span>` : ''}</div>
+      </div>
       <div>
         <select class="status-select" data-loc-id="${l.id}" onchange="changeLocationStatus(this)" style="padding:4px 8px;font-size:12px;font-weight:600;border-radius:6px;border:1px solid var(--border);background:${statusBg};color:${statusColor};cursor:pointer;">
           <option value="active" ${isActive ? 'selected' : ''}>● Active</option>
@@ -8659,6 +8755,62 @@ document.getElementById('locationForm').addEventListener('submit', e => {
   document.getElementById('locationForm').reset();
   toast('Store added');
 });
+
+// v3.44: Color palette + picker — popover triggered from the color dot button
+const COLOR_PALETTE = [
+  '#7132f5', // purple (brand)
+  '#1877F2', // Meta blue
+  '#10B981', // green
+  '#F59E0B', // amber
+  '#EF4444', // red
+  '#3B82F6', // blue
+  '#EC4899', // pink
+  '#14B8A6', // teal
+  '#F97316', // orange
+  '#6366F1', // indigo
+  '#84CC16', // lime
+  '#888888', // gray (neutral)
+];
+
+function openColorPicker(event, kind, id) {
+  event.stopPropagation();
+  // Remove any existing picker
+  const old = document.getElementById('colorPickerPop');
+  if (old) old.remove();
+  const btn = event.currentTarget;
+  const rect = btn.getBoundingClientRect();
+  const list = kind === 'channel' ? state.channels : state.locations;
+  const item = list.find(x => x.id === id);
+  const current = (item && item.color) || hashColor(item ? item.name : '');
+  const pop = document.createElement('div');
+  pop.id = 'colorPickerPop';
+  pop.style.cssText = `position:fixed;top:${rect.bottom + 6}px;left:${rect.left}px;z-index:10010;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:10px;display:grid;grid-template-columns:repeat(6, 24px);gap:6px;`;
+  pop.innerHTML = COLOR_PALETTE.map(c => {
+    const isCur = c.toLowerCase() === current.toLowerCase();
+    return `<button type="button" data-color="${c}" style="width:24px;height:24px;border-radius:50%;border:${isCur ? '2px solid #000' : '1px solid var(--border)'};background:${c};cursor:pointer;padding:0;"></button>`;
+  }).join('') + `<button type="button" data-color="reset" title="重置为默认" style="grid-column:1 / span 6;margin-top:4px;padding:5px 8px;font-size:11px;border:1px solid var(--border);background:#fff;border-radius:6px;cursor:pointer;color:var(--gray);">↺ Reset to auto</button>`;
+  document.body.appendChild(pop);
+  pop.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-color]');
+    if (!b) return;
+    const color = b.dataset.color;
+    if (color === 'reset') {
+      delete item.color;
+    } else {
+      item.color = color;
+    }
+    saveState();
+    pop.remove();
+    renderSettings();
+    if (typeof renderList === 'function') renderList(); // refresh Lead list chips
+  });
+  // Click outside to close
+  setTimeout(() => {
+    document.addEventListener('click', function close(e) {
+      if (!pop.contains(e.target)) { pop.remove(); document.removeEventListener('click', close); }
+    });
+  }, 50);
+}
 
 function changeChannelStatus(selectEl) {
   const id = selectEl.dataset.chId;
