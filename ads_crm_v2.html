@@ -468,6 +468,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (max-width: 767px) {
   .btn-delete-lead-v38 { display: none; }
 }
+/* v4.36: Inline Delete button next to Save Lead button (both desktop and mobile) */
+.btn-delete-inline { transition: all 0.15s; box-shadow: 0 1px 3px rgba(220,38,38,0.2); }
+.btn-delete-inline:hover { background: #B91C1C !important; box-shadow: 0 2px 6px rgba(220,38,38,0.3) !important; }
+.btn-delete-inline:active { transform: scale(0.97); }
 .lead-item.today-appt { border-left-color: var(--amber) !important; }
 .lead-item.overdue { border-left-color: var(--red) !important; background: rgba(212,21,59,0.02); }
 .lead-item.lc-lead { border-left-color: #AFA9EC; }
@@ -1798,11 +1802,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .contact-filters-inline {
     flex: 0 0 auto;  /* v4.25: don't grow/shrink */
     background: var(--white);
-    padding: 12px 0 10px;
+    padding: 6px 0 4px;  /* v4.36: reduced from 12/10 — tighter filter area */
     margin-bottom: 0;
     border-bottom: 1px solid var(--border);
   }
-  .contact-filters-inline .compact-filter { margin-bottom: 8px; }
+  .contact-filters-inline .compact-filter { margin-bottom: 4px; }
   .contact-filters-inline .list-search { flex: 1 1 100%; min-width: 0; }
   .contact-filters-inline input[type="text"] {
     height: 36px;
@@ -1832,8 +1836,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   #page-contact #loadMoreWrap {
     flex: 0 0 auto;
     position: static;  /* v4.25: override earlier sticky — it's now in flex flow at the bottom */
-    padding: 8px 0 12px;
-    margin: 0;
+    padding: 8px 0 8px;
+    margin: 0 0 32px;  /* v4.36: 32px margin-bottom — lifts the button off the viewport bottom */
     border-top: 1px solid var(--border);
     background: var(--white);
   }
@@ -2510,7 +2514,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.35</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.36</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2594,7 +2598,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <!-- LEFT: List panel (contains filters + list + load more) -->
       <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
-          <div class="list-search contact-search-row" style="position:relative;margin-bottom:10px;">
+          <div class="list-search contact-search-row" style="position:relative;margin-bottom:4px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
             <input type="text" id="searchInputDesktop" name="q_search_desktop" autocomplete="off" placeholder="Search name, contact, remark..." style="padding-left:30px;" oninput="onSearchInputChange(this.value)">
           </div>
@@ -2767,8 +2771,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               </div>
             </div>
 
-            <div style="grid-column:1/-1;margin-top:4px;">
-              <button type="submit" class="btn btn-primary btn-full" style="font-size:15px;padding:14px;">Save Lead</button>
+            <!-- v4.36: Save + Delete row. Delete only shown when editing existing lead. -->
+            <div style="grid-column:1/-1;margin-top:4px;display:flex;gap:8px;">
+              <button type="button" id="btnDeleteLead" onclick="confirmDeleteLeadFromForm()" class="btn btn-delete-inline" style="display:none;font-size:14px;padding:14px 18px;background:#DC2626;color:#fff;border:none;border-radius:10px;font-weight:600;cursor:pointer;white-space:nowrap;">
+                Delete
+              </button>
+              <button type="submit" class="btn btn-primary" style="font-size:15px;padding:14px;flex:1;">Save Lead</button>
             </div>
             <div id="lead_lastSaved" class="last-saved-time"></div>
           </form>
@@ -3644,7 +3652,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.60'; // keep — don't force reload of user data
+const DATA_VERSION = '2.61'; // keep — don't force reload of user data
 
 // ---------- State ----------
 let state = {
@@ -5019,6 +5027,10 @@ function editLead(id) {
   if (formWrap) formWrap.style.display = 'block';
   if (formEmpty) formEmpty.style.display = 'none';
 
+  // v4.36: Show Delete button (only for existing/saved leads)
+  const delBtn = document.getElementById('btnDeleteLead');
+  if (delBtn) delBtn.style.display = 'inline-block';
+
   // Highlight selected card
   document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.lead-item').forEach(el => { if (el.getAttribute('onclick')?.includes(id)) el.classList.add('selected'); });
@@ -5083,6 +5095,10 @@ function openNewLead() {
   const formEmpty = document.getElementById('contactFormEmpty');
   if (formWrap) formWrap.style.display = 'block';
   if (formEmpty) formEmpty.style.display = 'none';
+
+  // v4.36: Hide Delete button (new lead has no ID yet — nothing to delete)
+  const delBtn = document.getElementById('btnDeleteLead');
+  if (delBtn) delBtn.style.display = 'none';
 
   // Deselect any list item
   document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
@@ -5294,9 +5310,43 @@ function confirmDeleteLead(leadId) {
   renderList();
   toast('已删除 ✓');
 }
+// v4.36: Delete button on form (desktop) / bottom (mobile) — deletes currently editing lead
+function confirmDeleteLeadFromForm() {
+  if (!currentEditingId) return;
+  const leadId = currentEditingId;
+  const l = state.leads.find(x => x.id === leadId);
+  if (!l) return;
+  const name = l.name || l.contact || '(no name)';
+  if (!confirm(`确定删除这个 Lead 吗？\n\n${name}\n\n此操作无法撤销。`)) return;
+  state.leads = state.leads.filter(x => x.id !== leadId);
+  saveState();
+  if (typeof gsDelete === 'function') gsDelete('Leads', leadId);
+  // Close the form and go back to welcome state
+  currentEditingId = null;
+  if (typeof cancelEdit === 'function') {
+    try { cancelEdit(); } catch(_) {}
+  }
+  // Mobile: close the form overlay
+  const pg = document.getElementById('page-contact');
+  if (pg && pg.classList.contains('contact-form-open') && typeof closeContactForm === 'function') {
+    closeContactForm();
+  }
+  // Hide delete button (no lead selected now)
+  const btn = document.getElementById('btnDeleteLead');
+  if (btn) btn.style.display = 'none';
+  // Hide the form, show welcome page again
+  const formWrap = document.getElementById('contactFormWrap');
+  const emptyWrap = document.getElementById('contactFormEmpty');
+  if (formWrap) formWrap.style.display = 'none';
+  if (emptyWrap) emptyWrap.style.display = '';
+  renderList();
+  toast('已删除 ✓');
+}
 // v3.33: Swipe-to-delete handler for Lead cards
-// Threshold: drag 40px+ to reveal. Tap outside to close.
+// v4.36: Disabled — replaced by explicit Delete button in edit form.
+//        Code kept intact below but setup short-circuits so no touch listeners are bound.
 (function setupSwipeDelete() {
+  return;  // v4.36: disabled — users now delete via the red Delete button in the edit form
   const START_DEADZONE = 15;
   const THRESHOLD = 80;
   const REVEAL_PX = 64;
