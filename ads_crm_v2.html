@@ -1501,19 +1501,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (max-width: 767px) { .gs-footer { display: none; } }
 .quick-chip.active { background: var(--purple); color: white; border-color: var(--purple); }
 
-/* Search icon button (top-right) */
-#searchIconBtn:hover { border-color: var(--purple); color: var(--purple); }
-#searchIconBtn.has-query { background: var(--purple); border-color: var(--purple); color: white; }
-
-/* Desktop: inline search input in toolbar, hide icon button + mobile active bar */
+/* Desktop: inline search input in toolbar */
 @media (min-width: 768px) {
-  #searchIconBtn { display: none !important; }
   .mobile-only-search-bar { display: none !important; }
   .mobile-only-chips { display: none !important; }
 }
-/* Mobile: hide desktop search input, show icon button, hide ESC/Enter hint, show chips + force row break */
+/* Mobile: show chips + force row break. Search input is now persistent on both mobile and desktop. */
 @media (max-width: 767px) {
-  .desktop-search { display: none !important; }
   .desktop-only-hint { display: none !important; }
   .mobile-only-chips { display: flex !important; }
   .mobile-line-break { display: block !important; }
@@ -1607,14 +1601,84 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .contact-form-open .contact-list-panel { display: none !important; }
 .contact-form-open .contact-form-panel { display: block !important; }
 .contact-form-open #contactFab { display: none !important; }
-.contact-form-open #searchFab { display: none !important; }
 
-/* Mobile: hide top action buttons (use FABs instead) + show search FAB */
-#searchFab { display: none; }
+/* Mobile: hide top action buttons (use mobileActionBar instead) */
 @media (max-width: 767px) {
   .contact-top-actions { display: none !important; }
-  #searchFab { display: flex !important; }
+  /* Hide desktop inline search input on mobile (we have the bottom bar now) */
+  .list-search { display: none !important; }
 }
+
+/* v3.79: Mobile bottom floating action bar (search + new lead button) */
+#mobileActionBar {
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 72px;  /* Above bottom nav (which is ~68px tall) */
+  z-index: 20;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(16, 24, 40, 0.08), 0 1px 3px rgba(16, 24, 40, 0.04);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#mobileActionBar .mab-search {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+#mobileActionBar .mab-search svg {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--gray);
+}
+#mobileActionBar .mab-search input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px 0 36px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+#mobileActionBar .mab-search input:focus {
+  border-color: var(--purple);
+  background: #fff;
+}
+#mobileActionBar #contactFab {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--purple);
+  color: #fff;
+  border: none;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: none;
+  position: static;
+}
+#mobileActionBar #contactFab:active { background: var(--purple-dark); }
+/* Show the bar only on mobile, only while on Contact page */
+@media (max-width: 767px) {
+  body.on-contact-page #mobileActionBar { display: flex !important; }
+}
+/* Hide when contact form is fully open */
+.contact-form-open #mobileActionBar { display: none !important; }
 
 /* Mobile: form open = modal (centered via fixed positioning, sized to content) */
 @media (max-width: 767px) {
@@ -1683,8 +1747,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   /* Reduce last-saved time block bottom padding */
   .contact-form-open .last-saved-time { margin-top: 6px; margin-bottom: 0; padding: 0; }
   .contact-form-open .contact-list-panel { display: none !important; }
-  .contact-form-open #contactFab,
-  .contact-form-open #searchFab { display: none !important; }
+  .contact-form-open #contactFab { display: none !important; }
 }
 @keyframes modalIn {
   from { opacity: 0; transform: scale(0.95); }
@@ -2066,14 +2129,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 </style>
 </head>
-<body>
+<body class="">
 
 <header class="topbar">
   <div class="brand">
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.77</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v3.79</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2124,9 +2187,6 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
         <h1 class="page-title" style="margin:0;">Contact</h1>
         <div class="contact-top-actions" style="display:flex;gap:8px;align-items:center;">
-          <button type="button" id="searchIconBtn" onclick="openSearchModal()" title="Search" aria-label="Search" style="background:var(--white);border:1px solid var(--border);width:34px;height:34px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);transition:all 0.15s;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-          </button>
           <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
         </div>
       </div>
@@ -2160,7 +2220,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <span class="pop-trigger-label"><span>All channels</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span>
-        <div class="list-search desktop-search" style="position:relative;flex:1 1 180px;min-width:160px;">
+        <div class="list-search" style="position:relative;flex:1 1 180px;min-width:160px;">
           <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
           <input type="text" id="searchInputDesktop" name="q_search_desktop" autocomplete="off" placeholder="Search name, contact, remark..." style="padding-left:30px;" oninput="onSearchInputChange(this.value)">
         </div>
@@ -2218,7 +2278,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                     <span id="popWrap_popSel_f_channel" data-pop-wrap-for="f_channel" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_channel" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_channel')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg><span>Simply 5</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="f_channel" data-pop="1" data-pop-icon="channel" data-pop-placeholder="Select channel" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_channel" data-pop-field="1" style="display: none;"><option value=""></option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
+  </button></span><select id="f_channel" data-pop="1" data-pop-icon="channel" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_channel" data-pop-field="1" style="display: none;"><option value=""></option><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-organic">Organic</option><option value="ch-followup">Follow Up</option></select>
                   </div>
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
@@ -2250,7 +2310,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                     <span id="popWrap_popSel_f_location" data-pop-wrap-for="f_location" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_location" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_location')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="f_location" data-pop="1" data-pop-icon="location" data-pop-placeholder="Select location" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_location" data-pop-field="1" style="display: none;"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
+  </button></span><select id="f_location" data-pop="1" data-pop-icon="location" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_location" data-pop-field="1" style="display: none;"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
                   </div>
                   <div>
                     <label>Appt Date</label>
@@ -2277,7 +2337,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <span id="popWrap_popSel_f_showUp" data-pop-wrap-for="f_showUp" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_showUp" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_showUp')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>Show up</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="f_showUp" data-pop="1" data-pop-placeholder="Select status" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_showUp" data-pop-field="1" style="display: none;">
+  </button></span><select id="f_showUp" data-pop="1" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_showUp" data-pop-field="1" style="display: none;">
                     <option value=""></option>
                     <option value="Show up">Show up</option>
                     <option value="No Show up">No Show up</option>
@@ -2289,7 +2349,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                     <span id="popWrap_popSel_f_race" data-pop-wrap-for="f_race" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_race" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_race')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>Chinese</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="f_race" data-pop="1" data-pop-placeholder="Select race" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_race" data-pop-field="1" style="display: none;">
+  </button></span><select id="f_race" data-pop="1" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_race" data-pop-field="1" style="display: none;">
                       <option value=""></option>
                       <option value="Chinese">Chinese</option>
                       <option value="Malay">Malay</option>
@@ -2316,24 +2376,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
     </div>
 
-    <!-- Mobile FABs -->
+    <!-- Mobile Bottom Floating Bar (v3.79: search in middle + New Lead on the right) -->
     <div id="contactFormBackdrop" onclick="closeContactForm()"></div>
-    <button type="button" id="searchFab" onclick="openSearchModal()" aria-label="Search" title="Search" style="display:none;position:fixed;bottom:144px;right:20px;width:48px;height:48px;border-radius:50%;background:var(--white);color:var(--purple);border:1px solid var(--border);box-shadow:0 3px 12px rgba(0,0,0,0.08);cursor:pointer;z-index:20;align-items:center;justify-content:center;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-    </button>
-    <button type="button" id="contactFab" onclick="openNewLead()" style="display:none;position:fixed;bottom:80px;right:20px;width:52px;height:52px;border-radius:50%;background:var(--purple);color:#fff;border:none;font-size:28px;font-weight:400;box-shadow:0 3px 12px rgba(113,50,245,0.35);cursor:pointer;z-index:20;line-height:1;">+</button>
-
-    <!-- Search Modal -->
-    <div class="modal-backdrop" id="searchModalBackdrop" onclick="if(event.target===this) closeSearchModal()">
-      <div class="modal" style="max-width:460px;">
-        <div class="modal-header">
-          <div class="modal-title">🔍 Search leads</div>
-          <button type="button" class="modal-close" onclick="closeSearchModal()">✕</button>
-        </div>
-        <input type="text" id="searchInput" name="q_search" autocomplete="off" placeholder="Name, contact, or remark..." style="width:100%;height:44px;padding:0 14px;font-size:15px;border:1px solid var(--border);border-radius:8px;outline:none;" oninput="onSearchInputChange(this.value)">
-        <div class="desktop-only-hint" style="margin-top:10px;font-size:12px;color:var(--gray);">Press <kbd style="padding:2px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:11px;">ESC</kbd> to close · <kbd style="padding:2px 6px;background:var(--surface-2);border:1px solid var(--border);border-radius:4px;font-size:11px;">Enter</kbd> to apply</div>
+    <div id="mobileActionBar" style="display:none;">
+      <div class="mab-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input type="text" id="searchInputMobile" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value)">
       </div>
+      <button type="button" id="contactFab" onclick="openNewLead()" aria-label="New Lead">+</button>
     </div>
+
   </section>
 
   <!-- DASHBOARD PAGE (was Summary) -->
@@ -2582,7 +2634,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg><span>Simply 5</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="as_entryChannel" data-pop="1" data-pop-icon="channel" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select channel" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_as_entryChannel"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
+  </button></span><select id="as_entryChannel" data-pop="1" data-pop-icon="channel" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_as_entryChannel"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
@@ -3188,7 +3240,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.31'; // bump this to force reload of preloaded data (v3.77: brighter yellow star)
+const DATA_VERSION = '2.33'; // bump this to force reload of preloaded data (v3.79: mobile bottom bar, clear Lead placeholders)
 
 // ---------- State ----------
 let state = {
@@ -3351,6 +3403,8 @@ function nav(page) {
   document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(n => {
     n.classList.toggle('active', n.dataset.page === page);
   });
+  // v3.79: toggle body class so mobile bottom action bar shows only on Contact page
+  document.body.classList.toggle('on-contact-page', page === 'contact');
   window.scrollTo(0, 0);
   if (page === 'contact') { setTimeout(fixContactPanelTop, 50); }
   renderTopbarToday();
@@ -4657,7 +4711,7 @@ function renderDetailPanel(l) {
         <div class="step-body">
           <div><label>Contact <span style="color:var(--red)">*</span></label><input type="tel" id="df_contact" value="${esc(l.contact || '')}" inputmode="tel"></div>
           <div class="form-row" style="margin-top:12px;">
-            <div><label>Channel <span style="color:var(--red)">*</span></label><select id="df_channel" data-pop="1" data-pop-icon="channel" data-pop-placeholder="Select channel">${channelOpts}</select></div>
+            <div><label>Channel <span style="color:var(--red)">*</span></label><select id="df_channel" data-pop="1" data-pop-icon="channel" data-pop-placeholder="">${channelOpts}</select></div>
             <div><label>Lead Date <span style="color:var(--red)">*</span></label><input type="date" id="df_leadDate" value="${l.leadDate || ''}"></div>
           </div>
         </div>
@@ -4665,9 +4719,9 @@ function renderDetailPanel(l) {
       <div class="step-card step-2">
         <div class="step-header"><span class="step-num">2</span><div><div class="step-title">Booking</div></div></div>
         <div class="step-body">
-          <div><label>Name</label><input type="text" id="df_name" value="${esc(l.name || '')}" placeholder="Customer name"></div>
+          <div><label>Name</label><input type="text" id="df_name" value="${esc(l.name || '')}"></div>
           <div class="form-row" style="margin-top:12px;">
-            <div><label>Location</label><select id="df_location" data-pop="1" data-pop-icon="location" data-pop-placeholder="Select location"><option value=""></option>${locationOpts}</select></div>
+            <div><label>Location</label><select id="df_location" data-pop="1" data-pop-icon="location" data-pop-placeholder=""><option value=""></option>${locationOpts}</select></div>
             <div><label>Appt Date</label><input type="date" id="df_apptDate" value="${l.apptDate || ''}"></div>
           </div>
         </div>
@@ -4675,9 +4729,9 @@ function renderDetailPanel(l) {
       <div class="step-card step-3">
         <div class="step-header"><span class="step-num">3</span><div><div class="step-title">After Visit</div></div></div>
         <div class="step-body">
-          <div><label>Show Up</label><select id="df_showUp" data-pop="1" data-pop-placeholder="Select status"><option value=""></option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
+          <div><label>Show Up</label><select id="df_showUp" data-pop="1" data-pop-placeholder=""><option value=""></option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
           <div class="form-row" style="margin-top:12px;">
-            <div><label>Race</label><select id="df_race" data-pop="1" data-pop-placeholder="Select race"><option value=""></option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
+            <div><label>Race</label><select id="df_race" data-pop="1" data-pop-placeholder=""><option value=""></option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
             <div><label>Spend (RM)</label><input type="number" id="df_spend" value="${l.spend || ''}" step="0.01" min="0"></div>
           </div>
           <input type="hidden" id="df_remark" value="${esc(l.remark || '')}">
@@ -5782,79 +5836,64 @@ function toggleLeadFlag(event, leadId, flagColor) {
   renderList();
 }
 
-// ---------- Search Modal ----------
-function openSearchModal() {
-  const bd = document.getElementById('searchModalBackdrop');
-  if (!bd) return;
-  bd.classList.add('open');
-  const inp = document.getElementById('searchInput');
-  if (inp) { inp.value = state.listSearch || ''; setTimeout(() => inp.focus(), 50); }
-}
-function closeSearchModal() {
-  const bd = document.getElementById('searchModalBackdrop');
-  if (bd) bd.classList.remove('open');
-}
+// ---------- Search (v3.79: inline desktop + mobile bottom bar) ----------
+const SEARCH_INPUT_IDS = ['searchInputDesktop', 'searchInputMobile'];
+
 function clearSearchQuery() {
   state.listSearch = '';
   state.listPage = 1;
-  const mobileInp = document.getElementById('searchInput');
-  const desktopInp = document.getElementById('searchInputDesktop');
-  if (mobileInp) mobileInp.value = '';
-  if (desktopInp) desktopInp.value = '';
+  SEARCH_INPUT_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
   renderList();
 }
-// Update the "Searching: xxx" indicator bar + sync desktop input value
+
+// Sync both input values + toggle the "Searching: xxx" indicator bar
 function updateSearchActiveBar() {
   const bar = document.getElementById('searchActiveBar');
   const term = document.getElementById('searchActiveTerm');
-  const iconBtn = document.getElementById('searchIconBtn');
-  const desktopInp = document.getElementById('searchInputDesktop');
-  if (!bar || !term) return;
   const hasQuery = state.listSearch && state.listSearch.trim();
-  // Keep desktop input synced in case state was changed elsewhere (e.g. via modal)
-  if (desktopInp && document.activeElement !== desktopInp && desktopInp.value !== state.listSearch) {
-    desktopInp.value = state.listSearch || '';
-  }
-  // On mobile (where icon button is visible), show the active bar
-  // Skip on desktop where inline input already shows the value
-  const isDesktop = window.innerWidth >= 768;
-  if (hasQuery && !isDesktop) {
+  // Keep both input values synced with state — but don't stomp the one currently being typed in
+  let activeIsSearch = false;
+  SEARCH_INPUT_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (document.activeElement === el) { activeIsSearch = true; return; }
+    if (el.value !== (state.listSearch || '')) el.value = state.listSearch || '';
+  });
+  if (!bar || !term) return;
+  // Hide the redundant indicator bar — inline inputs show their own value
+  if (hasQuery && !activeIsSearch) {
     term.textContent = state.listSearch;
     bar.style.display = 'flex';
   } else {
     bar.style.display = 'none';
   }
-  if (iconBtn) {
-    if (hasQuery) iconBtn.classList.add('has-query');
-    else iconBtn.classList.remove('has-query');
-  }
 }
 
-// Both inputs write to the same state
+// Single handler for both inputs
 function onSearchInputChange(value) {
   state.listSearch = value;
   state.listPage = 1;
   renderList();
 }
-['searchInput', 'searchInputDesktop'].forEach(id => {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.addEventListener('input', e => onSearchInputChange(e.target.value));
-  el.addEventListener('keyup', e => onSearchInputChange(e.target.value));
-  el.addEventListener('change', e => onSearchInputChange(e.target.value));
-});
-// ESC closes the search modal
+
+// Bind listeners on both inputs so they stay in lockstep
+(function bindSearchInputs() {
+  SEARCH_INPUT_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', e => onSearchInputChange(e.target.value));
+  });
+})();
+
+// ESC on Lead form = close form
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    const bd = document.getElementById('searchModalBackdrop');
-    if (bd && bd.classList.contains('open')) { closeSearchModal(); return; }
     const pg = document.getElementById('page-contact');
     if (pg && pg.classList.contains('contact-form-open')) { closeContactForm(); }
   }
-});
-// Enter also closes (applies)
-document.getElementById('searchInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') closeSearchModal();
 });
 
 // ---------- Calculations ----------
