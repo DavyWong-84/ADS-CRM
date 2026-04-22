@@ -1843,12 +1843,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
   #page-contact .lead-list::-webkit-scrollbar { width: 4px; }
   #page-contact .lead-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-  /* v4.52: Load more fixed at bottom of left panel, aligned with right-panel Save Lead button */
+  /* v4.52+v4.53: Load more aligned vertically with Save Lead button on right panel */
   #page-contact #loadMoreWrap {
     flex: 0 0 auto;
     position: static;
     padding: 8px 0 8px;
-    margin: 0 0 100px;  /* v4.52: aligned with Save Lead button position on right panel */
+    margin: 0 0 120px;  /* v4.53: more lift — aligns with Save Lead button */
     border-top: 1px solid var(--border);
     background: var(--white);
   }
@@ -2523,7 +2523,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.52</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.53</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2660,7 +2660,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty">
+        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
           <!-- v4.22: Click-to-create welcome area — big round + button in the middle -->
           <button type="button" onclick="openNewLead()" class="welcome-new-lead-btn" aria-label="Create new lead">
             <span class="welcome-plus-circle">
@@ -2670,7 +2670,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <span class="welcome-plus-hint">or select a lead from the list</span>
           </button>
         </div>
-        <div id="contactFormWrap" style="display:none;">
+        <div id="contactFormWrap" style="display: block;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -2731,7 +2731,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label"></span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate">
+                    <input type="hidden" id="f_apptDate" value="">
                   </div>
                 </div>
               </div>
