@@ -2522,7 +2522,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.50</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.51</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2642,7 +2642,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </button></span>
           </div>
           <!-- Filter row 2: Status tabs -->
-          <div class="filter-tabs-wrap at-start" id="listFiltersWrap">
+          <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
         </div>
@@ -3244,7 +3244,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull</button>
               <button class="btn btn-ghost" onclick="gsTest()">🔗 Test</button>
             </div>
-            <div id="gs_log" style="font-size:12px;color:var(--gray);min-height:16px;"></div>
+            <div id="gs_log" style="font-size: 12px; color: var(--adscost-color); min-height: 16px;">Please enter Apps Script URL</div>
           </div>
         </div>
 
@@ -13171,9 +13171,13 @@ history.pushState(null, '', location.href);
 <script>
 // Auto-scroll input into view when keyboard appears (mobile)
 // v3.81: Exclude inputs inside #mobileActionBar — the bar is already pinned to the bottom,
-// and scrollIntoView would yank the page upward, pushing topbar + filters off-screen.
+//        and scrollIntoView would yank the page upward, pushing topbar + filters off-screen.
+// v4.51: Also skip on desktop — this was designed for mobile keyboard. On desktop it causes
+//        inputs to push the whole page up when focused (e.g. Spend input in Contact form).
 (function() {
   const fix = e => {
+    // v4.51: skip on desktop — only needed for mobile keyboard handling
+    if (window.innerWidth >= 768) return;
     const el = e.target;
     if (!['INPUT','TEXTAREA','SELECT'].includes(el.tagName)) return;
     // Skip floating bottom bar — it's already above the keyboard by design
