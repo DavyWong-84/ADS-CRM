@@ -2515,6 +2515,28 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 
 </style>
+<style>
+/* v4.63: Mobile topbar — hide Data Entry + Settings buttons (accessed via drawer/tabbar) */
+/* Use ID selector with !important to override inline display:flex */
+@media (max-width: 768px) {
+  #topbarExtras { display: none !important; }
+  #topbarMobileMenuWrap { display: block !important; }
+}
+/* v4.63 Mobile topbar fix */
+/* v4.63: Pending card channel pop-select — force full-width trigger button + wrapper span */
+.pending-chan-wrap { display: block; width: 100%; }
+.pending-chan-wrap span[data-pop-wrap-for] {
+  display: block !important;
+  width: 100% !important;
+}
+.pending-chan-wrap .pop-trigger {
+  width: 100% !important;
+  box-sizing: border-box;
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>
 </head>
 <body class="">
 
@@ -2523,7 +2545,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.62</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.65</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2547,14 +2569,31 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
       <span id="pendingTopbarBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">0</span>
     </button>
-    <!-- v4.62: Desktop-only now — Data Entry + Settings hidden on mobile (accessible via mobile nav drawer) -->
-    <div class="hide-mobile" style="display:flex;gap:6px;align-items:center;">
+    <!-- v4.63: Desktop-only — Data Entry + Settings hidden on mobile via ID selector + !important -->
+    <div id="topbarExtras" style="display:flex;gap:6px;align-items:center;">
       <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
       </button>
       <button onclick="nav('settings')" aria-label="Settings" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
+      
+    </div>
+    <!-- v4.65: Mobile-only menu button — opens inline popover (no modal) -->
+    <div style="position:relative;display:none;" id="topbarMobileMenuWrap">
+      <button id="topbarMobileMenuBtn" onclick="toggleMobileMenuPopover(event)" aria-label="Menu" title="Menu" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
+      </button>
+      <div id="topbarMobileMenuPopover" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:180px;padding:6px;z-index:200;">
+        <button onclick="closeMobileMenuPopover();nav('entry');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius:6px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          <span>Data Entry</span>
+        </button>
+        <button onclick="closeMobileMenuPopover();nav('settings');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius:6px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          <span>Settings</span>
+        </button>
+      </div>
     </div>
   </div>
 </header>
@@ -2611,7 +2650,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 100.8px; max-height: 690.2px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <div class="list-search contact-search-row" style="position:relative;margin-bottom:4px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -2661,7 +2700,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 100.8px; height: 690.2px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -13388,10 +13427,12 @@ function pendingRender() {
         <span style="font-size:12px; color:var(--silver);">${esc(niceTime)}</span>
       </div>
       <div style="margin-top:10px;">${matchBanner}</div>
-      <select id="chan-${esc(p.id)}" data-pop="1" data-pop-icon="channel" data-pop-placeholder="Select channel..."${selectedAttr} style="width:100%; margin-bottom:8px;">
-        <option value="">Select channel...</option>
-        ${optionsWithSelected}
-      </select>
+      <div class="pending-chan-wrap" style="margin-bottom:14px;">
+        <select id="chan-${esc(p.id)}" data-pop="1" data-pop-icon="channel" data-pop-placeholder="Select channel..."${selectedAttr} style="width:100%;">
+          <option value="">Select channel...</option>
+          ${optionsWithSelected}
+        </select>
+      </div>
       <div style="display:flex; gap:8px; align-items:stretch;">
         <button id="paddbtn-${esc(p.id)}" style="flex:1; padding:10px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500;" onclick="pendingConfirm('${esc(p.id)}')">✅ Add</button>
         <button id="pdelbtn-${esc(p.id)}" style="padding:10px 16px; font-size:14px; background:#fff; color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; font-weight:500; flex-shrink:0;" onclick="pendingDelete('${esc(p.id)}')">🗑</button>
@@ -13783,7 +13824,37 @@ function _pendingBatchAskDuplicate(existing, pendingItem, ch) {
 }
 
 
-</script>
+// v4.65: Inline popover menu for mobile ⋯ button (replaces modal)
+function toggleMobileMenuPopover(event) {
+  if (event) event.stopPropagation();
+  const pop = document.getElementById('topbarMobileMenuPopover');
+  if (!pop) return;
+  const isOpen = pop.style.display === 'block';
+  if (isOpen) {
+    closeMobileMenuPopover();
+  } else {
+    pop.style.display = 'block';
+    setTimeout(() => {
+      document.addEventListener('click', _mobileMenuOutsideClick, { once: true });
+    }, 0);
+  }
+}
+function closeMobileMenuPopover() {
+  const pop = document.getElementById('topbarMobileMenuPopover');
+  if (pop) pop.style.display = 'none';
+  document.removeEventListener('click', _mobileMenuOutsideClick);
+}
+function _mobileMenuOutsideClick(e) {
+  const wrap = document.getElementById('topbarMobileMenuWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    closeMobileMenuPopover();
+  } else {
+    setTimeout(() => {
+      document.addEventListener('click', _mobileMenuOutsideClick, { once: true });
+    }, 0);
+  }
+}
 
+</script>
 
 </body></html>
