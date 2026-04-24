@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 910px;"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2516,14 +2516,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 </style>
 </head>
-<body class="sidebar-collapsed">
+<body class="">
 
 <header class="topbar">
   <div class="brand">
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.53</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.57</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2541,6 +2541,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
       <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">5</span>
+    </button>
+    <!-- v4.55: Pending leads button (always visible, with badge) -->
+    <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;">
+      📥
+      <span id="pendingTopbarBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">0</span>
     </button>
     <!-- Mobile-only: Data Entry + Settings -->
     <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
@@ -2560,6 +2565,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <button class="nav-item" data-page="store" data-tooltip="Appt"><span class="nav-icon">🏢</span><span class="nav-label">Appt</span></button>
   <button class="nav-item" data-page="adsspend" data-tooltip="Ads Spend"><span class="nav-icon">💰</span><span class="nav-label">Ads Spend</span></button>
   <button class="nav-item" data-page="revenue" data-tooltip="Revenue Outlet"><span class="nav-icon">📈</span><span class="nav-label">Revenue Outlet</span></button>
+  <button class="nav-item" data-page="pending" data-tooltip="Pending"><span class="nav-icon">📥</span><span class="nav-label">Pending</span></button>
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="entry" data-tooltip="Data Entry"><span class="nav-icon">✍️</span><span class="nav-label">Data Entry</span></button>
   <button class="nav-item active" data-page="settings" data-tooltip="Settings"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button>
@@ -2605,7 +2611,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <div class="list-search contact-search-row" style="position:relative;margin-bottom:4px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -2655,12 +2661,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
+        <div class="contact-form-empty" id="contactFormEmpty">
           <!-- v4.22: Click-to-create welcome area — big round + button in the middle -->
           <button type="button" onclick="openNewLead()" class="welcome-new-lead-btn" aria-label="Create new lead">
             <span class="welcome-plus-circle">
@@ -2670,7 +2676,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <span class="welcome-plus-hint">or select a lead from the list</span>
           </button>
         </div>
-        <div id="contactFormWrap" style="display: block;">
+        <div id="contactFormWrap" style="display:none;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -2696,10 +2702,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-04-22</span>
+                      <span id="f_leadDate_label">2026-04-24</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-04-22">
+                    <input type="hidden" id="f_leadDate" value="2026-04-24">
                   </div>
                 </div>
               </div>
@@ -2731,7 +2737,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label"></span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate" value="">
+                    <input type="hidden" id="f_apptDate">
                   </div>
                 </div>
               </div>
@@ -3074,7 +3080,22 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </section>
 
   <!-- SETTINGS PAGE -->
-  <section class="page active" id="page-settings">
+  <section class="page" id="page-pending">
+  <div style="padding: 16px; max-width: 800px; margin: 0 auto;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h2 style="margin:0; font-size:20px; font-weight:600;">📥 Pending Leads</h2>
+      <button class="btn btn-outline" onclick="pendingRefresh()">🔄 Refresh</button>
+    </div>
+    <div id="pendingEmpty" style="padding:40px 20px; text-align:center; color:var(--gray); display:none;">
+      <div style="font-size:48px; margin-bottom:12px;">✨</div>
+      <div>No pending leads</div>
+      <div style="font-size:13px; margin-top:8px; color:var(--silver);">New leads from GHL will appear here</div>
+    </div>
+    <div id="pendingList"></div>
+  </div>
+</section>
+
+<section class="page active" id="page-settings">
     <div class="unified-header unified-header-single">
       <h1 class="page-title" style="margin:0;">Settings</h1>
     </div>
@@ -13189,6 +13210,254 @@ history.pushState(null, '', location.href);
   };
   document.addEventListener('focusin', fix, true);
 })();
+
+// ========== v4.54: PENDING PAGE (GHL new leads awaiting confirmation) ==========
+
+let pendingData = [];
+
+(function hookNavForPending() {
+  if (typeof window.nav !== 'function') return;
+  const origNav = window.nav;
+  window.nav = function(page) {
+    origNav(page);
+    if (page === 'pending') pendingRefresh();
+  };
+})();
+
+// v4.55: Badge updater — checks pending count every 60s, updates red dot on topbar button
+async function pendingBadgeUpdate() {
+  const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  if (!url) return;
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'pullpending' }),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    const d = await r.json();
+    const count = (d.pending || []).length;
+    const badge = document.getElementById('pendingTopbarBadge');
+    if (!badge) return;
+    if (count > 0) {
+      badge.textContent = count > 99 ? '99+' : String(count);
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch (e) { /* silent */ }
+}
+
+// Run badge check on page load + every 60 seconds
+setTimeout(pendingBadgeUpdate, 2000);
+setInterval(pendingBadgeUpdate, 60000);
+
+
+async function pendingRefresh() {
+  const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  if (!url) {
+    if (typeof toast === 'function') toast('⚠️ Apps Script URL not set, configure in Settings');
+    return;
+  }
+  const listEl = document.getElementById('pendingList');
+  if (listEl) listEl.innerHTML = '<div style="padding:20px; text-align:center; color:var(--gray);">Loading...</div>';
+
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'pullpending' }),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    const d = await r.json();
+    if (!d.success) throw new Error(d.error || 'pull failed');
+    pendingData = d.pending || [];
+    pendingRender();
+  } catch (e) {
+    if (listEl) listEl.innerHTML = '<div style="padding:20px; text-align:center; color:var(--red);">Load failed: ' + (e.message || e) + '</div>';
+  }
+}
+
+function pendingMatchChannel(tag) {
+  // v4.56: auto-match GHL tag against user's channels by name (case-insensitive, trimmed)
+  if (!tag) return null;
+  const channels = (typeof state !== 'undefined' && state.channels) ? state.channels : [];
+  const activeCh = channels.filter(c => c.active !== false);
+  const tagNorm = String(tag).trim().toLowerCase();
+
+  // 1. Exact name match
+  let hit = activeCh.find(c => String(c.name).trim().toLowerCase() === tagNorm);
+  if (hit) return hit;
+
+  // 2. Contains match (tag contains channel name or vice versa)
+  hit = activeCh.find(c => {
+    const cn = String(c.name).trim().toLowerCase();
+    return cn && (tagNorm.indexOf(cn) >= 0 || cn.indexOf(tagNorm) >= 0);
+  });
+  if (hit) return hit;
+
+  // 3. Keyword heuristic (facebook/organic/google/tiktok etc)
+  const kw = [
+    { match: ['facebook','instagram','meta','fb','ig'], platform: 'meta' },
+    { match: ['google'], platform: 'google' },
+    { match: ['tiktok','tt'], platform: 'tiktok' },
+    { match: ['organic','whatsapp','walk'], platform: 'organic' },
+    { match: ['follow','followup','retarget'], platform: 'followup' }
+  ];
+  for (const k of kw) {
+    if (k.match.some(m => tagNorm.indexOf(m) >= 0)) {
+      // Find first active channel in this platform
+      hit = activeCh.find(c => c.platform === k.platform);
+      if (hit) return hit;
+    }
+  }
+
+  return null;
+}
+
+function pendingRender() {
+  const listEl = document.getElementById('pendingList');
+  const emptyEl = document.getElementById('pendingEmpty');
+  if (!listEl || !emptyEl) return;
+
+  if (pendingData.length === 0) {
+    listEl.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+  emptyEl.style.display = 'none';
+
+  const esc = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
+
+  // Build channel options once — from user's actual channels list (active only)
+  const channels = (typeof state !== 'undefined' && state.channels) ? state.channels : [];
+  const activeCh = channels.filter(c => c.active !== false);
+  const channelOptions = activeCh.map(c =>
+    `<option value="${esc(c.id)}">${esc(c.name)} (${esc(c.platform)})</option>`
+  ).join('');
+
+  listEl.innerHTML = pendingData.map(p => {
+    const matched = pendingMatchChannel(p.tag);
+    const matchBanner = matched
+      ? `<div style="background:rgba(16,158,97,0.08); color:var(--green-dark); padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">✨ Auto-matched: <b>${esc(matched.name)}</b> (${esc(matched.platform)})</div>`
+      : `<div style="background:rgba(217,119,6,0.08); color:var(--amber); padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">⚠️ No match, please select manually</div>`;
+    const selectedAttr = matched ? ` data-matched="${esc(matched.id)}"` : '';
+    const optionsWithSelected = activeCh.map(c =>
+      `<option value="${esc(c.id)}"${matched && c.id === matched.id ? ' selected' : ''}>${esc(c.name)} (${esc(c.platform)})</option>`
+    ).join('');
+
+    return `
+    <div style="background:var(--white); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:10px; box-shadow: var(--shadow-sm);">
+      <div style="font-size:16px; font-weight:600; color:var(--black); margin-bottom:6px;">${esc(p.phone)}</div>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+        <span style="background:var(--purple-bg); color:var(--purple-deep); padding:3px 10px; border-radius:6px; font-size:12px; font-weight:500;">GHL: ${esc(p.tag)}</span>
+        <span style="font-size:12px; color:var(--silver);">${esc(p.timestamp)}</span>
+      </div>
+      <div style="margin-top:10px;">${matchBanner}</div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <select id="chan-${esc(p.id)}"${selectedAttr} style="flex:1; min-width:160px; padding:9px 12px; font-size:14px; border:1px solid var(--border); border-radius:8px; background:var(--white);">
+          <option value="">Select channel...</option>
+          ${optionsWithSelected}
+        </select>
+        <button style="padding:9px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500;" onclick="pendingConfirm('${esc(p.id)}')">✅ Add</button>
+        <button style="padding:9px 14px; font-size:14px; background:#fff; color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; font-weight:500;" onclick="pendingDelete('${esc(p.id)}')">🗑</button>
+      </div>
+    </div>
+    `;
+  }).join('');
+}
+
+async function pendingConfirm(pendingId) {
+  const p = pendingData.find(x => x.id === pendingId);
+  if (!p) return;
+
+  const chanSel = document.getElementById('chan-' + pendingId);
+  const channelId = chanSel ? chanSel.value : '';
+  if (!channelId) {
+    if (typeof toast === 'function') toast('Please select a channel first');
+    return;
+  }
+
+  // Look up the channel object from state
+  const channels = (typeof state !== 'undefined' && state.channels) ? state.channels : [];
+  const ch = channels.find(c => c.id === channelId);
+  if (!ch) {
+    if (typeof toast === 'function') toast('Channel not found, please refresh');
+    return;
+  }
+
+  const now = new Date();
+  const leadId = 'L-' + now.getTime().toString(36) + '-' + Math.random().toString(36).substr(2, 5);
+  const todayStr = now.toISOString().split('T')[0];
+
+  const phone = (typeof normalizePhone === 'function')
+    ? normalizePhone(p.phone)
+    : String(p.phone).replace(/\D/g, '').replace(/^0/, '60');
+
+  const leadRecord = {
+    id: leadId,
+    contact: phone,
+    channelId: ch.id,
+    channelName: ch.name,
+    platform: ch.platform,
+    leadDate: todayStr,
+    name: '',
+    apptDate: '',
+    locationId: '',
+    showUp: '',
+    race: '',
+    spend: 0,
+    remark: '[From GHL] original tag: ' + p.tag,
+    status: 'lead',
+    flags: ''
+  };
+
+  const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  if (!url) return;
+
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'confirmpending', id: pendingId, leadRecord: leadRecord }),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    const d = await r.json();
+    if (d.success) {
+      if (typeof state !== 'undefined' && state.leads) {
+        state.leads.push(leadRecord);
+        if (typeof saveState === 'function') saveState();
+      }
+      if (typeof toast === 'function') toast('✅ Added to Leads: ' + ch.name);
+      pendingRefresh();
+      if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
+    } else {
+      if (typeof toast === 'function') toast('❌ Failed: ' + (d.error || 'unknown'));
+    }
+  } catch (e) {
+    if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
+  }
+}
+
+async function pendingDelete(pendingId) {
+  if (!confirm('Delete this pending record?')) return;
+
+  const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  if (!url) return;
+
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'deletepending', id: pendingId }),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    const d = await r.json();
+    if (d.success) {
+      if (typeof toast === 'function') toast('Deleted');
+      pendingRefresh();
+    }
+  } catch (e) {
+    if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
+  }
+}
+
 </script>
 
 
