@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 792px; --uheader-h: 57px;"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2523,7 +2523,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.60</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.61</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2598,7 +2598,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
       </div>
       <!-- v4.30: Slot where filters go on mobile (JS moves .contact-filters-inline here when < 768px) -->
-      <div id="contactFiltersMobileSlot"><div class="contact-filters-inline">
+      <div id="contactFiltersMobileSlot"></div>
+    </div>
+    <div class="unified-header-spacer"></div>
+
+    <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
+    <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <span>Searching: <strong id="searchActiveTerm"></strong></span>
+      <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
+    </div>
+
+    <div class="contact-layout">
+      <!-- LEFT: List panel (contains filters + list + load more) -->
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <div class="list-search contact-search-row" style="position:relative;margin-bottom:4px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -2639,20 +2652,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
-        </div></div>
-    </div>
-    <div class="unified-header-spacer"></div>
-
-    <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
-    <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-      <span>Searching: <strong id="searchActiveTerm"></strong></span>
-      <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
-    </div>
-
-    <div class="contact-layout">
-      <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel">
+        </div>
         <!-- v4.23: Filters moved here from unified-header -->
         
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
@@ -2661,7 +2661,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -13386,13 +13386,13 @@ function pendingRender() {
         <span style="font-size:12px; color:var(--silver);">${esc(p.timestamp)}</span>
       </div>
       <div style="margin-top:10px;">${matchBanner}</div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-        <select id="chan-${esc(p.id)}"${selectedAttr} style="flex:1; min-width:160px; padding:9px 12px; font-size:14px; border:1px solid var(--border); border-radius:8px; background:var(--white);">
-          <option value="">Select channel...</option>
-          ${optionsWithSelected}
-        </select>
-        <button id="paddbtn-${esc(p.id)}" style="padding:9px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500;" onclick="pendingConfirm('${esc(p.id)}')">✅ Add</button>
-        <button id="pdelbtn-${esc(p.id)}" style="padding:9px 14px; font-size:14px; background:#fff; color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; font-weight:500;" onclick="pendingDelete('${esc(p.id)}')">🗑</button>
+      <select id="chan-${esc(p.id)}"${selectedAttr} style="width:100%; padding:10px 12px; font-size:14px; border:1px solid var(--border); border-radius:8px; background:var(--white); margin-bottom:8px; box-sizing:border-box;">
+        <option value="">Select channel...</option>
+        ${optionsWithSelected}
+      </select>
+      <div style="display:flex; gap:8px; align-items:stretch;">
+        <button id="paddbtn-${esc(p.id)}" style="flex:1; padding:10px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500;" onclick="pendingConfirm('${esc(p.id)}')">✅ Add</button>
+        <button id="pdelbtn-${esc(p.id)}" style="padding:10px 16px; font-size:14px; background:#fff; color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; font-weight:500; flex-shrink:0;" onclick="pendingDelete('${esc(p.id)}')">🗑</button>
       </div>
     </div>
     `;
