@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 792px; --uheader-h: 57px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2523,7 +2523,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.58</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.60</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2598,20 +2598,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
       </div>
       <!-- v4.30: Slot where filters go on mobile (JS moves .contact-filters-inline here when < 768px) -->
-      <div id="contactFiltersMobileSlot"></div>
-    </div>
-    <div class="unified-header-spacer"></div>
-
-    <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
-    <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-      <span>Searching: <strong id="searchActiveTerm"></strong></span>
-      <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
-    </div>
-
-    <div class="contact-layout">
-      <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;"><div class="contact-filters-inline">
+      <div id="contactFiltersMobileSlot"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <div class="list-search contact-search-row" style="position:relative;margin-bottom:4px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -2652,7 +2639,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
-        </div>
+        </div></div>
+    </div>
+    <div class="unified-header-spacer"></div>
+
+    <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
+    <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <span>Searching: <strong id="searchActiveTerm"></strong></span>
+      <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
+    </div>
+
+    <div class="contact-layout">
+      <!-- LEFT: List panel (contains filters + list + load more) -->
+      <div class="contact-list-panel" id="contactListPanel">
         <!-- v4.23: Filters moved here from unified-header -->
         
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
@@ -2661,7 +2661,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
+      <div class="contact-form-panel" id="contactFormPanel">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -3085,6 +3085,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
       <h2 style="margin:0; font-size:20px; font-weight:600;">📥 Pending Leads</h2>
       <button class="btn btn-outline" onclick="pendingRefresh()">🔄 Refresh</button>
+    </div>
+    <div id="pendingBatchBar" style="display:none; background:linear-gradient(135deg, var(--purple-bg), rgba(133,91,251,0.04)); border:1px solid var(--purple-subtle); border-radius:12px; padding:12px 14px; margin-bottom:14px; align-items:center; gap:10px; flex-wrap:wrap;">
+      <div id="pendingBatchSummary" style="font-size:13px; color:var(--purple-deep); flex:1; min-width:140px;"></div>
+      <button id="pendingBatchAddBtn" onclick="pendingBatchAddAll()" style="padding:9px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500; white-space:nowrap;">⚡ Add all matched</button>
     </div>
     <div id="pendingEmpty" style="padding:40px 20px; text-align:center; color:var(--gray); display:none;">
       <div style="font-size:48px; margin-bottom:12px;">✨</div>
@@ -13220,7 +13224,12 @@ let pendingData = [];
   const origNav = window.nav;
   window.nav = function(page) {
     origNav(page);
-    if (page === 'pending') pendingRefresh();
+    if (page === 'pending') {
+      pendingRefresh();
+    } else {
+      // v4.59: instant badge check on page switch (except pending itself, which refreshes fully)
+      if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
+    }
   };
 })();
 
@@ -13316,14 +13325,39 @@ function pendingMatchChannel(tag) {
 function pendingRender() {
   const listEl = document.getElementById('pendingList');
   const emptyEl = document.getElementById('pendingEmpty');
+  const batchBar = document.getElementById('pendingBatchBar');
+  const batchSummary = document.getElementById('pendingBatchSummary');
+  const batchBtn = document.getElementById('pendingBatchAddBtn');
   if (!listEl || !emptyEl) return;
 
   if (pendingData.length === 0) {
     listEl.innerHTML = '';
     emptyEl.style.display = 'block';
+    if (batchBar) batchBar.style.display = 'none';
     return;
   }
   emptyEl.style.display = 'none';
+
+  // v4.60: Count matched vs unmatched for batch bar
+  let matchedCount = 0, unmatchedCount = 0;
+  pendingData.forEach(p => {
+    if (pendingMatchChannel(p.tag)) matchedCount++;
+    else unmatchedCount++;
+  });
+  if (batchBar) {
+    if (matchedCount > 0) {
+      batchBar.style.display = 'flex';
+      if (batchSummary) {
+        const parts = [];
+        parts.push(matchedCount + ' matched');
+        if (unmatchedCount > 0) parts.push(unmatchedCount + ' unmatched (will skip)');
+        batchSummary.textContent = parts.join(', ');
+      }
+      if (batchBtn) batchBtn.textContent = '⚡ Add all matched (' + matchedCount + ')';
+    } else {
+      batchBar.style.display = 'none';
+    }
+  }
 
   const esc = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
 
@@ -13436,6 +13470,41 @@ async function pendingConfirm(pendingId) {
     return;
   }
 
+  // v4.60: Check for duplicate BEFORE sending to server (same logic as handleDuplicate)
+  const existingLead = (typeof state !== 'undefined' && state.leads)
+    ? state.leads.find(l => l.contact === phone)
+    : null;
+
+  if (existingLead) {
+    const daysDiff = (new Date(todayStr) - new Date(existingLead.leadDate)) / (1000 * 60 * 60 * 24);
+    if (daysDiff >= 30) {
+      // >30 days → auto Follow Up
+      const fuCh = state.channels.find(c => c.platform === 'followup');
+      if (fuCh) {
+        leadRecord.channelId = fuCh.id;
+        leadRecord.channelName = fuCh.name;
+        leadRecord.platform = fuCh.platform;
+        leadRecord.remark = '[From GHL → Auto Follow Up >30d] original tag: ' + p.tag;
+        if (typeof toast === 'function') toast('🔁 Auto Follow Up (>30 days since last contact)');
+      }
+    } else {
+      // <=30 days → ask user
+      _pendingInFlight.delete(pendingId);
+      if (card) { card.style.opacity = ''; card.style.pointerEvents = ''; }
+      if (addBtn) { addBtn.textContent = '✅ Add'; addBtn.disabled = false; }
+      if (delBtn) delBtn.disabled = false;
+      const decision = await _pendingBatchAskDuplicate(existingLead, p, ch);
+      if (decision === 'skip' || decision === 'cancel') return;
+      if (decision === 'force_new') {
+        // Re-lock and proceed (user wants to force new record)
+        _pendingInFlight.add(pendingId);
+        if (card) { card.style.opacity = '0.55'; card.style.pointerEvents = 'none'; }
+        if (addBtn) { addBtn.textContent = '⏳ Adding...'; addBtn.disabled = true; }
+        if (delBtn) delBtn.disabled = true;
+      }
+    }
+  }
+
   // Immediately remove from local UI so it can't be clicked again even across refreshes
   pendingData = pendingData.filter(x => x.id !== pendingId);
 
@@ -13451,17 +13520,15 @@ async function pendingConfirm(pendingId) {
         state.leads.push(leadRecord);
         if (typeof saveState === 'function') saveState();
       }
-      if (typeof toast === 'function') toast('✅ Added to Leads: ' + ch.name);
+      if (typeof toast === 'function') toast('✅ Added to Leads: ' + leadRecord.channelName);
       pendingRender();
       if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
     } else {
-      // Server said no — rollback local state
       pendingData.push(p);
       pendingRender();
       if (typeof toast === 'function') toast('❌ Failed: ' + (d.error || 'unknown'));
     }
   } catch (e) {
-    // Network error — rollback
     pendingData.push(p);
     pendingRender();
     if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
@@ -13511,6 +13578,186 @@ async function pendingDelete(pendingId) {
     _pendingInFlight.delete(pendingId);
   }
 }
+
+// v4.60: BATCH ADD — process all matched pending items
+// Uses handleDuplicate() for duplicate detection (same as manual flow)
+// - >30 days: auto Follow Up (handled by handleDuplicate)
+// - <=30 days: modal opens, user must decide before batch continues
+
+async function pendingBatchAddAll() {
+  if (pendingData.length === 0) return;
+
+  // Build list of matched items only (unmatched are skipped)
+  const toProcess = pendingData.filter(p => pendingMatchChannel(p.tag));
+  if (toProcess.length === 0) {
+    if (typeof toast === 'function') toast('No matched items to add');
+    return;
+  }
+
+  if (!confirm('Add ' + toProcess.length + ' matched lead(s) to CRM?\n\nUnmatched items will be skipped.\nYou may be asked to handle duplicates.')) return;
+
+  const btn = document.getElementById('pendingBatchAddBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Processing...'; }
+
+  let added = 0, followup = 0, skipped = 0, failed = 0;
+
+  for (const p of toProcess) {
+    const ch = pendingMatchChannel(p.tag);
+    if (!ch) { skipped++; continue; }
+
+    const phone = (typeof normalizePhone === 'function')
+      ? normalizePhone(p.phone)
+      : String(p.phone).replace(/\D/g, '').replace(/^0/, '60');
+
+    // Check if phone already exists in Leads — use existing handleDuplicate flow if so
+    const existing = (typeof state !== 'undefined' && state.leads)
+      ? state.leads.find(l => l.contact === phone)
+      : null;
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    if (existing) {
+      // Duplicate detected — check age
+      const daysDiff = (new Date(todayStr) - new Date(existing.leadDate)) / (1000 * 60 * 60 * 24);
+
+      if (daysDiff >= 30) {
+        // > 30 days: auto Follow Up (same logic as handleDuplicate)
+        const fuCh = state.channels.find(c => c.platform === 'followup');
+        if (fuCh) {
+          const ok = await _pendingBatchSaveOne(p, fuCh, phone, '[From GHL → Follow Up] original tag: ' + p.tag);
+          if (ok) followup++;
+          else failed++;
+          continue;
+        }
+        // No followup channel configured — fall through to skip
+        skipped++;
+        continue;
+      } else {
+        // <= 30 days: pause batch, open modal, wait for user decision
+        const decision = await _pendingBatchAskDuplicate(existing, p, ch);
+        if (decision === 'skip') { skipped++; continue; }
+        if (decision === 'force_new') {
+          const ok = await _pendingBatchSaveOne(p, ch, phone, '[From GHL] original tag: ' + p.tag);
+          if (ok) added++;
+          else failed++;
+          continue;
+        }
+        if (decision === 'cancel') {
+          // User cancelled — abort entire batch
+          break;
+        }
+      }
+    } else {
+      // No duplicate — simple insert
+      const ok = await _pendingBatchSaveOne(p, ch, phone, '[From GHL] original tag: ' + p.tag);
+      if (ok) added++;
+      else failed++;
+    }
+  }
+
+  // Final refresh & summary
+  pendingRefresh();
+  if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
+  if (btn) { btn.disabled = false; btn.textContent = '⚡ Add all matched'; }
+
+  const summary = [];
+  if (added > 0) summary.push('✅ Added ' + added);
+  if (followup > 0) summary.push('🔁 Follow Up ' + followup);
+  if (skipped > 0) summary.push('⏭ Skipped ' + skipped);
+  if (failed > 0) summary.push('❌ Failed ' + failed);
+  if (typeof toast === 'function') toast(summary.join(' · '));
+}
+
+// Helper: save one pending item to Leads + remove from Pending
+// Returns true on success, false on failure
+async function _pendingBatchSaveOne(p, ch, phone, remark) {
+  const now = new Date();
+  const leadId = 'L-' + now.getTime().toString(36) + '-' + Math.random().toString(36).substr(2, 5);
+  const todayStr = now.toISOString().split('T')[0];
+
+  const leadRecord = {
+    id: leadId, contact: phone, channelId: ch.id, channelName: ch.name,
+    platform: ch.platform, leadDate: todayStr, name: '', apptDate: '',
+    locationId: '', showUp: '', race: '', spend: 0,
+    remark: remark, status: 'lead', flags: ''
+  };
+
+  const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  if (!url) return false;
+
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'confirmpending', id: p.id, leadRecord: leadRecord }),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    const d = await r.json();
+    if (d.success) {
+      if (typeof state !== 'undefined' && state.leads) {
+        state.leads.push(leadRecord);
+        if (typeof saveState === 'function') saveState();
+      }
+      // Also remove from local pendingData so UI count is accurate
+      pendingData = pendingData.filter(x => x.id !== p.id);
+      return true;
+    }
+    return false;
+  } catch (e) {
+    console.warn('batch save failed:', e.message);
+    return false;
+  }
+}
+
+// Helper: show duplicate modal inside batch flow, returns promise with user choice
+// Resolves to 'force_new' | 'skip' | 'cancel'
+function _pendingBatchAskDuplicate(existing, pendingItem, ch) {
+  return new Promise(resolve => {
+    const esc = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||''));
+    const channelLabel = (existing.channelName || existing.channel || existing.channelId || '?');
+    const leadDateStr = existing.leadDate || '?';
+    const statusStr = existing.status || '?';
+    const nameStr = existing.name || '(no name)';
+
+    const html = `
+      <div class="modal-header">
+        <div>
+          <div class="modal-title">Duplicate contact found</div>
+          <div style="font-size:13px;color:var(--gray);margin-top:4px;">${esc(pendingItem.phone)}</div>
+        </div>
+        <button class="modal-close" onclick="_batchDupResolve('cancel')">✕</button>
+      </div>
+      <div style="padding:14px;background:var(--surface-2);border-radius:10px;margin-bottom:12px;">
+        <div style="font-size:13px;color:var(--gray);margin-bottom:6px;">Existing record in Leads</div>
+        <div style="font-weight:600;margin-bottom:4px;">${esc(nameStr)}</div>
+        <div style="font-size:13px;color:var(--gray);">
+          ${esc(channelLabel)} · Lead ${esc(leadDateStr)}<br>
+          Status: <span class="badge badge-${esc(statusStr)}">${esc(statusStr)}</span>
+        </div>
+      </div>
+      <div style="padding:10px 12px;background:rgba(133,91,251,0.06);border-radius:8px;margin-bottom:12px;font-size:13px;color:var(--purple-deep);">
+        Incoming from GHL: <b>${esc(pendingItem.tag)}</b> → <b>${esc(ch.name)}</b> (${esc(ch.platform)})
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-primary" onclick="_batchDupResolve('force_new')">Add as new record</button>
+        <button class="btn btn-outline" onclick="_batchDupResolve('skip')">Skip this one, continue batch</button>
+        <button class="btn btn-gray" onclick="_batchDupResolve('cancel')">Cancel entire batch</button>
+      </div>
+    `;
+
+    window._batchDupResolve = function(decision) {
+      if (typeof closeModal === 'function') closeModal();
+      delete window._batchDupResolve;
+      resolve(decision);
+    };
+
+    if (typeof showModal === 'function') {
+      showModal(html);
+    } else {
+      // Fallback if showModal unavailable
+      resolve('skip');
+    }
+  });
+}
+
 
 </script>
 
