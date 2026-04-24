@@ -2523,7 +2523,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.61</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.62</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2542,13 +2542,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
       <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">5</span>
     </button>
-    <!-- v4.55: Pending leads button (always visible, with badge) -->
-    <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;">
-      📥
+    <!-- v4.62: Pending leads button — SVG inbox icon to match other topbar icons -->
+    <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" class="hide-mobile-when-needed" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
       <span id="pendingTopbarBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">0</span>
     </button>
-    <!-- Mobile-only: Data Entry + Settings -->
-    <div class="hide-desktop" style="display:flex;gap:6px;align-items:center;">
+    <!-- v4.62: Desktop-only now — Data Entry + Settings hidden on mobile (accessible via mobile nav drawer) -->
+    <div class="hide-mobile" style="display:flex;gap:6px;align-items:center;">
       <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
       </button>
@@ -2565,7 +2565,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <button class="nav-item" data-page="store" data-tooltip="Appt"><span class="nav-icon">🏢</span><span class="nav-label">Appt</span></button>
   <button class="nav-item" data-page="adsspend" data-tooltip="Ads Spend"><span class="nav-icon">💰</span><span class="nav-label">Ads Spend</span></button>
   <button class="nav-item" data-page="revenue" data-tooltip="Revenue Outlet"><span class="nav-icon">📈</span><span class="nav-label">Revenue Outlet</span></button>
-  <button class="nav-item" data-page="pending" data-tooltip="Pending"><span class="nav-icon">📥</span><span class="nav-label">Pending</span></button>
+  <button class="nav-item" data-page="pending" data-tooltip="Pending"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Pending</span></button>
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="entry" data-tooltip="Data Entry"><span class="nav-icon">✍️</span><span class="nav-label">Data Entry</span></button>
   <button class="nav-item active" data-page="settings" data-tooltip="Settings"><span class="nav-icon">⚙️</span><span class="nav-label">Settings</span></button>
@@ -2611,7 +2611,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 100.8px; max-height: 690.2px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <div class="list-search contact-search-row" style="position:relative;margin-bottom:4px;">
             <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -2661,7 +2661,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66px; height: 725px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 100.8px; height: 690.2px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -13377,16 +13377,18 @@ function pendingRender() {
     const optionsWithSelected = activeCh.map(c =>
       `<option value="${esc(c.id)}"${matched && c.id === matched.id ? ' selected' : ''}>${esc(c.name)} (${esc(c.platform)})</option>`
     ).join('');
+    // v4.62: Simplify timestamp display — "24 Apr 3:00 PM" instead of "Fri Apr 24 2026 16:38:52 GMT+0800 (Singapore Standard Time)"
+    const niceTime = pendingFormatTime(p.timestamp);
 
     return `
     <div id="pcard-${esc(p.id)}" style="background:var(--white); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:10px; box-shadow: var(--shadow-sm); transition: opacity 0.15s;">
       <div style="font-size:16px; font-weight:600; color:var(--black); margin-bottom:6px;">${esc(p.phone)}</div>
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
         <span style="background:var(--purple-bg); color:var(--purple-deep); padding:3px 10px; border-radius:6px; font-size:12px; font-weight:500;">GHL: ${esc(p.tag)}</span>
-        <span style="font-size:12px; color:var(--silver);">${esc(p.timestamp)}</span>
+        <span style="font-size:12px; color:var(--silver);">${esc(niceTime)}</span>
       </div>
       <div style="margin-top:10px;">${matchBanner}</div>
-      <select id="chan-${esc(p.id)}"${selectedAttr} style="width:100%; padding:10px 12px; font-size:14px; border:1px solid var(--border); border-radius:8px; background:var(--white); margin-bottom:8px; box-sizing:border-box;">
+      <select id="chan-${esc(p.id)}" data-pop="1" data-pop-icon="channel" data-pop-placeholder="Select channel..."${selectedAttr} style="width:100%; margin-bottom:8px;">
         <option value="">Select channel...</option>
         ${optionsWithSelected}
       </select>
@@ -13397,6 +13399,28 @@ function pendingRender() {
     </div>
     `;
   }).join('');
+
+  // v4.62: Upgrade the newly-rendered selects to use the pop-select modal UI (consistent with Leads/Channel/etc)
+  if (typeof upgradeAllPopSelects === 'function') {
+    setTimeout(upgradeAllPopSelects, 0);
+  }
+}
+
+// v4.62: Parse Apps Script timestamp ("2026-04-24 16:38:52") → "24 Apr 3:00 PM"
+function pendingFormatTime(raw) {
+  if (!raw) return '';
+  const s = String(raw).trim();
+  // Match yyyy-MM-dd HH:mm:ss (what Apps Script sends)
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+  if (!m) return s;  // fallback: show raw if we can't parse
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const day = parseInt(m[3], 10);
+  const mon = months[parseInt(m[2], 10) - 1] || '?';
+  let hr = parseInt(m[4], 10);
+  const min = m[5];
+  const ampm = hr >= 12 ? 'PM' : 'AM';
+  hr = hr % 12 || 12;
+  return `${day} ${mon} ${hr}:${min} ${ampm}`;
 }
 
 // v4.58: in-flight lock to prevent double-click
