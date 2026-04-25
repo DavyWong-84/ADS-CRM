@@ -2560,6 +2560,32 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   pointer-events: none;
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
+/* v4.98: Timeline tooltip — wider, padded, no white-space:pre-wrap (uses HTML) */
+.remark-tooltip-timeline {
+  width: 320px;
+  max-width: calc(100vw - 20px);
+  padding: 12px 14px;
+  white-space: normal;
+  word-break: normal;
+}
+/* Modal version is also dark themed for timeline */
+.remark-modal-timeline {
+  background: #1A1A20 !important;
+  color: #fff;
+}
+.remark-modal-timeline .remark-modal-header {
+  color: #fff !important;
+  border-bottom-color: rgba(255,255,255,0.1) !important;
+}
+.remark-modal-timeline .remark-modal-header button {
+  color: rgba(255,255,255,0.6) !important;
+}
+.remark-modal-body-timeline {
+  padding: 14px 18px !important;
+  color: #fff !important;
+  font-size: 13px;
+  white-space: normal !important;
+}
 .remark-modal-overlay {
   position: fixed;
   inset: 0;
@@ -2671,7 +2697,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.97</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.98</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3860,17 +3886,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 // v4.82: List card helpers — remark icon (only if remark present) + reschedule chip (only if flag set & still booked)
 function remarkIconHTML(l) {
   if (!l || !l.remark) return '';
-  // Strip auto-generated lines (lines starting with [Auto]) from tooltip preview to focus on user content
-  // But still show full content if user wants to see history
   const fullText = String(l.remark).trim();
   if (!fullText) return '';
   const escFn = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
-  // Truncate for tooltip preview, but keep full text for tap-to-modal
-  const previewMax = 280;
-  const preview = fullText.length > previewMax ? fullText.substring(0, previewMax) + '…' : fullText;
-  const escapedTooltip = escFn(preview);
   const escapedFull = escFn(fullText);
-  return ` <span class="lc-remark-icon" data-remark-tooltip="${escapedTooltip}" data-remark-full="${escapedFull}" onclick="event.stopPropagation();showRemarkPopup(this);" onmouseenter="showRemarkTooltip(this);" onmouseleave="hideRemarkTooltip();" title="" role="button" aria-label="View remark"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>`;
+  return ` <span class="lc-remark-icon" data-remark-full="${escapedFull}" onclick="event.stopPropagation();showRemarkPopup(this);" onmouseenter="showRemarkTooltip(this);" onmouseleave="hideRemarkTooltip();" title="" role="button" aria-label="View activity"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>`;
 }
 
 function rescheduleChipHTML(l) {
@@ -3880,26 +3900,112 @@ function rescheduleChipHTML(l) {
   return `<span class="lc-resched-chip" title="Customer rescheduled this appointment"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Rescheduled</span>`;
 }
 
-// Tooltip: hover/focus shows brief preview
+// v4.98: Parse a remark line into structured event data for timeline rendering
+function _parseRemarkLine(line) {
+  // Examples:
+  //   "[Auto] 25 Apr 14:40 Reschedule: 2026-04-30 → 2026-06-15, Location: Sunway → Cheras"
+  //   "[Auto] 25 Apr 14:40 Reschedule: 2026-04-30 → 2026-06-15"
+  //   "[Auto] 25 Apr 14:40 Location: Sunway → Cheras"
+  //   "[Auto] 25 Apr 13:30 Lead received · Simply 5 · Appt 30 Apr 2:30 PM @ Sunway"
+  //   "[Auto] 25 Apr 13:30 Appt received · Simply 5 · 30 Apr 2:30 PM @ Sunway"
+  const m = line.match(/^\[Auto\]\s+([0-9]+\s+\w+\s+[0-9:]+)\s+(.+)$/);
+  if (!m) {
+    // Not auto-generated — treat as user-written note
+    return { type: 'note', timestamp: '', body: line };
+  }
+  const ts = m[1];
+  const rest = m[2];
+
+  // Reschedule / Location change events
+  if (/^Reschedule:|^Location:/i.test(rest)) {
+    const changes = [];
+    // Split on ", " but only when it's between change clauses
+    const partRegex = /(Reschedule|Location):\s*([^→]+?)\s*→\s*([^,]+?)(?=,\s*(Reschedule|Location):|$)/g;
+    let pm;
+    while ((pm = partRegex.exec(rest)) !== null) {
+      changes.push({ kind: pm[1], from: pm[2].trim(), to: pm[3].trim() });
+    }
+    if (changes.length === 0) {
+      return { type: 'change', timestamp: ts, body: rest };
+    }
+    return { type: 'change', timestamp: ts, changes: changes };
+  }
+
+  // Lead received / Appt received
+  if (/^Lead received/i.test(rest) || /^Appt received/i.test(rest)) {
+    return { type: 'received', timestamp: ts, body: rest };
+  }
+
+  // Anything else — generic auto event
+  return { type: 'auto', timestamp: ts, body: rest };
+}
+
+// v4.98: Render remark as timeline HTML
+function _renderRemarkTimeline(fullText) {
+  const escFn = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
+  const lines = String(fullText).split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if (lines.length === 0) return '<div style="opacity:0.7; padding:8px;">No activity</div>';
+
+  let html = '';
+  lines.forEach((line, idx) => {
+    const event = _parseRemarkLine(line);
+    const isLast = (idx === lines.length - 1);
+    const accentColor = (event.type === 'change') ? '#FAC775'  // amber for reschedule
+                      : (event.type === 'received') ? 'rgba(255,255,255,0.3)'  // muted for received
+                      : 'rgba(255,255,255,0.3)';
+
+    let bodyHtml = '';
+    if (event.type === 'change' && event.changes) {
+      bodyHtml = event.changes.map(c => {
+        const label = c.kind === 'Reschedule' ? 'Date' : (c.kind === 'Location' ? 'Location' : c.kind);
+        return `<div style="margin-bottom:${c === event.changes[event.changes.length-1] ? '0' : '6px'};">
+          <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;">${escFn(label)}</div>
+          <div style="font-size:13px; line-height:1.4;">
+            <span style="text-decoration:line-through; opacity:0.55;">${escFn(c.from)}</span>
+            <span style="margin:0 4px; opacity:0.6;">→</span>
+            <strong style="color:#FAC775; font-weight:600;">${escFn(c.to)}</strong>
+          </div>
+        </div>`;
+      }).join('');
+    } else if (event.type === 'received') {
+      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:rgba(255,255,255,0.85);">${escFn(event.body)}</div>`;
+    } else if (event.type === 'note') {
+      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:rgba(255,255,255,0.95); white-space:pre-wrap;">${escFn(event.body)}</div>`;
+    } else {
+      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:rgba(255,255,255,0.85);">${escFn(event.body || line)}</div>`;
+    }
+
+    const tsHtml = event.timestamp
+      ? `<div style="font-size:11px; color:rgba(255,255,255,0.55); margin-bottom:4px;">${escFn(event.timestamp)}</div>`
+      : '';
+
+    html += `<div style="display:flex; gap:10px; padding:${idx === 0 ? '0' : '12px'} 0 ${isLast ? '0' : '12px'} 0; ${isLast ? '' : 'border-bottom:1px solid rgba(255,255,255,0.1);'}">
+      <div style="width:4px; background:${accentColor}; border-radius:2px; flex-shrink:0;"></div>
+      <div style="flex:1; min-width:0;">${tsHtml}${bodyHtml}</div>
+    </div>`;
+  });
+  return html;
+}
+
+// v4.98: Tooltip — shows the timeline (no longer plain text)
 let _remarkTooltipEl = null;
 function showRemarkTooltip(iconEl) {
   hideRemarkTooltip();
-  const text = iconEl.getAttribute('data-remark-tooltip') || '';
-  if (!text) return;
+  const fullText = iconEl.getAttribute('data-remark-full') || '';
+  if (!fullText) return;
   const tip = document.createElement('div');
-  tip.className = 'remark-tooltip';
-  tip.textContent = text;
+  tip.className = 'remark-tooltip remark-tooltip-timeline';
+  tip.innerHTML = _renderRemarkTimeline(fullText);
   document.body.appendChild(tip);
   _remarkTooltipEl = tip;
   // Position above the icon
   const r = iconEl.getBoundingClientRect();
   const tipRect = tip.getBoundingClientRect();
   let left = r.left + (r.width / 2) - (tipRect.width / 2);
-  // Keep within viewport
   const margin = 10;
   left = Math.max(margin, Math.min(left, window.innerWidth - tipRect.width - margin));
   let top = r.top - tipRect.height - 8;
-  if (top < margin) top = r.bottom + 8;  // flip below if above is cut off
+  if (top < margin) top = r.bottom + 8;
   tip.style.left = left + 'px';
   tip.style.top = top + 'px';
 }
@@ -3911,33 +4017,22 @@ function hideRemarkTooltip() {
   _remarkTooltipEl = null;
 }
 
-// Modal: click on mobile or for full text
+// v4.98: On click — desktop ALSO shows modal now (consistent with mobile, since timeline can be tall)
 function showRemarkPopup(iconEl) {
   hideRemarkTooltip();
   const fullText = iconEl.getAttribute('data-remark-full') || '';
   if (!fullText) return;
 
-  // On desktop with hover capability, click does nothing extra (tooltip already shown)
-  // On mobile (no hover), show modal
-  const hasHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
-  if (hasHover) {
-    // Desktop: show tooltip on click too (in case it disappeared)
-    showRemarkTooltip(iconEl);
-    return;
-  }
-
-  // Mobile: full modal
-  const escFn = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
   const overlay = document.createElement('div');
   overlay.className = 'remark-modal-overlay';
   overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
   overlay.innerHTML = `
-    <div class="remark-modal">
+    <div class="remark-modal remark-modal-timeline">
       <div class="remark-modal-header">
-        <span>Remark</span>
+        <span>Activity log</span>
         <button onclick="this.closest('.remark-modal-overlay').remove();" aria-label="Close" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--silver);padding:0;line-height:1;">×</button>
       </div>
-      <div class="remark-modal-body">${escFn(fullText)}</div>
+      <div class="remark-modal-body remark-modal-body-timeline">${_renderRemarkTimeline(fullText)}</div>
     </div>
   `;
   document.body.appendChild(overlay);
