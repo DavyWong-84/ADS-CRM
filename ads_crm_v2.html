@@ -2557,7 +2557,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.76</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.77</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3133,18 +3133,25 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- SETTINGS PAGE -->
   <section class="page" id="page-pending">
   <div style="padding: 16px; max-width: 800px; margin: 0 auto;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-      <h2 style="margin:0; font-size:20px; font-weight:600;">📬 Inbox</h2>
-      <button class="btn btn-outline" onclick="pendingRefresh()">🔄 Refresh</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:8px; flex-wrap:wrap;">
+      <h2 style="margin:0; font-size:20px; font-weight:600; flex:1; min-width:100px;">📬 Inbox</h2>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button id="pendingBatchAddBtn" onclick="pendingBatchAddAll()" style="padding:8px 14px; font-size:13px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500; white-space:nowrap; display:flex; align-items:center; gap:6px; transition:opacity 0.15s;" title="Add all matched leads in current tab">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff" style="flex-shrink:0;"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"></polygon></svg>
+          <span id="pendingBatchAddLabel">Add all matched 0</span>
+        </button>
+        <button onclick="pendingRefresh()" title="Refresh" aria-label="Refresh" style="width:34px; height:34px; padding:0; background:#fff; border:1px solid var(--border); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--purple);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path></svg>
+        </button>
+      </div>
     </div>
-    <div id="pendingBatchBar" style="display:none; background:linear-gradient(135deg, var(--purple-bg), rgba(133,91,251,0.04)); border:1px solid var(--purple-subtle); border-radius:12px; padding:12px 14px; margin-bottom:14px; align-items:center; gap:10px; flex-wrap:wrap;">
-      <div id="pendingBatchSummary" style="font-size:13px; color:var(--purple-deep); flex:1; min-width:140px;"></div>
-      <button id="pendingBatchAddBtn" onclick="pendingBatchAddAll()" style="padding:9px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500; white-space:nowrap;">⚡ Add all matched</button>
-    </div>
-    <div id="pendingEmpty" style="padding:40px 20px; text-align:center; color:var(--gray); display:none;">
-      <div style="font-size:48px; margin-bottom:12px;">✨</div>
-      <div>No pending leads</div>
-      <div style="font-size:13px; margin-top:8px; color:var(--silver);">New leads from GHL will appear here</div>
+    <!-- v4.77: Batch bar removed — button moved to header, always visible -->
+    <div id="pendingBatchBar" style="display:none;"></div>
+    <div id="pendingBatchSummary" style="display:none;"></div>
+    <div id="pendingEmpty" style="padding:48px 20px; text-align:center; color:var(--gray); display:none;">
+      <div style="font-size:44px; margin-bottom:12px; opacity:0.5;">📭</div>
+      <div style="font-size:14px; color:var(--black); font-weight:500;">Inbox is empty</div>
+      <div style="font-size:12px; margin-top:6px; color:var(--silver);">New records from GHL will appear here</div>
     </div>
     <div id="pendingList"></div>
   </div>
@@ -13470,26 +13477,30 @@ function pendingRender() {
   const activeTab = _pendingActiveTab;
   const activeItems = byType[activeTab] || [];
 
-  // Batch bar only counts items IN CURRENT TAB that are processable
-  let matchedCount = 0, unmatchedCount = 0;
-  if (activeTab !== 'update') {
-    activeItems.forEach(p => {
-      if (pendingMatchChannel(p.tag)) matchedCount++;
-      else unmatchedCount++;
-    });
-  }
-  if (batchBar) {
-    if (activeTab !== 'update' && matchedCount > 0) {
-      batchBar.style.display = 'flex';
-      if (batchSummary) {
-        const parts = [];
-        parts.push(matchedCount + ' matched on this tab');
-        if (unmatchedCount > 0) parts.push(unmatchedCount + ' unmatched');
-        batchSummary.textContent = parts.join(', ');
-      }
-      if (batchBtn) batchBtn.textContent = '⚡ Add all matched (' + matchedCount + ')';
+  // v4.77: Count matched items in current tab — drives header button label/state
+  let matchedCount = 0;
+  activeItems.forEach(p => {
+    if (pendingMatchChannel(p.tag)) {
+      const t = String(p.type || 'lead').toLowerCase();
+      // For appt/lead+appt, only count as matched if location is also set
+      if ((t === 'appt' || t === 'lead+appt') && !p.locationId) return;
+      matchedCount++;
+    }
+  });
+
+  // Update header button: always visible, disabled when 0
+  const headerBtn = document.getElementById('pendingBatchAddBtn');
+  const headerLabel = document.getElementById('pendingBatchAddLabel');
+  if (headerLabel) headerLabel.textContent = 'Add all matched ' + matchedCount;
+  if (headerBtn) {
+    if (matchedCount === 0) {
+      headerBtn.style.opacity = '0.45';
+      headerBtn.style.cursor = 'not-allowed';
+      headerBtn.disabled = true;
     } else {
-      batchBar.style.display = 'none';
+      headerBtn.style.opacity = '1';
+      headerBtn.style.cursor = 'pointer';
+      headerBtn.disabled = false;
     }
   }
 
@@ -13501,8 +13512,10 @@ function pendingRender() {
   let cardsHtml = '';
   if (activeItems.length === 0) {
     const meta = PENDING_TAB_META[activeTab];
-    cardsHtml = `<div style="text-align:center; color:var(--silver); padding:40px 20px; font-size:13px;">
-      No ${esc(meta.label)} records right now. Pull to refresh or switch tabs.
+    cardsHtml = `<div style="text-align:center; padding:40px 20px;">
+      <div style="font-size:32px; opacity:0.35; margin-bottom:10px;">📭</div>
+      <div style="font-size:13px; color:var(--gray);">No <b>${esc(meta.label)}</b> records</div>
+      <div style="font-size:12px; color:var(--silver); margin-top:4px;">Try refresh or switch tabs</div>
     </div>`;
   } else {
     cardsHtml = activeItems.map(p => renderPendingCard(p, activeCh, locations, esc)).join('');
@@ -14034,7 +14047,9 @@ async function pendingBatchAddAll() {
 
   // v4.71: Lock ALL cards + button IMMEDIATELY so user can't click during processing
   const btn = document.getElementById('pendingBatchAddBtn');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳ Processing...'; }
+  const btnLabel = document.getElementById('pendingBatchAddLabel');
+  if (btn) btn.disabled = true;
+  if (btnLabel) btnLabel.textContent = 'Processing...';
   // Lock each card visually + add to in-flight set
   const lockedIds = [];
   for (const p of toProcess) {
@@ -14120,7 +14135,8 @@ async function pendingBatchAddAll() {
   // Final refresh & summary
   pendingRefresh();
   if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
-  if (btn) { btn.disabled = false; btn.textContent = '⚡ Add all matched'; }
+  // v4.77: Reset is handled by pendingRender re-running after refresh
+  if (btn) { btn.disabled = false; }
 
   const summary = [];
   if (added > 0) summary.push('✅ Added ' + added);
