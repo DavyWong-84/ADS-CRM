@@ -2524,12 +2524,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 /* v4.63 Mobile topbar fix */
 /* v4.63: Pending card channel pop-select — force full-width trigger button + wrapper span */
-.pending-chan-wrap { display: block; width: 100%; }
-.pending-chan-wrap span[data-pop-wrap-for] {
+/* v4.73: Also applies to location (pending-loc-wrap) on appointment cards */
+.pending-chan-wrap, .pending-loc-wrap { display: block; width: 100%; }
+.pending-chan-wrap span[data-pop-wrap-for],
+.pending-loc-wrap span[data-pop-wrap-for] {
   display: block !important;
   width: 100% !important;
 }
-.pending-chan-wrap .pop-trigger {
+.pending-chan-wrap .pop-trigger,
+.pending-loc-wrap .pop-trigger {
   width: 100% !important;
   box-sizing: border-box;
   display: flex !important;
@@ -2554,7 +2557,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.72</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.73</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -13575,21 +13578,40 @@ function renderUpdateCard(p, locations, apptTime, locName, niceTime, esc) {
     `;
 }
 
-// v4.66: Format appt date "2026-04-28 14:00" → "28 Apr Mon 2:00 PM"
+// v4.73: Format appt date — robust against Google Sheet's Date.toString() format
 function pendingFormatApptTime(raw) {
   if (!raw) return '';
   const s = String(raw).trim();
-  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);
-  if (!m) return s;
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const day = parseInt(m[3], 10);
-  const mon = months[parseInt(m[2], 10) - 1] || '?';
-  if (!m[4]) return `${day} ${mon}`;
-  let hr = parseInt(m[4], 10);
-  const min = m[5];
-  const ampm = hr >= 12 ? 'PM' : 'AM';
-  hr = hr % 12 || 12;
-  return `${day} ${mon} ${hr}:${min} ${ampm}`;
+
+  // Try format A: "2026-04-28 14:00" or "2026-04-28T14:00"
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+  if (m) {
+    const day = parseInt(m[3], 10);
+    const mon = months[parseInt(m[2], 10) - 1] || '?';
+    if (!m[4]) return `${day} ${mon}`;
+    let hr = parseInt(m[4], 10);
+    const min = m[5];
+    const ampm = hr >= 12 ? 'PM' : 'AM';
+    hr = hr % 12 || 12;
+    return `${day} ${mon} ${hr}:${min} ${ampm}`;
+  }
+
+  // Fallback: Date parse (catches "Thu Apr 30 2026 14:30:00 GMT+0800 ..." etc.)
+  try {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      const day = d.getDate();
+      const mon = months[d.getMonth()] || '?';
+      let hr = d.getHours();
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      const ampm = hr >= 12 ? 'PM' : 'AM';
+      hr = hr % 12 || 12;
+      return `${day} ${mon} ${hr}:${mm} ${ampm}`;
+    }
+  } catch (e) { /* pass */ }
+
+  return s.length > 20 ? s.substring(0, 20) + '…' : s;
 }
 
 // v4.66: Resolve location id → location name for display
