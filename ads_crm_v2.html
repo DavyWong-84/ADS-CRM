@@ -2693,7 +2693,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.99</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.00</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4047,7 +4047,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.75'; // keep — don't force reload of user data
+const DATA_VERSION = '2.76'; // v5.00 — clean GHL tag display (only show recognized channel name)
 
 // ---------- State ----------
 let state = {
@@ -14122,11 +14122,15 @@ function renderLeadOrApptCard(p, type, activeCh, locations, apptTime, locName, n
       </select>
     </div>` : '';
 
+  // v5.00: Clean GHL tag display — show recognized channel name instead of raw tag list
+  // (e.g. "facebook simply 5,appointment confirmed,setia alam eco ardence" → "Simply 5")
+  const cleanTagDisplay = matched ? matched.name : (p.tag || '');
+
   return `
     <div id="pcard-${esc(p.id)}" style="background:var(--white); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:10px; box-shadow: var(--shadow-sm); transition: opacity 0.15s;">
       <div style="font-size:16px; font-weight:600; color:var(--black); margin-bottom:6px;">${esc(p.phone)}</div>
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
-        <span style="background:var(--purple-bg); color:var(--purple-deep); padding:3px 10px; border-radius:6px; font-size:12px; font-weight:500;">GHL: ${esc(p.tag)}</span>
+        <span style="background:var(--purple-bg); color:var(--purple-deep); padding:3px 10px; border-radius:6px; font-size:12px; font-weight:500;">GHL: ${esc(cleanTagDisplay)}</span>
         <span style="font-size:12px; color:var(--silver);">${esc(niceTime)}</span>
       </div>
       <div style="margin-top:10px;">${typeBanner}${conflictBanner}${matchBanner}</div>
