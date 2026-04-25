@@ -2557,7 +2557,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.78</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.80</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3134,7 +3134,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <section class="page" id="page-pending">
   <div style="padding: 16px; max-width: 800px; margin: 0 auto;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:8px; flex-wrap:wrap;">
-      <h2 style="margin:0; font-size:20px; font-weight:600; flex:1; min-width:100px;">📬 Inbox</h2>
+      <h2 style="margin:0; font-size:20px; font-weight:600; flex:1; min-width:100px;">Inbox</h2>
       <div style="display:flex; gap:8px; align-items:center;">
         <button id="pendingBatchAddBtn" onclick="pendingBatchAddAll()" style="padding:8px 14px; font-size:13px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500; white-space:nowrap; display:flex; align-items:center; gap:6px; transition:opacity 0.15s;" title="Add all matched leads in current tab">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff" style="flex-shrink:0;"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"></polygon></svg>
@@ -13438,13 +13438,11 @@ function pendingRender() {
         const meta = PENDING_TAB_META[t];
         const count = (byType[t] || []).length;
         const isActive = _pendingActiveTab === t;
-        const activeBg = isActive ? meta.accent : '';
-        const activeStyle = isActive
-          ? `background:${meta.accent}; color:#fff; border-color:${meta.accent};`
-          : '';
-        return `<button class="filter-tab${isActive ? ' active' : ''}" onclick="pendingSetTab('${t}')" style="${activeStyle} flex:1; min-width:0;">
+        // v4.80: No accent color — all tabs use default filter-tab style.
+        // Only active tab shows purple (via .active class default).
+        return `<button class="filter-tab${isActive ? ' active' : ''}" onclick="pendingSetTab('${t}')" style="flex:1; min-width:0;">
           ${esc(meta.label)}
-          <span class="count" style="${isActive ? 'background:rgba(255,255,255,0.25); color:#fff;' : `background:${count > 0 ? meta.accent : 'var(--surface)'}; color:${count > 0 ? '#fff' : 'var(--silver)'};`} padding:1px 7px; border-radius:10px; font-size:11px; font-weight:600; margin-left:4px;">${count}</span>
+          <span class="count" style="${isActive ? 'background:rgba(255,255,255,0.25); color:#fff;' : 'background:var(--surface); color:var(--silver);'} padding:1px 7px; border-radius:10px; font-size:11px; font-weight:600; margin-left:4px;">${count}</span>
         </button>`;
       }).join('')}
     </div>
@@ -13805,7 +13803,7 @@ async function pendingConfirm(pendingId) {
   if (!url) {
     _pendingInFlight.delete(pendingId);
     if (card) { card.style.opacity = ''; card.style.pointerEvents = ''; }
-    if (addBtn) { addBtn.textContent = '✅ Add'; addBtn.disabled = false; }
+    if (addBtn) { addBtn.textContent = 'Add'; addBtn.disabled = false; }
     if (delBtn) delBtn.disabled = false;
     if (typeof toast === 'function') toast('⚠️ Apps Script URL not set');
     return;
@@ -13832,7 +13830,7 @@ async function pendingConfirm(pendingId) {
       // <=30 days → ask user
       _pendingInFlight.delete(pendingId);
       if (card) { card.style.opacity = ''; card.style.pointerEvents = ''; }
-      if (addBtn) { addBtn.textContent = '✅ Add'; addBtn.disabled = false; }
+      if (addBtn) { addBtn.textContent = 'Add'; addBtn.disabled = false; }
       if (delBtn) delBtn.disabled = false;
       const decision = await _pendingBatchAskDuplicate(existingLead, p, ch);
       if (decision === 'skip' || decision === 'cancel') return;
