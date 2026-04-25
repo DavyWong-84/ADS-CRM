@@ -2642,7 +2642,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.82</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.84</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4065,6 +4065,27 @@ function todayStr() {
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return y + '-' + m + '-' + day;
+}
+
+// v4.83: Extract YYYY-MM-DD from any date format (string, Date.toString, ISO, etc)
+// Replaces the buggy .substring(0, 10) which broke on "Thu Apr 30 2026 ..." style strings.
+function extractDateOnly(raw) {
+  if (!raw) return '';
+  const s = String(raw).trim();
+  // Already YYYY-MM-DD format? Use as-is
+  const m = s.match(/^(\d{4}-\d{2}-\d{2})/);
+  if (m) return m[1];
+  // Try Date parse
+  try {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      const y = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return y + '-' + mm + '-' + dd;
+    }
+  } catch (e) {}
+  return '';
 }
 
 // v4.30: Move .contact-filters-inline between mobile slot (inside sticky unified-header)
@@ -5790,10 +5811,20 @@ let dpState = { targetId: null, currentMonth: null, currentYear: null, selected:
 
 function openDatePicker(targetId) {
   dpState.targetId = targetId;
-  const existing = document.getElementById(targetId).value;
+  // v4.84: Sanitize input value through extractDateOnly to handle dirty data
+  // (e.g. legacy "Thu Apr 30 2026 ..." style strings that broke this picker → January 2024 fallback)
+  const rawValue = document.getElementById(targetId).value;
+  const existing = (typeof extractDateOnly === 'function') ? extractDateOnly(rawValue) : rawValue;
   const d = existing ? new Date(existing + 'T00:00:00') : new Date();
-  dpState.currentMonth = d.getMonth();
-  dpState.currentYear = d.getFullYear();
+  // If still invalid for any reason, default to current date (not 1970/2024 garbage)
+  if (isNaN(d.getTime())) {
+    const now = new Date();
+    dpState.currentMonth = now.getMonth();
+    dpState.currentYear = now.getFullYear();
+  } else {
+    dpState.currentMonth = d.getMonth();
+    dpState.currentYear = d.getFullYear();
+  }
   dpState.selected = existing || null;
   renderDatePicker();
 }
@@ -13961,7 +13992,7 @@ async function pendingConfirm(pendingId) {
     platform: ch.platform,
     leadDate: todayStr,
     name: '',
-    apptDate: isAppt ? (p.apptDate || '').substring(0, 10) : '',
+    apptDate: isAppt ? extractDateOnly(p.apptDate) : '',
     locationId: isAppt ? locationId : '',
     showUp: '',
     race: '',
@@ -14074,7 +14105,7 @@ async function pendingConfirmUpdate(p) {
   if (addBtn) { addBtn.textContent = '⏳ Updating...'; addBtn.disabled = true; }
   if (delBtn) delBtn.disabled = true;
 
-  const apptDateStr = (p.apptDate || '').substring(0, 10);
+  const apptDateStr = extractDateOnly(p.apptDate);
   const leadUpdate = {
     id: p.existingLeadId,
     status: 'booked',
@@ -14312,7 +14343,7 @@ async function _pendingBatchSaveOne(p, ch, phone, remark) {
   // v4.66: If pending has appt info (type=appt or lead+appt), apply it
   const t = String(p.type || 'lead').toLowerCase();
   const isAppt = (t === 'appt' || t === 'lead+appt');
-  const apptDateStr = isAppt ? (p.apptDate || '').substring(0, 10) : '';
+  const apptDateStr = isAppt ? extractDateOnly(p.apptDate) : '';
   const locationIdVal = isAppt ? (p.locationId || '') : '';
   const statusVal = isAppt ? 'booked' : 'lead';
 
