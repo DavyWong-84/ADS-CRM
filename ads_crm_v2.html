@@ -2514,6 +2514,91 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 
 
+
+/* v4.82: Remark icon + Reschedule chip + tooltip + modal */
+.lc-remark-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  color: var(--silver);
+  cursor: pointer;
+  vertical-align: middle;
+  transition: color 0.15s, background 0.15s;
+}
+.lc-remark-icon:hover {
+  color: var(--purple);
+  background: var(--purple-bg);
+}
+.lc-resched-chip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(186, 117, 23, 0.12);
+  color: #BA7517;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.remark-tooltip {
+  position: fixed;
+  z-index: 99999;
+  max-width: 320px;
+  background: rgba(20, 20, 25, 0.95);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  pointer-events: none;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.remark-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.remark-modal {
+  background: var(--white);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+.remark-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--black);
+}
+.remark-modal-body {
+  padding: 16px 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  color: var(--black);
+}
 </style>
 <style>
 /* v4.63: Mobile topbar — hide Data Entry + Settings buttons (accessed via drawer/tabbar) */
@@ -2557,7 +2642,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.81</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.82</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3733,6 +3818,92 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 // v3.69: Global HTML escape — used by all render functions to prevent XSS
 // when user-entered data (name/contact/remark/location/channelName) is
 // injected into innerHTML. Defined here so all <script> blocks can use it.
+// v4.82: List card helpers — remark icon (only if remark present) + reschedule chip (only if flag set & still booked)
+function remarkIconHTML(l) {
+  if (!l || !l.remark) return '';
+  // Strip auto-generated lines (lines starting with [Auto]) from tooltip preview to focus on user content
+  // But still show full content if user wants to see history
+  const fullText = String(l.remark).trim();
+  if (!fullText) return '';
+  const escFn = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
+  // Truncate for tooltip preview, but keep full text for tap-to-modal
+  const previewMax = 280;
+  const preview = fullText.length > previewMax ? fullText.substring(0, previewMax) + '…' : fullText;
+  const escapedTooltip = escFn(preview);
+  const escapedFull = escFn(fullText);
+  return ` <span class="lc-remark-icon" data-remark-tooltip="${escapedTooltip}" data-remark-full="${escapedFull}" onclick="event.stopPropagation();showRemarkPopup(this);" onmouseenter="showRemarkTooltip(this);" onmouseleave="hideRemarkTooltip();" title="" role="button" aria-label="View remark"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg></span>`;
+}
+
+function rescheduleChipHTML(l) {
+  if (!l || l.status !== 'booked') return '';  // auto-disappear when status leaves booked
+  const flags = String(l.flags || '').toLowerCase();
+  if (flags.indexOf('rescheduled') < 0) return '';
+  return `<span class="lc-resched-chip" title="Customer rescheduled this appointment"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Rescheduled</span>`;
+}
+
+// Tooltip: hover/focus shows brief preview
+let _remarkTooltipEl = null;
+function showRemarkTooltip(iconEl) {
+  hideRemarkTooltip();
+  const text = iconEl.getAttribute('data-remark-tooltip') || '';
+  if (!text) return;
+  const tip = document.createElement('div');
+  tip.className = 'remark-tooltip';
+  tip.textContent = text;
+  document.body.appendChild(tip);
+  _remarkTooltipEl = tip;
+  // Position above the icon
+  const r = iconEl.getBoundingClientRect();
+  const tipRect = tip.getBoundingClientRect();
+  let left = r.left + (r.width / 2) - (tipRect.width / 2);
+  // Keep within viewport
+  const margin = 10;
+  left = Math.max(margin, Math.min(left, window.innerWidth - tipRect.width - margin));
+  let top = r.top - tipRect.height - 8;
+  if (top < margin) top = r.bottom + 8;  // flip below if above is cut off
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+}
+
+function hideRemarkTooltip() {
+  if (_remarkTooltipEl && _remarkTooltipEl.parentNode) {
+    _remarkTooltipEl.parentNode.removeChild(_remarkTooltipEl);
+  }
+  _remarkTooltipEl = null;
+}
+
+// Modal: click on mobile or for full text
+function showRemarkPopup(iconEl) {
+  hideRemarkTooltip();
+  const fullText = iconEl.getAttribute('data-remark-full') || '';
+  if (!fullText) return;
+
+  // On desktop with hover capability, click does nothing extra (tooltip already shown)
+  // On mobile (no hover), show modal
+  const hasHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+  if (hasHover) {
+    // Desktop: show tooltip on click too (in case it disappeared)
+    showRemarkTooltip(iconEl);
+    return;
+  }
+
+  // Mobile: full modal
+  const escFn = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
+  const overlay = document.createElement('div');
+  overlay.className = 'remark-modal-overlay';
+  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
+  overlay.innerHTML = `
+    <div class="remark-modal">
+      <div class="remark-modal-header">
+        <span>Remark</span>
+        <button onclick="this.closest('.remark-modal-overlay').remove();" aria-label="Close" style="background:none;border:none;font-size:24px;cursor:pointer;color:var(--silver);padding:0;line-height:1;">×</button>
+      </div>
+      <div class="remark-modal-body">${escFn(fullText)}</div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
 function escapeHTML(s) {
   if (s == null) return '';
   return String(s)
@@ -6365,8 +6536,9 @@ function renderList() {
         }
         return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-lead lead-compact-v2${selected ? ' selected' : ''} swipe-card" onclick="editLead('${esc(l.id)}')">
           <div class="lc-head">
-            <div class="lc-name">${esc(l.name || l.contact || '(no contact)')}</div>
+            <div class="lc-name">${esc(l.name || l.contact || '(no contact)')}${remarkIconHTML(l)}</div>
             <div style="display:flex;align-items:center;gap:4px;">
+              ${rescheduleChipHTML(l)}
               <span class="lc-flags">${starHTML}</span>
               <span class="badge badge-lead">Lead</span>
             </div>
@@ -6393,8 +6565,9 @@ function renderList() {
       }
       return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${esc(l.id)}')">
         <div class="lc-head">
-          <div class="lc-name">${esc(l.name || l.contact || '(no data)')}</div>
+          <div class="lc-name">${esc(l.name || l.contact || '(no data)')}${remarkIconHTML(l)}</div>
           <div style="display:flex;align-items:center;gap:4px;">
+            ${rescheduleChipHTML(l)}
             <span class="lc-flags">${starHTML}</span>
             <span class="badge badge-${l.status}">${statusLabel}</span>
           </div>
