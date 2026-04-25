@@ -2554,7 +2554,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.67</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.68</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2750,10 +2750,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-04-24</span>
+                      <span id="f_leadDate_label">2026-04-25</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-04-24">
+                    <input type="hidden" id="f_leadDate" value="2026-04-25">
                   </div>
                 </div>
               </div>
@@ -3876,7 +3876,15 @@ function toast(msg) {
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2000);
 }
-function todayStr() { return new Date().toISOString().split('T')[0]; }
+function todayStr() {
+  // v4.68 fix: use LOCAL date not UTC — otherwise after midnight local,
+  // toISOString() still returns yesterday (UTC) and today's appts don't surface to top.
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
 
 // v4.30: Move .contact-filters-inline between mobile slot (inside sticky unified-header)
 // and desktop home (top of .contact-list-panel) based on viewport width.
