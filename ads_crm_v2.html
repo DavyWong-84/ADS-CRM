@@ -2615,13 +2615,26 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   /* Hide tool nav-items on mobile (they live in topbar now) */
   .nav-item.nav-tool { display: none !important; }
 }
+
+/* v4.93: + New Lead inline button next to search (desktop only) */
+@media (min-width: 769px) {
+  .contact-newlead-btn-inline { display: inline-flex !important; align-items: center; }
+}
+@media (max-width: 768px) {
+  /* On mobile, fall back to top header button — re-show it */
+  .contact-top-actions { display: flex !important; }
+  .contact-newlead-btn-inline { display: none !important; }
+}
 </style>
 <style>
 /* v4.63: Mobile topbar — hide Data Entry + Settings buttons (accessed via drawer/tabbar) */
-/* Use ID selector with !important to override inline display:flex */
+/* v4.92: Desktop ALSO hides #topbarExtras since left nav has Data Entry + Settings */
 @media (max-width: 768px) {
   #topbarExtras { display: none !important; }
   #topbarMobileMenuWrap { display: block !important; }
+}
+@media (min-width: 769px) {
+  #topbarExtras { display: none !important; }
 }
 /* v4.63 Mobile topbar fix */
 /* v4.63: Pending card channel pop-select — force full-width trigger button + wrapper span */
@@ -2658,7 +2671,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.91</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.93</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2748,7 +2761,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <input type="text" id="searchInputTitle" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value);toggleSearchClearBtn()" style="width:100%;height:34px;padding:0 30px 0 32px;font-size:13px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);outline:none;">
           <button type="button" id="searchClearBtn" onclick="clearTitleSearch()" aria-label="Clear" style="display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:none;background:var(--border);color:var(--gray);cursor:pointer;align-items:center;justify-content:center;padding:0;font-size:12px;line-height:1;">✕</button>
         </div>
-        <div class="contact-top-actions" style="display:flex;gap:8px;align-items:center;">
+        <!-- v4.93: + New Lead — desktop has it next to search; mobile shows it here -->
+        <div class="contact-top-actions" style="display:none;gap:8px;align-items:center;">
           <button type="button" onclick="openNewLead()" class="btn btn-primary" style="padding:7px 14px;font-size:13px;border-radius:8px;">+ New Lead</button>
         </div>
       </div>
@@ -2768,9 +2782,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <!-- LEFT: List panel (contains filters + list + load more) -->
       <div class="contact-list-panel" id="contactListPanel" style="top: 66px; max-height: 725px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
-          <div class="list-search contact-search-row" style="position:relative;margin-bottom:4px;">
-            <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-            <input type="text" id="searchInputDesktop" name="q_search_desktop" autocomplete="off" placeholder="Search name, contact, remark..." style="padding-left:30px;" oninput="onSearchInputChange(this.value)">
+          <!-- v4.93: + New Lead button on left of search (desktop only) -->
+          <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
+            <button type="button" onclick="openNewLead()" class="btn btn-primary contact-newlead-btn-inline" style="padding:0 14px; height:36px; font-size:13px; border-radius:8px; white-space:nowrap; display:none;">+ New Lead</button>
+            <div class="list-search contact-search-row" style="position:relative; flex:1;">
+              <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+              <input type="text" id="searchInputDesktop" name="q_search_desktop" autocomplete="off" placeholder="Search name, contact, remark..." style="padding-left:30px;" oninput="onSearchInputChange(this.value)">
+            </div>
           </div>
           <!-- Filter row 1: Month/Year + date + sort + channel -->
           <div class="compact-filter" style="flex-wrap:wrap;gap:8px;">
@@ -2821,7 +2839,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty">
+        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
           <!-- v4.22: Click-to-create welcome area — big round + button in the middle -->
           <button type="button" onclick="openNewLead()" class="welcome-new-lead-btn" aria-label="Create new lead">
             <span class="welcome-plus-circle">
@@ -2831,7 +2849,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <span class="welcome-plus-hint">or select a lead from the list</span>
           </button>
         </div>
-        <div id="contactFormWrap" style="display:none;">
+        <div id="contactFormWrap" style="display: block;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -2892,7 +2910,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label"></span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate">
+                    <input type="hidden" id="f_apptDate" value="">
                   </div>
                 </div>
               </div>
@@ -2975,7 +2993,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
+        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">Apr 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -2984,7 +3002,69 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="summaryContent"></div>
+    <div id="summaryContent">
+    <div class="dash-row-2">
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Revenue →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">Apr 2026</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
+        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Meta — · G —</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">— shows</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — leads</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — appt</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — shows</div>
+      </div>
+    </div>
+    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
+      <div class="dash-section-label">Funnel — Apr 2026 →</div>
+      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
+        <div style="flex:4;background:var(--purple-bg);border-radius:6px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">—</div>
+          <div style="font-size:11px;color:var(--purple);">Leads</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#0C447C;">—</div>
+          <div style="font-size:11px;color:#185FA5;">Appt</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#085041;">—</div>
+          <div style="font-size:11px;color:#0F6E56;">Show</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#633806;">RM 0</div>
+          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
+      <div class="dash-section-label">Revenue trend — 2026 →</div>
+      <div id="chart_dash_rev" style="margin-top:8px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1372 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1372" height="260" fill="white"></rect>
+      <line x1="58" y1="218.0" x2="1358" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1358" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1358" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1358" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1358" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1358" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1358" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1358" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1358" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1358" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1358" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1358" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="112.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="220.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="328.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="437.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="545.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="653.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="762.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="870.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="978.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="1087.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1195.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1303.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="664" y="20" width="11" height="11" fill="#7132f5" rx="2"></rect><text x="680" y="29" font-size="10" fill="#334155">Revenue</text>
+    </svg></div></div>
+    </div>
+  </div>
   </section>
 
   <!-- STORE PAGE -->
@@ -3505,7 +3585,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="alertsTitleText" style="font-size:16px;font-weight:600;">Data Alerts</span>
-        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;">5</span>
+        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;">0</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <div id="alertsLangToggle" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;font-weight:600;">
@@ -3515,47 +3595,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
       </div>
     </div>
-    <div id="alertsContent" class="alerts-content"><div class="alerts-section-label">Needs attention (5)</div>
-        <div class="alert-item sev-med" onclick="_alertAct(0)">
-          <div class="alert-icon">📊</div>
-          <div class="alert-body">
-            <div class="alert-title">Sunway — Revenue missing for Mar 2026</div>
-            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
-          </div>
-        </div>
-      
-        <div class="alert-item sev-med" onclick="_alertAct(1)">
-          <div class="alert-icon">📊</div>
-          <div class="alert-body">
-            <div class="alert-title">Cheras — Revenue missing for Mar 2026</div>
-            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
-          </div>
-        </div>
-      
-        <div class="alert-item sev-med" onclick="_alertAct(2)">
-          <div class="alert-icon">📊</div>
-          <div class="alert-body">
-            <div class="alert-title">ECO — Revenue missing for Mar 2026</div>
-            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
-          </div>
-        </div>
-      
-        <div class="alert-item sev-med" onclick="_alertAct(3)">
-          <div class="alert-icon">💰</div>
-          <div class="alert-body">
-            <div class="alert-title">Simply 5 — Ads Spend missing for Mar 2026</div>
-            <div class="alert-desc">Last month cost missing. Go to Data Entry → Ads Cost.</div>
-          </div>
-        </div>
-      
-        <div class="alert-item sev-med" onclick="_alertAct(4)">
-          <div class="alert-icon">💰</div>
-          <div class="alert-body">
-            <div class="alert-title">Google Ads — Ads Spend missing for Mar 2026</div>
-            <div class="alert-desc">Last month cost missing. Go to Data Entry → Ads Cost.</div>
-          </div>
-        </div>
-      </div>
+    <div id="alertsContent" class="alerts-content"></div>
   </div>
 </div>
 
@@ -3564,7 +3604,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="ai-modal">
     <div class="ai-header">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:26px;height:26px;" id="aiHeaderAvatar"><div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;letter-spacing:0.3px;">AI</div></div>
+        <div style="width:26px;height:26px;" id="aiHeaderAvatar"></div>
         <div style="display:flex;flex-direction:column;line-height:1.15;">
           <span style="font-size:14px;font-weight:500;color:#1a1a1a;letter-spacing:-0.2px;">Ask CRM</span>
           <span id="aiModelLabel" style="font-size:9.5px;color:var(--gray);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-top:1px;">Gemini Flash</span>
@@ -3593,14 +3633,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <!-- Inline Settings Panel (collapsible) -->
     <!-- v3.23: Settings moved to standalone Modal (see aiSettingsBackdrop below) -->
 
-    <div id="aiMessages" class="ai-messages">
-      <div class="ai-empty">
-        <div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>
-        <div class="ai-empty-title">你的 CRM 分析助手</div>
-        <div style="font-size:12px;color:var(--gray);">Click a quick action below or type your question</div>
-      </div>
-    </div>
-    <div class="ai-quick-actions" id="aiQuickActions"><button class="ai-chip" data-chip-idx="0">💰 每月营业额</button><button class="ai-chip" data-chip-idx="1">💸 每月 Ads Spend</button><button class="ai-chip" data-chip-idx="2">🎯 每月 ROAS</button><button class="ai-chip" data-chip-idx="3">📡 每月 Lead</button><button class="ai-chip" data-chip-idx="4">🏢 门店月度营业额</button><button class="ai-chip" data-chip-idx="5">🏆 门店本月对比</button><button class="ai-chip" data-chip-idx="6">🎪 渠道本月对比</button><button class="ai-chip" data-chip-idx="7">📊 本月 vs 上月</button></div>
+    <div id="aiMessages" class="ai-messages"></div>
+    <div class="ai-quick-actions" id="aiQuickActions"></div>
     <div class="ai-input-wrap">
       <div class="ai-input-wrap-inner">
         <textarea id="aiInput" placeholder="问我任何数据问题..." rows="1" onkeydown="_aiInputKey(event)"></textarea>
