@@ -2554,7 +2554,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.68</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.70</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -6276,36 +6276,53 @@ function renderList() {
     );
   }
   const today = todayStr();
-  // v3.39: Sort by user choice — default: updatedAt (most recently modified first)
+  // v4.68 (user feedback): Sort rules differ per mode.
+  // - 'appt' mode: overdue booked first (newest overdue first), then upcoming ASC 
+  //   (nearest appt first), then no-appt records. No "today always on top" override 
+  //   because today naturally sorts to top of upcoming group.
+  // - 'updated' / 'lead' modes: keep "today's booked on top" because the mode's own 
+  //   sort doesn't surface today otherwise.
   const sortMode = state.listSort || 'updated';
   list.sort((a, b) => {
-    // Priority 1: Today's appointments always on top (across all sort modes)
-    const aToday = a.apptDate === today && (a.status === 'booked') ? 1 : 0;
-    const bToday = b.apptDate === today && (b.status === 'booked') ? 1 : 0;
-    if (aToday !== bToday) return bToday - aToday;
-    // Priority 2: Overdue booked appointments second
-    const aOver = a.status === 'booked' && a.apptDate && a.apptDate < today ? 1 : 0;
-    const bOver = b.status === 'booked' && b.apptDate && b.apptDate < today ? 1 : 0;
-    if (aOver !== bOver) return bOver - aOver;
-    // Priority 3: User-selected sort
-    if (sortMode === 'updated') {
-      // Most recent update first; fallback to leadDate for legacy data
-      const aU = a.updatedAt || a.leadDate || '';
-      const bU = b.updatedAt || b.leadDate || '';
-      const cmp = bU.localeCompare(aU);
-      if (cmp !== 0) return cmp;
-    } else if (sortMode === 'appt') {
-      // Appt Date descending; leads without appt go to bottom
-      const aA = a.apptDate || '';
-      const bA = b.apptDate || '';
-      if (aA && !bA) return -1;
-      if (!aA && bA) return 1;
-      const cmp = bA.localeCompare(aA);
-      if (cmp !== 0) return cmp;
+    if (sortMode === 'appt') {
+      // Appt mode: classify each record into 3 groups
+      // 0 = overdue booked, 1 = upcoming (today+future) booked or has apptDate, 2 = no apptDate
+      const groupFor = (x) => {
+        if (!x.apptDate) return 2;
+        if (x.status === 'booked' && x.apptDate < today) return 0;  // overdue
+        return 1;  // upcoming (today or future)
+      };
+      const ga = groupFor(a);
+      const gb = groupFor(b);
+      if (ga !== gb) return ga - gb;
+      // Same group — sort within group
+      if (ga === 0) {
+        // Overdue: newest first (Apr 24 > Apr 20 > Apr 10)
+        return (b.apptDate || '').localeCompare(a.apptDate || '');
+      }
+      if (ga === 1) {
+        // Upcoming: soonest first (Apr 25 > Apr 28 > May 5)
+        return (a.apptDate || '').localeCompare(b.apptDate || '');
+      }
+      // Both no apptDate — fall through to tiebreaker
     } else {
-      // 'lead' — Lead Date descending (original behavior)
-      const cmp = (b.leadDate || '').localeCompare(a.leadDate || '');
-      if (cmp !== 0) return cmp;
+      // 'updated' and 'lead' modes: Priority 1 & 2 still apply
+      const aToday = a.apptDate === today && (a.status === 'booked') ? 1 : 0;
+      const bToday = b.apptDate === today && (b.status === 'booked') ? 1 : 0;
+      if (aToday !== bToday) return bToday - aToday;
+      const aOver = a.status === 'booked' && a.apptDate && a.apptDate < today ? 1 : 0;
+      const bOver = b.status === 'booked' && b.apptDate && b.apptDate < today ? 1 : 0;
+      if (aOver !== bOver) return bOver - aOver;
+      if (sortMode === 'updated') {
+        const aU = a.updatedAt || a.leadDate || '';
+        const bU = b.updatedAt || b.leadDate || '';
+        const cmp = bU.localeCompare(aU);
+        if (cmp !== 0) return cmp;
+      } else {
+        // 'lead' — Lead Date descending
+        const cmp = (b.leadDate || '').localeCompare(a.leadDate || '');
+        if (cmp !== 0) return cmp;
+      }
     }
     // Tiebreaker: id descending
     return (b.id || '').localeCompare(a.id || '');
@@ -13599,19 +13616,42 @@ function pendingLocationName(locationId, locations) {
 
 // v4.62: Parse Apps Script timestamp ("2026-04-24 16:38:52") → "24 Apr 3:00 PM"
 function pendingFormatTime(raw) {
+  // v4.70: Handle 3 possible formats:
+  //   (A) "2026-04-25 09:54:00"  ← Apps Script new format
+  //   (B) "Sat Apr 25 2026 09:54:00 GMT+0800 ..."  ← Google Sheet default Date.toString()
+  //   (C) Anything else → try Date parse
   if (!raw) return '';
   const s = String(raw).trim();
-  // Match yyyy-MM-dd HH:mm:ss (what Apps Script sends)
-  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
-  if (!m) return s;  // fallback: show raw if we can't parse
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const day = parseInt(m[3], 10);
-  const mon = months[parseInt(m[2], 10) - 1] || '?';
-  let hr = parseInt(m[4], 10);
-  const min = m[5];
-  const ampm = hr >= 12 ? 'PM' : 'AM';
-  hr = hr % 12 || 12;
-  return `${day} ${mon} ${hr}:${min} ${ampm}`;
+
+  // Try format A first (fast path)
+  const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
+  if (m) {
+    const day = parseInt(m[3], 10);
+    const mon = months[parseInt(m[2], 10) - 1] || '?';
+    let hr = parseInt(m[4], 10);
+    const min = m[5];
+    const ampm = hr >= 12 ? 'PM' : 'AM';
+    hr = hr % 12 || 12;
+    return `${day} ${mon} ${hr}:${min} ${ampm}`;
+  }
+
+  // Fallback: try Date parse (catches format B + any other valid date string)
+  try {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      const day = d.getDate();
+      const mon = months[d.getMonth()] || '?';
+      let hr = d.getHours();
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      const ampm = hr >= 12 ? 'PM' : 'AM';
+      hr = hr % 12 || 12;
+      return `${day} ${mon} ${hr}:${mm} ${ampm}`;
+    }
+  } catch (e) { /* pass */ }
+
+  // Last resort: show original (should rarely hit)
+  return s.length > 20 ? s.substring(0, 20) + '…' : s;
 }
 
 // v4.58: in-flight lock to prevent double-click
