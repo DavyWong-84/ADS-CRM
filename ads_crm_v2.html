@@ -2645,7 +2645,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.88</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.89</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3236,6 +3236,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <!-- v4.77: Batch bar removed — button moved to header, always visible -->
     <div id="pendingBatchBar" style="display:none;"></div>
     <div id="pendingBatchSummary" style="display:none;"></div>
+    <!-- v4.89: Static tab bar (always present, even when empty) -->
+    <div id="pendingTabBarHost" style="margin-bottom:14px;"></div>
     <div id="pendingEmpty" style="padding:48px 20px; text-align:center; color:var(--gray); display:none;">
       <div style="font-size:44px; margin-bottom:12px; opacity:0.5;">📭</div>
       <div style="font-size:14px; color:var(--black); font-weight:500;">Inbox is empty</div>
@@ -3487,7 +3489,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="alertsTitleText" style="font-size:16px;font-weight:600;">Data Alerts</span>
-        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;">5</span>
+        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;">0</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <div id="alertsLangToggle" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;font-weight:600;">
@@ -3497,47 +3499,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
       </div>
     </div>
-    <div id="alertsContent" class="alerts-content"><div class="alerts-section-label">Needs attention (5)</div>
-        <div class="alert-item sev-med" onclick="_alertAct(0)">
-          <div class="alert-icon">📊</div>
-          <div class="alert-body">
-            <div class="alert-title">Sunway — Revenue missing for Mar 2026</div>
-            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
-          </div>
-        </div>
-      
-        <div class="alert-item sev-med" onclick="_alertAct(1)">
-          <div class="alert-icon">📊</div>
-          <div class="alert-body">
-            <div class="alert-title">Cheras — Revenue missing for Mar 2026</div>
-            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
-          </div>
-        </div>
-      
-        <div class="alert-item sev-med" onclick="_alertAct(2)">
-          <div class="alert-icon">📊</div>
-          <div class="alert-body">
-            <div class="alert-title">ECO — Revenue missing for Mar 2026</div>
-            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
-          </div>
-        </div>
-      
-        <div class="alert-item sev-med" onclick="_alertAct(3)">
-          <div class="alert-icon">💰</div>
-          <div class="alert-body">
-            <div class="alert-title">Simply 5 — Ads Spend missing for Mar 2026</div>
-            <div class="alert-desc">Last month cost missing. Go to Data Entry → Ads Cost.</div>
-          </div>
-        </div>
-      
-        <div class="alert-item sev-med" onclick="_alertAct(4)">
-          <div class="alert-icon">💰</div>
-          <div class="alert-body">
-            <div class="alert-title">Google Ads — Ads Spend missing for Mar 2026</div>
-            <div class="alert-desc">Last month cost missing. Go to Data Entry → Ads Cost.</div>
-          </div>
-        </div>
-      </div>
+    <div id="alertsContent" class="alerts-content"></div>
   </div>
 </div>
 
@@ -13739,24 +13701,27 @@ function pendingRender() {
 
   const esc = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
 
-  // v4.74: Build tab bar HTML (always show, even when empty — so user can switch back)
+  // v4.89: Build tab bar — render INTO STATIC HOST (not inside list).
+  // Tab bar uses flex:1 so 4 tabs equally divide width on all screen sizes.
   const tabBarHtml = `
-    <div id="pendingTabBar" class="filter-tabs" style="margin-bottom:14px; justify-content:flex-start; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; flex-wrap:nowrap; padding-bottom:2px;">
+    <div id="pendingTabBar" class="filter-tabs" style="display:flex; gap:6px; flex-wrap:nowrap; width:100%;">
       ${PENDING_TAB_ORDER.map(t => {
         const meta = PENDING_TAB_META[t];
         const count = (byType[t] || []).length;
         const isActive = _pendingActiveTab === t;
-        // v4.87: Tab bar scrolls horizontally on narrow screens, no clipping
-        return `<button class="filter-tab${isActive ? ' active' : ''}" onclick="pendingSetTab('${t}')" style="white-space:nowrap; flex-shrink:0;">
-          ${esc(meta.label)}<span class="count" style="${isActive ? 'background:rgba(255,255,255,0.25); color:#fff;' : 'background:var(--surface); color:var(--silver);'} padding:1px 7px; border-radius:10px; font-size:11px; font-weight:600; margin-left:6px; display:inline-block;">${count}</span>
+        // v4.89: All tabs flex:1, equal width, stretch to fill container
+        return `<button class="filter-tab${isActive ? ' active' : ''}" onclick="pendingSetTab('${t}')" style="white-space:nowrap; flex:1 1 0; min-width:0; padding-left:6px; padding-right:6px; overflow:hidden; text-overflow:ellipsis;">
+          ${esc(meta.label)}<span class="count" style="${isActive ? 'background:rgba(255,255,255,0.25); color:#fff;' : 'background:var(--surface); color:var(--silver);'} padding:1px 6px; border-radius:10px; font-size:11px; font-weight:600; margin-left:4px; display:inline-block;">${count}</span>
         </button>`;
       }).join('')}
     </div>
   `;
+  const tabHost = document.getElementById('pendingTabBarHost');
+  if (tabHost) tabHost.innerHTML = tabBarHtml;
 
   // Global empty check — no records of ANY type
   if (pendingData.length === 0) {
-    listEl.innerHTML = tabBarHtml;
+    listEl.innerHTML = '';
     emptyEl.style.display = 'block';
     if (batchBar) batchBar.style.display = 'none';
     return;
@@ -13821,7 +13786,8 @@ function pendingRender() {
     cardsHtml = activeItems.map(p => renderPendingCard(p, activeCh, locations, esc)).join('');
   }
 
-  listEl.innerHTML = tabBarHtml + cardsHtml;
+  // v4.89: Tab bar is rendered separately (above) — list only contains cards
+  listEl.innerHTML = cardsHtml;
 
   // v4.62: Upgrade the newly-rendered selects to use the pop-select modal UI
   if (typeof upgradeAllPopSelects === 'function') {
