@@ -2642,7 +2642,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.84</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.86</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -13611,11 +13611,12 @@ function pendingSetTab(tab) {
 }
 
 const PENDING_TAB_META = {
-  'lead':      { label: 'Lead',      accent: '#7132f5' },
-  'appt':      { label: 'Appt',      accent: '#1D9E75' },
-  'lead+appt': { label: 'Lead+Appt', accent: '#D85A30' }
+  'lead':              { label: 'Lead',      accent: '#7132f5' },
+  'appt':              { label: 'Appt',      accent: '#1D9E75' },
+  'lead+appt':         { label: 'L+A',       accent: '#D85A30' },
+  'reschedule_notice': { label: 'Resched',   accent: '#BA7517' }
 };
-const PENDING_TAB_ORDER = ['lead', 'appt', 'lead+appt'];
+const PENDING_TAB_ORDER = ['lead', 'appt', 'lead+appt', 'reschedule_notice'];
 
 function pendingRender() {
   const listEl = document.getElementById('pendingList');
@@ -13626,7 +13627,7 @@ function pendingRender() {
   if (!listEl || !emptyEl) return;
 
   // v4.74: Group records by type for tab counts + current-tab display
-  const byType = { lead: [], appt: [], 'lead+appt': [] };
+  const byType = { lead: [], appt: [], 'lead+appt': [], 'reschedule_notice': [] };
   pendingData.forEach(p => {
     const t = String(p.type || 'lead').toLowerCase();
     const bucket = byType[t] ? t : 'lead';
@@ -13675,10 +13676,20 @@ function pendingRender() {
     }
   });
 
-  // Update header button: always visible, disabled when 0
+  // v4.86: Header button label depends on tab
+  // - For reschedule_notice tab: "Got it all N" (clears all visible notices)
+  // - For other tabs: "Add all matched N"
   const headerBtn = document.getElementById('pendingBatchAddBtn');
   const headerLabel = document.getElementById('pendingBatchAddLabel');
-  if (headerLabel) headerLabel.textContent = 'Add all matched ' + matchedCount;
+  let totalCount = matchedCount;
+  if (activeTab === 'reschedule_notice') {
+    totalCount = activeItems.length;  // all notices, no "match" concept
+    if (headerLabel) headerLabel.textContent = 'Got it all ' + totalCount;
+  } else {
+    if (headerLabel) headerLabel.textContent = 'Add all matched ' + matchedCount;
+  }
+  // Below code references matchedCount — patch with totalCount
+  matchedCount = totalCount;
   if (headerBtn) {
     if (matchedCount === 0) {
       headerBtn.style.opacity = '0.45';
@@ -13717,9 +13728,111 @@ function pendingRender() {
 }
 
 // v4.66: Render a single Pending card based on its type
+
+// v4.86: Render a Reschedule notice card — shows old → new date / location, click to dismiss
+function renderRescheduleNoticeCard(p, locations, esc) {
+  // Parse the apptDate field which contains "oldDate|newDate"
+  const apptParts = String(p.apptDate || '').split('|');
+  const oldDate = apptParts[0] || '';
+  const newDate = apptParts[1] || '';
+
+  const locParts = String(p.locationId || '').split('|');
+  const oldLocId = locParts[0] || '';
+  const newLocId = locParts[1] || '';
+
+  const fmtDate = (d) => {
+    if (!d) return '?';
+    const m = d.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return d;
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${parseInt(m[3],10)} ${months[parseInt(m[2],10)-1]} ${m[1]}`;
+  };
+  const fmtLoc = (id) => {
+    if (!id) return '—';
+    const found = locations.find(l => l.id === id || String(l.id).replace(/^st-/, '') === String(id).replace(/^st-/, ''));
+    return found ? found.name : id;
+  };
+
+  const dateChanged = oldDate !== newDate && newDate;
+  const locChanged = oldLocId !== newLocId && newLocId;
+  const niceTime = pendingFormatTime(p.timestamp);
+
+  let changesHtml = '';
+  if (dateChanged) {
+    changesHtml += `<div style="font-size:13px; padding:6px 0; display:flex; align-items:center; gap:8px;">
+      <span style="opacity:0.6;">📅 Date:</span>
+      <span style="text-decoration:line-through; color:var(--silver);">${esc(fmtDate(oldDate))}</span>
+      <span style="color:var(--silver);">→</span>
+      <span style="font-weight:600; color:#BA7517;">${esc(fmtDate(newDate))}</span>
+    </div>`;
+  }
+  if (locChanged) {
+    changesHtml += `<div style="font-size:13px; padding:6px 0; display:flex; align-items:center; gap:8px;">
+      <span style="opacity:0.6;">📍 Loc:</span>
+      <span style="text-decoration:line-through; color:var(--silver);">${esc(fmtLoc(oldLocId))}</span>
+      <span style="color:var(--silver);">→</span>
+      <span style="font-weight:600; color:#BA7517;">${esc(fmtLoc(newLocId))}</span>
+    </div>`;
+  }
+
+  return `<div id="pcard-${esc(p.id)}" class="pending-card" style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; transition:opacity 0.15s;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px;">
+      <div style="font-size:16px; font-weight:600; color:var(--black);">${esc(p.phone || '(no phone)')}</div>
+      <span style="background:rgba(186,117,23,0.12); color:#BA7517; font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px; white-space:nowrap;">🔄 Rescheduled</span>
+    </div>
+    <div style="font-size:11px; color:var(--silver); margin-bottom:10px;">${esc(niceTime)}</div>
+    <div style="background:var(--surface); border-radius:8px; padding:10px 12px; margin-bottom:14px;">
+      ${changesHtml || '<div style="font-size:13px; color:var(--silver);">No changes</div>'}
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button id="paddbtn-${esc(p.id)}" style="flex:1; padding:10px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="dismissRescheduleNotice('${esc(p.id)}')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
+        Got it
+      </button>
+      <button id="pdelbtn-${esc(p.id)}" style="width:46px; padding:10px; background:#fff; color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="dismissRescheduleNotice('${esc(p.id)}')" title="Skip">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
+      </button>
+    </div>
+  </div>`;
+}
+
+// v4.86: Dismiss notice — calls Apps Script to delete the row, then re-renders Inbox
+async function dismissRescheduleNotice(pendingId) {
+  const card = document.getElementById('pcard-' + pendingId);
+  if (card) { card.style.opacity = '0.4'; card.style.pointerEvents = 'none'; }
+
+  try {
+    const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+    if (!url) throw new Error('No backend URL');
+    const r = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'deletepending', id: pendingId }),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    const j = await r.json();
+    if (j && j.success) {
+      pendingData = pendingData.filter(x => x.id !== pendingId);
+      pendingRender();
+      if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
+      if (typeof toast === 'function') toast('Reschedule notice dismissed');
+    } else {
+      throw new Error(j && j.error ? j.error : 'Failed');
+    }
+  } catch (e) {
+    if (card) { card.style.opacity = '1'; card.style.pointerEvents = 'auto'; }
+    if (typeof toast === 'function') toast('Failed to dismiss: ' + (e.message || e));
+  }
+}
+
 function renderPendingCard(p, activeCh, locations, esc) {
   const type = String(p.type || 'lead').toLowerCase();
   const niceTime = pendingFormatTime(p.timestamp);
+
+  // v4.86: Special-case reschedule_notice — different card layout (no channel/location selectors)
+  if (type === 'reschedule_notice') {
+    return renderRescheduleNoticeCard(p, locations, esc);
+  }
+
   const apptTime = p.apptDate ? pendingFormatApptTime(p.apptDate) : '';
   const locName = pendingLocationName(p.locationId, locations);
 
@@ -13997,7 +14110,7 @@ async function pendingConfirm(pendingId) {
     showUp: '',
     race: '',
     spend: 0,
-    remark: '[From GHL' + (isAppt ? ' + Appt ' + (p.apptDate || '') : '') + '] original tag: ' + p.tag,
+    remark: '',
     status: isAppt ? 'booked' : 'lead',
     flags: ''
   };
@@ -14026,7 +14139,7 @@ async function pendingConfirm(pendingId) {
         leadRecord.channelId = fuCh.id;
         leadRecord.channelName = fuCh.name;
         leadRecord.platform = fuCh.platform;
-        leadRecord.remark = '[From GHL → Auto Follow Up >30d] original tag: ' + p.tag;
+        // v4.85: No longer write [From GHL] remarks — only reschedule events touch remark
         if (typeof toast === 'function') toast('🔁 Auto Follow Up (>30 days since last contact)');
       }
     } else {
@@ -14218,6 +14331,42 @@ async function pendingBatchAddAll() {
 
   // v4.74: Process items ONLY from active tab (user expects tab-scoped operation)
   const activeTab = _pendingActiveTab || 'lead';
+
+  // v4.86: For reschedule_notice tab, use bulk dismiss (different from add)
+  if (activeTab === 'reschedule_notice') {
+    const notices = pendingData.filter(p => String(p.type || '').toLowerCase() === 'reschedule_notice');
+    if (notices.length === 0) {
+      if (typeof toast === 'function') toast('No reschedule notices to dismiss');
+      return;
+    }
+    if (!confirm('Dismiss ' + notices.length + ' reschedule notice(s)?')) return;
+    const btn = document.getElementById('pendingBatchAddBtn');
+    const btnLabel = document.getElementById('pendingBatchAddLabel');
+    if (btn) btn.disabled = true;
+    if (btnLabel) btnLabel.textContent = 'Dismissing...';
+    let dismissed = 0;
+    for (const n of notices) {
+      try {
+        const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+        const r = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'deletepending', id: n.id }),
+          headers: { 'Content-Type': 'text/plain' }
+        });
+        const j = await r.json();
+        if (j && j.success) {
+          pendingData = pendingData.filter(x => x.id !== n.id);
+          dismissed++;
+        }
+      } catch (e) {}
+    }
+    pendingRender();
+    if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
+    if (btn) btn.disabled = false;
+    if (typeof toast === 'function') toast('Dismissed ' + dismissed + ' notice(s)');
+    return;
+  }
+
   const toProcess = pendingData.filter(p => {
     const t = String(p.type || 'lead').toLowerCase();
     if (t !== activeTab) return false;          // scope to current tab only
@@ -14293,10 +14442,10 @@ async function pendingBatchAddAll() {
   // 1) Run parallel groups concurrently
   const [simpleResults, followupResults] = await Promise.all([
     Promise.all(simpleInsertTasks.map(t => 
-      _pendingBatchSaveOne(t.p, t.ch, t.phone, '[From GHL] original tag: ' + t.p.tag)
+      _pendingBatchSaveOne(t.p, t.ch, t.phone, '')
     )),
     Promise.all(followupTasks.map(t => 
-      _pendingBatchSaveOne(t.p, t.fuCh, t.phone, '[From GHL → Follow Up] original tag: ' + t.p.tag)
+      _pendingBatchSaveOne(t.p, t.fuCh, t.phone, '')
     ))
   ]);
   simpleResults.forEach(ok => ok ? added++ : failed++);
@@ -14308,7 +14457,7 @@ async function pendingBatchAddAll() {
     if (decision === 'skip') { skipped++; continue; }
     if (decision === 'cancel') break;  // abort rest
     if (decision === 'force_new') {
-      const ok = await _pendingBatchSaveOne(t.p, t.ch, t.phone, '[From GHL] original tag: ' + t.p.tag);
+      const ok = await _pendingBatchSaveOne(t.p, t.ch, t.phone, '');
       if (ok) added++;
       else failed++;
     }
