@@ -2602,6 +2602,19 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* v4.87: Hide horizontal scrollbar on Inbox tab bar */
 #pendingTabBar::-webkit-scrollbar { display: none; }
+
+/* v4.91: Tool nav-items in left sidebar (AI / Search / Alerts) - smaller styling */
+@media (min-width: 768px) {
+  .nav-item.nav-tool { font-size: 13px; color: var(--gray); }
+  .nav-item.nav-tool:hover { color: var(--purple); background: var(--surface); }
+  .nav-item.nav-tool .nav-icon { opacity: 0.85; }
+  /* Hide topbar tool buttons on desktop (they live in left nav now) */
+  #topbarTools { display: none !important; }
+}
+@media (max-width: 767px) {
+  /* Hide tool nav-items on mobile (they live in topbar now) */
+  .nav-item.nav-tool { display: none !important; }
+}
 </style>
 <style>
 /* v4.63: Mobile topbar — hide Data Entry + Settings buttons (accessed via drawer/tabbar) */
@@ -2645,30 +2658,29 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.89</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.91</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
     <!-- v3.69: Pending sync badge (only shows when there are queued offline writes) -->
     <span id="pendingSyncBadge" onclick="flushPendingQueueManual()" style="display:none;align-items:center;gap:4px;padding:5px 10px;background:rgba(217,119,6,0.12);color:var(--amber);border:1px solid rgba(217,119,6,0.3);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;" title="点击立即重试同步"></span>
-    <!-- AI Assistant (first on the left) -->
-    <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" id="aiTopbarBtn" style="width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(113,50,245,0.3);">
-      AI
-    </button>
-    <!-- Global search -->
-    <button onclick="openGlobalSearch()" aria-label="Search" title="Search (Ctrl+K)" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-    </button>
-    <!-- Alerts / Inbox -->
-    <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-      <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">5</span>
-    </button>
-    <!-- v4.62: Pending leads button — SVG inbox icon to match other topbar icons -->
-    <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" class="hide-mobile-when-needed" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
-      <span id="pendingTopbarBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">0</span>
-    </button>
+    <!-- v4.91: Topbar tool buttons — hidden on desktop (moved to left nav), shown on mobile only -->
+    <div id="topbarTools" style="display:flex;gap:6px;align-items:center;">
+      <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" id="aiTopbarBtn" style="width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(113,50,245,0.3);">
+        AI
+      </button>
+      <button onclick="openGlobalSearch()" aria-label="Search" title="Search (Ctrl+K)" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      </button>
+      <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">5</span>
+      </button>
+      <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+        <span id="pendingTopbarBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">0</span>
+      </button>
+    </div>
     <!-- v4.63: Desktop-only — Data Entry + Settings hidden on mobile via ID selector + !important -->
     <div id="topbarExtras" style="display:flex;gap:6px;align-items:center;">
       <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -2699,12 +2711,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 </header>
 
 <nav class="nav" id="navDesktop">
+  <button class="nav-item nav-tool" onclick="openAIChat()" data-tooltip="AI Assistant"><span class="nav-icon"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#7132f5,#9b5fff);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:22px;letter-spacing:0.3px;">AI</span></span><span class="nav-label">AI Assistant</span></button>
+  <button class="nav-item nav-tool" onclick="openGlobalSearch()" data-tooltip="Search"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span><span class="nav-label">Search</span></button>
+  <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 9px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">5</span></button>
+  <div class="nav-divider"></div>
   <button class="nav-item" data-page="contact" data-tooltip="Contact"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><span class="nav-label">Contact</span></button>
   <button class="nav-item" data-page="summary" data-tooltip="Dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span><span class="nav-label">Dashboard</span></button>
   <button class="nav-item" data-page="store" data-tooltip="Appt"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span><span class="nav-label">Appt</span></button>
   <button class="nav-item" data-page="adsspend" data-tooltip="Ads Spend"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span><span class="nav-label">Ads Spend</span></button>
   <button class="nav-item" data-page="revenue" data-tooltip="Revenue Outlet"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span><span class="nav-label">Revenue Outlet</span></button>
-  <button class="nav-item" data-page="pending" data-tooltip="Inbox"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span></button>
+  <button class="nav-item" data-page="pending" data-tooltip="Inbox" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span><span id="pendingBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius:9px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="entry" data-tooltip="Data Entry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></span><span class="nav-label">Data Entry</span></button>
   <button class="nav-item active" data-page="settings" data-tooltip="Settings"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span><span class="nav-label">Settings</span></button>
@@ -3489,7 +3505,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="alertsTitleText" style="font-size:16px;font-weight:600;">Data Alerts</span>
-        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;">0</span>
+        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;">5</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <div id="alertsLangToggle" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;font-weight:600;">
@@ -3499,7 +3515,47 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
       </div>
     </div>
-    <div id="alertsContent" class="alerts-content"></div>
+    <div id="alertsContent" class="alerts-content"><div class="alerts-section-label">Needs attention (5)</div>
+        <div class="alert-item sev-med" onclick="_alertAct(0)">
+          <div class="alert-icon">📊</div>
+          <div class="alert-body">
+            <div class="alert-title">Sunway — Revenue missing for Mar 2026</div>
+            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(1)">
+          <div class="alert-icon">📊</div>
+          <div class="alert-body">
+            <div class="alert-title">Cheras — Revenue missing for Mar 2026</div>
+            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(2)">
+          <div class="alert-icon">📊</div>
+          <div class="alert-body">
+            <div class="alert-title">ECO — Revenue missing for Mar 2026</div>
+            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(3)">
+          <div class="alert-icon">💰</div>
+          <div class="alert-body">
+            <div class="alert-title">Simply 5 — Ads Spend missing for Mar 2026</div>
+            <div class="alert-desc">Last month cost missing. Go to Data Entry → Ads Cost.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(4)">
+          <div class="alert-icon">💰</div>
+          <div class="alert-body">
+            <div class="alert-title">Google Ads — Ads Spend missing for Mar 2026</div>
+            <div class="alert-desc">Last month cost missing. Go to Data Entry → Ads Cost.</div>
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 
@@ -3508,7 +3564,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="ai-modal">
     <div class="ai-header">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:26px;height:26px;" id="aiHeaderAvatar"></div>
+        <div style="width:26px;height:26px;" id="aiHeaderAvatar"><div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;letter-spacing:0.3px;">AI</div></div>
         <div style="display:flex;flex-direction:column;line-height:1.15;">
           <span style="font-size:14px;font-weight:500;color:#1a1a1a;letter-spacing:-0.2px;">Ask CRM</span>
           <span id="aiModelLabel" style="font-size:9.5px;color:var(--gray);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-top:1px;">Gemini Flash</span>
@@ -3537,8 +3593,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <!-- Inline Settings Panel (collapsible) -->
     <!-- v3.23: Settings moved to standalone Modal (see aiSettingsBackdrop below) -->
 
-    <div id="aiMessages" class="ai-messages"></div>
-    <div class="ai-quick-actions" id="aiQuickActions"></div>
+    <div id="aiMessages" class="ai-messages">
+      <div class="ai-empty">
+        <div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>
+        <div class="ai-empty-title">你的 CRM 分析助手</div>
+        <div style="font-size:12px;color:var(--gray);">Click a quick action below or type your question</div>
+      </div>
+    </div>
+    <div class="ai-quick-actions" id="aiQuickActions"><button class="ai-chip" data-chip-idx="0">💰 每月营业额</button><button class="ai-chip" data-chip-idx="1">💸 每月 Ads Spend</button><button class="ai-chip" data-chip-idx="2">🎯 每月 ROAS</button><button class="ai-chip" data-chip-idx="3">📡 每月 Lead</button><button class="ai-chip" data-chip-idx="4">🏢 门店月度营业额</button><button class="ai-chip" data-chip-idx="5">🏆 门店本月对比</button><button class="ai-chip" data-chip-idx="6">🎪 渠道本月对比</button><button class="ai-chip" data-chip-idx="7">📊 本月 vs 上月</button></div>
     <div class="ai-input-wrap">
       <div class="ai-input-wrap-inner">
         <textarea id="aiInput" placeholder="问我任何数据问题..." rows="1" onkeydown="_aiInputKey(event)"></textarea>
@@ -4070,6 +4132,45 @@ function todayStr() {
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return y + '-' + m + '-' + day;
+}
+
+// v4.90: Build [Auto] remark line for new Lead from Pending
+// Examples:
+//   Lead only: "[Auto] 25 Apr 13:30 Lead received · Simply 5"
+//   Lead + Appt: "[Auto] 25 Apr 13:30 Lead received · Simply 5 · Appt 10 May 2:30 PM @ Sunway"
+//   Appt only (existing-pending merged): "[Auto] 25 Apr 13:30 Appt received · Simply 5 · 10 May 2:30 PM @ Sunway"
+function buildAutoRemarkForNewLead(p, ch, locations) {
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, '0');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const mm = months[now.getMonth()];
+  const hh = String(now.getHours()).padStart(2, '0');
+  const min = String(now.getMinutes()).padStart(2, '0');
+  const nowStr = `${dd} ${mm} ${hh}:${min}`;
+  
+  const t = String(p.type || 'lead').toLowerCase();
+  const chName = ch ? ch.name : (p.tag || '?');
+  
+  // Format appt date+time + location for display
+  let apptDisplay = '';
+  if (p.apptDate) {
+    const apptStr = pendingFormatApptTime(p.apptDate);
+    let locName = '';
+    if (p.locationId) {
+      const found = locations.find(l => 
+        l.id === p.locationId || 
+        String(l.id).replace(/^st-/, '') === String(p.locationId).replace(/^st-/, '')
+      );
+      locName = found ? found.name : '';
+    }
+    apptDisplay = ` · ${t === 'appt' ? '' : 'Appt '}${apptStr}${locName ? ' @ ' + locName : ''}`;
+  }
+  
+  if (t === 'appt') {
+    return `[Auto] ${nowStr} Appt received · ${chName}${apptDisplay}`;
+  }
+  // 'lead' or 'lead+appt'
+  return `[Auto] ${nowStr} Lead received · ${chName}${apptDisplay}`;
 }
 
 // v4.83: Extract YYYY-MM-DD from any date format (string, Date.toString, ISO, etc)
@@ -14178,7 +14279,7 @@ async function pendingConfirm(pendingId) {
     showUp: '',
     race: '',
     spend: 0,
-    remark: '',
+    remark: buildAutoRemarkForNewLead(p, ch, (typeof state !== 'undefined' && state.locations) ? state.locations : []),
     status: isAppt ? 'booked' : 'lead',
     flags: ''
   };
@@ -14564,11 +14665,14 @@ async function _pendingBatchSaveOne(p, ch, phone, remark) {
   const locationIdVal = isAppt ? (p.locationId || '') : '';
   const statusVal = isAppt ? 'booked' : 'lead';
 
+  // v4.90: Auto-generate remark if caller passed empty/undefined
+  const autoRemark = (remark && remark.trim()) ? remark : buildAutoRemarkForNewLead(p, ch, (typeof state !== 'undefined' && state.locations) ? state.locations : []);
+
   const leadRecord = {
     id: leadId, contact: phone, channelId: ch.id, channelName: ch.name,
     platform: ch.platform, leadDate: todayStr, name: '', apptDate: apptDateStr,
     locationId: locationIdVal, showUp: '', race: '', spend: 0,
-    remark: remark, status: statusVal, flags: ''
+    remark: autoRemark, status: statusVal, flags: ''
   };
 
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
@@ -14680,6 +14784,35 @@ function _mobileMenuOutsideClick(e) {
   }
 }
 
+
+// v4.91: Mirror topbar badges → nav badges (run on load + whenever badges update)
+function syncTopbarToNavBadges() {
+  const map = [
+    { src: 'pendingTopbarBadge', dst: 'pendingBadgeNav' },
+    { src: 'alertsBadge',        dst: 'alertsBadgeNav' }
+  ];
+  map.forEach(({src, dst}) => {
+    const s = document.getElementById(src);
+    const d = document.getElementById(dst);
+    if (!s || !d) return;
+    d.style.display = s.style.display === 'none' ? 'none' : 'inline-flex';
+    d.textContent = s.textContent;
+  });
+}
+// Hook into existing badge update function
+(function() {
+  const _origPendingBadge = (typeof pendingBadgeUpdate === 'function') ? pendingBadgeUpdate : null;
+  if (_origPendingBadge) {
+    window.pendingBadgeUpdate = async function(...args) {
+      const r = await _origPendingBadge.apply(this, args);
+      syncTopbarToNavBadges();
+      return r;
+    };
+  }
+})();
+// Also run on a periodic timer to catch any other badge update path
+setInterval(syncTopbarToNavBadges, 2000);
+setTimeout(syncTopbarToNavBadges, 500);
 </script>
 
 </body></html>
