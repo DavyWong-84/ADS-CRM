@@ -2599,6 +2599,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   overflow-y: auto;
   color: var(--black);
 }
+
+/* v4.87: Hide horizontal scrollbar on Inbox tab bar */
+#pendingTabBar::-webkit-scrollbar { display: none; }
 </style>
 <style>
 /* v4.63: Mobile topbar — hide Data Entry + Settings buttons (accessed via drawer/tabbar) */
@@ -2642,7 +2645,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.86</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.87</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -13638,14 +13641,13 @@ function pendingRender() {
 
   // v4.74: Build tab bar HTML (always show, even when empty — so user can switch back)
   const tabBarHtml = `
-    <div id="pendingTabBar" class="filter-tabs" style="margin-bottom:14px; justify-content:center;">
+    <div id="pendingTabBar" class="filter-tabs" style="margin-bottom:14px; justify-content:flex-start; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; flex-wrap:nowrap; padding-bottom:2px;">
       ${PENDING_TAB_ORDER.map(t => {
         const meta = PENDING_TAB_META[t];
         const count = (byType[t] || []).length;
         const isActive = _pendingActiveTab === t;
-        // v4.81: Auto-width tabs (no flex:1) — prevents 0 badge from overflowing on narrow screens.
-        // Count badge is inline text with subtle background.
-        return `<button class="filter-tab${isActive ? ' active' : ''}" onclick="pendingSetTab('${t}')" style="white-space:nowrap;">
+        // v4.87: Tab bar scrolls horizontally on narrow screens, no clipping
+        return `<button class="filter-tab${isActive ? ' active' : ''}" onclick="pendingSetTab('${t}')" style="white-space:nowrap; flex-shrink:0;">
           ${esc(meta.label)}<span class="count" style="${isActive ? 'background:rgba(255,255,255,0.25); color:#fff;' : 'background:var(--surface); color:var(--silver);'} padding:1px 7px; border-radius:10px; font-size:11px; font-weight:600; margin-left:6px; display:inline-block;">${count}</span>
         </button>`;
       }).join('')}
