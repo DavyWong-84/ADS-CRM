@@ -2557,7 +2557,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.73</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.74</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -13383,6 +13383,26 @@ function pendingMatchChannel(tag) {
   return null;
 }
 
+// v4.74: Pending tabs — 4 separate tabs, user switches between them
+let _pendingActiveTab = (() => {
+  try { return localStorage.getItem('pendingActiveTab') || 'lead'; }
+  catch (e) { return 'lead'; }
+})();
+
+function pendingSetTab(tab) {
+  _pendingActiveTab = tab;
+  try { localStorage.setItem('pendingActiveTab', tab); } catch (e) {}
+  pendingRender();
+}
+
+const PENDING_TAB_META = {
+  'lead':      { label: 'Pending Lead',    accent: '#7132f5' },
+  'appt':      { label: 'Pending Appt',    accent: '#1D9E75' },
+  'lead+appt': { label: 'Lead+Appt',       accent: '#D85A30' },
+  'update':    { label: 'Update Lead',     accent: '#BA7517' }
+};
+const PENDING_TAB_ORDER = ['lead', 'appt', 'lead+appt', 'update'];
+
 function pendingRender() {
   const listEl = document.getElementById('pendingList');
   const emptyEl = document.getElementById('pendingEmpty');
@@ -13391,15 +13411,7 @@ function pendingRender() {
   const batchBtn = document.getElementById('pendingBatchAddBtn');
   if (!listEl || !emptyEl) return;
 
-  if (pendingData.length === 0) {
-    listEl.innerHTML = '';
-    emptyEl.style.display = 'block';
-    if (batchBar) batchBar.style.display = 'none';
-    return;
-  }
-  emptyEl.style.display = 'none';
-
-  // v4.66: Group records by type — 4 types: lead, appt, lead+appt, update
+  // v4.74: Group records by type for tab counts + current-tab display
   const byType = { lead: [], appt: [], 'lead+appt': [], update: [] };
   pendingData.forEach(p => {
     const t = String(p.type || 'lead').toLowerCase();
@@ -13407,22 +13419,69 @@ function pendingRender() {
     byType[bucket].push(p);
   });
 
-  // v4.60: Count matched vs unmatched for batch bar (only counts items needing channel selection — lead/appt/lead+appt)
-  let matchedCount = 0, unmatchedCount = 0, updateCount = 0;
-  pendingData.forEach(p => {
-    const t = String(p.type || 'lead').toLowerCase();
-    if (t === 'update') { updateCount++; return; }
-    if (pendingMatchChannel(p.tag)) matchedCount++;
-    else unmatchedCount++;
-  });
+  const esc = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
+
+  // v4.74: Build tab bar HTML (always show, even when empty — so user can switch back)
+  const tabBarHtml = `
+    <div id="pendingTabBar" style="display:flex; gap:4px; background:var(--surface); padding:3px; border-radius:8px; margin-bottom:14px; overflow-x:auto; -webkit-overflow-scrolling:touch;">
+      ${PENDING_TAB_ORDER.map(t => {
+        const meta = PENDING_TAB_META[t];
+        const count = (byType[t] || []).length;
+        const isActive = _pendingActiveTab === t;
+        return `<button onclick="pendingSetTab('${t}')" style="
+          flex:1; min-width:110px;
+          background:${isActive ? 'var(--white)' : 'transparent'};
+          border:none;
+          padding:8px 10px;
+          border-radius:6px;
+          font-size:12px;
+          font-weight:${isActive ? '600' : '500'};
+          color:${isActive ? meta.accent : 'var(--gray)'};
+          box-shadow:${isActive ? '0 1px 3px rgba(0,0,0,0.1)' : 'none'};
+          cursor:pointer;
+          white-space:nowrap;
+          transition: all 0.15s;
+        ">${esc(meta.label)} <span style="
+          background:${count > 0 ? meta.accent : 'var(--silver)'};
+          color:#fff;
+          padding:1px 6px;
+          border-radius:8px;
+          font-size:10px;
+          margin-left:4px;
+          opacity:${count > 0 ? '1' : '0.4'};
+        ">${count}</span></button>`;
+      }).join('')}
+    </div>
+  `;
+
+  // Global empty check — no records of ANY type
+  if (pendingData.length === 0) {
+    listEl.innerHTML = tabBarHtml;
+    emptyEl.style.display = 'block';
+    if (batchBar) batchBar.style.display = 'none';
+    return;
+  }
+  emptyEl.style.display = 'none';
+
+  // v4.74: Get current tab's items
+  const activeTab = _pendingActiveTab;
+  const activeItems = byType[activeTab] || [];
+
+  // Batch bar only counts items IN CURRENT TAB that are processable
+  let matchedCount = 0, unmatchedCount = 0;
+  if (activeTab !== 'update') {
+    activeItems.forEach(p => {
+      if (pendingMatchChannel(p.tag)) matchedCount++;
+      else unmatchedCount++;
+    });
+  }
   if (batchBar) {
-    if (matchedCount > 0) {
+    if (activeTab !== 'update' && matchedCount > 0) {
       batchBar.style.display = 'flex';
       if (batchSummary) {
         const parts = [];
-        parts.push(matchedCount + ' matched');
-        if (unmatchedCount > 0) parts.push(unmatchedCount + ' unmatched (will skip)');
-        if (updateCount > 0) parts.push(updateCount + ' update (review each)');
+        parts.push(matchedCount + ' matched on this tab');
+        if (unmatchedCount > 0) parts.push(unmatchedCount + ' unmatched');
         batchSummary.textContent = parts.join(', ');
       }
       if (batchBtn) batchBtn.textContent = '⚡ Add all matched (' + matchedCount + ')';
@@ -13431,33 +13490,22 @@ function pendingRender() {
     }
   }
 
-  const esc = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
   const channels = (typeof state !== 'undefined' && state.channels) ? state.channels : [];
   const activeCh = channels.filter(c => c.active !== false);
   const locations = (typeof state !== 'undefined' && state.locations) ? state.locations : [];
 
-  // Render groups in order: leads → appts → lead+appt → updates
-  const groupOrder = ['lead', 'appt', 'lead+appt', 'update'];
-  const groupMeta = {
-    'lead':      { icon: '📥', title: 'New Leads', accent: 'var(--purple)' },
-    'appt':      { icon: '📅', title: 'New Appointments', accent: '#1D9E75' },
-    'lead+appt': { icon: '📥📅', title: 'New Leads + Appointments', accent: '#D85A30' },
-    'update':    { icon: '🔄', title: 'Update Existing Leads', accent: '#BA7517' }
-  };
-
-  let html = '';
-  groupOrder.forEach(type => {
-    const items = byType[type] || [];
-    if (items.length === 0) return;
-    const meta = groupMeta[type];
-    html += `<div style="margin-top:18px; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
-      <span style="font-size:13px; font-weight:600; color:${meta.accent}; letter-spacing:0.2px;">${meta.icon} ${meta.title}</span>
-      <span style="font-size:11px; color:var(--silver); background:var(--surface); padding:2px 8px; border-radius:10px;">${items.length}</span>
+  // v4.74: Render ONLY the active tab's cards
+  let cardsHtml = '';
+  if (activeItems.length === 0) {
+    const meta = PENDING_TAB_META[activeTab];
+    cardsHtml = `<div style="text-align:center; color:var(--silver); padding:40px 20px; font-size:13px;">
+      No ${esc(meta.label)} records right now. Pull to refresh or switch tabs.
     </div>`;
-    html += items.map(p => renderPendingCard(p, activeCh, locations, esc)).join('');
-  });
+  } else {
+    cardsHtml = activeItems.map(p => renderPendingCard(p, activeCh, locations, esc)).join('');
+  }
 
-  listEl.innerHTML = html;
+  listEl.innerHTML = tabBarHtml + cardsHtml;
 
   // v4.62: Upgrade the newly-rendered selects to use the pop-select modal UI
   if (typeof upgradeAllPopSelects === 'function') {
@@ -13957,10 +14005,15 @@ async function pendingDelete(pendingId) {
 async function pendingBatchAddAll() {
   if (pendingData.length === 0) return;
 
-  // v4.66: Build list of matched items only, EXCLUDE update type (need manual review)
+  // v4.74: Process items ONLY from active tab (user expects tab-scoped operation)
+  const activeTab = _pendingActiveTab || 'lead';
+  if (activeTab === 'update') {
+    if (typeof toast === 'function') toast('Update records must be reviewed individually');
+    return;
+  }
   const toProcess = pendingData.filter(p => {
     const t = String(p.type || 'lead').toLowerCase();
-    if (t === 'update') return false;
+    if (t !== activeTab) return false;          // scope to current tab only
     if (!pendingMatchChannel(p.tag)) return false;
     if ((t === 'appt' || t === 'lead+appt') && !p.locationId) return false;
     return true;
