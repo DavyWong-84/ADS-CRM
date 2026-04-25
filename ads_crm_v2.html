@@ -2554,7 +2554,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.70</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.72</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -6276,53 +6276,38 @@ function renderList() {
     );
   }
   const today = todayStr();
-  // v4.68 (user feedback): Sort rules differ per mode.
-  // - 'appt' mode: overdue booked first (newest overdue first), then upcoming ASC 
-  //   (nearest appt first), then no-appt records. No "today always on top" override 
-  //   because today naturally sorts to top of upcoming group.
-  // - 'updated' / 'lead' modes: keep "today's booked on top" because the mode's own 
-  //   sort doesn't surface today otherwise.
+  // v4.72 (user feedback): ONLY overdue booked get placed on top across all sort modes.
+  // Today's booked / no special treatment — just follow the user's chosen sort.
   const sortMode = state.listSort || 'updated';
   list.sort((a, b) => {
+    // Universal Priority: Overdue booked always on top (requires user follow-up)
+    const aOver = a.status === 'booked' && a.apptDate && a.apptDate < today ? 1 : 0;
+    const bOver = b.status === 'booked' && b.apptDate && b.apptDate < today ? 1 : 0;
+    if (aOver !== bOver) return bOver - aOver;
+    // Within overdue group — sort by appt date descending (most recently overdue first)
+    if (aOver === 1 && bOver === 1) {
+      const cmp = (b.apptDate || '').localeCompare(a.apptDate || '');
+      if (cmp !== 0) return cmp;
+    }
+
+    // Non-overdue sort by user choice
     if (sortMode === 'appt') {
-      // Appt mode: classify each record into 3 groups
-      // 0 = overdue booked, 1 = upcoming (today+future) booked or has apptDate, 2 = no apptDate
-      const groupFor = (x) => {
-        if (!x.apptDate) return 2;
-        if (x.status === 'booked' && x.apptDate < today) return 0;  // overdue
-        return 1;  // upcoming (today or future)
-      };
-      const ga = groupFor(a);
-      const gb = groupFor(b);
-      if (ga !== gb) return ga - gb;
-      // Same group — sort within group
-      if (ga === 0) {
-        // Overdue: newest first (Apr 24 > Apr 20 > Apr 10)
-        return (b.apptDate || '').localeCompare(a.apptDate || '');
-      }
-      if (ga === 1) {
-        // Upcoming: soonest first (Apr 25 > Apr 28 > May 5)
-        return (a.apptDate || '').localeCompare(b.apptDate || '');
-      }
-      // Both no apptDate — fall through to tiebreaker
+      // Appt Date ascending (soonest first); leads without appt go to bottom
+      const aA = a.apptDate || '';
+      const bA = b.apptDate || '';
+      if (aA && !bA) return -1;
+      if (!aA && bA) return 1;
+      const cmp = aA.localeCompare(bA);
+      if (cmp !== 0) return cmp;
+    } else if (sortMode === 'updated') {
+      const aU = a.updatedAt || a.leadDate || '';
+      const bU = b.updatedAt || b.leadDate || '';
+      const cmp = bU.localeCompare(aU);
+      if (cmp !== 0) return cmp;
     } else {
-      // 'updated' and 'lead' modes: Priority 1 & 2 still apply
-      const aToday = a.apptDate === today && (a.status === 'booked') ? 1 : 0;
-      const bToday = b.apptDate === today && (b.status === 'booked') ? 1 : 0;
-      if (aToday !== bToday) return bToday - aToday;
-      const aOver = a.status === 'booked' && a.apptDate && a.apptDate < today ? 1 : 0;
-      const bOver = b.status === 'booked' && b.apptDate && b.apptDate < today ? 1 : 0;
-      if (aOver !== bOver) return bOver - aOver;
-      if (sortMode === 'updated') {
-        const aU = a.updatedAt || a.leadDate || '';
-        const bU = b.updatedAt || b.leadDate || '';
-        const cmp = bU.localeCompare(aU);
-        if (cmp !== 0) return cmp;
-      } else {
-        // 'lead' — Lead Date descending
-        const cmp = (b.leadDate || '').localeCompare(a.leadDate || '');
-        if (cmp !== 0) return cmp;
-      }
+      // 'lead' — Lead Date descending
+      const cmp = (b.leadDate || '').localeCompare(a.leadDate || '');
+      if (cmp !== 0) return cmp;
     }
     // Tiebreaker: id descending
     return (b.id || '').localeCompare(a.id || '');
@@ -13951,12 +13936,10 @@ async function pendingBatchAddAll() {
   if (pendingData.length === 0) return;
 
   // v4.66: Build list of matched items only, EXCLUDE update type (need manual review)
-  // Also exclude items needing location selection that haven't been picked (appt/lead+appt with no default loc)
   const toProcess = pendingData.filter(p => {
     const t = String(p.type || 'lead').toLowerCase();
-    if (t === 'update') return false;  // Updates require individual review
+    if (t === 'update') return false;
     if (!pendingMatchChannel(p.tag)) return false;
-    // For appt/lead+appt, skip if location is empty (user must manually select)
     if ((t === 'appt' || t === 'lead+appt') && !p.locationId) return false;
     return true;
   });
@@ -13967,10 +13950,32 @@ async function pendingBatchAddAll() {
 
   if (!confirm('Add ' + toProcess.length + ' matched lead(s) to CRM?\n\nUnmatched items will be skipped.\nYou may be asked to handle duplicates.')) return;
 
+  // v4.71: Lock ALL cards + button IMMEDIATELY so user can't click during processing
   const btn = document.getElementById('pendingBatchAddBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Processing...'; }
+  // Lock each card visually + add to in-flight set
+  const lockedIds = [];
+  for (const p of toProcess) {
+    _pendingInFlight.add(p.id);
+    lockedIds.push(p.id);
+    const card = document.getElementById('pcard-' + p.id);
+    const addBtn = document.getElementById('paddbtn-' + p.id);
+    const delBtn = document.getElementById('pdelbtn-' + p.id);
+    if (card) { card.style.opacity = '0.55'; card.style.pointerEvents = 'none'; }
+    if (addBtn) { addBtn.textContent = '⏳ Adding...'; addBtn.disabled = true; }
+    if (delBtn) delBtn.disabled = true;
+  }
 
   let added = 0, followup = 0, skipped = 0, failed = 0;
+
+  // v4.71 speed: Split into 3 groups
+  //   - duplicateNeedsAsk: must run serially (modal must show one at a time)
+  //   - duplicateAutoFollowUp: can run in parallel
+  //   - simpleInsert: can run in parallel (fastest group, the common case)
+  const todayStr = new Date().toISOString().split('T')[0];
+  const simpleInsertTasks = [];
+  const followupTasks = [];
+  const duplicateAskQueue = [];  // has to be serial due to modal
 
   for (const p of toProcess) {
     const ch = pendingMatchChannel(p.tag);
@@ -13980,49 +13985,54 @@ async function pendingBatchAddAll() {
       ? normalizePhone(p.phone)
       : String(p.phone).replace(/\D/g, '').replace(/^0/, '60');
 
-    // Check if phone already exists in Leads — use existing handleDuplicate flow if so
     const existing = (typeof state !== 'undefined' && state.leads)
       ? state.leads.find(l => l.contact === phone)
       : null;
-    const todayStr = new Date().toISOString().split('T')[0];
 
-    if (existing) {
-      // Duplicate detected — check age
-      const daysDiff = (new Date(todayStr) - new Date(existing.leadDate)) / (1000 * 60 * 60 * 24);
-
-      if (daysDiff >= 30) {
-        // > 30 days: auto Follow Up (same logic as handleDuplicate)
-        const fuCh = state.channels.find(c => c.platform === 'followup');
-        if (fuCh) {
-          const ok = await _pendingBatchSaveOne(p, fuCh, phone, '[From GHL → Follow Up] original tag: ' + p.tag);
-          if (ok) followup++;
-          else failed++;
-          continue;
-        }
-        // No followup channel configured — fall through to skip
-        skipped++;
-        continue;
-      } else {
-        // <= 30 days: pause batch, open modal, wait for user decision
-        const decision = await _pendingBatchAskDuplicate(existing, p, ch);
-        if (decision === 'skip') { skipped++; continue; }
-        if (decision === 'force_new') {
-          const ok = await _pendingBatchSaveOne(p, ch, phone, '[From GHL] original tag: ' + p.tag);
-          if (ok) added++;
-          else failed++;
-          continue;
-        }
-        if (decision === 'cancel') {
-          // User cancelled — abort entire batch
-          break;
-        }
-      }
+    if (!existing) {
+      // No dup — parallel-safe simple insert
+      simpleInsertTasks.push({ p, ch, phone });
     } else {
-      // No duplicate — simple insert
-      const ok = await _pendingBatchSaveOne(p, ch, phone, '[From GHL] original tag: ' + p.tag);
+      const daysDiff = (new Date(todayStr) - new Date(existing.leadDate)) / (1000 * 60 * 60 * 24);
+      if (daysDiff >= 30) {
+        // Auto Follow Up — parallel-safe
+        const fuCh = state.channels.find(c => c.platform === 'followup');
+        if (fuCh) followupTasks.push({ p, fuCh, phone });
+        else skipped++;
+      } else {
+        // Needs user decision via modal — must be serial
+        duplicateAskQueue.push({ p, ch, phone, existing });
+      }
+    }
+  }
+
+  // 1) Run parallel groups concurrently
+  const [simpleResults, followupResults] = await Promise.all([
+    Promise.all(simpleInsertTasks.map(t => 
+      _pendingBatchSaveOne(t.p, t.ch, t.phone, '[From GHL] original tag: ' + t.p.tag)
+    )),
+    Promise.all(followupTasks.map(t => 
+      _pendingBatchSaveOne(t.p, t.fuCh, t.phone, '[From GHL → Follow Up] original tag: ' + t.p.tag)
+    ))
+  ]);
+  simpleResults.forEach(ok => ok ? added++ : failed++);
+  followupResults.forEach(ok => ok ? followup++ : failed++);
+
+  // 2) Then run duplicate-ask queue serially (modal blocks anyway)
+  for (const t of duplicateAskQueue) {
+    const decision = await _pendingBatchAskDuplicate(t.existing, t.p, t.ch);
+    if (decision === 'skip') { skipped++; continue; }
+    if (decision === 'cancel') break;  // abort rest
+    if (decision === 'force_new') {
+      const ok = await _pendingBatchSaveOne(t.p, t.ch, t.phone, '[From GHL] original tag: ' + t.p.tag);
       if (ok) added++;
       else failed++;
     }
+  }
+
+  // 3) Unlock any cards that didn't get removed (skipped/failed/cancelled items still exist)
+  for (const id of lockedIds) {
+    _pendingInFlight.delete(id);
   }
 
   // Final refresh & summary
