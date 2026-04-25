@@ -2560,29 +2560,25 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   pointer-events: none;
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
-/* v4.98: Timeline tooltip — wider, padded, no white-space:pre-wrap (uses HTML) */
+/* v4.99: Timeline tooltip — light theme (white surface) */
 .remark-tooltip-timeline {
   width: 320px;
   max-width: calc(100vw - 20px);
   padding: 12px 14px;
   white-space: normal;
   word-break: normal;
+  background: #fff !important;
+  color: var(--black) !important;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
 }
-/* Modal version is also dark themed for timeline */
+/* v4.99: Modal version — light theme too */
 .remark-modal-timeline {
-  background: #1A1A20 !important;
-  color: #fff;
-}
-.remark-modal-timeline .remark-modal-header {
-  color: #fff !important;
-  border-bottom-color: rgba(255,255,255,0.1) !important;
-}
-.remark-modal-timeline .remark-modal-header button {
-  color: rgba(255,255,255,0.6) !important;
+  background: #fff !important;
+  color: var(--black);
 }
 .remark-modal-body-timeline {
   padding: 14px 18px !important;
-  color: #fff !important;
   font-size: 13px;
   white-space: normal !important;
 }
@@ -2697,7 +2693,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.98</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v4.99</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2753,13 +2749,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <button class="nav-item nav-tool" onclick="openAIChat()" data-tooltip="AI Assistant"><span class="nav-icon"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#7132f5,#9b5fff);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:22px;letter-spacing:0.3px;">AI</span></span><span class="nav-label">AI Assistant</span></button>
   <button class="nav-item nav-tool" onclick="openGlobalSearch()" data-tooltip="Search"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span><span class="nav-label">Search</span></button>
   <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 9px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">5</span></button>
+  <button class="nav-item" data-page="pending" data-tooltip="Inbox" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span><span id="pendingBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius:9px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="contact" data-tooltip="Contact"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><span class="nav-label">Contact</span></button>
   <button class="nav-item" data-page="summary" data-tooltip="Dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span><span class="nav-label">Dashboard</span></button>
   <button class="nav-item" data-page="store" data-tooltip="Appt"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span><span class="nav-label">Appt</span></button>
   <button class="nav-item" data-page="adsspend" data-tooltip="Ads Spend"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span><span class="nav-label">Ads Spend</span></button>
   <button class="nav-item" data-page="revenue" data-tooltip="Revenue Outlet"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span><span class="nav-label">Revenue Outlet</span></button>
-  <button class="nav-item" data-page="pending" data-tooltip="Inbox" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span><span id="pendingBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius:9px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
+  
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="entry" data-tooltip="Data Entry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></span><span class="nav-label">Data Entry</span></button>
   <button class="nav-item active" data-page="settings" data-tooltip="Settings"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span><span class="nav-label">Settings</span></button>
@@ -3940,47 +3937,48 @@ function _parseRemarkLine(line) {
   return { type: 'auto', timestamp: ts, body: rest };
 }
 
-// v4.98: Render remark as timeline HTML
+// v4.99: Render remark as timeline HTML — light theme (white surface)
 function _renderRemarkTimeline(fullText) {
   const escFn = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||'').replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])));
   const lines = String(fullText).split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-  if (lines.length === 0) return '<div style="opacity:0.7; padding:8px;">No activity</div>';
+  if (lines.length === 0) return '<div style="opacity:0.6; padding:8px; color:var(--silver);">No activity</div>';
 
   let html = '';
   lines.forEach((line, idx) => {
     const event = _parseRemarkLine(line);
     const isLast = (idx === lines.length - 1);
-    const accentColor = (event.type === 'change') ? '#FAC775'  // amber for reschedule
-                      : (event.type === 'received') ? 'rgba(255,255,255,0.3)'  // muted for received
-                      : 'rgba(255,255,255,0.3)';
+    // Light theme colors
+    const accentColor = (event.type === 'change') ? '#BA7517'      // amber accent for reschedule
+                      : 'rgba(0,0,0,0.12)';                          // muted gray for received/other
 
     let bodyHtml = '';
     if (event.type === 'change' && event.changes) {
       bodyHtml = event.changes.map(c => {
         const label = c.kind === 'Reschedule' ? 'Date' : (c.kind === 'Location' ? 'Location' : c.kind);
-        return `<div style="margin-bottom:${c === event.changes[event.changes.length-1] ? '0' : '6px'};">
-          <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-bottom:2px;">${escFn(label)}</div>
-          <div style="font-size:13px; line-height:1.4;">
-            <span style="text-decoration:line-through; opacity:0.55;">${escFn(c.from)}</span>
-            <span style="margin:0 4px; opacity:0.6;">→</span>
-            <strong style="color:#FAC775; font-weight:600;">${escFn(c.to)}</strong>
+        const isLastChange = (c === event.changes[event.changes.length-1]);
+        return `<div style="margin-bottom:${isLastChange ? '0' : '6px'};">
+          <div style="font-size:11px; color:var(--silver); margin-bottom:2px; text-transform:uppercase; letter-spacing:0.4px;">${escFn(label)}</div>
+          <div style="font-size:13px; line-height:1.4; color:var(--black);">
+            <span style="text-decoration:line-through; color:var(--silver);">${escFn(c.from)}</span>
+            <span style="margin:0 4px; color:var(--silver);">→</span>
+            <strong style="color:#BA7517; font-weight:600;">${escFn(c.to)}</strong>
           </div>
         </div>`;
       }).join('');
     } else if (event.type === 'received') {
-      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:rgba(255,255,255,0.85);">${escFn(event.body)}</div>`;
+      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:var(--gray);">${escFn(event.body)}</div>`;
     } else if (event.type === 'note') {
-      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:rgba(255,255,255,0.95); white-space:pre-wrap;">${escFn(event.body)}</div>`;
+      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:var(--black); white-space:pre-wrap;">${escFn(event.body)}</div>`;
     } else {
-      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:rgba(255,255,255,0.85);">${escFn(event.body || line)}</div>`;
+      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:var(--gray);">${escFn(event.body || line)}</div>`;
     }
 
     const tsHtml = event.timestamp
-      ? `<div style="font-size:11px; color:rgba(255,255,255,0.55); margin-bottom:4px;">${escFn(event.timestamp)}</div>`
+      ? `<div style="font-size:11px; color:var(--silver); margin-bottom:4px;">${escFn(event.timestamp)}</div>`
       : '';
 
-    html += `<div style="display:flex; gap:10px; padding:${idx === 0 ? '0' : '12px'} 0 ${isLast ? '0' : '12px'} 0; ${isLast ? '' : 'border-bottom:1px solid rgba(255,255,255,0.1);'}">
-      <div style="width:4px; background:${accentColor}; border-radius:2px; flex-shrink:0;"></div>
+    html += `<div style="display:flex; gap:10px; padding:${idx === 0 ? '0' : '12px'} 0 ${isLast ? '0' : '12px'} 0; ${isLast ? '' : 'border-bottom:1px solid rgba(0,0,0,0.06);'}">
+      <div style="width:3px; background:${accentColor}; border-radius:2px; flex-shrink:0;"></div>
       <div style="flex:1; min-width:0;">${tsHtml}${bodyHtml}</div>
     </div>`;
   });
