@@ -2693,7 +2693,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.05</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.06</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2845,7 +2845,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </button></span>
           </div>
           <!-- Filter row 2: Status tabs -->
-          <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
+          <div class="filter-tabs-wrap at-start" id="listFiltersWrap">
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
         </div>
@@ -3278,18 +3278,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- SETTINGS PAGE -->
   <section class="page" id="page-pending">
   <div style="padding: 16px; max-width: 800px; margin: 0 auto;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; gap:8px; flex-wrap:wrap;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; gap:8px; flex-wrap:wrap;">
       <h2 style="margin:0; font-size:20px; font-weight:600; flex:1; min-width:100px;">Inbox</h2>
       <div style="display:flex; gap:8px; align-items:center;">
         <button id="pendingBatchAddBtn" onclick="pendingBatchAddAll()" style="padding:8px 14px; font-size:13px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500; white-space:nowrap; display:flex; align-items:center; gap:6px; transition:opacity 0.15s;" title="Add all matched leads in current tab">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff" style="flex-shrink:0;"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"></polygon></svg>
           <span id="pendingBatchAddLabel">Add all matched 0</span>
         </button>
-        <button onclick="pendingRefresh()" title="Refresh" aria-label="Refresh" style="width:34px; height:34px; padding:0; background:#fff; border:1px solid var(--border); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--purple);">
+        <button id="pendingRefreshBtn" onclick="pendingRefresh()" title="Refresh" aria-label="Refresh" style="width:34px; height:34px; padding:0; background:#fff; border:1px solid var(--border); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--purple); transition: transform 0.5s;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path></svg>
         </button>
       </div>
     </div>
+    <!-- v5.06: Cache freshness indicator — helps user see if data is stale -->
+    <div id="pendingFreshness" style="font-size:11px; color:var(--silver); margin-bottom:14px; min-height:14px;"></div>
     <!-- v4.77: Batch bar removed — button moved to header, always visible -->
     <div id="pendingBatchBar" style="display:none;"></div>
     <div id="pendingBatchSummary" style="display:none;"></div>
@@ -4090,7 +4092,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.81'; // v5.05 — spend=0 now allowed for Done status (customer came but didn't buy)
+const DATA_VERSION = '2.82'; // v5.06 — code cleanup (~700 lines removed) + pending freshness indicator + stale-cache guard on Add
 
 // ---------- State ----------
 let state = {
@@ -4415,24 +4417,6 @@ function renderTopbarToday() {
   return;
 }
 
-function openTopMenu() {
-  const html = `
-    <div class="dp-header">
-      <div class="dp-title">Menu</div>
-      <button type="button" class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div style="padding:14px 18px 4px;display:grid;gap:8px;">
-      <button class="btn btn-outline btn-full" onclick="closeModal();nav('entry');" style="justify-content:flex-start;padding:14px 16px;">
-        <span style="font-size:18px;margin-right:10px;">✍️</span><span>Entry — Add data</span>
-      </button>
-      <button class="btn btn-outline btn-full" onclick="closeModal();nav('settings');" style="justify-content:flex-start;padding:14px 16px;">
-        <span style="font-size:18px;margin-right:10px;">⚙️</span><span>Settings</span>
-      </button>
-    </div>
-    <div class="dp-footer"></div>
-  `;
-  showModal(html, { className: 'dp-modal' });
-}
 
 // ============================================================
 // ADS CHART ENGINE v2 — clean, no label overlap, 12-month aware
@@ -5114,9 +5098,6 @@ function renderEntry() {
   switchEntryTab(_entryTab || 'rv');
 }
 
-function setEntryTab(tab) {
-  switchEntryTab(tab);
-}
 
 // ---------- Channels/Locations helpers ----------
 function getChannel(id) { return state.channels.find(c => c.id === id); }
@@ -5939,7 +5920,6 @@ function confirmDeleteLeadFromForm() {
 })();
 
 // Legacy alias for backward-compat (in case any other caller still references it)
-function deleteLeadFromDetail(leadId) { return confirmDeleteLead(leadId); }
 
 function renderLeadStepper(lead) {
   const el = document.getElementById('leadStepper');
@@ -7462,9 +7442,6 @@ function renderDashboardYear() {
   }, 30);
 }
 
-function wrapCollapsibleSections() {
-  wrapCollapsibleInContainer('summaryContent');
-}
 
 function wrapCollapsibleInContainer(containerId) {
   const root = document.getElementById(containerId);
@@ -7527,85 +7504,7 @@ if (_stm) _stm.addEventListener('change', e => {
   renderSummary();
 });
 
-function renderSummarySingle() {
-  const month = document.getElementById('summaryMonth').value || state.summaryMonth;
-  if (!month) { document.getElementById('summaryContent').innerHTML = '<div class="empty">No data for this month.</div>'; return; }
-  const m = calcMonthMetrics(month);
-  const apptRate = m.totalLeads > 0 ? m.appts / m.totalLeads : null;
-  const showRate = m.appts > 0 ? m.showUps / m.appts : null;
-  // Total CPL/CPA/CPS: use ALL leads/appts/shows (incl. Organic + FU) as denominator
-  // so the Total column matches Excel's "all leads" calculation
-  const cpl = m.totalAdsCost > 0 && m.totalLeads > 0 ? m.totalAdsCost / m.totalLeads : null;
-  const cpa = m.totalAdsCost > 0 && m.appts > 0 ? m.totalAdsCost / m.appts : null;
-  const cps = m.totalAdsCost > 0 && m.showUps > 0 ? m.totalAdsCost / m.showUps : null;
-  const feePct = m.revenue.total > 0 ? m.totalFees / m.revenue.total : null;
-  const totalMarketingCost = m.totalAdsCost + m.totalFees;
-  const marketingVsRev = m.revenue.total > 0 ? totalMarketingCost / m.revenue.total : null;
 
-  document.getElementById('summaryContent').innerHTML = `
-    ${renderExecSummary(m, month)}
-
-    <div class="section-title"><h3>Ads Cost</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Metric</th><th class="num">Value</th></tr></thead>
-      <tbody>
-        <tr><td style="font-weight:500;">Meta Ads Cost</td><td class="num">${fmt.money(m.costByPlatform.meta)}</td></tr>
-        <tr><td style="font-weight:500;">Google Ads Cost</td><td class="num">${fmt.money(m.costByPlatform.google)}</td></tr>
-        <tr class="total-row"><td>Total Ads Cost</td><td class="num">${fmt.money(m.totalAdsCost)}</td></tr>
-        <tr><td style="font-weight:500;">3rd Party Fees</td><td class="num">${fmt.money(m.totalFees)}</td></tr>
-        <tr><td style="font-weight:500;">Total Marketing Cost</td><td class="num">${fmt.money(totalMarketingCost)}</td></tr>
-        <tr><td style="font-weight:500;">Marketing % Revenue</td><td class="num">${marketingVsRev != null ? fmt.pct(marketingVsRev) : '—'}</td></tr>
-      </tbody>
-    </table></div>
-
-    <div class="section-title"><h3>ROAS</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>ROAS</th><th class="num">Value</th></tr></thead>
-      <tbody>
-        <tr><td style="font-weight:500;">Meta ROAS</td><td class="num">${m.metaROAS != null ? m.metaROAS.toFixed(2) + 'x' : '—'}</td></tr>
-        <tr><td style="font-weight:500;">Google ROAS</td><td class="num">${m.googleROAS != null ? m.googleROAS.toFixed(2) + 'x' : '—'}</td></tr>
-        <tr class="total-row"><td>Total ROAS</td><td class="num">${m.totalROAS != null ? m.totalROAS.toFixed(2) + 'x' : '—'}</td></tr>
-      </tbody>
-    </table></div>
-
-    <div class="section-title"><h3>Race Breakdown</h3><span class="right">All channels · Show-ups only</span></div>
-    <div class="table-wrap">
-      <table class="data">
-        <thead><tr><th>Channel</th><th class="num">Chinese</th><th class="num">Malay</th><th class="num">Indian</th><th class="num">Foreigner</th><th class="num">Others</th><th class="num">Total</th><th class="num">AVG Spend</th></tr></thead>
-        <tbody>
-          ${Object.entries(m.raceByChannel).filter(([id,r]) => r.totalCount > 0).map(([id,r]) =>
-            `<tr><td style="font-weight:500;">${r.name}</td><td class="num">${r.Chinese}</td><td class="num">${r.Malay}</td><td class="num">${r.Indian}</td><td class="num">${r.Foreigner}</td><td class="num">${r.Others}</td><td class="num">${r.totalCount}</td><td class="num">${r.totalCount > 0 ? fmt.money(r.totalSpend / r.totalCount) : '—'}</td></tr>`
-          ).join('')}
-          <tr class="total-row"><td>TOTAL</td>${(() => {
-            const all = Object.values(m.raceByChannel);
-            const tC = all.reduce((s,r) => s + r.Chinese, 0);
-            const tM = all.reduce((s,r) => s + r.Malay, 0);
-            const tI = all.reduce((s,r) => s + r.Indian, 0);
-            const tF = all.reduce((s,r) => s + r.Foreigner, 0);
-            const tO = all.reduce((s,r) => s + r.Others, 0);
-            const tN = all.reduce((s,r) => s + r.totalCount, 0);
-            const tS = all.reduce((s,r) => s + r.totalSpend, 0);
-            return `<td class="num">${tC}</td><td class="num">${tM}</td><td class="num">${tI}</td><td class="num">${tF}</td><td class="num">${tO}</td><td class="num">${tN}</td><td class="num">${tN > 0 ? fmt.money(tS / tN) : '—'}</td>`;
-          })()}</tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="section-title"><h3>Weekly Breakdown — ${fmt.monthLabel(month)}</h3></div>
-    <div class="table-wrap">
-      <table class="data week-table">
-        <thead><tr><th>Week</th><th class="num">Meta</th><th class="num">Google</th><th class="num">OFU</th><th class="num">Total</th><th class="num">Appt</th><th class="num">Show</th><th class="num">Sales</th></tr></thead>
-        <tbody>${weeklyBreakdown(month)}</tbody>
-      </table>
-    </div>
-  `;
-}
-
-function metricCard(label, value, sub, tone, colorClass) {
-  const toneClass = tone === 'pos' ? 'pos' : tone === 'neg' ? 'neg' : '';
-  const cc = colorClass ? ` color-${colorClass}` : '';
-  return `<div class="metric${cc}"><div class="metric-label">${label}</div><div class="metric-value">${value}</div>${sub ? `<div class="metric-sub ${toneClass}">${sub}</div>` : ''}</div>`;
-}
 
 function execItem(color, label, value, pct) {
   return `<div class="exec-item">
@@ -7849,249 +7748,8 @@ function weeklyBreakdown(month) {
   return rows;
 }
 
-function renderSummaryMulti() {
-  const year = document.getElementById('summaryYear').value || state.summaryYear;
-  const allMonths = calcYearMetrics(year);
-  if (allMonths.length === 0) { document.getElementById('summaryContent').innerHTML = '<div class="empty">No data for ' + year + '</div>'; return; }
 
-  const months = allMonths.map(m => m.month);
-  const mh = (label, values, formatter, isTotal = false) => {
-    const total = values.reduce((s, v) => s + (v || 0), 0);
-    return `<tr class="${isTotal ? 'total-row' : ''}"><td style="font-weight:500;">${label}</td>${values.map(v => `<td class="num">${formatter(v)}</td>`).join('')}<td class="num">${formatter(total)}</td></tr>`;
-  };
-  const mhAvg = (label, values, formatter, numArr, denArr) => {
-    let totalVal = null;
-    if (numArr && denArr) {
-      const tNum = numArr.reduce((s,v) => s + (v||0), 0);
-      const tDen = denArr.reduce((s,v) => s + (v||0), 0);
-      totalVal = tDen > 0 ? tNum / tDen : null;
-    } else {
-      const nums = values.filter(v => v != null && !isNaN(v) && isFinite(v));
-      totalVal = nums.length > 0 ? nums.reduce((s, v) => s + v, 0) / nums.length : null;
-    }
-    return `<tr><td style="font-weight:500;">${label}</td>${values.map(v => `<td class="num">${formatter(v)}</td>`).join('')}<td class="num">${formatter(totalVal)}</td></tr>`;
-  };
 
-  // Cumulative totals
-  const totMetrics = {
-    totalLeads: allMonths.reduce((s,m) => s + m.totalLeads, 0),
-    metaLeads: allMonths.reduce((s,m) => s + m.leadsByPlatformByLead.meta, 0),
-    googleLeads: allMonths.reduce((s,m) => s + m.leadsByPlatformByLead.google, 0),
-    ofLeads: allMonths.reduce((s,m) => s + m.leadsByPlatformByLead.organic + m.leadsByPlatformByLead.followup, 0),
-    appts: allMonths.reduce((s,m) => s + m.appts, 0),
-    shows: allMonths.reduce((s,m) => s + m.showUps, 0),
-    noshows: allMonths.reduce((s,m) => s + m.noShows, 0),
-    metaSales: allMonths.reduce((s,m) => s + m.spendByPlatform.meta, 0),
-    googleSales: allMonths.reduce((s,m) => s + m.spendByPlatform.google, 0),
-    ofSales: allMonths.reduce((s,m) => s + m.spendByPlatform.organic + m.spendByPlatform.followup, 0),
-    custSpend: allMonths.reduce((s,m) => s + m.totalCustomerSpend, 0),
-    metaCost: allMonths.reduce((s,m) => s + m.costByPlatform.meta, 0),
-    googleCost: allMonths.reduce((s,m) => s + m.costByPlatform.google, 0),
-    totalCost: allMonths.reduce((s,m) => s + m.totalAdsCost, 0),
-    revenue: allMonths.reduce((s,m) => s + m.revenue.total, 0),
-    newRev: allMonths.reduce((s,m) => s + m.revenue.new, 0),
-    fees: allMonths.reduce((s,m) => s + m.totalFees, 0)
-  };
-
-  const totalROAS = totMetrics.totalCost > 0 ? (totMetrics.metaSales + totMetrics.googleSales + totMetrics.ofSales) / totMetrics.totalCost : null;
-
-  document.getElementById('summaryContent').innerHTML = `
-    ${renderExecSummaryMulti(totMetrics, year, months.length)}
-
-    <div class="section-title"><h3>Revenue Overview</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Metric</th>${months.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>
-      <tbody>
-        ${mh('Meta Sales', allMonths.map(m => m.spendByPlatform.meta), fmt.moneyK)}
-        ${mh('Google Sales', allMonths.map(m => m.spendByPlatform.google), fmt.moneyK)}
-        ${mh('Organic + FU', allMonths.map(m => m.spendByPlatform.organic + m.spendByPlatform.followup), fmt.moneyK)}
-        ${mh('Ads Customer Spend', allMonths.map(m => m.totalCustomerSpend), fmt.moneyK, true)}
-        ${mh('Total Revenue', allMonths.map(m => m.revenue.total), fmt.moneyK)}
-        ${mh('New Customer Revenue', allMonths.map(m => m.revenue.new), fmt.moneyK)}
-        ${mhAvg('New %', allMonths.map(m => m.revenue.total > 0 ? m.revenue.new / m.revenue.total : null), fmt.pct, allMonths.map(m => m.revenue.new), allMonths.map(m => m.revenue.total))}
-      </tbody>
-    </table></div>
-
-    <div class="section-title"><h3>Ads Cost</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Metric</th>${months.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>
-      <tbody>
-        ${mh('Meta Ads Cost', allMonths.map(m => m.costByPlatform.meta), fmt.moneyK)}
-        ${mh('Google Ads Cost', allMonths.map(m => m.costByPlatform.google), fmt.moneyK)}
-        ${mh('Total Ads Cost', allMonths.map(m => m.totalAdsCost), fmt.moneyK, true)}
-        ${mh('3rd Party Fees', allMonths.map(m => m.totalFees), fmt.moneyK)}
-        ${mhAvg('Total Cost % Revenue', allMonths.map(m => m.revenue.total > 0 ? (m.totalAdsCost + m.totalFees) / m.revenue.total : null), fmt.pct, allMonths.map(m => m.totalAdsCost + m.totalFees), allMonths.map(m => m.revenue.total))}
-      </tbody>
-    </table></div>
-
-    <div class="section-title"><h3>ROAS</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>ROAS</th>${months.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('')}<th class="num">AVG</th></tr></thead>
-      <tbody>
-        ${mhAvg('Meta ROAS', allMonths.map(m => m.metaROAS), fmt.x, allMonths.map(m => m.metaSales), allMonths.map(m => m.costByPlatform.meta))}
-        ${mhAvg('Google ROAS', allMonths.map(m => m.googleROAS), fmt.x, allMonths.map(m => m.googleSales), allMonths.map(m => m.costByPlatform.google))}
-        ${mhAvg('Total ROAS', allMonths.map(m => m.totalROAS), fmt.x, allMonths.map(m => m.totalAdsSales), allMonths.map(m => m.totalAdsCost))}
-      </tbody>
-    </table></div>
-
-    <div class="section-title"><h3>Race Breakdown</h3><span class="right">All channels · Show-ups only</span></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Race</th>${months.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>
-      <tbody>
-        ${['Chinese','Malay','Indian','Foreigner','Others'].map(race => {
-          const vals = allMonths.map(m => {
-            let c = 0; Object.values(m.raceByChannel).forEach(r => { c += (r[race] || 0); });
-            return c;
-          });
-          return mh(race, vals, fmt.num);
-        }).join('')}
-      </tbody>
-    </table></div>
-  `;
-}
-
-function refreshSummaryCustomSelects() {
-  const allM = new Set();
-  state.leads.forEach(l => { if (l.leadDate) allM.add(l.leadDate.substring(0,7)); });
-  state.adsSpend.forEach(a => allM.add(a.month));
-  state.revenue.forEach(r => allM.add(r.month));
-  const sorted = [...allM].sort();
-  if (sorted.length === 0) return;
-  
-  const curFrom = state.summaryCustomFrom || sorted[0];
-  const curTo = state.summaryCustomTo || sorted[sorted.length - 1];
-  
-  document.getElementById('summaryFromMonth').value = curFrom;
-  document.getElementById('summaryToMonth').value = curTo;
-  document.getElementById('summaryFromMonth_label').textContent = fmt.monthLabel(curFrom);
-  document.getElementById('summaryToMonth_label').textContent = fmt.monthLabel(curTo);
-  document.getElementById('summaryFromMonth_btn').classList.remove('empty');
-  document.getElementById('summaryToMonth_btn').classList.remove('empty');
-  
-  state.summaryCustomFrom = curFrom;
-  state.summaryCustomTo = curTo;
-}
-
-function renderSummaryCustom() {
-  const from = document.getElementById('summaryFromMonth').value;
-  const to = document.getElementById('summaryToMonth').value;
-  state.summaryCustomFrom = from;
-  state.summaryCustomTo = to;
-  
-  if (!from || !to || from > to) {
-    document.getElementById('summaryContent').innerHTML = '<div class="empty">请选择有效的月份范围</div>';
-    return;
-  }
-  
-  // Collect all months in range
-  const allM = new Set();
-  state.leads.forEach(l => { if (l.leadDate) { const m = l.leadDate.substring(0,7); if (m >= from && m <= to) allM.add(m); } });
-  state.adsSpend.forEach(a => { if (a.month >= from && a.month <= to) allM.add(a.month); });
-  state.revenue.forEach(r => { if (r.month >= from && r.month <= to) allM.add(r.month); });
-  const monthArr = [...allM].sort();
-  
-  if (monthArr.length === 0) {
-    document.getElementById('summaryContent').innerHTML = '<div class="empty">No data for this range</div>';
-    return;
-  }
-  
-  const allMonths = monthArr.map(m => calcMonthMetrics(m));
-  const months = allMonths.map(m => m.month);
-  
-  const mh = (label, values, formatter, isTotal = false) => {
-    const total = values.reduce((s, v) => s + (v || 0), 0);
-    return `<tr class="${isTotal ? 'total-row' : ''}"><td style="font-weight:500;">${label}</td>${values.map(v => `<td class="num">${formatter(v)}</td>`).join('')}<td class="num">${formatter(total)}</td></tr>`;
-  };
-  const mhAvg = (label, values, formatter, numArr, denArr) => {
-    let totalVal = null;
-    if (numArr && denArr) {
-      const tNum = numArr.reduce((s,v) => s + (v||0), 0);
-      const tDen = denArr.reduce((s,v) => s + (v||0), 0);
-      totalVal = tDen > 0 ? tNum / tDen : null;
-    } else {
-      const nums = values.filter(v => v != null && !isNaN(v) && isFinite(v));
-      totalVal = nums.length > 0 ? nums.reduce((s, v) => s + v, 0) / nums.length : null;
-    }
-    return `<tr><td style="font-weight:500;">${label}</td>${values.map(v => `<td class="num">${formatter(v)}</td>`).join('')}<td class="num">${formatter(totalVal)}</td></tr>`;
-  };
-
-  const totMetrics = {
-    totalLeads: allMonths.reduce((s,m) => s + m.totalLeads, 0),
-    metaLeads: allMonths.reduce((s,m) => s + m.leadsByPlatformByLead.meta, 0),
-    googleLeads: allMonths.reduce((s,m) => s + m.leadsByPlatformByLead.google, 0),
-    ofLeads: allMonths.reduce((s,m) => s + m.leadsByPlatformByLead.organic + m.leadsByPlatformByLead.followup, 0),
-    appts: allMonths.reduce((s,m) => s + m.appts, 0),
-    shows: allMonths.reduce((s,m) => s + m.showUps, 0),
-    noshows: allMonths.reduce((s,m) => s + m.noShows, 0),
-    metaSales: allMonths.reduce((s,m) => s + m.spendByPlatform.meta, 0),
-    googleSales: allMonths.reduce((s,m) => s + m.spendByPlatform.google, 0),
-    ofSales: allMonths.reduce((s,m) => s + m.spendByPlatform.organic + m.spendByPlatform.followup, 0),
-    custSpend: allMonths.reduce((s,m) => s + m.totalCustomerSpend, 0),
-    metaCost: allMonths.reduce((s,m) => s + m.costByPlatform.meta, 0),
-    googleCost: allMonths.reduce((s,m) => s + m.costByPlatform.google, 0),
-    totalCost: allMonths.reduce((s,m) => s + m.totalAdsCost, 0),
-    fees: allMonths.reduce((s,m) => s + m.totalFees, 0),
-    revenue: allMonths.reduce((s,m) => s + m.revenue.total, 0),
-    newRev: allMonths.reduce((s,m) => s + m.revenue.new, 0),
-  };
-  const totalROAS = totMetrics.totalCost > 0 ? (totMetrics.metaSales + totMetrics.googleSales + totMetrics.ofSales) / totMetrics.totalCost : null;
-
-  const rangeLabel = `${fmt.monthLabel(from)} → ${fmt.monthLabel(to)}`;
-
-  document.getElementById('summaryContent').innerHTML = `
-    ${renderExecSummaryMulti(totMetrics, rangeLabel, months.length)}
-
-    <div class="section-title"><h3>Revenue Overview</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Metric</th>${months.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>
-      <tbody>
-        ${mh('Meta Sales', allMonths.map(m => m.spendByPlatform.meta), fmt.moneyK)}
-        ${mh('Google Sales', allMonths.map(m => m.spendByPlatform.google), fmt.moneyK)}
-        ${mh('Organic + FU', allMonths.map(m => m.spendByPlatform.organic + m.spendByPlatform.followup), fmt.moneyK)}
-        ${mh('Ads Customer Spend', allMonths.map(m => m.totalCustomerSpend), fmt.moneyK, true)}
-        ${mh('Total Revenue', allMonths.map(m => m.revenue.total), fmt.moneyK)}
-        ${mh('New Customer Revenue', allMonths.map(m => m.revenue.new), fmt.moneyK)}
-        ${mhAvg('New %', allMonths.map(m => m.revenue.total > 0 ? m.revenue.new / m.revenue.total : null), fmt.pct, allMonths.map(m => m.revenue.new), allMonths.map(m => m.revenue.total))}
-      </tbody>
-    </table></div>
-
-    <div class="section-title"><h3>Ads Cost</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Metric</th>${months.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>
-      <tbody>
-        ${mh('Meta Ads Cost', allMonths.map(m => m.costByPlatform.meta), fmt.moneyK)}
-        ${mh('Google Ads Cost', allMonths.map(m => m.costByPlatform.google), fmt.moneyK)}
-        ${mh('Total Ads Cost', allMonths.map(m => m.totalAdsCost), fmt.moneyK, true)}
-        ${mh('3rd Party Fees', allMonths.map(m => m.totalFees), fmt.moneyK)}
-        ${mhAvg('Total Cost % Revenue', allMonths.map(m => m.revenue.total > 0 ? (m.totalAdsCost + m.totalFees) / m.revenue.total : null), fmt.pct, allMonths.map(m => m.totalAdsCost + m.totalFees), allMonths.map(m => m.revenue.total))}
-      </tbody>
-    </table></div>
-
-    <div class="section-title"><h3>ROAS</h3></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>ROAS</th>${months.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('')}<th class="num">AVG</th></tr></thead>
-      <tbody>
-        ${mhAvg('Meta ROAS', allMonths.map(m => m.metaROAS), fmt.x, allMonths.map(m => m.metaSales), allMonths.map(m => m.costByPlatform.meta))}
-        ${mhAvg('Google ROAS', allMonths.map(m => m.googleROAS), fmt.x, allMonths.map(m => m.googleSales), allMonths.map(m => m.costByPlatform.google))}
-        ${mhAvg('Total ROAS', allMonths.map(m => m.totalROAS), fmt.x, allMonths.map(m => m.totalAdsSales), allMonths.map(m => m.totalAdsCost))}
-      </tbody>
-    </table></div>
-
-    <div class="section-title"><h3>Race Breakdown</h3><span class="right">All channels · Show-ups only</span></div>
-    <div class="table-wrap"><table class="data">
-      <thead><tr><th>Race</th>${months.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>
-      <tbody>
-        ${['Chinese','Malay','Indian','Foreigner','Others'].map(race => {
-          const vals = allMonths.map(m => {
-            let c = 0; Object.values(m.raceByChannel).forEach(r => { c += (r[race] || 0); });
-            return c;
-          });
-          return mh(race, vals, fmt.num);
-        }).join('')}
-      </tbody>
-    </table></div>
-  `;
-}
 function setStoreMode(mode) {
   state.storeMode = mode;
   document.querySelectorAll('#page-store .toggle').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
@@ -8119,35 +7777,6 @@ function refreshStoreCustomSelects() {
   state.storeCustomTo = curTo;
 }
 
-function openStorePage(storeId, monthOrYear) {
-  state.storeSelected = storeId;
-  if (monthOrYear && monthOrYear.length === 7) {
-    state.storeMode = 'month';
-    state.storeMonth = monthOrYear;
-    state.storeYear = monthOrYear.substring(0, 4);
-  } else if (monthOrYear && monthOrYear.length === 4) {
-    state.storeMode = 'year';
-    state.storeYear = monthOrYear;
-  }
-  nav('store');
-  // After nav, update selectors
-  setTimeout(() => {
-    const yEl = document.getElementById('storeYear');
-    if (yEl) yEl.value = state.storeYear;
-    refreshStoreMonthSelect();
-    const mEl = document.getElementById('storeMonth');
-    if (mEl && state.storeMode === 'month') mEl.value = state.storeMonth;
-    const sEl = document.getElementById('storeSelect');
-    if (sEl) sEl.value = state.storeSelected;
-    document.querySelectorAll('#page-store .toggle').forEach(t => t.classList.toggle('active', t.dataset.mode === state.storeMode));
-    document.getElementById('storeMonth_btn').style.display = state.storeMode === 'month' ? '' : 'none';
-    document.getElementById('storeYearBtn').style.display = state.storeMode === 'year' ? '' : 'none';
-    document.getElementById('storeFromMonth_btn').style.display = state.storeMode === 'custom' ? '' : 'none';
-    document.getElementById('storeCustomArrow').style.display = state.storeMode === 'custom' ? '' : 'none';
-    document.getElementById('storeToMonth_btn').style.display = state.storeMode === 'custom' ? '' : 'none';
-    renderStore();
-  }, 20);
-}
 
 function calcStoreMetrics(storeId, period) {
   // period = 'YYYY-MM' for month, 'YYYY' for year
@@ -9772,17 +9401,6 @@ function deleteFeeDirect(id) {
 }
 let editingFeeId = null;
 
-function toggleFeeMonth(m) {
-  const body = document.getElementById('fee-body-' + m);
-  const toggle = document.getElementById('fee-toggle-' + m);
-  if (body.style.display === 'none') {
-    body.style.display = 'block';
-    toggle.textContent = '▾';
-  } else {
-    body.style.display = 'none';
-    toggle.textContent = '▸';
-  }
-}
 
 // ---------- Revenue ----------
 function renderRevenue() {
@@ -10141,132 +9759,7 @@ function renderRevenueSummary(mArr) {
   }, 30);
 }
 
-function renderRevenueDetail(mArr) {
-  // All Outlets total card
-  let allTotal = 0, allNew = 0;
-  let allRows = '';
-  mArr.forEach(m => {
-    const revs = state.revenue.filter(x => x.month === m);
-    const mTotal = revs.reduce((s,r) => s + (r.total || 0), 0);
-    const mNew = revs.reduce((s,r) => s + (r.newCustomer || 0), 0);
-    const mOld = mTotal - mNew;
-    allTotal += mTotal; allNew += mNew;
-    let custSpend = 0;
-    state.leads.forEach(l => { if (sw(l.apptDate, m) && l.spend) custSpend += l.spend; });
-    const newPct = mTotal > 0 ? (mNew / mTotal * 100).toFixed(1) : null;
-    const oldPct = newPct != null ? (100 - parseFloat(newPct)).toFixed(1) : null;
-    allRows += `<tr>
-      <td style="font-weight:500;">${fmt.monthLabel(m)}</td>
-      <td class="num">${fmt.money(mTotal)}</td>
-      <td class="num" style="color:var(--green-dark);">${fmt.money(mNew)}${newPct != null ? `<div style="font-size:11px;color:var(--gray);font-weight:400;">${newPct}%</div>` : ''}</td>
-      <td class="num col-hide-mobile" style="color:var(--gray);">${fmt.money(mOld)}${oldPct != null ? `<div style="font-size:11px;color:var(--gray);font-weight:400;">${oldPct}%</div>` : ''}</td>
-      <td class="num" style="color:var(--meta-color);">${fmt.money(custSpend)}${mTotal > 0 ? `<div style="font-size:11px;color:var(--gray);font-weight:400;">${(custSpend / mTotal * 100).toFixed(1)}%</div>` : ''}</td>
-    </tr>`;
-  });
-  const allOld = allTotal - allNew;
-  const allNewPct = allTotal > 0 ? (allNew / allTotal * 100).toFixed(1) : null;
-  const allOldPct = allNewPct != null ? (100 - parseFloat(allNewPct)).toFixed(1) : null;
 
-  let html = `<div class="store-card" style="margin-bottom:16px;">
-    <div class="store-card-header">
-      <div>
-        <div class="store-card-title">All Outlets</div>
-        <div class="store-card-sub">${mArr.length} months</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;font-weight:500;">Year Total</div>
-        <div style="font-size:20px;font-weight:700;color:var(--purple-deep);letter-spacing:-0.3px;">${fmt.money(allTotal)}</div>
-        ${allNewPct != null ? `
-          <div style="font-size:12px;color:var(--green-dark);font-weight:500;margin-top:4px;">● New: ${fmt.money(allNew)} · ${allNewPct}%</div>
-          <div style="font-size:12px;color:var(--gray);font-weight:500;">● Old: ${fmt.money(allOld)} · ${allOldPct}%</div>
-        ` : ''}
-      </div>
-    </div>
-    <div class="table-wrap" style="border:none;border-radius:0;border-top:1px solid var(--border-light);">
-      <table class="data">
-        <thead><tr><th>Month</th><th class="num">Total Sales</th><th class="num">New Customer</th><th class="num col-hide-mobile">Old Customer</th><th class="num">Ads New Sales</th></tr></thead>
-        <tbody>${allRows}</tbody>
-      </table>
-    </div>
-  </div>`;
-
-  // Card per store
-  html += '<div class="store-cards">';
-
-  state.locations.forEach(loc => {
-    let storeTotal = 0, storeNew = 0;
-    let rows = '';
-
-    mArr.forEach(m => {
-      const r = state.revenue.find(x => x.month === m && x.locationId === loc.id);
-      const hasData = !!r;
-      if (hasData) { storeTotal += r.total || 0; storeNew += r.newCustomer || 0; }
-
-      // Compute customer spend from leads
-      let custSpend = 0;
-      state.leads.forEach(l => {
-        if (sw(l.apptDate, m) && l.locationId === loc.id && l.spend) custSpend += l.spend;
-      });
-      
-      const newPct = hasData && r.total > 0 ? (r.newCustomer / r.total * 100).toFixed(1) : null;
-      const oldPct = newPct != null ? (100 - parseFloat(newPct)).toFixed(1) : null;
-      const oldAmt = hasData ? (r.total || 0) - (r.newCustomer || 0) : 0;
-
-      rows += `<tr onclick="editRevRow('${m}','${loc.id}')" style="cursor:pointer;">
-        <td style="font-weight:500;">${fmt.monthLabel(m)}</td>
-        <td class="num" style="color:${hasData ? 'var(--black)' : 'var(--silver)'};font-weight:${hasData ? '500' : '400'};">${hasData ? fmt.money(r.total) : '+ enter'}</td>
-        <td class="num" style="color:${hasData ? 'var(--green-dark)' : 'var(--silver)'};">
-          ${hasData ? fmt.money(r.newCustomer) : '—'}
-          ${newPct != null ? `<div style="font-size:11px;color:var(--gray);font-weight:400;">${newPct}%</div>` : ''}
-        </td>
-        <td class="num col-hide-mobile" style="color:var(--gray);">
-          ${hasData ? fmt.money(oldAmt) : '—'}
-          ${oldPct != null ? `<div style="font-size:11px;color:var(--gray);font-weight:400;">${oldPct}%</div>` : ''}
-        </td>
-        <td class="num" style="color:var(--meta-color);">
-          ${fmt.money(custSpend)}
-          ${hasData && r.total > 0 ? `<div style="font-size:11px;color:var(--gray);font-weight:400;">${(custSpend / r.total * 100).toFixed(1)}%</div>` : ''}
-        </td>
-      </tr>`;
-    });
-    
-    const storeOld = storeTotal - storeNew;
-    const storeNewPct = storeTotal > 0 ? (storeNew / storeTotal * 100).toFixed(1) : null;
-    const storeOldPct = storeNewPct != null ? (100 - parseFloat(storeNewPct)).toFixed(1) : null;
-
-    html += `<div class="store-card" id="revStore-${loc.id}">
-      <div class="store-card-header">
-        <div>
-          <div class="store-card-title">${loc.name}</div>
-          <div class="store-card-sub">${mArr.length} months</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;font-weight:500;">Year Total</div>
-          <div style="font-size:20px;font-weight:700;color:var(--purple-deep);letter-spacing:-0.3px;">${fmt.money(storeTotal)}</div>
-          ${storeNewPct != null ? `
-            <div style="font-size:12px;color:var(--green-dark);font-weight:500;margin-top:4px;">● New: ${fmt.money(storeNew)} · ${storeNewPct}%</div>
-            <div style="font-size:12px;color:var(--gray);font-weight:500;">● Old: ${fmt.money(storeOld)} · ${storeOldPct}%</div>
-          ` : ''}
-        </div>
-      </div>
-      <div class="table-wrap" style="border:none;border-radius:0;border-top:1px solid var(--border-light);">
-        <table class="data">
-          <thead><tr><th>Month</th><th class="num">Total Sales</th><th class="num">New Customer</th><th class="num col-hide-mobile">Old Customer</th><th class="num">Ads New Sales</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>`;
-  });
-
-  html += '</div>';
-  document.getElementById('revenueReport').innerHTML = html;
-}
-
-function deleteRev(id) {
-  if (!confirm('Delete this revenue entry?')) return;
-  state.revenue = state.revenue.filter(r => r.id !== id);
-  saveState(); gsDelete('Revenue', id); renderRevenue();
-}
 
 document.getElementById('revYear').addEventListener('change', e => { state.revYear = e.target.value; renderRevenue(); });
 
@@ -10381,14 +9874,6 @@ function renderRevenueEntry() {
   });
 }
 
-function selectRvEntryOutlet(outletId) {
-  const pref = getRvEntryPref();
-  pref.outletId = outletId;
-  setRvEntryPref(pref);
-  const sel = document.getElementById('rv_entryOutlet');
-  if (sel && sel.querySelector(`option[value="${outletId}"]`)) sel.value = outletId;
-  renderRevenueEntry();
-}
 
 function onRvCellBlur(e) {
   const input = e.target;
@@ -10584,23 +10069,7 @@ function openColorPicker(event, kind, id) {
   }, 50);
 }
 
-function changeChannelStatus(selectEl) {
-  const id = selectEl.dataset.chId;
-  const c = getChannel(id);
-  if (!c) return;
-  c.active = selectEl.value === 'active';
-  saveState(); renderSettings(); refreshSelects();
-  toast(`${c.name} ${c.active ? 'activated' : 'deactivated'}`);
-}
 
-function changeLocationStatus(selectEl) {
-  const id = selectEl.dataset.locId;
-  const loc = state.locations.find(l => l.id === id);
-  if (!loc) return;
-  loc.active = selectEl.value === 'active';
-  saveState(); renderSettings(); refreshSelects();
-  toast(`${loc.name} ${loc.active ? 'activated' : 'deactivated'}`);
-}
 
 // v3.58: Toggle Pill handlers — direct active toggle
 function setChannelActive(id, active) {
@@ -11694,10 +11163,6 @@ function _alertAct(idx) {
 setTimeout(refreshAlertsBadge, 500);
 setInterval(refreshAlertsBadge, 60000); // every 1 min
 
-function onAIModelChange(m) {
-  setAIModel(m);
-  toast('AI model changed to ' + m);
-}
 
 // ---------- AI Chat (Gemini) ----------
 const AI_SETTINGS_KEY = 'ads-crm-ai-model';
@@ -11771,9 +11236,6 @@ function createAINote({ source, question, answer, tags, aiWrongAnswer }) {
 }
 
 // Stub kept so legacy call sites don't error; returns empty array
-function extractAndSaveAINotes(responseText) {
-  return [];
-}
 
 function deleteAINote(savedId) {
   const saved = getAINotes();
@@ -12133,17 +11595,7 @@ function saveAICustomRole() {
   else localStorage.removeItem(AI_ROLE_KEY);
 }
 
-function applyAIRolePreset(key) {
-  if (!key || !AI_ROLE_PRESETS[key]) return;
-  const ta = document.getElementById('ai_custom_role');
-  if (ta) { ta.value = AI_ROLE_PRESETS[key]; saveAICustomRole(); toast('模板已套用，记得保存 ✓'); }
-  document.getElementById('ai_role_preset').value = '';
-}
 
-function loadAIRoleToUI() {
-  const ta = document.getElementById('ai_custom_role');
-  if (ta) ta.value = getAICustomRole();
-}
 
 function saveAIHistory() {
   try { localStorage.setItem(AI_CHAT_HISTORY_KEY, JSON.stringify(_aiHistory.slice(-20))); } catch(e) {}
@@ -13112,26 +12564,6 @@ function buildYearSummary(yStr) {
   };
 }
 
-function buildTrendSummary(nMonths) {
-  const arr = [];
-  const today = new Date();
-  for (let i = nMonths - 1; i >= 0; i--) {
-    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
-    const m = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
-    const rev = state.revenue.filter(r => r.month === m).reduce((s, r) => s + (r.total || 0), 0);
-    const newC = state.revenue.filter(r => r.month === m).reduce((s, r) => s + (r.newCustomer || 0), 0);
-    const ads = state.adsSpend.filter(a => a.month === m).reduce((s, a) => s + (a.amount || 0), 0);
-    const leadsN = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m)).length;
-    arr.push({
-      month: m,
-      revenue: Math.round(rev),
-      new_customer: Math.round(newC),
-      ads_cost: Math.round(ads),
-      leads: leadsN
-    });
-  }
-  return arr;
-}
 
 function buildLeadsCount() {
   const today = todayStr();
@@ -13736,6 +13168,7 @@ let pendingData = [];
     origNav(page);
     if (page === 'pending') {
       pendingRefresh('silent');  // v4.88: cache-first, no loading spinner
+      _startPendingFreshnessTimer();  // v5.06: start ticking the "X seconds ago" indicator
     } else {
       // v4.59: instant badge check on page switch (except pending itself, which refreshes fully)
       if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
@@ -13805,6 +13238,7 @@ function _pendingDataEqual(a, b) {
 // v4.88: pendingRefresh has two modes:
 //   - 'manual' (user clicked Refresh button) — show loading state, full reload
 //   - 'silent' (auto-call when entering page) — render cache instantly, fetch in background
+// v5.06: Added spinner animation on refresh button + freshness indicator update
 async function pendingRefresh(mode) {
   mode = mode || 'manual';
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
@@ -13813,12 +13247,17 @@ async function pendingRefresh(mode) {
     return;
   }
   const listEl = document.getElementById('pendingList');
+  const refreshBtn = document.getElementById('pendingRefreshBtn');
+
+  // v5.06: Spin the refresh button
+  if (refreshBtn) refreshBtn.style.transform = 'rotate(360deg)';
 
   // Step 1: Render cache immediately (if available) — feels instant
   const cached = _loadPendingFromCache();
   if (cached) {
     pendingData = cached;
     pendingRender();
+    _updatePendingFreshness();
   } else if (mode === 'manual') {
     // No cache + manual click — show loading
     if (listEl) listEl.innerHTML = '<div style="padding:20px; text-align:center; color:var(--gray);">Loading...</div>';
@@ -13826,6 +13265,10 @@ async function pendingRefresh(mode) {
     // Silent mode + no cache + no current data — show subtle loading
     listEl.innerHTML = '<div style="padding:20px; text-align:center; color:var(--silver); font-size:12px;">Loading…</div>';
   }
+
+  // v5.06: Show "syncing" indicator during fetch
+  const freshEl = document.getElementById('pendingFreshness');
+  if (freshEl) freshEl.innerHTML = '<span style="color:var(--purple);">⟳ Syncing latest…</span>';
 
   // Step 2: Background fetch latest, replace if changed
   try {
@@ -13846,13 +13289,51 @@ async function pendingRefresh(mode) {
     } else {
       _savePendingToCache(fresh);  // refresh timestamp
     }
+    _updatePendingFreshness();
   } catch (e) {
     // On manual mode, show error if no cache to fall back on
     if (mode === 'manual' && !cached && listEl) {
       listEl.innerHTML = '<div style="padding:20px; text-align:center; color:var(--red);">Load failed: ' + (e.message || e) + '</div>';
     }
-    // On silent mode, fail silently (cache still showing)
+    if (freshEl) freshEl.innerHTML = '<span style="color:var(--red);">⚠ Sync failed — using cached data</span>';
+  } finally {
+    // v5.06: Reset spinner
+    if (refreshBtn) {
+      setTimeout(() => { refreshBtn.style.transform = ''; }, 50);
+    }
   }
+}
+
+// v5.06: Show "X seconds ago" / "Just now" — helps user know if data is fresh
+function _updatePendingFreshness() {
+  const freshEl = document.getElementById('pendingFreshness');
+  if (!freshEl) return;
+  const ts = parseInt(localStorage.getItem(PENDING_CACHE_TS_KEY) || '0', 10);
+  if (!ts) { freshEl.textContent = ''; return; }
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  let text;
+  if (diff < 5) text = '✓ Just synced';
+  else if (diff < 60) text = `✓ Synced ${diff}s ago`;
+  else if (diff < 3600) text = `✓ Synced ${Math.floor(diff/60)}m ago — refresh recommended`;
+  else text = `⚠ Synced ${Math.floor(diff/3600)}h ago — please refresh`;
+  const color = diff < 30 ? 'var(--silver)' : (diff < 300 ? '#BA7517' : 'var(--red)');
+  freshEl.innerHTML = `<span style="color:${color};">${text}</span>`;
+}
+
+// v5.06: Tick the freshness indicator every 10 seconds while Inbox is visible
+let _pendingFreshnessTimer = null;
+function _startPendingFreshnessTimer() {
+  if (_pendingFreshnessTimer) return;
+  _pendingFreshnessTimer = setInterval(() => {
+    const page = document.getElementById('page-pending');
+    if (page && page.classList.contains('active')) {
+      _updatePendingFreshness();
+    } else {
+      // Stop ticking if user left the page
+      clearInterval(_pendingFreshnessTimer);
+      _pendingFreshnessTimer = null;
+    }
+  }, 10000);
 }
 
 function pendingMatchChannel(tag) {
@@ -13983,20 +13464,10 @@ function pendingRender() {
     }
   });
 
-  // v4.86: Header button label depends on tab
-  // - For reschedule_notice tab: "Got it all N" (clears all visible notices)
-  // - For other tabs: "Add all matched N"
+  // v5.06: Simplified — only "Add all matched" tabs exist now
   const headerBtn = document.getElementById('pendingBatchAddBtn');
   const headerLabel = document.getElementById('pendingBatchAddLabel');
-  let totalCount = matchedCount;
-  if (activeTab === 'reschedule_notice') {
-    totalCount = activeItems.length;  // all notices, no "match" concept
-    if (headerLabel) headerLabel.textContent = 'Got it all ' + totalCount;
-  } else {
-    if (headerLabel) headerLabel.textContent = 'Add all matched ' + matchedCount;
-  }
-  // Below code references matchedCount — patch with totalCount
-  matchedCount = totalCount;
+  if (headerLabel) headerLabel.textContent = 'Add all matched ' + matchedCount;
   if (headerBtn) {
     if (matchedCount === 0) {
       headerBtn.style.opacity = '0.45';
@@ -14037,109 +13508,10 @@ function pendingRender() {
 
 // v4.66: Render a single Pending card based on its type
 
-// v4.86: Render a Reschedule notice card — shows old → new date / location, click to dismiss
-function renderRescheduleNoticeCard(p, locations, esc) {
-  // Parse the apptDate field which contains "oldDate|newDate"
-  const apptParts = String(p.apptDate || '').split('|');
-  const oldDate = apptParts[0] || '';
-  const newDate = apptParts[1] || '';
-
-  const locParts = String(p.locationId || '').split('|');
-  const oldLocId = locParts[0] || '';
-  const newLocId = locParts[1] || '';
-
-  const fmtDate = (d) => {
-    if (!d) return '?';
-    const m = d.match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (!m) return d;
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return `${parseInt(m[3],10)} ${months[parseInt(m[2],10)-1]} ${m[1]}`;
-  };
-  const fmtLoc = (id) => {
-    if (!id) return '—';
-    const found = locations.find(l => l.id === id || String(l.id).replace(/^st-/, '') === String(id).replace(/^st-/, ''));
-    return found ? found.name : id;
-  };
-
-  const dateChanged = oldDate !== newDate && newDate;
-  const locChanged = oldLocId !== newLocId && newLocId;
-  const niceTime = pendingFormatTime(p.timestamp);
-
-  let changesHtml = '';
-  if (dateChanged) {
-    changesHtml += `<div style="font-size:13px; padding:6px 0; display:flex; align-items:center; gap:8px;">
-      <span style="opacity:0.6; display:inline-flex; align-items:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Date:</span>
-      <span style="text-decoration:line-through; color:var(--silver);">${esc(fmtDate(oldDate))}</span>
-      <span style="color:var(--silver);">→</span>
-      <span style="font-weight:600; color:#BA7517;">${esc(fmtDate(newDate))}</span>
-    </div>`;
-  }
-  if (locChanged) {
-    changesHtml += `<div style="font-size:13px; padding:6px 0; display:flex; align-items:center; gap:8px;">
-      <span style="opacity:0.6; display:inline-flex; align-items:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Loc:</span>
-      <span style="text-decoration:line-through; color:var(--silver);">${esc(fmtLoc(oldLocId))}</span>
-      <span style="color:var(--silver);">→</span>
-      <span style="font-weight:600; color:#BA7517;">${esc(fmtLoc(newLocId))}</span>
-    </div>`;
-  }
-
-  return `<div id="pcard-${esc(p.id)}" class="pending-card" style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:12px; transition:opacity 0.15s;">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px;">
-      <div style="font-size:16px; font-weight:600; color:var(--black);">${esc(p.phone || '(no phone)')}</div>
-      <span style="background:rgba(186,117,23,0.12); color:#BA7517; font-size:10px; font-weight:600; padding:2px 8px; border-radius:10px; white-space:nowrap; display:inline-flex; align-items:center;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Rescheduled</span>
-    </div>
-    <div style="font-size:11px; color:var(--silver); margin-bottom:10px;">${esc(niceTime)}</div>
-    <div style="background:var(--surface); border-radius:8px; padding:10px 12px; margin-bottom:14px;">
-      ${changesHtml || '<div style="font-size:13px; color:var(--silver);">No changes</div>'}
-    </div>
-    <div style="display:flex; gap:8px;">
-      <button id="paddbtn-${esc(p.id)}" style="flex:1; padding:10px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="dismissRescheduleNotice('${esc(p.id)}')">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><polyline points="20 6 9 17 4 12"/></svg>
-        Got it
-      </button>
-      <button id="pdelbtn-${esc(p.id)}" style="width:46px; padding:10px; background:#fff; color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="dismissRescheduleNotice('${esc(p.id)}')" title="Skip">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
-      </button>
-    </div>
-  </div>`;
-}
-
-// v4.86: Dismiss notice — calls Apps Script to delete the row, then re-renders Inbox
-async function dismissRescheduleNotice(pendingId) {
-  const card = document.getElementById('pcard-' + pendingId);
-  if (card) { card.style.opacity = '0.4'; card.style.pointerEvents = 'none'; }
-
-  try {
-    const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
-    if (!url) throw new Error('No backend URL');
-    const r = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'deletepending', id: pendingId }),
-      headers: { 'Content-Type': 'text/plain' }
-    });
-    const j = await r.json();
-    if (j && j.success) {
-      pendingData = pendingData.filter(x => x.id !== pendingId);
-      pendingRender();
-      if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
-      if (typeof toast === 'function') toast('Reschedule notice dismissed');
-    } else {
-      throw new Error(j && j.error ? j.error : 'Failed');
-    }
-  } catch (e) {
-    if (card) { card.style.opacity = '1'; card.style.pointerEvents = 'auto'; }
-    if (typeof toast === 'function') toast('Failed to dismiss: ' + (e.message || e));
-  }
-}
 
 function renderPendingCard(p, activeCh, locations, esc) {
   const type = String(p.type || 'lead').toLowerCase();
   const niceTime = pendingFormatTime(p.timestamp);
-
-  // v4.86: Special-case reschedule_notice — different card layout (no channel/location selectors)
-  if (type === 'reschedule_notice') {
-    return renderRescheduleNoticeCard(p, locations, esc);
-  }
 
   const apptTime = p.apptDate ? pendingFormatApptTime(p.apptDate) : '';
   const locName = pendingLocationName(p.locationId, locations);
@@ -14376,6 +13748,22 @@ const _pendingInFlight = new Set();
 async function pendingConfirm(pendingId) {
   // Guard against double-click
   if (_pendingInFlight.has(pendingId)) return;
+
+  // v5.06: If cache is older than 30 seconds, pull fresh first to avoid
+  // operating on a stale card (GHL may have already updated/cancelled it).
+  const cacheTs = parseInt(localStorage.getItem(PENDING_CACHE_TS_KEY) || '0', 10);
+  const cacheAge = Date.now() - cacheTs;
+  if (cacheAge > 30000) {
+    if (typeof toast === 'function') toast('Verifying latest data…');
+    await pendingRefresh('silent');
+    // After refresh, check if this pending row still exists
+    const stillExists = pendingData.find(x => x.id === pendingId);
+    if (!stillExists) {
+      if (typeof toast === 'function') toast('⚠️ This card was already processed elsewhere — refreshing inbox');
+      pendingRender();
+      return;
+    }
+  }
 
   const p = pendingData.find(x => x.id === pendingId);
   if (!p) return;
@@ -14681,41 +14069,6 @@ async function pendingBatchAddAll() {
 
   // v4.74: Process items ONLY from active tab (user expects tab-scoped operation)
   const activeTab = _pendingActiveTab || 'lead';
-
-  // v4.86: For reschedule_notice tab, use bulk dismiss (different from add)
-  if (activeTab === 'reschedule_notice') {
-    const notices = pendingData.filter(p => String(p.type || '').toLowerCase() === 'reschedule_notice');
-    if (notices.length === 0) {
-      if (typeof toast === 'function') toast('No reschedule notices to dismiss');
-      return;
-    }
-    if (!confirm('Dismiss ' + notices.length + ' reschedule notice(s)?')) return;
-    const btn = document.getElementById('pendingBatchAddBtn');
-    const btnLabel = document.getElementById('pendingBatchAddLabel');
-    if (btn) btn.disabled = true;
-    if (btnLabel) btnLabel.textContent = 'Dismissing...';
-    let dismissed = 0;
-    for (const n of notices) {
-      try {
-        const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
-        const r = await fetch(url, {
-          method: 'POST',
-          body: JSON.stringify({ action: 'deletepending', id: n.id }),
-          headers: { 'Content-Type': 'text/plain' }
-        });
-        const j = await r.json();
-        if (j && j.success) {
-          pendingData = pendingData.filter(x => x.id !== n.id);
-          dismissed++;
-        }
-      } catch (e) {}
-    }
-    pendingRender();
-    if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
-    if (btn) btn.disabled = false;
-    if (typeof toast === 'function') toast('Dismissed ' + dismissed + ' notice(s)');
-    return;
-  }
 
   const toProcess = pendingData.filter(p => {
     const t = String(p.type || 'lead').toLowerCase();
