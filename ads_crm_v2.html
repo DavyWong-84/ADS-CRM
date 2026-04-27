@@ -2747,7 +2747,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.13</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.15</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4166,7 +4166,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.89'; // v5.13 — All Outlets 视图新增 Outlet Comparison 3 张表（New / Existing / Ads）
+const DATA_VERSION = '2.91'; // v5.15 — Outlet Comparison 加 Total Revenue 表（最上面）+ 4 张表都加 % 算法说明小字
 
 // ---------- State ----------
 let state = {
@@ -9861,73 +9861,132 @@ function renderRevenueSummary(mArr) {
 
   html += `<div id="chart_rev_all" style="margin-top:14px;"></div></div>`;
 
-  // v5.13: Multi-outlet × month comparison tables (New / Existing / Ads Sales)
-  // Desktop: stores as rows, months as columns (one wide table per metric)
-  // Mobile: months as rows, stores as columns (narrow, scrollable)
+  // v5.13/14/15: Multi-outlet × month comparison tables
+  // 4 tables: Total Revenue / New Customer / Existing Customer / Ads Sales
+  // Each table has its own % logic (shown in subtitle):
+  //   - Total Revenue: % of monthly total (compare outlet contribution)
+  //   - Others: % of outlet revenue for that month (compare metric within outlet)
   {
     const cmpMonths = isMobile ? activeMonths : mArr;
     const yearLabel = year;
-    const tc = v => (v == null || v === 0) ? '—' : fmt.money(v);
+    const tcPlain = v => (v == null || v === 0) ? '—' : fmt.money(v);
 
-    // Helper: build a comparison table given a value-fetcher function
-    const buildCmpTable = (label, color, getVal) => {
+    // Get total revenue for a given month + outlet
+    const getOutletTotal = (m, locId) => {
+      const r = state.revenue.find(x => x.month === m && x.locationId === locId);
+      return r?.total || 0;
+    };
+    // Get total revenue for a given month across ALL outlets
+    const getMonthTotal = (m) => {
+      return locs.reduce((s, loc) => s + getOutletTotal(m, loc.id), 0);
+    };
+
+    // Helper: format value + % under it
+    const cellWithPct = (v, base, color) => {
+      if (v == null || v === 0) return '<span style="color:var(--silver);">—</span>';
+      const pct = base > 0 ? ((v/base)*100).toFixed(1)+'%' : '—';
+      return `<div style="color:${color};">${fmt.money(v)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${pct}</div>`;
+    };
+
+    // Helper: build a comparison table given a value-fetcher + base-fetcher (for %)
+    const buildCmpTable = (label, hint, color, getVal, getBase) => {
       let tbl = '';
       if (isMobile) {
-        // Mobile: month rows × store columns
         const storeHdr = locs.map(l => `<th class="num">${esc(l.name)}</th>`).join('');
         let body = '';
         let colTotals = locs.map(() => 0);
+        let colBaseTotals = locs.map(() => 0);
         let grandTotal = 0;
+        let grandBaseTotal = 0;
         cmpMonths.forEach(m => {
           let rowTotal = 0;
+          let rowBaseTotal = 0;
           let cells = '';
           locs.forEach((loc, i) => {
             const v = getVal(m, loc.id);
-            cells += `<td class="num" style="color:${color};">${tc(v)}</td>`;
+            const base = getBase(m, loc.id);
+            cells += `<td class="num" style="vertical-align:top;">${cellWithPct(v, base, color)}</td>`;
             colTotals[i] += v || 0;
+            colBaseTotals[i] += base || 0;
             rowTotal += v || 0;
+            rowBaseTotal += base || 0;
           });
           grandTotal += rowTotal;
-          body += `<tr><td>${fmt.monthShort(m)}</td>${cells}<td class="num" style="font-weight:700;border-left:2px solid var(--purple);">${tc(rowTotal)}</td></tr>`;
+          grandBaseTotal += rowBaseTotal;
+          const rowPct = rowBaseTotal > 0 ? ((rowTotal/rowBaseTotal)*100).toFixed(1)+'%' : '—';
+          const rowCell = rowTotal === 0
+            ? '<span style="color:var(--silver);">—</span>'
+            : `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
+          body += `<tr><td>${fmt.monthShort(m)}</td>${cells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${rowCell}</td></tr>`;
         });
-        const totalCells = colTotals.map(t => `<td class="num" style="color:${color};font-weight:700;">${tc(t)}</td>`).join('');
+        const totalCells = colTotals.map((t, i) => {
+          if (t === 0) return '<td class="num"><span style="color:var(--silver);">—</span></td>';
+          const pct = colBaseTotals[i] > 0 ? ((t/colBaseTotals[i])*100).toFixed(1)+'%' : '—';
+          return `<td class="num" style="vertical-align:top;color:var(--purple);"><div style="font-weight:700;">${fmt.money(t)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${pct}</div></td>`;
+        }).join('');
+        const grandPct = grandBaseTotal > 0 ? ((grandTotal/grandBaseTotal)*100).toFixed(1)+'%' : '—';
+        const grandCell = grandTotal === 0
+          ? '<span style="color:var(--silver);">—</span>'
+          : `<div style="font-weight:700;color:var(--purple);">${fmt.money(grandTotal)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${grandPct}</div>`;
         tbl = `<table class="data data-t">
           <thead><tr><th>Month</th>${storeHdr}<th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
           <tbody>${body}</tbody>
-          <tfoot><tr style="background:var(--purple-bg);border-top:2px solid var(--purple);"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="font-weight:700;color:var(--purple);border-left:2px solid var(--purple);">${tc(grandTotal)}</td></tr></tfoot>
+          <tfoot><tr style="background:var(--purple-bg);border-top:2px solid var(--purple);"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${grandCell}</td></tr></tfoot>
         </table>`;
       } else {
-        // Desktop: store rows × month columns
         const monthHdr = cmpMonths.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('');
         let body = '';
         let colTotals = cmpMonths.map(() => 0);
+        let colBaseTotals = cmpMonths.map(() => 0);
         let grandTotal = 0;
+        let grandBaseTotal = 0;
         locs.forEach(loc => {
           let rowTotal = 0;
+          let rowBaseTotal = 0;
           let cells = '';
           cmpMonths.forEach((m, i) => {
             const v = getVal(m, loc.id);
-            cells += `<td class="num" style="color:${color};">${tc(v)}</td>`;
+            const base = getBase(m, loc.id);
+            cells += `<td class="num" style="vertical-align:top;">${cellWithPct(v, base, color)}</td>`;
             colTotals[i] += v || 0;
+            colBaseTotals[i] += base || 0;
             rowTotal += v || 0;
+            rowBaseTotal += base || 0;
           });
           grandTotal += rowTotal;
-          body += `<tr><td style="font-weight:600;">${esc(loc.name)}</td>${cells}<td class="num" style="font-weight:700;border-left:2px solid var(--purple);">${tc(rowTotal)}</td></tr>`;
+          grandBaseTotal += rowBaseTotal;
+          const rowPct = rowBaseTotal > 0 ? ((rowTotal/rowBaseTotal)*100).toFixed(1)+'%' : '—';
+          const rowCell = rowTotal === 0
+            ? '<span style="color:var(--silver);">—</span>'
+            : `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
+          body += `<tr><td style="font-weight:600;">${esc(loc.name)}</td>${cells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${rowCell}</td></tr>`;
         });
-        const totalCells = colTotals.map(t => `<td class="num" style="color:${color};font-weight:700;">${tc(t)}</td>`).join('');
+        const totalCells = colTotals.map((t, i) => {
+          if (t === 0) return '<td class="num"><span style="color:var(--silver);">—</span></td>';
+          const pct = colBaseTotals[i] > 0 ? ((t/colBaseTotals[i])*100).toFixed(1)+'%' : '—';
+          return `<td class="num" style="vertical-align:top;color:var(--purple);"><div style="font-weight:700;">${fmt.money(t)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${pct}</div></td>`;
+        }).join('');
+        const grandPct = grandBaseTotal > 0 ? ((grandTotal/grandBaseTotal)*100).toFixed(1)+'%' : '—';
+        const grandCell = grandTotal === 0
+          ? '<span style="color:var(--silver);">—</span>'
+          : `<div style="font-weight:700;color:var(--purple);">${fmt.money(grandTotal)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${grandPct}</div>`;
         tbl = `<table class="data data-t">
           <thead><tr><th>Outlet</th>${monthHdr}<th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
           <tbody>${body}</tbody>
-          <tfoot><tr style="background:var(--purple-bg);border-top:2px solid var(--purple);"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="font-weight:700;color:var(--purple);border-left:2px solid var(--purple);">${tc(grandTotal)}</td></tr></tfoot>
+          <tfoot><tr style="background:var(--purple-bg);border-top:2px solid var(--purple);"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${grandCell}</td></tr></tfoot>
         </table>`;
       }
       return `<div style="margin-top:18px;">
-        <div style="font-size:12px;font-weight:700;color:${color};margin-bottom:8px;letter-spacing:0.4px;">● ${label.toUpperCase()}</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:${color};letter-spacing:0.4px;">● ${label.toUpperCase()}</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">${hint}</div>
+        </div>
         <div class="table-wrap">${tbl}</div>
       </div>`;
     };
 
     // Data fetchers
+    const getTotal = (m, locId) => getOutletTotal(m, locId);
     const getNew = (m, locId) => {
       const r = state.revenue.find(x => x.month === m && x.locationId === locId);
       return r?.newCustomer || 0;
@@ -9941,12 +10000,17 @@ function renderRevenueSummary(mArr) {
         .filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && l.status === 'done' && ['meta','google'].includes(l.platform))
         .reduce((s, l) => s + (l.spend || 0), 0);
     };
+    // Base for Total Revenue table = monthly total (so % = outlet's share of month)
+    const getMonthBase = (m, locId) => getMonthTotal(m);
+    // Base for other 3 tables = outlet's monthly total (so % = metric's share of outlet revenue)
+    const getOutletBase = (m, locId) => getOutletTotal(m, locId);
 
     html += `<div class="card" style="margin-top:14px;">
       <div class="section-title"><h3>Outlet Comparison ${yearLabel}</h3></div>
-      ${buildCmpTable('New Customer Revenue', '#15803D', getNew)}
-      ${buildCmpTable('Existing Customer Revenue', '#6B7280', getOld)}
-      ${buildCmpTable('Ads Sales (paid leads)', 'var(--meta-color)', getAds)}
+      ${buildCmpTable('Total Revenue',              '% = outlet share of monthly total', 'var(--purple-deep)',  getTotal, getMonthBase)}
+      ${buildCmpTable('New Customer Revenue',       '% = share of that outlet revenue',  'var(--green-dark)',   getNew,   getOutletBase)}
+      ${buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  'var(--gray)',         getOld,   getOutletBase)}
+      ${buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  'var(--meta-color)',   getAds,   getOutletBase)}
     </div>`;
   }
 
