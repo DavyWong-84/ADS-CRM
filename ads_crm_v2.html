@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 911px;"><head>
+<html lang="en" style="--app-vh: 910px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2747,7 +2747,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.10</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.11</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2854,7 +2854,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <!-- v4.93: + New Lead button on left of search (desktop only) -->
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
@@ -2896,7 +2896,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </button></span>
           </div>
           <!-- Filter row 2: Status tabs -->
-          <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
+          <div class="filter-tabs-wrap at-start" id="listFiltersWrap">
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
         </div>
@@ -2908,7 +2908,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -4166,7 +4166,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.86'; // v5.10 — UI batch 1: border-radius 标准化(113 处) + 颜色 CSS variable(74 处) + spacing 4px 对齐(57 处)
+const DATA_VERSION = '2.87'; // v5.11 — UI batch 2: native alert/confirm → unified showConfirm/showAlert (18 处)
 
 // ---------- State ----------
 let state = {
@@ -5868,11 +5868,11 @@ function closeDetailPanel() {
 
 // v3.28: Delete Lead from detail panel
 // v3.33: Shared delete with confirm — used by swipe delete
-function confirmDeleteLead(leadId) {
+async function confirmDeleteLead(leadId) {
   const l = state.leads.find(x => x.id === leadId);
   if (!l) return;
   const name = l.name || l.contact || '(no name)';
-  if (!confirm(`确定删除这个 Lead 吗？\n\n${name}\n\n此操作无法撤销。`)) return;
+  if (!await showConfirm(`确定删除这个 Lead 吗？\n\n${name}\n\n此操作无法撤销。`, { title: 'Delete Lead', okText: 'Delete', danger: true })) return;
   state.leads = state.leads.filter(x => x.id !== leadId);
   saveState();
   if (typeof gsDelete === 'function') gsDelete('Leads', leadId);
@@ -5881,13 +5881,13 @@ function confirmDeleteLead(leadId) {
   toast('已删除 ✓');
 }
 // v4.36: Delete button on form (desktop) / bottom (mobile) — deletes currently editing lead
-function confirmDeleteLeadFromForm() {
+async function confirmDeleteLeadFromForm() {
   if (!currentEditingId) return;
   const leadId = currentEditingId;
   const l = state.leads.find(x => x.id === leadId);
   if (!l) return;
   const name = l.name || l.contact || '(no name)';
-  if (!confirm(`确定删除这个 Lead 吗？\n\n${name}\n\n此操作无法撤销。`)) return;
+  if (!await showConfirm(`确定删除这个 Lead 吗？\n\n${name}\n\n此操作无法撤销。`, { title: 'Delete Lead', okText: 'Delete', danger: true })) return;
   state.leads = state.leads.filter(x => x.id !== leadId);
   saveState();
   if (typeof gsDelete === 'function') gsDelete('Leads', leadId);
@@ -6081,6 +6081,73 @@ function showModal(html, opts) {
 function closeModal() {
   const mb = document.getElementById('modalBackdrop');
   if (mb) mb.classList.remove('open');
+}
+
+// v5.11: Promise-based replacements for native confirm() / alert()
+// Use these instead of browser-default popups so UX stays consistent with brand.
+//
+// Usage:
+//   const ok = await showConfirm('Delete this lead?');
+//   if (ok) { ... }
+//
+//   await showAlert('Saved successfully');
+//
+// Optionally pass options { title, okText, cancelText, danger: true }
+
+function showConfirm(message, opts) {
+  return new Promise(resolve => {
+    opts = opts || {};
+    const title = opts.title || 'Confirm';
+    const okText = opts.okText || 'OK';
+    const cancelText = opts.cancelText || 'Cancel';
+    const isDanger = !!opts.danger;
+    const okBg = isDanger ? 'background:var(--red);color:#fff;border-color:var(--red);' : '';
+    const escFn = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||''));
+
+    const html = `
+      <div class="modal-header">
+        <div class="modal-title">${escFn(title)}</div>
+        <button class="modal-close" onclick="window.__resolveConfirm__(false)">✕</button>
+      </div>
+      <div style="font-size:14px; color:var(--gray); line-height:1.6; margin-bottom:18px; white-space:pre-wrap;">${escFn(message)}</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-gray" style="flex:1;" onclick="window.__resolveConfirm__(false)">${escFn(cancelText)}</button>
+        <button class="btn btn-primary" style="flex:1;${okBg}" onclick="window.__resolveConfirm__(true)">${escFn(okText)}</button>
+      </div>
+    `;
+    window.__resolveConfirm__ = function(ok) {
+      delete window.__resolveConfirm__;
+      closeModal();
+      resolve(ok);
+    };
+    showModal(html);
+  });
+}
+
+function showAlert(message, opts) {
+  return new Promise(resolve => {
+    opts = opts || {};
+    const title = opts.title || 'Notice';
+    const okText = opts.okText || 'OK';
+    const escFn = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s||''));
+
+    const html = `
+      <div class="modal-header">
+        <div class="modal-title">${escFn(title)}</div>
+        <button class="modal-close" onclick="window.__resolveAlert__()">✕</button>
+      </div>
+      <div style="font-size:14px; color:var(--gray); line-height:1.6; margin-bottom:18px; white-space:pre-wrap;">${escFn(message)}</div>
+      <div style="display:flex; justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="window.__resolveAlert__()">${escFn(okText)}</button>
+      </div>
+    `;
+    window.__resolveAlert__ = function() {
+      delete window.__resolveAlert__;
+      closeModal();
+      resolve();
+    };
+    showModal(html);
+  });
 }
 
 // ---------- Date Picker ----------
@@ -9367,10 +9434,10 @@ document.getElementById('fee_entryName').addEventListener('change', e => {
 });
 document.getElementById('fee_entryYear').addEventListener('change', renderFeeEntry);
 
-function deleteFee(id) {
+async function deleteFee(id) {
   const f = state.thirdPartyFees.find(x => x.id === id);
   if (!f) return;
-  if (!confirm('确定删除 ' + f.name + '?')) return;
+  if (!await showConfirm('确定删除 ' + f.name + '?', { title: 'Delete Fee', okText: 'Delete', danger: true })) return;
   const month = f.month;
   state.thirdPartyFees = state.thirdPartyFees.filter(x => x.id !== id);
   saveState();
@@ -10229,7 +10296,7 @@ async function pushHTMLToGitHub() {
     return;
   }
   
-  const confirmed = confirm(`推送当前网页到 GitHub?\n\n这会覆盖 ${cfg.owner}/${cfg.repo} 里的 "ads_crm_v2.html"。\n\n推完后等 1-2 分钟 → Ctrl+Shift+R 强制刷新。`);
+  const confirmed = await showConfirm(`推送当前网页到 GitHub?\n\n这会覆盖 ${cfg.owner}/${cfg.repo} 里的 "ads_crm_v2.html"。\n\n推完后等 1-2 分钟 → Ctrl+Shift+R 强制刷新。`, { title: 'Push to GitHub', okText: 'Push' });
   if (!confirmed) return;
   
   logEl.innerHTML = '<span style="color:var(--gray);">📖 Reading current HTML...</span>';
@@ -10302,7 +10369,7 @@ function exportAllData() {
 async function cloudBackupNow() {
   const url = getGsUrl();
   if (!url) { toast('⚠️ Apps Script URL not set'); return; }
-  if (!confirm('Create a backup of the current Sheet now?')) return;
+  if (!await showConfirm('Create a backup of the current Sheet now?', { title: 'Backup Now', okText: 'Create' })) return;
   toast('Creating backup…');
   try {
     const r = await fetch(url, {
@@ -10437,7 +10504,7 @@ async function cloudBackupRestoreConfirm(backupId, backupName) {
     toast('⚠️ Select at least one tab to restore');
     return;
   }
-  if (!confirm(`Restore ${selected.length} tab(s) from "${backupName}"? Current data will be REPLACED.`)) return;
+  if (!await showConfirm(`Restore ${selected.length} tab(s) from "${backupName}"? Current data will be REPLACED.`, { title: 'Confirm Restore', okText: 'Restore', danger: true })) return;
 
   closeModal();
   toast('Restoring… this may take a minute');
@@ -10526,7 +10593,7 @@ async function gsTest() {
 async function gsPushAll() {
   const url = getGsUrl();
   if (!url) { gsLog('Please enter Apps Script URL', true); return; }
-  if (!confirm('Push ALL CRM data to Google Sheet? This will overwrite Sheet data.')) return;
+  if (!await showConfirm('Push ALL CRM data to Google Sheet? This will overwrite Sheet data.', { title: 'Push All', okText: 'Push', danger: true })) return;
   gsLog('⬆️ Enriching & pushing all data...');
   try {
     // Enrich leads with missing fields (exclude remark from Sheet)
@@ -10793,7 +10860,7 @@ async function gsPull() {
     if (suspiciousLead) {
       gsLog('⚠️ SAFETY: Sheet has unexpected columns. Pull BLOCKED to protect data.', true);
       console.warn('Suspicious lead keys:', Object.keys(suspiciousLead));
-      alert('⚠️ 安全保护\n\nGoogle Sheet 的 Leads 表头有异常列（可能有重复或错误字段），为保护您的数据，Pull 已被阻止。\n\n请先修复 Sheet 的表头（删除重复列）再试。\n\nLead 字段：' + Object.keys(suspiciousLead).join(', '));
+      await showAlert('⚠️ 安全保护\n\nGoogle Sheet 的 Leads 表头有异常列（可能有重复或错误字段），为保护您的数据，Pull 已被阻止。\n\n请先修复 Sheet 的表头（删除重复列）再试。\n\nLead 字段：' + Object.keys(suspiciousLead).join(', '), { title: 'Safety Block' });
       return;
     }
 
@@ -10939,7 +11006,7 @@ async function gsPull() {
     } catch (e) { console.warn('Backup failed:', e); }
 
     const counts = `Leads: ${normalizedLeads.length}, Ads: ${normalizedAds.length}, Rev: ${normalizedRev.length}, Fees: ${normalizedFees.length}`;
-    if (!confirm(`Pull data from Sheet will REPLACE all CRM data.\n\nSheet has: ${counts}\nCRM has: Leads: ${state.leads.length}, Ads: ${state.adsSpend.length}, Rev: ${state.revenue.length}, Fees: ${state.thirdPartyFees.length}\n\n✅ 已自动备份当前数据（万一出错可恢复）\n\nContinue?`)) {
+    if (!await showConfirm(`Pull data from Sheet will REPLACE all CRM data.\n\nSheet has: ${counts}\nCRM has: Leads: ${state.leads.length}, Ads: ${state.adsSpend.length}, Rev: ${state.revenue.length}, Fees: ${state.thirdPartyFees.length}\n\n✅ 已自动备份当前数据（万一出错可恢复）\n\nContinue?`, { title: 'Pull from Sheet', okText: 'Pull', danger: true })) {
       gsLog('Pull cancelled'); return;
     }
     state.leads = normalizedLeads;
@@ -10953,21 +11020,21 @@ async function gsPull() {
 }
 
 // Restore pre-pull backup (manual recovery — call from console)
-function restorePrePullBackup() {
+async function restorePrePullBackup() {
   try {
     const raw = localStorage.getItem('ads_crm_pre_pull_backup');
-    if (!raw) { alert('没有找到 pre-pull 备份'); return; }
+    if (!raw) { await showAlert('没有找到 pre-pull 备份', { title: 'Restore' }); return; }
     const b = JSON.parse(raw);
     const ageMin = Math.round((Date.now() - b.ts) / 60000);
-    if (!confirm(`恢复 ${ageMin} 分钟前的 pre-pull 备份？\n\nLeads: ${b.leads?.length || 0}\nAds: ${b.adsSpend?.length || 0}\nRev: ${b.revenue?.length || 0}\nFees: ${b.thirdPartyFees?.length || 0}\n\n当前数据将被覆盖。`)) return;
+    if (!await showConfirm(`恢复 ${ageMin} 分钟前的 pre-pull 备份？\n\nLeads: ${b.leads?.length || 0}\nAds: ${b.adsSpend?.length || 0}\nRev: ${b.revenue?.length || 0}\nFees: ${b.thirdPartyFees?.length || 0}\n\n当前数据将被覆盖。`, { title: 'Restore Backup', okText: 'Restore', danger: true })) return;
     state.leads = b.leads || [];
     state.adsSpend = b.adsSpend || [];
     state.revenue = b.revenue || [];
     state.thirdPartyFees = b.thirdPartyFees || [];
     saveState();
-    alert('✅ 已恢复，页面即将刷新');
+    await showAlert('✅ 已恢复，页面即将刷新', { title: 'Restored' });
     setTimeout(() => location.reload(), 500);
-  } catch (e) { alert('恢复失败：' + e.message); }
+  } catch (e) { await showAlert('恢复失败：' + e.message, { title: 'Error' }); }
 }
 
 // Auto-sync: push single record to Sheet (fire-and-forget)
@@ -11639,8 +11706,8 @@ function filterNotebookByTag(t) {
   renderNotebook();
 }
 
-function confirmDeleteNote(id) {
-  if (!confirm('删除这条笔记？')) return;
+async function confirmDeleteNote(id) {
+  if (!await showConfirm('删除这条笔记？', { title: 'Delete Note', okText: 'Delete', danger: true })) return;
   deleteAINote(id);
   renderNotebook();
   toast('已删除 ✓');
@@ -12453,7 +12520,7 @@ async function sendAIMessage() {
   // Check Apps Script URL
   const gsUrl = getGSheetUrl();
   if (!gsUrl) {
-    alert('Please configure Apps Script URL in Settings → Google Sheet Sync first.');
+    toast('⚠️ Configure Apps Script URL in Settings → Google Sheet Sync first');
     return;
   }
 
@@ -13178,8 +13245,8 @@ async function flushPendingQueueManual() {
 init();
 
 // --- Mobile back button handling ---
-function clearCacheReload() {
-  if (!confirm('This will clear all cached data and reload from preloaded data. Continue?')) return;
+async function clearCacheReload() {
+  if (!await showConfirm('This will clear all cached data and reload from preloaded data. Continue?', { title: 'Clear Cache', okText: 'Continue', danger: true })) return;
   localStorage.removeItem(STORAGE_KEY);
   if ('caches' in window) { caches.keys().then(names => names.forEach(n => caches.delete(n))); }
   toast('Cache cleared — reloading...');
@@ -14291,7 +14358,7 @@ async function pendingConfirmUpdate(p) {
 
 async function pendingDelete(pendingId) {
   if (_pendingInFlight.has(pendingId)) return;
-  if (!confirm('Delete this pending record?')) return;
+  if (!await showConfirm('Delete this pending record?', { title: 'Delete Pending', okText: 'Delete', danger: true })) return;
 
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
   if (!url) return;
@@ -14354,7 +14421,7 @@ async function pendingBatchAddAll() {
     return;
   }
 
-  if (!confirm('Add ' + toProcess.length + ' matched lead(s) to CRM?\n\nUnmatched items will be skipped.\nYou may be asked to handle duplicates.')) return;
+  if (!await showConfirm('Add ' + toProcess.length + ' matched lead(s) to CRM?\n\nUnmatched items will be skipped.\nYou may be asked to handle duplicates.', { title: 'Batch Add', okText: 'Add All' })) return;
 
   // v4.71: Lock ALL cards + button IMMEDIATELY so user can't click during processing
   const btn = document.getElementById('pendingBatchAddBtn');
@@ -14794,4 +14861,18 @@ setInterval(syncTopbarToNavBadges, 2000);
 setTimeout(syncTopbarToNavBadges, 500);
 </script>
 
-</body></html>
+<div id="modalBackdrop" class="modal-backdrop"><div class="modal" id="modalInner">
+      <div class="modal-header">
+        <div class="modal-title">Push to GitHub</div>
+        <button class="modal-close" onclick="window.__resolveConfirm__(false)">✕</button>
+      </div>
+      <div style="font-size:14px; color:var(--gray); line-height:1.6; margin-bottom:18px; white-space:pre-wrap;">推送当前网页到 GitHub?
+
+这会覆盖 DavyWong-84/ADS-CRM 里的 "ads_crm_v2.html"。
+
+推完后等 1-2 分钟 → Ctrl+Shift+R 强制刷新。</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-gray" style="flex:1;" onclick="window.__resolveConfirm__(false)">Cancel</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="window.__resolveConfirm__(true)">Push</button>
+      </div>
+    </div></div></body></html>
