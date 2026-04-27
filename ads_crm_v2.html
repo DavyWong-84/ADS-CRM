@@ -2747,7 +2747,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.15</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.16</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4166,7 +4166,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.91'; // v5.15 — Outlet Comparison 加 Total Revenue 表（最上面）+ 4 张表都加 % 算法说明小字
+const DATA_VERSION = '2.92'; // v5.16 — Total Revenue 表修复 33% bug：行总不显 %、YTD 总不显 %，YTD 列显示门店年度份额
 
 // ---------- State ----------
 let state = {
@@ -9889,7 +9889,10 @@ function renderRevenueSummary(mArr) {
     };
 
     // Helper: build a comparison table given a value-fetcher + base-fetcher (for %)
-    const buildCmpTable = (label, hint, color, getVal, getBase) => {
+    // isShareTable = true means: row totals & grand total are SAME as denominator,
+    // so don't show % on row total cells or grand total cell (would always be 100%).
+    // (For Total Revenue table, where each cell's base = monthly all-outlet total)
+    const buildCmpTable = (label, hint, color, getVal, getBase, isShareTable) => {
       let tbl = '';
       if (isMobile) {
         const storeHdr = locs.map(l => `<th class="num">${esc(l.name)}</th>`).join('');
@@ -9913,21 +9916,41 @@ function renderRevenueSummary(mArr) {
           });
           grandTotal += rowTotal;
           grandBaseTotal += rowBaseTotal;
-          const rowPct = rowBaseTotal > 0 ? ((rowTotal/rowBaseTotal)*100).toFixed(1)+'%' : '—';
-          const rowCell = rowTotal === 0
-            ? '<span style="color:var(--silver);">—</span>'
-            : `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
+          // For Total Revenue table: row total = sum of cells = monthly total (= denominator), no % needed
+          let rowCell;
+          if (rowTotal === 0) {
+            rowCell = '<span style="color:var(--silver);">—</span>';
+          } else if (isShareTable) {
+            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div>`;
+          } else {
+            const rowPct = rowBaseTotal > 0 ? ((rowTotal/rowBaseTotal)*100).toFixed(1)+'%' : '—';
+            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
+          }
           body += `<tr><td>${fmt.monthShort(m)}</td>${cells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${rowCell}</td></tr>`;
         });
+        // YTD row: column totals
+        // For Total Revenue: % = each store's share of grand total (yearly outlet share)
+        // For other tables: % = metric's share of that store's revenue
         const totalCells = colTotals.map((t, i) => {
           if (t === 0) return '<td class="num"><span style="color:var(--silver);">—</span></td>';
-          const pct = colBaseTotals[i] > 0 ? ((t/colBaseTotals[i])*100).toFixed(1)+'%' : '—';
+          let pct;
+          if (isShareTable) {
+            pct = grandTotal > 0 ? ((t/grandTotal)*100).toFixed(1)+'%' : '—';
+          } else {
+            pct = colBaseTotals[i] > 0 ? ((t/colBaseTotals[i])*100).toFixed(1)+'%' : '—';
+          }
           return `<td class="num" style="vertical-align:top;color:var(--purple);"><div style="font-weight:700;">${fmt.money(t)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${pct}</div></td>`;
         }).join('');
-        const grandPct = grandBaseTotal > 0 ? ((grandTotal/grandBaseTotal)*100).toFixed(1)+'%' : '—';
-        const grandCell = grandTotal === 0
-          ? '<span style="color:var(--silver);">—</span>'
-          : `<div style="font-weight:700;color:var(--purple);">${fmt.money(grandTotal)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${grandPct}</div>`;
+        // YTD x Total: grand total. For Total Revenue, this IS the denominator — no %
+        let grandCell;
+        if (grandTotal === 0) {
+          grandCell = '<span style="color:var(--silver);">—</span>';
+        } else if (isShareTable) {
+          grandCell = `<div style="font-weight:700;color:var(--purple);">${fmt.money(grandTotal)}</div>`;
+        } else {
+          const grandPct = grandBaseTotal > 0 ? ((grandTotal/grandBaseTotal)*100).toFixed(1)+'%' : '—';
+          grandCell = `<div style="font-weight:700;color:var(--purple);">${fmt.money(grandTotal)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${grandPct}</div>`;
+        }
         tbl = `<table class="data data-t">
           <thead><tr><th>Month</th>${storeHdr}<th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
           <tbody>${body}</tbody>
@@ -9955,21 +9978,43 @@ function renderRevenueSummary(mArr) {
           });
           grandTotal += rowTotal;
           grandBaseTotal += rowBaseTotal;
-          const rowPct = rowBaseTotal > 0 ? ((rowTotal/rowBaseTotal)*100).toFixed(1)+'%' : '—';
-          const rowCell = rowTotal === 0
-            ? '<span style="color:var(--silver);">—</span>'
-            : `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
+          // Desktop row = a single store across 12 months
+          // For Total Revenue: row total = that store's yearly revenue.
+          //   row % = store / grand total = store's share of yearly all-outlet revenue (meaningful!)
+          // For other tables: row % = metric / store's revenue (also meaningful)
+          let rowCell;
+          if (rowTotal === 0) {
+            rowCell = '<span style="color:var(--silver);">—</span>';
+          } else if (isShareTable) {
+            const rowPct = grandTotal > 0 ? ((rowTotal/grandTotal)*100).toFixed(1)+'%' : '—';
+            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
+          } else {
+            const rowPct = rowBaseTotal > 0 ? ((rowTotal/rowBaseTotal)*100).toFixed(1)+'%' : '—';
+            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
+          }
           body += `<tr><td style="font-weight:600;">${esc(loc.name)}</td>${cells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${rowCell}</td></tr>`;
         });
+        // YTD column = each month, sum of all stores
+        // For Total Revenue: col total = monthly total = denominator → no % (always 100%)
+        // For other tables: col % = metric total / monthly total
         const totalCells = colTotals.map((t, i) => {
           if (t === 0) return '<td class="num"><span style="color:var(--silver);">—</span></td>';
+          if (isShareTable) {
+            return `<td class="num" style="vertical-align:top;color:var(--purple);"><div style="font-weight:700;">${fmt.money(t)}</div></td>`;
+          }
           const pct = colBaseTotals[i] > 0 ? ((t/colBaseTotals[i])*100).toFixed(1)+'%' : '—';
           return `<td class="num" style="vertical-align:top;color:var(--purple);"><div style="font-weight:700;">${fmt.money(t)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${pct}</div></td>`;
         }).join('');
-        const grandPct = grandBaseTotal > 0 ? ((grandTotal/grandBaseTotal)*100).toFixed(1)+'%' : '—';
-        const grandCell = grandTotal === 0
-          ? '<span style="color:var(--silver);">—</span>'
-          : `<div style="font-weight:700;color:var(--purple);">${fmt.money(grandTotal)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${grandPct}</div>`;
+        // YTD x Total: yearly total. For Total Revenue: no % (this is the denominator)
+        let grandCell;
+        if (grandTotal === 0) {
+          grandCell = '<span style="color:var(--silver);">—</span>';
+        } else if (isShareTable) {
+          grandCell = `<div style="font-weight:700;color:var(--purple);">${fmt.money(grandTotal)}</div>`;
+        } else {
+          const grandPct = grandBaseTotal > 0 ? ((grandTotal/grandBaseTotal)*100).toFixed(1)+'%' : '—';
+          grandCell = `<div style="font-weight:700;color:var(--purple);">${fmt.money(grandTotal)}</div><div style="font-size:11px;color:var(--purple);opacity:0.7;font-weight:400;">${grandPct}</div>`;
+        }
         tbl = `<table class="data data-t">
           <thead><tr><th>Outlet</th>${monthHdr}<th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
           <tbody>${body}</tbody>
@@ -10007,10 +10052,10 @@ function renderRevenueSummary(mArr) {
 
     html += `<div class="card" style="margin-top:14px;">
       <div class="section-title"><h3>Outlet Comparison ${yearLabel}</h3></div>
-      ${buildCmpTable('Total Revenue',              '% = outlet share of monthly total', 'var(--purple-deep)',  getTotal, getMonthBase)}
-      ${buildCmpTable('New Customer Revenue',       '% = share of that outlet revenue',  'var(--green-dark)',   getNew,   getOutletBase)}
-      ${buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  'var(--gray)',         getOld,   getOutletBase)}
-      ${buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  'var(--meta-color)',   getAds,   getOutletBase)}
+      ${buildCmpTable('Total Revenue',              '% = outlet share of monthly total', 'var(--purple-deep)',  getTotal, getMonthBase,  true)}
+      ${buildCmpTable('New Customer Revenue',       '% = share of that outlet revenue',  'var(--green-dark)',   getNew,   getOutletBase, false)}
+      ${buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  'var(--gray)',         getOld,   getOutletBase, false)}
+      ${buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  'var(--meta-color)',   getAds,   getOutletBase, false)}
     </div>`;
   }
 
