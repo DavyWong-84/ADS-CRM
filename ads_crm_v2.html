@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 910px;"><head>
+<html lang="en" style="--app-vh: 911px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2747,7 +2747,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.11</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.12</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2854,7 +2854,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 844.812px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <!-- v4.93: + New Lead button on left of search (desktop only) -->
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
@@ -2896,7 +2896,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </button></span>
           </div>
           <!-- Filter row 2: Status tabs -->
-          <div class="filter-tabs-wrap at-start" id="listFiltersWrap">
+          <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
         </div>
@@ -2908,7 +2908,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 844.812px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -4166,7 +4166,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.87'; // v5.11 — UI batch 2: native alert/confirm → unified showConfirm/showAlert (18 处)
+const DATA_VERSION = '2.88'; // v5.12 — Weekly Report 表格 Total 列右边加紫色分割线（来源 | 漏斗 视觉切分）
 
 // ---------- State ----------
 let state = {
@@ -8569,22 +8569,22 @@ function renderStore() {
         if (sorted.length === 0) return;
         let mMeta=0, mGoogle=0, mOfu=0, mTotal=0, mAppt=0, mShow=0, mSpend=0;
         sorted.forEach(w => {
-          rows += `<tr class="wk-row" data-wm="${m}"><td style="text-align:center;width:36px;min-width:36px;">W${w.week}</td>${showLeadCols ? `<td class="num">${tc(w.meta)}</td><td class="num">${tc(w.google)}</td><td class="num">${tc(w.ofu)}</td><td class="num" style="font-weight:600;">${tc(w.total)}</td>` : ''}<td class="num">${tc(w.appt)}</td><td class="num">${tc(w.show)}</td><td class="num" style="font-weight:600;">${w.spend > 0 ? fmt.money(w.spend) : '—'}</td></tr>`;
+          rows += `<tr class="wk-row" data-wm="${m}"><td style="text-align:center;width:36px;min-width:36px;">W${w.week}</td>${showLeadCols ? `<td class="num">${tc(w.meta)}</td><td class="num">${tc(w.google)}</td><td class="num">${tc(w.ofu)}</td><td class="num" style="font-weight:600;border-right:2px solid rgba(113,50,245,0.25);">${tc(w.total)}</td>` : ''}<td class="num">${tc(w.appt)}</td><td class="num">${tc(w.show)}</td><td class="num" style="font-weight:600;">${w.spend > 0 ? fmt.money(w.spend) : '—'}</td></tr>`;
           mMeta+=w.meta; mGoogle+=w.google; mOfu+=w.ofu; mTotal+=w.total; mAppt+=w.appt; mShow+=w.show; mSpend+=w.spend;
         });
-        rows += `<tr class="total-row wk-month" onclick="toggleWeekMonth('${m}')" style="cursor:pointer;"><td style="text-align:center;font-weight:700;width:36px;min-width:36px;"><span class="wk-chev" data-wm="${m}" style="display:inline-block;transition:transform 0.2s;font-size:10px;margin-right:2px;">▼</span>${fmt.monthShort(m)}</td>${showLeadCols ? `<td class="num">${tc(mMeta)}</td><td class="num">${tc(mGoogle)}</td><td class="num">${tc(mOfu)}</td><td class="num" style="font-weight:700;">${tc(mTotal)}</td>` : ''}<td class="num">${tc(mAppt)}</td><td class="num">${tc(mShow)}</td><td class="num" style="font-weight:700;">${mSpend > 0 ? fmt.money(mSpend) : '—'}</td></tr>`;
+        rows += `<tr class="total-row wk-month" onclick="toggleWeekMonth('${m}')" style="cursor:pointer;"><td style="text-align:center;font-weight:700;width:36px;min-width:36px;"><span class="wk-chev" data-wm="${m}" style="display:inline-block;transition:transform 0.2s;font-size:10px;margin-right:2px;">▼</span>${fmt.monthShort(m)}</td>${showLeadCols ? `<td class="num">${tc(mMeta)}</td><td class="num">${tc(mGoogle)}</td><td class="num">${tc(mOfu)}</td><td class="num" style="font-weight:700;border-right:2px solid var(--purple);">${tc(mTotal)}</td>` : ''}<td class="num">${tc(mAppt)}</td><td class="num">${tc(mShow)}</td><td class="num" style="font-weight:700;">${mSpend > 0 ? fmt.money(mSpend) : '—'}</td></tr>`;
         gMeta+=mMeta; gGoogle+=mGoogle; gOfu+=mOfu; gTotal+=mTotal; gAppt+=mAppt; gShow+=mShow; gSpend+=mSpend;
         if (mi < wMonths.length - 1 && sorted.length > 0) rows += `<tr class="wk-gap" data-wm="${m}"><td colspan="${colSpan}" style="padding:4px;"></td></tr>`;
       });
 
       if (gTotal > 0 || gAppt > 0) {
-        rows += `<tr style="border-top:2px solid var(--purple);background:var(--purple-bg);"><td style="text-align:center;font-weight:700;color:var(--purple);width:36px;min-width:36px;">TOTAL</td>${showLeadCols ? `<td class="num" style="font-weight:700;">${tc(gMeta)}</td><td class="num" style="font-weight:700;">${tc(gGoogle)}</td><td class="num" style="font-weight:700;">${tc(gOfu)}</td><td class="num" style="font-weight:700;">${tc(gTotal)}</td>` : ''}<td class="num" style="font-weight:700;">${tc(gAppt)}</td><td class="num" style="font-weight:700;">${tc(gShow)}</td><td class="num" style="font-weight:700;">${gSpend > 0 ? fmt.money(gSpend) : '—'}</td></tr>`;
+        rows += `<tr style="border-top:2px solid var(--purple);background:var(--purple-bg);"><td style="text-align:center;font-weight:700;color:var(--purple);width:36px;min-width:36px;">TOTAL</td>${showLeadCols ? `<td class="num" style="font-weight:700;">${tc(gMeta)}</td><td class="num" style="font-weight:700;">${tc(gGoogle)}</td><td class="num" style="font-weight:700;">${tc(gOfu)}</td><td class="num" style="font-weight:700;border-right:2px solid var(--purple);">${tc(gTotal)}</td>` : ''}<td class="num" style="font-weight:700;">${tc(gAppt)}</td><td class="num" style="font-weight:700;">${tc(gShow)}</td><td class="num" style="font-weight:700;">${gSpend > 0 ? fmt.money(gSpend) : '—'}</td></tr>`;
       }
 
       html += `<div id="chart_weekly_leads" style="margin-bottom:20px;"></div>
         <div class="section-title"><h3>${wTitle}</h3></div>
         <div class="table-wrap"><table class="data">
-          <thead><tr><th style="text-align:center;width:36px;min-width:36px;">Wk</th>${showLeadCols ? '<th class="num">Meta</th><th class="num">Google</th><th class="num">OFU</th><th class="num" style="font-weight:700;">Total</th>' : ''}<th class="num">Appt</th><th class="num">Show</th><th class="num" style="font-weight:700;">Sales</th></tr></thead>
+          <thead><tr><th style="text-align:center;width:36px;min-width:36px;">Wk</th>${showLeadCols ? '<th class="num">Meta</th><th class="num">Google</th><th class="num">OFU</th><th class="num" style="font-weight:700;border-right:2px solid var(--purple);">Total</th>' : ''}<th class="num">Appt</th><th class="num">Show</th><th class="num" style="font-weight:700;">Sales</th></tr></thead>
           <tbody>${rows || `<tr><td colspan="${colSpan}" style="text-align:center;padding:20px;color:var(--gray);">No data</td></tr>`}</tbody>
         </table></div>`;
 
