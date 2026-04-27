@@ -65,7 +65,7 @@ html, body {
   min-height: 100vh;
 }
 button { font-family: inherit; cursor: pointer; border: none; background: none; font-size: inherit; color: inherit; }
-input, select, textarea { font-family: inherit; font-size: 15px; outline: none; border: 1px solid var(--border); background: var(--white); padding: 11px 13px; border-radius: 10px; width: 100%; color: var(--black); transition: border-color 0.15s, box-shadow 0.15s; }
+input, select, textarea { font-family: inherit; font-size: 15px; outline: none; border: 1px solid var(--border); background: var(--white); padding: 12px 13px; border-radius: 8px; width: 100%; color: var(--black); transition: border-color 0.15s, box-shadow 0.15s; }
 input:focus, select:focus, textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-subtle); }
 select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23686b82' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-position: right 12px center; background-repeat: no-repeat; padding-right: 36px; }
 label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); margin-bottom: 6px; }
@@ -120,12 +120,12 @@ input[type="number"] { -moz-appearance: textfield; }
 .brand-logo { width: 28px; height: 28px; background: var(--purple); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; letter-spacing: -0.5px; }
 @media (min-width: 768px) {
   .brand { font-size: 22px; gap: 12px; }
-  .brand-logo { width: 34px; height: 34px; font-size: 17px; border-radius: 9px; }
+  .brand-logo { width: 34px; height: 34px; font-size: 17px; border-radius: 8px; }
 }
 .sync-status { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray); padding: 6px 10px; background: var(--surface-2); border-radius: 8px; }
 .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
 .sync-dot.offline { background: var(--silver); }
-.topbar-menu-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--white); color: var(--black); cursor: pointer; transition: all 0.15s; }
+.topbar-menu-btn { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 8px; border: 1px solid var(--border); background: var(--white); color: var(--black); cursor: pointer; transition: all 0.15s; }
 .topbar-today { display: flex; gap: 18px; font-size: 12px; color: var(--gray); font-weight: 500; }
 .topbar-today .kv { display: flex; flex-direction: column; line-height: 1.2; }
 .topbar-today .kv b { color: var(--purple-deep); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -158,7 +158,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .bottom-nav-item svg { width: 22px; height: 22px; }
 .bottom-nav-item span { font-size: 10.5px; font-weight: 500; }
 
-/* v5.09: Center Contact button — raised circular badge with double pulse animation
+/* v5.10: Center Contact button — raised circular badge with double pulse animation
    Standard middle-button pattern (like Instagram/TikTok create button) */
 .bottom-nav-item.contact-center {
   position: relative;
@@ -213,23 +213,23 @@ input[type="number"] { -moz-appearance: textfield; }
 }
 
 /* Cards */
-.card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: var(--shadow-sm); }
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow-sm); }
 .card + .card { margin-top: 12px; }
 .metric { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
 .metric-label { font-size: 12px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.4px; font-weight: 500; }
 .metric-value { font-size: 22px; font-weight: 600; letter-spacing: -0.4px; margin-top: 4px; color: var(--black); }
-.metric-sub { font-size: 12px; color: var(--gray); margin-top: 3px; }
+.metric-sub { font-size: 12px; color: var(--gray); margin-top: 4px; }
 .metric-sub.pos { color: var(--green-dark); }
 .metric-sub.neg { color: var(--red); }
 
-.hero-card { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%); color: white; border-radius: 16px; padding: 22px; position: relative; overflow: hidden; box-shadow: var(--shadow-md); }
+.hero-card { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%); color: white; border-radius: 16px; padding: 20px; position: relative; overflow: hidden; box-shadow: var(--shadow-md); }
 .hero-card::before { content: ''; position: absolute; top: -40%; right: -10%; width: 260px; height: 260px; background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%); pointer-events: none; }
 .hero-label { font-size: 12px; opacity: 0.85; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 500; position: relative; }
 .hero-value { font-size: 40px; font-weight: 700; letter-spacing: -1.2px; margin-top: 6px; position: relative; }
 .hero-sub { font-size: 13px; opacity: 0.9; margin-top: 4px; position: relative; }
 
 /* Buttons */
-.btn { padding: 11px 18px; border-radius: 10px; font-size: 14px; font-weight: 500; transition: all 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.btn { padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; transition: all 0.15s; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .btn-primary { background: var(--purple); color: white; }
 .btn-primary:hover { background: var(--purple-dark); }
 .btn-primary:active { transform: scale(0.98); }
@@ -247,14 +247,14 @@ input[type="number"] { -moz-appearance: textfield; }
 
 /* Period selector */
 /* Compact filter row (single-line for mobile) */
-.period-select { display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: var(--white); border: 1px solid var(--border); border-radius: 10px; }
+.period-select { display: flex; align-items: center; gap: 6px; padding: 6px 8px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; }
 .period-select select { border: none; padding: 4px 24px 4px 6px; background-position: right 4px center; font-weight: 500; font-size: 13px; width: auto; }
 .period-select select:focus { box-shadow: none; }
-.pill { padding: 7px 13px; background: var(--surface-2); color: var(--gray); border-radius: 999px; font-size: 13px; font-weight: 500; border: 1px solid transparent; transition: all 0.15s; }
+.pill { padding: 8px 13px; background: var(--surface-2); color: var(--gray); border-radius: 999px; font-size: 13px; font-weight: 500; border: 1px solid transparent; transition: all 0.15s; }
 .pill:hover { color: var(--black); }
 .pill.active { background: var(--purple); color: white; }
-.toggle-group { display: inline-flex; background: var(--surface-2); border-radius: 10px; padding: 3px; gap: 2px; }
-.toggle-group .toggle { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); transition: all 0.15s; }
+.toggle-group { display: inline-flex; background: var(--surface-2); border-radius: 8px; padding: 4px; gap: 2px; }
+.toggle-group .toggle { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); transition: all 0.15s; }
 .toggle-group .toggle.active { background: var(--white); color: var(--black); box-shadow: var(--shadow-sm); }
 
 /* Section */
@@ -270,14 +270,14 @@ input[type="number"] { -moz-appearance: textfield; }
 .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 
 /* Password lock screen */
-.lock-screen { position: fixed; inset: 0; background: var(--purple); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; background-image: linear-gradient(135deg, #7132f5 0%, #5b1fd1 100%); }
-.lock-box { background: var(--white); border-radius: 20px; padding: 32px 28px; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
-.lock-logo { width: 56px; height: 56px; background: var(--purple); color: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 600; margin: 0 auto 16px; }
+.lock-screen { position: fixed; inset: 0; background: var(--purple); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; background-image: linear-gradient(135deg, var(--purple) 0%, #5b1fd1 100%); }
+.lock-box { background: var(--white); border-radius: 16px; padding: 32px 28px; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.25); }
+.lock-logo { width: 56px; height: 56px; background: var(--purple); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 600; margin: 0 auto 16px; }
 .lock-title { font-size: 22px; font-weight: 600; color: var(--black); margin-bottom: 6px; letter-spacing: -0.3px; }
 .lock-sub { font-size: 13px; color: var(--gray); margin-bottom: 24px; }
 .lock-input { width: 100%; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 12px; font-size: 16px; text-align: center; letter-spacing: 2px; margin-bottom: 12px; transition: border-color 0.15s; }
 .lock-input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-subtle); }
-.lock-btn { width: 100%; padding: 13px; background: var(--purple); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.lock-btn { width: 100%; padding: 12px; background: var(--purple); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
 .lock-btn:hover { background: var(--purple-dark); }
 .lock-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .lock-error { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 18px; }
@@ -285,7 +285,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .app-hidden { display: none !important; }
 
 /* Collapsible summary sections */
-.collapsible-section { margin-top: 22px; border: 1px solid var(--border); border-radius: 14px; background: var(--white); overflow: hidden; box-shadow: 0 2px 6px rgba(16,24,40,0.06), 0 1px 2px rgba(16,24,40,0.04); }
+.collapsible-section { margin-top: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--white); overflow: hidden; box-shadow: 0 2px 6px rgba(16,24,40,0.06), 0 1px 2px rgba(16,24,40,0.04); }
 .collapsible-section:first-child { margin-top: 0; }
 .collapsible-section .section-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; cursor: pointer; user-select: none; background: var(--white); border-bottom: 1px solid transparent; transition: border-color 0.15s; }
 .collapsible-section.open .section-header { border-bottom-color: var(--border-light); }
@@ -299,7 +299,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .collapsible-section .right { font-size: 12px; color: var(--gray); font-weight: 400; text-transform: none; }
 
 /* Executive Summary - new card layout */
-.exec-grid { display: grid; gap: 14px; margin-top: 18px; }
+.exec-grid { display: grid; gap: 14px; margin-top: 16px; }
 @media (min-width: 900px) { .exec-grid { grid-template-columns: repeat(3, 1fr); } }
 
 /* Entry page - 2 columns grid on desktop */
@@ -314,7 +314,7 @@ input[type="number"] { -moz-appearance: textfield; }
 .exec-card-title { font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--gray); padding: 14px 18px 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .exec-card-title .icon { font-size: 14px; }
 .pct-toggle { margin-left: auto; display: inline-flex; background: var(--surface-2); border-radius: 8px; padding: 2px; gap: 2px; }
-.pct-opt { padding: 4px 8px; font-size: 10px; font-weight: 600; color: var(--gray); border-radius: 6px; border: none; background: transparent; cursor: pointer; text-transform: uppercase; letter-spacing: 0.3px; transition: all 0.15s; }
+.pct-opt { padding: 4px 8px; font-size: 10px; font-weight: 600; color: var(--gray); border-radius: 8px; border: none; background: transparent; cursor: pointer; text-transform: uppercase; letter-spacing: 0.3px; transition: all 0.15s; }
 .pct-opt.active { background: var(--white); color: var(--purple-deep); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
 .pct-opt:hover:not(.active) { color: var(--black); }
 .exec-hero { padding: 4px 18px 16px; border-bottom: 1px solid var(--border-light); display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; }
@@ -388,14 +388,14 @@ table.data th.bg-newcust { background: var(--newcust-bg); color: var(--newcust-c
 /* Tables */
 .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--white); position: relative; -webkit-overflow-scrolling: touch; }
 .table-wrap::-webkit-scrollbar { height: 6px; }
-.table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.table-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 table.data { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 100%; }
 table.data th { text-align: left; padding: 10px 12px; color: var(--purple-deep); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid var(--border); background: var(--purple-bg); white-space: nowrap; position: sticky; top: 0; z-index: 1; }
 /* v3.94: On mobile, table th sticky must sit below the unified-header (which is also sticky at top:0 of .main) */
 @media (max-width: 767px) {
   table.data th { position: static; }  /* don't sticky on mobile — avoids collision with unified-header */
 }
-table.data td { padding: 11px 12px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+table.data td { padding: 12px 12px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
 table.data th:not(:last-child), table.data td:not(:last-child) { border-right: 1px solid var(--border-light); }
 /* First column sticky + thicker right border */
 table.data thead th:first-child, table.data tbody td:first-child { position: sticky; left: 0; z-index: 2; background: var(--white); border-right: 2px solid var(--border) !important; white-space: nowrap; }
@@ -423,7 +423,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .zebra tr:hover td { background: var(--surface); }
 
 /* Status badges */
-.badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
 .badge-lead { background: var(--surface-2); color: var(--gray); }
 .badge-booked { background: rgba(113,50,245,0.12); color: var(--purple-deep); }
 /* v3.40: Appointment day chip — shows Today / in X days / overdue */
@@ -432,7 +432,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   font-size: 10px;
   font-weight: 600;
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: 8px;
   letter-spacing: 0.2px;
   white-space: nowrap;
   line-height: 1.5;
@@ -451,14 +451,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* Mobile list */
 .lead-list { display: flex; flex-direction: column; gap: 8px; padding-top: 8px; }
-.lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; transition: all 0.15s; cursor: pointer; border-left: 3px solid var(--border); }
+.lead-item { background: var(--white); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; transition: all 0.15s; cursor: pointer; border-left: 3px solid var(--border); }
 .lead-item:hover { border-color: var(--purple); box-shadow: var(--shadow-sm); }
 
 /* v3.33: Swipe-to-delete — iOS-style reveal */
 .swipe-wrapper {
   position: relative;
   overflow: hidden;
-  border-radius: 10px;
+  border-radius: 8px;
   flex-shrink: 0;  /* v4.32: MUST NOT shrink inside .lead-list (flex column).
                       Without this, 16+ cards get squashed to fit panel height,
                       slicing text in half on desktop narrow window. */
@@ -474,13 +474,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 .swipe-delete-btn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #DC2626;
+  background: var(--adscost-color);
   color: #fff;
   border: none;
   cursor: pointer;
@@ -513,10 +513,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .btn-delete-lead-v38 {
   font-size: 13px;
   font-weight: 600;
-  padding: 7px 14px;
-  border-radius: 9px;
-  border: 1px solid #DC2626;
-  background: #DC2626;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--adscost-color);
+  background: var(--adscost-color);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
@@ -563,7 +563,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   font-size: 11px;
   padding: 2px 8px 2px 6px;
   background: var(--surface-2);
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -594,7 +594,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   padding: 2px 8px 2px 6px;
   background: var(--surface-2);
   color: var(--silver);
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -623,11 +623,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* Lit stars = saturated color */
 .lc-flag.active[data-flag="yellow"] { color: #facc15; }
 .lc-flag.active[data-flag="red"]    { color: #0ea5e9; }
-.lc-flag.active[data-flag="green"]  { color: #10b981; }
+.lc-flag.active[data-flag="green"]  { color: var(--organic-color); }
 
 /* Pagination */
 .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
-.pagination button { padding: 7px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); }
+.pagination button { padding: 8px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); }
 .pagination button:hover:not(:disabled) { border-color: var(--purple); color: var(--purple); }
 .pagination button.active { background: var(--purple); color: white; border-color: var(--purple); }
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -722,7 +722,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .filter-tabs-wrap.at-start::before { opacity: 0; }
 .filter-tabs-wrap.at-end::after { opacity: 0; }
-.filter-tab { padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; }
+.filter-tab { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; }
 .filter-tab.active { background: var(--purple); color: white; border-color: var(--purple); }
 
 /* v3.32: AI Guide Tooltip — page-aware contextual hint bubble */
@@ -800,7 +800,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  border: 2px solid #7132f5;
+  border: 2px solid var(--purple);
   animation: aiGuidePulseRing 1.6s infinite;
   pointer-events: none;
 }
@@ -814,10 +814,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
   font-size: 13px;
   font-weight: 600;
-  padding: 7px 14px;
-  border-radius: 9px;
-  border: 1px solid #DC2626;
-  background: #DC2626;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--adscost-color);
+  background: var(--adscost-color);
   color: #fff;
   cursor: pointer;
   display: inline-flex;
@@ -894,8 +894,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .pill-tabs-inheader::-webkit-scrollbar { display: none; }
 .pill-tab {
-  padding: 7px 14px;
-  border-radius: 20px;
+  padding: 8px 14px;
+  border-radius: 16px;
   border: 1.5px solid var(--border);
   background: #fff;
   color: var(--gray);
@@ -929,7 +929,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 
 /* Quick period chips (today/yesterday/month/year) */
-.quick-chip { padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; cursor: pointer; }
+.quick-chip { padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; cursor: pointer; }
 .quick-chip:hover { border-color: var(--purple-light, #b99afa); color: var(--purple); }
 
 /* AI Chat Modal */
@@ -972,7 +972,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     height: 90dvh;
     height: calc(var(--app-vh, 90vh) * 0.90); /* v3.29 */
     max-height: none;
-    border-radius: 14px;
+    border-radius: 12px;
   }
   .ai-header { padding: 12px 14px; }
   .ai-messages { padding: 14px 14px; gap: 14px; }
@@ -1072,8 +1072,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-msg.user .ai-msg-bubble {
   background: #F1EFE8;
   color: #1a1a1a;
-  padding: 9px 14px;
-  border-radius: 14px;
+  padding: 8px 14px;
+  border-radius: 12px;
 }
 /* v3.24: AI message — NO bubble (ChatGPT/Claude style) */
 .ai-msg.assistant .ai-msg-bubble {
@@ -1090,7 +1090,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   background: #FEF2F2;
   border: 0.5px solid #FCA5A5;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 /* Markdown content inside assistant bubble */
 .ai-msg.assistant .ai-msg-bubble p { margin: 0 0 4px 0; }
@@ -1100,7 +1100,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-msg.assistant .ai-msg-bubble ul.ai-ul,
 .ai-msg.assistant .ai-msg-bubble ol.ai-ol {
   margin: 2px 0 4px 0;
-  padding-left: 18px;
+  padding-left: 16px;
 }
 .ai-msg.assistant .ai-msg-bubble ul.ai-ul li,
 .ai-msg.assistant .ai-msg-bubble ol.ai-ol li {
@@ -1115,11 +1115,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   line-height: 1.3;
 }
 .ai-msg.assistant .ai-msg-bubble h2.ai-h2 { font-size: 15px; }
-.ai-msg.assistant .ai-msg-bubble h3.ai-h3 { font-size: 14px; color: var(--purple-deep, #5B1ECF); }
+.ai-msg.assistant .ai-msg-bubble h3.ai-h3 { font-size: 14px; color: var(--purple-deep, var(--purple-deep)); }
 .ai-msg.assistant .ai-msg-bubble h4.ai-h4 { font-size: 13px; color: var(--gray); }
 .ai-msg.assistant .ai-msg-bubble code.ai-code {
   background: rgba(113,50,245,0.08);
-  color: var(--purple-deep, #5B1ECF);
+  color: var(--purple-deep, var(--purple-deep));
   padding: 1px 5px;
   border-radius: 4px;
   font-family: 'SF Mono', Consolas, monospace;
@@ -1129,14 +1129,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   background: #f6f4ff;
   border: 1px solid var(--border);
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 12px;
   overflow-x: auto;
   margin: 4px 0;
 }
 /* v3.27: Numeric highlights — removed purple pill background, cleaner look */
 .ai-msg.assistant .ai-msg-bubble .ai-money {
-  color: #5B1ECF;
+  color: var(--purple-deep);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -1171,7 +1171,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* === Data Analyst UI: Hero Card (single big number) === */
 .ai-msg.assistant .ai-msg-bubble .ai-card {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 12px 14px;
   margin: 6px 0;
   background: linear-gradient(135deg, #faf8ff, #fff);
@@ -1187,7 +1187,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-card-value {
   font-size: 26px;
   font-weight: 800;
-  color: var(--purple-deep, #5B1ECF);
+  color: var(--purple-deep, var(--purple-deep));
   line-height: 1.1;
   letter-spacing: -0.3px;
 }
@@ -1199,10 +1199,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 .ai-card-trend.up { background: rgba(16,185,129,0.12); color: #047857; }
-.ai-card-trend.down { background: rgba(220,38,38,0.12); color: #DC2626; }
+.ai-card-trend.down { background: rgba(220,38,38,0.12); color: var(--adscost-color); }
 .ai-card-trend.flat { background: var(--surface); color: var(--gray); }
 .ai-card-sub {
   margin-top: 4px;
@@ -1213,7 +1213,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* === Data Analyst UI: Comparison Table with bars === */
 .ai-msg.assistant .ai-msg-bubble .ai-table {
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 10px;
   margin: 6px 0;
   background: #fff;
@@ -1259,13 +1259,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-table-bar {
   display: block;
   height: 6px;
-  border-radius: 3px;
+  border-radius: 4px;
   background: linear-gradient(90deg, var(--purple), #9b5fff);
   min-width: 2px;
 }
-.ai-table-bar.meta { background: linear-gradient(90deg, #1877F2, #4a9bff); }
-.ai-table-bar.google { background: linear-gradient(90deg, #CA8A04, #f5b40c); }
-.ai-table-bar.neg { background: linear-gradient(90deg, #DC2626, #f87171); }
+.ai-table-bar.meta { background: linear-gradient(90deg, var(--meta-color), #4a9bff); }
+.ai-table-bar.google { background: linear-gradient(90deg, var(--google-color), #f5b40c); }
+.ai-table-bar.neg { background: linear-gradient(90deg, var(--adscost-color), #f87171); }
 .ai-table-row-total td {
   border-top: 2px solid var(--purple);
   background: var(--purple-bg);
@@ -1287,7 +1287,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   height: 24px;
   border: none;
   background: transparent;
-  border-radius: 6px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1302,7 +1302,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-copy-btn.copied { color: #059669; opacity: 1; }
 .ai-msg.error .ai-msg-bubble {
   background: #fef2f2;
-  color: #dc2626;
+  color: var(--adscost-color);
   border-color: #fecaca;
 }
 .ai-typing {
@@ -1346,7 +1346,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   font-size: 12px;
   border: 0.5px solid var(--border);
   background: #fff;
-  border-radius: 14px;
+  border-radius: 12px;
   cursor: pointer;
   color: var(--gray);
   white-space: nowrap;
@@ -1368,7 +1368,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   align-items: flex-end;
   background: var(--surface);
   border: 0.5px solid var(--border);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 8px 8px 8px 14px;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
@@ -1392,7 +1392,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-send {
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--purple);
   color: #fff;
   border: none;
@@ -1403,7 +1403,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   flex-shrink: 0;
   transition: all 0.15s;
 }
-.ai-send:hover { background: var(--purple-deep, #5B1ECF); }
+.ai-send:hover { background: var(--purple-deep, var(--purple-deep)); }
 .ai-send:active { transform: scale(0.94); }
 .ai-send:disabled { background: var(--border); cursor: not-allowed; }
 .ai-footer-info {
@@ -1475,7 +1475,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .alert-item:hover { background: #faf9ff; }
 .alert-item.sev-high { border-left-color: var(--red); }
-.alert-item.sev-med { border-left-color: var(--orange, #F59E0B); }
+.alert-item.sev-med { border-left-color: var(--orange, var(--followup-color)); }
 .alert-item.sev-low { border-left-color: var(--yellow, #eab308); }
 .alert-icon {
   font-size: 18px;
@@ -1569,10 +1569,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .gs-search-wrap input::placeholder { color: #9ca0a8; font-weight: 400; }
 .gs-kbd {
-  padding: 3px 8px;
+  padding: 4px 8px;
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 11px;
   color: var(--gray);
   font-family: inherit;
@@ -1650,7 +1650,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   justify-content: center;
   flex-shrink: 0;
   background: var(--surface);
-  border-radius: 9px;
+  border-radius: 8px;
   border: 1px solid var(--border);
 }
 .gs-item.active .gs-item-icon {
@@ -1677,8 +1677,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .gs-item-badge {
   font-size: 10px;
-  padding: 3px 8px;
-  border-radius: 10px;
+  padding: 4px 8px;
+  border-radius: 8px;
   background: var(--surface-2);
   color: var(--gray);
   font-weight: 600;
@@ -1735,16 +1735,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* Modal */
 .modal-backdrop { position: fixed; inset: 0; background: rgba(16,17,20,0.5); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
 .modal-backdrop.open { display: flex; animation: fadein 0.15s ease; }
-.modal { background: var(--white); border-radius: 18px; padding: 22px; width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; animation: slideup 0.2s ease; }
+.modal { background: var(--white); border-radius: 16px; padding: 20px; width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; animation: slideup 0.2s ease; }
 @keyframes slideup { from { transform: translateY(30px); opacity: 0.8; } to { transform: translateY(0); opacity: 1; } }
-.modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+.modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
 .modal-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
 .modal-close { padding: 6px; color: var(--gray); border-radius: 8px; }
 .modal-close:hover { background: var(--surface-2); color: var(--black); }
 .modal-footer { display: flex; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
 
 /* Toast */
-.toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--black); color: white; padding: 12px 18px; border-radius: 10px; font-size: 14px; font-weight: 500; z-index: 200; box-shadow: var(--shadow-lg); animation: toastin 0.2s ease; }
+.toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--black); color: white; padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; z-index: 200; box-shadow: var(--shadow-lg); animation: toastin 0.2s ease; }
 @keyframes toastin { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
 
 /* Stats */
@@ -1760,12 +1760,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* Dashboard KPI cards */
 .dash-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .dash-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-.dash-kpi { background: var(--surface); border-radius: 10px; padding: 12px 14px; transition: box-shadow 0.15s; border: 1.5px solid var(--border); }
+.dash-kpi { background: var(--surface); border-radius: 8px; padding: 12px 14px; transition: box-shadow 0.15s; border: 1.5px solid var(--border); }
 .dash-kpi:hover { box-shadow: 0 2px 8px rgba(113,50,245,0.1); }
 .dash-kpi-label { font-size: 11px; color: var(--gray); }
-.dash-kpi-value { font-size: 20px; font-weight: 700; margin-top: 3px; color: var(--black); }
+.dash-kpi-value { font-size: 20px; font-weight: 700; margin-top: 4px; color: var(--black); }
 .dash-kpi-sub { font-size: 11px; color: var(--gray); margin-top: 2px; }
-.dash-funnel, .dash-chart { background: var(--surface); border-radius: 10px; padding: 14px 16px; margin-bottom: 10px; transition: box-shadow 0.15s; }
+.dash-funnel, .dash-chart { background: var(--surface); border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; transition: box-shadow 0.15s; }
 .dash-funnel:hover, .dash-chart:hover { box-shadow: 0 2px 8px rgba(113,50,245,0.1); }
 .dash-section-label { font-size: 12px; font-weight: 600; color: var(--gray); margin-bottom: 10px; }
 
@@ -1825,7 +1825,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .contact-form-panel .step-header { padding: 6px 10px; }
   .contact-form-panel .step-title { font-size: 13px; }
   .contact-form-panel .step-num { width: 20px; height: 20px; font-size: 11px; }
-  .contact-form-panel label { font-size: 11px; margin-bottom: 3px; }
+  .contact-form-panel label { font-size: 11px; margin-bottom: 4px; }
   .contact-form-panel .form-row { gap: 8px; }
   .contact-form-panel .form-row > div { margin-top: 0; }
   .contact-form-panel textarea { min-height: 48px; }
@@ -1993,7 +1993,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   padding: 0 12px 0 36px;
   font-size: 14px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--surface-2);
   outline: none;
   transition: background 0.15s;
@@ -2005,7 +2005,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   flex: 0 0 auto;
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--purple);
   color: #fff;
   border: none;
@@ -2108,7 +2108,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (min-width: 768px) {
   .bottom-nav { display: none; }
   .nav { display: flex; flex-direction: column; position: fixed; top: 64px; left: 0; bottom: 0; width: 220px; background: var(--white); border-right: 1px solid var(--border); border-bottom: none; padding: 16px 10px; gap: 4px; overflow-y: auto; overflow-x: hidden; z-index: 10; }
-  .nav-item { padding: 11px 14px; font-size: 14px; font-weight: 500; color: var(--gray); border-bottom: none; border-radius: 10px; text-align: left; transition: all 0.15s; width: 100%; display: flex; align-items: center; gap: 10px; }
+  .nav-item { padding: 12px 14px; font-size: 14px; font-weight: 500; color: var(--gray); border-bottom: none; border-radius: 8px; text-align: left; transition: all 0.15s; width: 100%; display: flex; align-items: center; gap: 10px; }
   .nav-item:hover { background: var(--surface); color: var(--black); }
   .nav-item.active { color: var(--white); background: var(--purple); border-bottom: none; }
   .nav-item .nav-icon { font-size: 16px; display: inline-flex; }
@@ -2142,7 +2142,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     padding: 10px 14px;
     background: transparent;
     border: 1px solid var(--border);
-    border-radius: 10px;
+    border-radius: 8px;
     color: var(--gray);
     font-size: 13px;
     font-weight: 500;
@@ -2161,7 +2161,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
   /* v4.21: COLLAPSED STATE — 60px icon-only sidebar */
   body.sidebar-collapsed .nav { width: 60px; padding: 16px 6px; }
-  body.sidebar-collapsed .nav-item { padding: 11px 0; justify-content: center; gap: 0; position: relative; }
+  body.sidebar-collapsed .nav-item { padding: 12px 0; justify-content: center; gap: 0; position: relative; }
   body.sidebar-collapsed .nav-label { display: none; }
   body.sidebar-collapsed .nav-toggle { justify-content: center; padding: 10px 0; }
   body.sidebar-collapsed .nav-toggle-icon { transform: rotate(180deg); }
@@ -2178,7 +2178,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     background: var(--black);
     color: var(--white);
     padding: 6px 10px;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
@@ -2222,12 +2222,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .month-picker { display: flex; align-items: stretch; gap: 0; }
 .month-picker input[type="month"] { flex: 1; border-radius: 0; border-left: none; border-right: none; min-width: 0; }
 .month-picker .month-nav { background: var(--white); border: 1px solid var(--border); padding: 0 12px; color: var(--gray); font-size: 18px; line-height: 1; }
-.month-picker .month-nav:first-child { border-radius: 10px 0 0 10px; }
+.month-picker .month-nav:first-child { border-radius: 8px 0 0 10px; }
 .month-picker .month-nav:last-child { border-radius: 0 10px 10px 0; }
 .month-picker .month-nav:hover { background: var(--surface); color: var(--purple); }
 
 /* Date picker button (opens modal) */
-.date-btn { width: 100%; padding: 11px 13px; border-radius: 10px; border: 1px solid var(--border); background: var(--white); text-align: left; font-size: 15px; color: var(--black); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.15s; }
+.date-btn { width: 100%; padding: 12px 13px; border-radius: 8px; border: 1px solid var(--border); background: var(--white); text-align: left; font-size: 15px; color: var(--black); display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: border-color 0.15s; }
 .date-btn:hover { border-color: var(--purple); }
 .date-btn.empty { color: var(--silver); }
 .date-btn-icon { color: var(--gray); font-size: 14px; }
@@ -2260,7 +2260,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* Month picker grid */
 .mp-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 4px; }
 .mp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px 18px 16px; }
-.mp-cell { padding: 16px 8px; text-align: center; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 500; color: var(--black); cursor: pointer; transition: all 0.15s; }
+.mp-cell { padding: 16px 8px; text-align: center; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-weight: 500; color: var(--black); cursor: pointer; transition: all 0.15s; }
 .mp-cell:hover { border-color: var(--purple); background: var(--purple-bg); color: var(--purple-deep); }
 .mp-cell.today { border-color: var(--purple); color: var(--purple); font-weight: 600; }
 .mp-cell.selected { background: var(--purple); color: white; border-color: var(--purple); }
@@ -2275,16 +2275,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* Store cards (Revenue detail view) */
 .store-cards { display: grid; gap: 14px; }
 @media (min-width: 900px) { .store-cards { grid-template-columns: repeat(2, 1fr); } }
-.store-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow-sm); }
+.store-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-sm); }
 .store-card-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 14px 16px; gap: 10px; }
 .store-card-title { font-weight: 600; font-size: 16px; color: var(--black); letter-spacing: -0.3px; }
 .store-card-sub { font-size: 12px; color: var(--gray); margin-top: 2px; }
-.store-card table.data td { padding: 9px 10px; font-size: 13px; }
+.store-card table.data td { padding: 8px 10px; font-size: 13px; }
 .store-card table.data th { padding: 8px 10px; font-size: 11px; }
 .store-card tr:hover td { background: var(--surface); }
 
 /* Step cards for Lead form */
-.step-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 8px; overflow: hidden; box-shadow: var(--shadow-sm); }
+.step-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; overflow: hidden; box-shadow: var(--shadow-sm); }
 .step-card.step-1 { border-left: 4px solid var(--purple); }
 .step-card.step-2 { border-left: 4px solid #3b82f6; }
 .step-card.step-3 { border-left: 4px solid var(--green); }
@@ -2299,30 +2299,30 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* v4.09: Mobile — compact edit form so 3 sections fit on one page without much scroll */
 @media (max-width: 767px) {
-  .step-card { margin-bottom: 6px; border-radius: 10px; }
+  .step-card { margin-bottom: 6px; border-radius: 8px; }
   .step-header { padding: 6px 12px; }
   .step-num { width: 22px; height: 22px; font-size: 11px; }
   .step-title { font-size: 13px; }
   .step-body { padding: 8px 12px 10px; }
-  .step-body label { font-size: 11px; margin-bottom: 3px; }
+  .step-body label { font-size: 11px; margin-bottom: 4px; }
   .step-body input, .step-body select, .step-body textarea,
-  .step-body .pop-trigger, .step-body .date-btn { padding: 7px 10px; font-size: 13px; }
+  .step-body .pop-trigger, .step-body .date-btn { padding: 8px 10px; font-size: 13px; }
   .step-body .form-grid { gap: 8px; }
 }
 
 /* Fee month groups */
-.fee-month-group { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 8px; overflow: hidden; background: var(--white); }
+.fee-month-group { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; background: var(--white); }
 .fee-month-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; cursor: pointer; transition: background 0.15s; font-size: 14px; }
 .fee-month-header:hover { background: var(--surface); }
 .fee-toggle { color: var(--gray); font-size: 12px; width: 10px; display: inline-block; }
 .fee-month-body { padding: 0 4px 4px; }
-.fee-month-body table.data td { padding: 9px 10px; font-size: 13px; }
+.fee-month-body table.data td { padding: 8px 10px; font-size: 13px; }
 
 /* Existing-data preview panels */
-.preview-panel { background: var(--surface); border: 1px dashed var(--border); border-radius: 10px; padding: 12px; margin-top: 8px; font-size: 12.5px; }
+.preview-panel { background: var(--surface); border: 1px dashed var(--border); border-radius: 8px; padding: 12px; margin-top: 8px; font-size: 12.5px; }
 .last-saved-time { font-size: 11px; color: var(--gray); text-align: center; margin-top: 8px; min-height: 16px; }
 .preview-panel-title { font-size: 11px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
-.preview-item { display: flex; justify-content: space-between; padding: 3px 0; color: var(--gray); }
+.preview-item { display: flex; justify-content: space-between; padding: 4px 0; color: var(--gray); }
 .preview-item strong { color: var(--black); font-weight: 500; }
 
 /* Sticky summary filter (legacy - used by other pages) */
@@ -2383,12 +2383,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  padding: 7px 10px 7px 10px;
+  padding: 8px 10px 7px 10px;
   font-size: 12.5px;
   font-weight: 500;
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 9px;
+  border-radius: 8px;
   color: var(--black);
   cursor: pointer;
   transition: border-color 0.15s, box-shadow 0.15s;
@@ -2413,7 +2413,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   color: #888;
   background: transparent;
   border: 0;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
   font-family: inherit;
@@ -2435,7 +2435,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   gap: 4px;
   padding: 14px 8px;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   background: var(--white);
   color: var(--black);
   font-size: 12.5px;
@@ -2457,7 +2457,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   padding: 8px 12px;
   font-size: 14px;
   font-weight: 400;
-  border-radius: 10px;
+  border-radius: 8px;
   white-space: normal;
   min-width: 0;
 }
@@ -2472,7 +2472,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   position: fixed;
   background: #fff;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.04);
   padding: 4px;
   z-index: 1000;
@@ -2491,7 +2491,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   gap: 8px;
   padding: 8px 10px;
   font-size: 13px;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   color: var(--black);
   transition: background 0.1s;
@@ -2507,7 +2507,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   transform: rotate(45deg);
   margin-left: auto;
   margin-right: 2px;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 .pop-item-icon { display: inline-flex; align-items: center; flex-shrink: 0; }
 .pop-backdrop {
@@ -2542,8 +2542,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .compact-filter::-webkit-scrollbar { display: none; }
 .compact-filter .toggle-group { flex-shrink: 0; }
 .compact-filter .toggle-group .toggle { padding: 6px 10px; font-size: 12.5px; }
-.compact-filter .date-btn.cf-select { padding: 7px 24px 7px 10px; font-size: 12.5px; width: auto; min-width: 70px; }
-.cf-select { flex: 0 0 auto; padding: 7px 24px 7px 10px; font-size: 12.5px; background-color: var(--white); border: 1px solid var(--border); border-radius: 9px; font-weight: 500; width: auto; min-width: 70px; background-position: right 7px center; }
+.compact-filter .date-btn.cf-select { padding: 8px 24px 7px 10px; font-size: 12.5px; width: auto; min-width: 70px; }
+.cf-select { flex: 0 0 auto; padding: 8px 24px 7px 10px; font-size: 12.5px; background-color: var(--white); border: 1px solid var(--border); border-radius: 8px; font-weight: 500; width: auto; min-width: 70px; background-position: right 7px center; }
 .cf-select:focus { border-color: var(--purple); box-shadow: 0 0 0 2px var(--purple-subtle); }
 
 /* Inputs compact */
@@ -2595,7 +2595,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   font-size: 10px;
   font-weight: 600;
   padding: 2px 7px;
-  border-radius: 10px;
+  border-radius: 8px;
   letter-spacing: 0.2px;
   white-space: nowrap;
 }
@@ -2648,7 +2648,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .remark-modal {
   background: var(--white);
-  border-radius: 14px;
+  border-radius: 12px;
   width: 100%;
   max-width: 480px;
   max-height: 80vh;
@@ -2737,7 +2737,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 <link rel="apple-touch-icon" sizes="512x512" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiB2aWV3Qm94PSIwIDAgNTEyIDUxMiI+CiAgPHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSIxMTIiIHJ5PSIxMTIiIGZpbGw9IiM3MTMyZjUiLz4KICA8cGF0aCBkPSJNMTYzLjggMTMwLjYgTDI1Ni4wIDcwLjcgTDM0OC4yIDEzMC42IEwyOTIuOSAxMzAuNiBMMjkyLjkgMTg1LjkgTDIxOS4xIDE4NS45IEwyMTkuMSAxMzAuNiBaIiBmaWxsPSIjZmZmZmZmIi8+CiAgPHJlY3QgeD0iMjE5LjEiIHk9IjE1My42IiB3aWR0aD0iNzMuNyIgaGVpZ2h0PSI2LjkxIiByeD0iMi43NiIgZmlsbD0iIzcxMzJmNSIvPgogIDxyZWN0IHg9IjIxOS4xIiB5PSIxNjcuNCIgd2lkdGg9IjczLjciIGhlaWdodD0iNi45MSIgcng9IjIuNzYiIGZpbGw9IiM3MTMyZjUiIG9wYWNpdHk9IjAuNSIvPgogIDx0ZXh0IHg9IjI1Ni4wIiB5PSIzMTQuODgiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLCBCbGlua01hY1N5c3RlbUZvbnQsICdTZWdvZSBVSScsIFJvYm90bywgJ0hlbHZldGljYSBOZXVlJywgQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI4MDAiIGZvbnQtc2l6ZT0iOTguMyIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgbGV0dGVyLXNwYWNpbmc9IjQuMTAiPkFEUzwvdGV4dD4KICA8dGV4dCB4PSIyNTYuMCIgeT0iNDI3LjUyIiBmb250LWZhbWlseT0iLWFwcGxlLXN5c3RlbSwgQmxpbmtNYWNTeXN0ZW1Gb250LCAnU2Vnb2UgVUknLCBSb2JvdG8sICdIZWx2ZXRpY2EgTmV1ZScsIEFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iODAwIiBmb250LXNpemU9Ijk4LjMiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGxldHRlci1zcGFjaW5nPSI0LjEwIj5DUk08L3RleHQ+Cjwvc3ZnPg==">
 <meta name="apple-mobile-web-app-title" content="Ads CRM">
 <meta name="application-name" content="Ads CRM">
-<meta name="theme-color" content="#7132f5">
+<meta name="theme-color" content="var(--purple)">
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQWRzIENSTSDigJQgVG9iaWIgTGVlIiwic2hvcnRfbmFtZSI6IkFkcyBDUk0iLCJkZXNjcmlwdGlvbiI6IkFkcyBkYXRhICYgbGVhZCBtYW5hZ2VtZW50Iiwic3RhcnRfdXJsIjoiYWRzX2NybV92Mi5odG1sIiwic2NvcGUiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiM3MTMyZjUiLCJ0aGVtZV9jb2xvciI6IiM3MTMyZjUiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhkcFpIUm9QU0l4T1RJaUlHaGxhV2RvZEQwaU1Ua3lJaUIyYVdWM1FtOTRQU0l3SURBZ01Ua3lJREU1TWlJK0NpQWdQSEpsWTNRZ2QybGtkR2c5SWpFNU1pSWdhR1ZwWjJoMFBTSXhPVElpSUhKNFBTSTBNaUlnY25rOUlqUXlJaUJtYVd4c1BTSWpOekV6TW1ZMUlpOCtDaUFnUEhCaGRHZ2daRDBpVFRZeExqUWdORGt1TUNCTU9UWXVNQ0F5Tmk0MUlFd3hNekF1TmlBME9TNHdJRXd4TURrdU9DQTBPUzR3SUV3eE1Ea3VPQ0EyT1M0M0lFdzRNaTR5SURZNUxqY2dURGd5TGpJZ05Ea3VNQ0JhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU9ESXVNaUlnZVQwaU5UY3VOaUlnZDJsa2RHZzlJakkzTGpZaUlHaGxhV2RvZEQwaU1pNDFPU0lnY25nOUlqRXVNRFFpSUdacGJHdzlJaU0zTVRNeVpqVWlMejRLSUNBOGNtVmpkQ0I0UFNJNE1pNHlJaUI1UFNJMk1pNDRJaUIzYVdSMGFEMGlNamN1TmlJZ2FHVnBaMmgwUFNJeUxqVTVJaUJ5ZUQwaU1TNHdOQ0lnWm1sc2JEMGlJemN4TXpKbU5TSWdiM0JoWTJsMGVUMGlNQzQxSWk4K0NpQWdQSFJsZUhRZ2VEMGlPVFl1TUNJZ2VUMGlNVEU0TGpBNElpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqTTJMamtpSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0l4TGpVMElqNUJSRk04TDNSbGVIUStDaUFnUEhSbGVIUWdlRDBpT1RZdU1DSWdlVDBpTVRZd0xqTXlJaUJtYjI1MExXWmhiV2xzZVQwaUxXRndjR3hsTFhONWMzUmxiU3dnUW14cGJtdE5ZV05UZVhOMFpXMUdiMjUwTENBblUyVm5iMlVnVlVrbkxDQlNiMkp2ZEc4c0lDZElaV3gyWlhScFkyRWdUbVYxWlNjc0lFRnlhV0ZzTENCellXNXpMWE5sY21sbUlpQm1iMjUwTFhkbGFXZG9kRDBpT0RBd0lpQm1iMjUwTFhOcGVtVTlJak0yTGpraUlHWnBiR3c5SWlObVptWm1abVlpSUhSbGVIUXRZVzVqYUc5eVBTSnRhV1JrYkdVaUlHeGxkSFJsY2kxemNHRmphVzVuUFNJeExqVTBJajVEVWswOEwzUmxlSFErQ2p3dmMzWm5QZz09Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSTFNVElpSUdobGFXZG9kRDBpTlRFeUlpQjJhV1YzUW05NFBTSXdJREFnTlRFeUlEVXhNaUkrQ2lBZ1BISmxZM1FnZDJsa2RHZzlJalV4TWlJZ2FHVnBaMmgwUFNJMU1USWlJSEo0UFNJeE1USWlJSEo1UFNJeE1USWlJR1pwYkd3OUlpTTNNVE15WmpVaUx6NEtJQ0E4Y0dGMGFDQmtQU0pOTVRZekxqZ2dNVE13TGpZZ1RESTFOaTR3SURjd0xqY2dURE0wT0M0eUlERXpNQzQySUV3eU9USXVPU0F4TXpBdU5pQk1Namt5TGprZ01UZzFMamtnVERJeE9TNHhJREU0TlM0NUlFd3lNVGt1TVNBeE16QXVOaUJhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU1qRTVMakVpSUhrOUlqRTFNeTQySWlCM2FXUjBhRDBpTnpNdU55SWdhR1ZwWjJoMFBTSTJMamt4SWlCeWVEMGlNaTQzTmlJZ1ptbHNiRDBpSXpjeE16Sm1OU0l2UGdvZ0lEeHlaV04wSUhnOUlqSXhPUzR4SWlCNVBTSXhOamN1TkNJZ2QybGtkR2c5SWpjekxqY2lJR2hsYVdkb2REMGlOaTQ1TVNJZ2NuZzlJakl1TnpZaUlHWnBiR3c5SWlNM01UTXlaalVpSUc5d1lXTnBkSGs5SWpBdU5TSXZQZ29nSUR4MFpYaDBJSGc5SWpJMU5pNHdJaUI1UFNJek1UUXVPRGdpSUdadmJuUXRabUZ0YVd4NVBTSXRZWEJ3YkdVdGMzbHpkR1Z0TENCQ2JHbHVhMDFoWTFONWMzUmxiVVp2Ym5Rc0lDZFRaV2R2WlNCVlNTY3NJRkp2WW05MGJ5d2dKMGhsYkhabGRHbGpZU0JPWlhWbEp5d2dRWEpwWVd3c0lITmhibk10YzJWeWFXWWlJR1p2Ym5RdGQyVnBaMmgwUFNJNE1EQWlJR1p2Ym5RdGMybDZaVDBpT1RndU15SWdabWxzYkQwaUkyWm1abVptWmlJZ2RHVjRkQzFoYm1Ob2IzSTlJbTFwWkdSc1pTSWdiR1YwZEdWeUxYTndZV05wYm1jOUlqUXVNVEFpUGtGRVV6d3ZkR1Y0ZEQ0S0lDQThkR1Y0ZENCNFBTSXlOVFl1TUNJZ2VUMGlOREkzTGpVeUlpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqazRMak1pSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0kwTGpFd0lqNURVazA4TDNSbGVIUStDand2YzNablBnPT0iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJhbnkifV19">
 </head>
 <body class="sidebar-collapsed">
@@ -2747,7 +2747,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.09</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.10</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2755,42 +2755,42 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <span id="pendingSyncBadge" onclick="flushPendingQueueManual()" style="display:none;align-items:center;gap:4px;padding:5px 10px;background:rgba(217,119,6,0.12);color:var(--amber);border:1px solid rgba(217,119,6,0.3);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;" title="点击立即重试同步"></span>
     <!-- v4.91: Topbar tool buttons — hidden on desktop (moved to left nav), shown on mobile only -->
     <div id="topbarTools" style="display:flex;gap:6px;align-items:center;">
-      <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" id="aiTopbarBtn" style="width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(113,50,245,0.3);">
+      <button onclick="openAIChat()" aria-label="AI Assistant" title="Ask AI (Alt+A)" id="aiTopbarBtn" style="width:36px;height:36px;border-radius:50%;border:none;background:linear-gradient(135deg, var(--purple), #9b5fff);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-weight:700;font-size:13px;letter-spacing:0.5px;box-shadow:0 2px 6px rgba(113,50,245,0.3);">
         AI
       </button>
-      <button onclick="openGlobalSearch()" aria-label="Search" title="Search (Ctrl+K)" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button onclick="openGlobalSearch()" aria-label="Search" title="Search (Ctrl+K)" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
       </button>
-      <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">5</span>
       </button>
-      <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
         <span id="pendingTopbarBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">0</span>
       </button>
     </div>
     <!-- v4.63: Desktop-only — Data Entry + Settings hidden on mobile via ID selector + !important -->
     <div id="topbarExtras" style="display:flex;gap:6px;align-items:center;">
-      <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
       </button>
-      <button onclick="nav('settings')" aria-label="Settings" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button onclick="nav('settings')" aria-label="Settings" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
       
     </div>
     <!-- v4.65: Mobile-only menu button — opens inline popover (no modal) -->
     <div style="position:relative;display:none;" id="topbarMobileMenuWrap">
-      <button id="topbarMobileMenuBtn" onclick="toggleMobileMenuPopover(event)" aria-label="Menu" title="Menu" style="width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button id="topbarMobileMenuBtn" onclick="toggleMobileMenuPopover(event)" aria-label="Menu" title="Menu" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
       </button>
-      <div id="topbarMobileMenuPopover" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:180px;padding:6px;z-index:200;">
-        <button onclick="closeMobileMenuPopover();nav('entry');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius:6px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
+      <div id="topbarMobileMenuPopover" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--border);border-radius: 8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:180px;padding:6px;z-index:200;">
+        <button onclick="closeMobileMenuPopover();nav('entry');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius: 8px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
           <span>Data Entry</span>
         </button>
-        <button onclick="closeMobileMenuPopover();nav('settings');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius:6px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
+        <button onclick="closeMobileMenuPopover();nav('settings');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius: 8px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
           <span>Settings</span>
         </button>
@@ -2800,10 +2800,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 </header>
 
 <nav class="nav" id="navDesktop">
-  <button class="nav-item nav-tool" onclick="openAIChat()" data-tooltip="AI Assistant"><span class="nav-icon"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#7132f5,#9b5fff);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:22px;letter-spacing:0.3px;">AI</span></span><span class="nav-label">AI Assistant</span></button>
+  <button class="nav-item nav-tool" onclick="openAIChat()" data-tooltip="AI Assistant"><span class="nav-icon"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#9b5fff);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:22px;letter-spacing:0.3px;">AI</span></span><span class="nav-label">AI Assistant</span></button>
   <button class="nav-item nav-tool" onclick="openGlobalSearch()" data-tooltip="Search"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span><span class="nav-label">Search</span></button>
-  <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 9px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">5</span></button>
-  <button class="nav-item" data-page="pending" data-tooltip="Inbox" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span><span id="pendingBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius:9px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
+  <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 8px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">5</span></button>
+  <button class="nav-item" data-page="pending" data-tooltip="Inbox" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span><span id="pendingBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius: 8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="contact" data-tooltip="Contact"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><span class="nav-label">Contact</span></button>
   <button class="nav-item" data-page="summary" data-tooltip="Dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span><span class="nav-label">Dashboard</span></button>
@@ -2835,10 +2835,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <!-- v4.09: Longer search box, aligned slightly below title -->
         <div class="contact-title-search" style="display:none;position:relative;flex:0 0 180px;min-width:0;align-self:flex-end;">
           <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-          <input type="text" id="searchInputTitle" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value);toggleSearchClearBtn()" style="width:100%;height:34px;padding:0 30px 0 32px;font-size:13px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);outline:none;">
+          <input type="text" id="searchInputTitle" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value);toggleSearchClearBtn()" style="width:100%;height:34px;padding:0 30px 0 32px;font-size:13px;border:1px solid var(--border);border-radius: 8px;background:var(--surface-2);outline:none;">
           <button type="button" id="searchClearBtn" onclick="clearTitleSearch()" aria-label="Clear" style="display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:none;background:var(--border);color:var(--gray);cursor:pointer;align-items:center;justify-content:center;padding:0;font-size:12px;line-height:1;">✕</button>
         </div>
-        <!-- v5.09: Mobile + New Lead button removed — bottom-right floating + button is enough -->
+        <!-- v5.10: Mobile + New Lead button removed — bottom-right floating + button is enough -->
       </div>
       <!-- v4.30: Slot where filters go on mobile (JS moves .contact-filters-inline here when < 768px) -->
       <div id="contactFiltersMobileSlot"></div>
@@ -3035,7 +3035,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
             <!-- v4.36: Save + Delete row. Delete only shown when editing existing lead. -->
             <div style="grid-column:1/-1;margin-top:4px;display:flex;gap:8px;">
-              <button type="button" id="btnDeleteLead" onclick="confirmDeleteLeadFromForm()" class="btn btn-delete-inline" style="display:none;font-size:14px;padding:14px 18px;background:#DC2626;color:#fff;border:none;border-radius:10px;font-weight:600;cursor:pointer;white-space:nowrap;">
+              <button type="button" id="btnDeleteLead" onclick="confirmDeleteLeadFromForm()" class="btn btn-delete-inline" style="display:none;font-size:14px;padding:14px 18px;background:var(--adscost-color);color:#fff;border:none;border-radius: 8px;font-weight:600;cursor:pointer;white-space:nowrap;">
                 Delete
               </button>
               <button type="submit" class="btn btn-primary" style="font-size:15px;padding:14px;flex:1;">Save Lead</button>
@@ -3113,7 +3113,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </button>
         <input type="hidden" id="storeToMonth">
         <span id="popWrap_popSel_storeSelect" data-pop-wrap-for="storeSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_storeSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_storeSelect')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#10B981;">A</span><span>All outlets</span></span>
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="storeSelect" data-pop="1" data-pop-icon="location" class="cf-select" data-pop-placeholder="All stores" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_storeSelect" style="display: none;"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
@@ -3267,9 +3267,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
     <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
-      <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
-      <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
-      <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
+      <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
+      <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
+      <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
     </div>
 
     <!-- Desktop: 3-column grid | Mobile: single panel via tabs -->
@@ -3295,7 +3295,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg><span>Simply 5</span></span>
+    <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" fill="var(--meta-color)" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg><span>Simply 5</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="as_entryChannel" data-pop="1" data-pop-icon="channel" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_as_entryChannel"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
           <input type="hidden" id="as_entryYear" value="2026">
@@ -3615,7 +3615,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="alertsTitleText" style="font-size:16px;font-weight:600;">Data Alerts</span>
-        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius:10px;font-weight:600;">0</span>
+        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius: 8px;font-weight:600;">0</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <div id="alertsLangToggle" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;font-weight:600;">
@@ -3643,7 +3643,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div style="display:flex;gap:4px;align-items:center;">
         <button type="button" onclick="openAINotebook()" class="ai-icon-btn" id="aiNotebookBtn" aria-label="笔记本" title="笔记本" style="position:relative;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-          <span id="aiNotebookBadge" style="display:none;position:absolute;top:-2px;right:-2px;background:#DC2626;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:8px;min-width:14px;text-align:center;line-height:1.2;"></span>
+          <span id="aiNotebookBadge" style="display:none;position:absolute;top:-2px;right:-2px;background:var(--adscost-color);color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:8px;min-width:14px;text-align:center;line-height:1.2;"></span>
         </button>
         <button type="button" onclick="toggleAISettings()" class="ai-icon-btn" id="aiSettingsBtn" aria-label="Settings" title="设置">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -3681,14 +3681,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div style="background:#fff;border-radius:16px;width:min(520px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7132f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        <span style="font-size:16px;font-weight:700;color:#7132f5;">AI 设置</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span style="font-size:16px;font-weight:700;color:var(--purple);">AI 设置</span>
       </div>
       <button type="button" onclick="closeAISettings()" class="ai-icon-btn" aria-label="Close">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
-    <div style="padding:18px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:18px;">
+    <div style="padding: 16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:18px;">
       <!-- Section: Model -->
       <div>
         <div style="font-size:12px;color:var(--gray);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">模型</div>
@@ -3702,7 +3702,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
           <div style="font-size:12px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">AI 角色</div>
-          <select id="ai_role_preset_inline" onchange="applyAIRolePresetInline(this.value)" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:#fff;">
+          <select id="ai_role_preset_inline" onchange="applyAIRolePresetInline(this.value)" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius: 8px;background:#fff;">
             <option value="">— 套用模板 —</option>
             <option value="executor">🎯 决策执行官（推荐）</option>
             <option value="detective">🔍 数据侦探</option>
@@ -3713,10 +3713,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
         <textarea id="ai_custom_role_inline" rows="6" placeholder="留空 = 默认角色（决策执行官）。可自定义 AI 语气、专注点..." style="width:100%;font-size:13px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:vertical;line-height:1.5;box-sizing:border-box;background:#fff;min-height:120px;"></textarea>
         <div style="display:flex;gap:8px;margin-top:10px;">
-          <button class="btn btn-primary" style="font-size:13px;padding:7px 16px;" onclick="saveAISettingsInline(); closeAISettings();">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-1px;margin-right:3px;"><polyline points="20 6 9 17 4 12"></polyline></svg>保存并关闭
+          <button class="btn btn-primary" style="font-size:13px;padding: 8px 16px;" onclick="saveAISettingsInline(); closeAISettings();">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-1px;margin-right: 4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>保存并关闭
           </button>
-          <button class="btn btn-ghost" style="font-size:13px;padding:7px 14px;" onclick="clearAIRoleInline()">✕ 清除角色</button>
+          <button class="btn btn-ghost" style="font-size:13px;padding: 8px 14px;" onclick="clearAIRoleInline()">✕ 清除角色</button>
         </div>
       </div>
     </div>
@@ -3728,8 +3728,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div style="background:#fff;border-radius:16px;width:min(560px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7132f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-        <span style="font-size:16px;font-weight:700;color:#7132f5;">AI 笔记本</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        <span style="font-size:16px;font-weight:700;color:var(--purple);">AI 笔记本</span>
         <span id="aiNotebookCount" style="font-size:11px;color:var(--gray);"></span>
       </div>
       <div style="display:flex;gap:6px;">
@@ -3757,13 +3757,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div style="padding:14px 18px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
         <span id="aiAddNoteIcon" style="font-size:18px;">➕</span>
-        <span id="aiAddNoteTitle" style="font-size:16px;font-weight:500;color:#7132f5;letter-spacing:-0.2px;">新增笔记</span>
+        <span id="aiAddNoteTitle" style="font-size:16px;font-weight:500;color:var(--purple);letter-spacing:-0.2px;">新增笔记</span>
       </div>
       <button type="button" onclick="closeAddNoteDialog()" class="ai-icon-btn" aria-label="Close">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
       </button>
     </div>
-    <div style="padding:18px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;">
+    <div style="padding: 16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;">
       <div id="aiAddNoteWrongWrap" style="display:none;">
         <label style="font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">AI 原答（会被记录为对比）</label>
         <div id="aiAddNoteWrong" style="margin-top:4px;font-size:12px;color:#B91C1C;background:#FEF2F2;border:0.5px solid #FCA5A5;border-radius:8px;padding:8px 10px;max-height:80px;overflow-y:auto;line-height:1.5;"></div>
@@ -3782,14 +3782,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
     </div>
     <div style="padding:12px 20px 16px;border-top:0.5px solid var(--border);display:flex;gap:8px;justify-content:flex-end;">
-      <button class="btn btn-ghost" style="font-size:13px;padding:7px 14px;" onclick="closeAddNoteDialog()">取消</button>
-      <button class="btn btn-primary" style="font-size:13px;padding:7px 16px;" onclick="submitAddNote()">保存笔记</button>
+      <button class="btn btn-ghost" style="font-size:13px;padding: 8px 14px;" onclick="closeAddNoteDialog()">取消</button>
+      <button class="btn btn-primary" style="font-size:13px;padding: 8px 16px;" onclick="submitAddNote()">保存笔记</button>
     </div>
   </div>
 </div>
 
 <!-- v3.21: Important insight notification (right-side toast, kept for legacy, unused in v3.26) -->
-<div id="aiInsightToast" style="display:none;position:fixed;top:80px;right:20px;width:min(340px, 85vw);background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(113,50,245,0.25);border:2px solid #7132f5;padding:14px 16px;z-index:10003;animation:slideInRight 0.3s ease;"></div>
+<div id="aiInsightToast" style="display:none;position:fixed;top:80px;right:20px;width:min(340px, 85vw);background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(113,50,245,0.25);border:2px solid var(--purple);padding:14px 16px;z-index:10003;animation:slideInRight 0.3s ease;"></div>
 <style>
 @keyframes slideInRight { from { transform: translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
 @keyframes slideOutRight { from { transform: translateX(0); opacity:1; } to { transform:translateX(100%); opacity:0; } }
@@ -3803,7 +3803,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   padding: 10px 12px;
   background: #fff;
   border: 0.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -3861,7 +3861,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-note-rec-dismiss {
   background: transparent; border: none; color: var(--silver);
   width: 22px; height: 22px; cursor: pointer; font-size: 13px;
-  border-radius: 6px;
+  border-radius: 8px;
   display:flex; align-items:center; justify-content:center; flex-shrink:0;
   transition: all 0.15s;
 }
@@ -3871,17 +3871,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   margin-bottom: 10px;
   padding: 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   background: #fff;
   position: relative;
 }
-.ai-nb-item.high { border-left: 3px solid #DC2626; }
+.ai-nb-item.high { border-left: 3px solid var(--adscost-color); }
 .ai-nb-item-date { font-size: 10px; color: var(--gray); margin-bottom: 4px; }
 .ai-nb-item-summary { font-size: 13px; font-weight: 500; color: #222; margin-bottom: 6px; line-height: 1.5; white-space: pre-wrap; }
 .ai-nb-item-question { font-size: 11.5px; color: var(--gray); margin-bottom: 4px; line-height: 1.4; font-style: italic; }
 .ai-nb-item-full { font-size: 12px; color: #555; line-height: 1.5; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); display: none; }
 .ai-nb-item.expanded .ai-nb-item-full { display: block; }
-.ai-nb-wrong { font-size: 11px; color: #B91C1C; background: #FEF2F2; border: 0.5px solid #FCA5A5; border-radius: 6px; padding: 6px 8px; margin-top: 6px; line-height: 1.5; display: none; }
+.ai-nb-wrong { font-size: 11px; color: #B91C1C; background: #FEF2F2; border: 0.5px solid #FCA5A5; border-radius: 8px; padding: 6px 8px; margin-top: 6px; line-height: 1.5; display: none; }
 .ai-nb-item.expanded .ai-nb-wrong { display: block; }
 .ai-nb-wrong-label { display: inline-block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-right: 5px; background: #FCA5A5; color: #fff; padding: 1px 5px; border-radius: 4px; }
 
@@ -3897,13 +3897,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .ai-correct-btn:hover { background: #FEF2F2; border-color: #FCA5A5; color: #B91C1C; }
 .ai-correct-btn:active { transform: scale(0.97); }
-.ai-nb-tag-chip { display:inline-block; background:var(--purple-bg); color:var(--purple); padding:2px 8px; border-radius:10px; font-size:10px; font-weight:600; margin-right:4px; margin-bottom:2px; }
+.ai-nb-tag-chip { display:inline-block; background:var(--purple-bg); color:var(--purple); padding:2px 8px; border-radius: 8px; font-size:10px; font-weight:600; margin-right:4px; margin-bottom:2px; }
 .ai-nb-item-actions { position: absolute; top: 8px; right: 8px; display:flex; gap:4px; }
 .ai-nb-item-actions button { background:transparent; border:none; color:var(--gray); cursor:pointer; padding:2px 6px; border-radius:4px; font-size:12px; }
 .ai-nb-item-actions button:hover { background:var(--hover); color:#222; }
-.ai-nb-item-actions .del:hover { background:#fee; color:#DC2626; }
+.ai-nb-item-actions .del:hover { background:#fee; color:var(--adscost-color); }
 .ai-nb-tag-filter {
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: #fff;
@@ -3970,7 +3970,7 @@ function rescheduleChipHTML(l) {
   if (!l || l.status !== 'booked') return '';  // auto-disappear when status leaves booked
   const flags = String(l.flags || '').toLowerCase();
   if (flags.indexOf('rescheduled') < 0) return '';
-  return `<span class="lc-resched-chip" title="Customer rescheduled this appointment"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:3px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Rescheduled</span>`;
+  return `<span class="lc-resched-chip" title="Customer rescheduled this appointment"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right: 4px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Rescheduled</span>`;
 }
 
 // v4.98: Parse a remark line into structured event data for timeline rendering
@@ -4166,7 +4166,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.85'; // v5.09 — mobile +New Lead removed (top), Contact bottom-nav button raised + pulse animation
+const DATA_VERSION = '2.86'; // v5.10 — UI batch 1: border-radius 标准化(113 处) + 颜色 CSS variable(74 处) + spacing 4px 对齐(57 处)
 
 // ---------- State ----------
 let state = {
@@ -4496,8 +4496,8 @@ function renderTopbarToday() {
 // ADS CHART ENGINE v2 — clean, no label overlap, 12-month aware
 // ============================================================
 const AdsChart = {
-  C: { meta:'#1877F2', google:'#CA8A04', purple:'#7132f5', purple2:'#a78bfa',
-       green:'#10B981', orange:'#F59E0B', gray:'#94a3b8' },
+  C: { meta:'var(--meta-color)', google:'var(--google-color)', purple:'var(--purple)', purple2:'#a78bfa',
+       green:'var(--organic-color)', orange:'var(--followup-color)', gray:'#94a3b8' },
 
   // fmtK: format for Y axis
   fmtK(v) {
@@ -4644,7 +4644,7 @@ const AdsChart = {
     });
 
     // Title
-    const title = cfg.title ? `<text x="${(W/2).toFixed(0)}" y="16" text-anchor="middle" font-size="${mobile?11:12}" font-weight="700" fill="#7132f5">${cfg.title}</text>` : '';
+    const title = cfg.title ? `<text x="${(W/2).toFixed(0)}" y="16" text-anchor="middle" font-size="${mobile?11:12}" font-weight="700" fill="var(--purple)">${cfg.title}</text>` : '';
 
     const svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
       <rect width="${W}" height="${H}" fill="white"/>
@@ -4739,17 +4739,17 @@ function renderCplChart(mArr, monthData, tab, fullData) {
   let series;
   if (tab === 'all') {
     series = [
-      { label:'Meta CPL',    color:'#1877F2', type:'line',
+      { label:'Meta CPL',    color:'var(--meta-color)', type:'line',
         data: fullData.map(d => d.leadsByPlatformByLead.meta>0   ? d.costByPlatform.meta/d.leadsByPlatformByLead.meta   : null) },
-      { label:'Google CPL',  color:'#CA8A04', type:'line',
+      { label:'Google CPL',  color:'var(--google-color)', type:'line',
         data: fullData.map(d => d.leadsByPlatformByLead.google>0 ? d.costByPlatform.google/d.leadsByPlatformByLead.google : null) },
       { label:'Meta CPA',    color:'#60a5fa', type:'line',
         data: fullData.map(d => d.apptsByPlatform&&d.apptsByPlatform.meta>0   ? d.costByPlatform.meta/d.apptsByPlatform.meta   : null) },
       { label:'Google CPA',  color:'#fbbf24', type:'line',
         data: fullData.map(d => d.apptsByPlatform&&d.apptsByPlatform.google>0 ? d.costByPlatform.google/d.apptsByPlatform.google : null) },
-      { label:'Meta CPS',    color:'#7132f5', type:'line',
+      { label:'Meta CPS',    color:'var(--purple)', type:'line',
         data: fullData.map(d => d.showsByPlatform&&d.showsByPlatform.meta>0   ? d.costByPlatform.meta/d.showsByPlatform.meta   : null) },
-      { label:'Google CPS',  color:'#10B981', type:'line',
+      { label:'Google CPS',  color:'var(--organic-color)', type:'line',
         data: fullData.map(d => d.showsByPlatform&&d.showsByPlatform.google>0 ? d.costByPlatform.google/d.showsByPlatform.google : null) },
     ];
   } else {
@@ -5758,7 +5758,7 @@ function renderDetailPanel(l) {
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
             <span>删除</span>
           </button>
-          <button type="button" class="btn" style="font-size:13px;padding:7px 14px;border-radius:9px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="closeDetailPanel()">Close</button>
+          <button type="button" class="btn" style="font-size:13px;padding: 8px 14px;border-radius: 8px;border:1px solid var(--purple-subtle);background:var(--white);color:var(--purple-deep);" onclick="closeDetailPanel()">Close</button>
         </div>
       </div>
       <div style="display:flex;align-items:flex-start;justify-content:center;gap:0;margin-top:12px;">
@@ -6040,7 +6040,7 @@ function handleDuplicate(existing, incoming) {
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div style="padding:14px;background:var(--surface-2);border-radius:10px;margin-bottom:16px;">
+    <div style="padding:14px;background:var(--surface-2);border-radius: 8px;margin-bottom:16px;">
       <div style="font-size:13px;color:var(--gray);margin-bottom:6px;">Existing record</div>
       <div style="font-weight:600;margin-bottom:4px;">${existing.name || '(no name)'}</div>
       <div style="font-size:13px;color:var(--gray);">
@@ -6613,7 +6613,7 @@ function upgradeAllPopSelects() {
 
 // v3.43: Smart channel/location chip logos — preset for 6 popular channels, auto-fallback for custom ones
 const CHANNEL_LOGO_SVG = {
-  meta: '<svg class="chip-logo" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+  meta: '<svg class="chip-logo" viewBox="0 0 24 24" fill="var(--meta-color)" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
   google: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>',
   tiktok: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FE2C55" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/></svg>',
   instagram: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ig-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F58529"/><stop offset="50%" stop-color="#DD2A7B"/><stop offset="100%" stop-color="#8134AF"/></linearGradient></defs><path fill="url(#ig-grad)" d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63 3.35.94 2.68 1.34 2.01 2.01 1.34 2.68.94 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.71 1.46 1.38 2.13.67.67 1.34 1.07 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.31 1.46-.71 2.13-1.38.67-.67 1.07-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.31-.79-.71-1.46-1.38-2.13C21.32 1.34 20.65.94 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 12 18.16 6.16 6.16 0 0 0 12 5.84zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>',
@@ -6622,7 +6622,7 @@ const CHANNEL_LOGO_SVG = {
 };
 
 // Auto-color palette for unknown channels (by name hash)
-const INITIAL_COLORS = ['#7132f5', '#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1'];
+const INITIAL_COLORS = ['var(--purple)', 'var(--organic-color)', 'var(--followup-color)', '#EF4444', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1'];
 function hashColor(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
@@ -6714,7 +6714,7 @@ function renderList() {
         return `${logo}<span>${it.label}</span>`;
       },
       itemFormatter: (it) => {
-        if (!it.value) return `<span class="pop-item-icon" style="width:14px;height:14px;border-radius:50%;background:#7132f5;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:600;">A</span><span>All channels</span>`;
+        if (!it.value) return `<span class="pop-item-icon" style="width:14px;height:14px;border-radius:50%;background:var(--purple);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:600;">A</span><span>All channels</span>`;
         const logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, it.color) : '';
         return `<span class="pop-item-icon">${logo}</span><span>${it.label}</span>`;
       },
@@ -7367,7 +7367,7 @@ function renderDashboardMonth() {
     <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
       <div class="dash-section-label">Funnel — ${label} →</div>
       <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
-        <div style="flex:4;background:var(--purple-bg);border-radius:6px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:4;background:var(--purple-bg);border-radius: 8px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">${fmt.num(leads)||'—'}</div>
           <div style="font-size:11px;color:var(--purple);">Leads</div>
         </div>
@@ -7398,7 +7398,7 @@ function renderDashboardMonth() {
     AdsChart.render('chart_dash_rev', {
       title: '',
       labels: mArr.map(m2 => fmt.monthShort(m2)),
-      series: [{ label: 'Revenue', color: '#7132f5', data: revData.map(v => v > 0 ? v : null) }],
+      series: [{ label: 'Revenue', color: 'var(--purple)', data: revData.map(v => v > 0 ? v : null) }],
       yFmt: v => v >= 1000 ? 'RM'+(v/1000).toFixed(0)+'k' : 'RM'+v.toFixed(0),
     });
   }, 30);
@@ -7479,7 +7479,7 @@ function renderDashboardYear() {
     <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
       <div class="dash-section-label">Funnel — ${year} YTD →</div>
       <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
-        <div style="flex:4;background:var(--purple-bg);border-radius:6px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:4;background:var(--purple-bg);border-radius: 8px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">${fmt.num(leads)||'—'}</div>
           <div style="font-size:11px;color:var(--purple);">Leads</div>
         </div>
@@ -7510,7 +7510,7 @@ function renderDashboardYear() {
     AdsChart.render('chart_dash_rev', {
       title: '',
       labels: mArr.map(m2 => fmt.monthShort(m2)),
-      series: [{ label: 'Revenue', color: '#7132f5', data: revData.map(v => v > 0 ? v : null) }],
+      series: [{ label: 'Revenue', color: 'var(--purple)', data: revData.map(v => v > 0 ? v : null) }],
       yFmt: v => v >= 1000 ? 'RM'+(v/1000).toFixed(0)+'k' : 'RM'+v.toFixed(0),
     });
   }, 30);
@@ -8317,8 +8317,8 @@ function renderStore() {
         }, 30);
       }
 
-      html += buildOnePlatTable('Meta', l => l.platform==='meta', 'chart_plat_meta', '#1877F2', '#93c5fd');
-      html += buildOnePlatTable('Google', l => l.platform==='google', 'chart_plat_google', '#CA8A04', '#fde68a');
+      html += buildOnePlatTable('Meta', l => l.platform==='meta', 'chart_plat_meta', 'var(--meta-color)', '#93c5fd');
+      html += buildOnePlatTable('Google', l => l.platform==='google', 'chart_plat_google', 'var(--google-color)', '#fde68a');
       html += buildOnePlatTable('Organic + Follow Up', l => l.platform==='organic'||l.platform==='followup', 'chart_plat_ofu', '#059669', '#6ee7b7');
     }
 
@@ -8440,14 +8440,14 @@ function renderStore() {
         }
 
         setTimeout(() => {
-          const colors = ['#1877F2','#CA8A04','#7132f5','#10B981','#94a3b8'];
+          const colors = ['var(--meta-color)','var(--google-color)','var(--purple)','var(--organic-color)','#94a3b8'];
           AdsChart.render(chartId, {
             title: 'Race — Show Up Trend',
             labels: raceMonths.map(m => fmt.monthShort(m)),
             series: races.map((r,i) => ({ label:r, color:colors[i], data:raceChartData[r] })),
             yFmt: v => v!=null ? v.toFixed(0) : '',
           });
-          const raceColors = ['#1877F2','#CA8A04','#7132f5','#10B981','#94a3b8'];
+          const raceColors = ['var(--meta-color)','var(--google-color)','var(--purple)','var(--organic-color)','#94a3b8'];
           AdsChart.render(chartId+'_avg', {
             title: 'AVG Spend per Show by Race — Trend',
             labels: raceMonths.map(m => fmt.monthShort(m)),
@@ -8532,10 +8532,10 @@ function renderStore() {
           title: 'Monthly Leads — ' + wYear,
           labels: chartLabels,
           series: [
-            { label: 'Meta', color: '#1877F2', data: metaData },
-            { label: 'Google', color: '#CA8A04', data: googleData },
-            { label: 'OFU', color: '#10B981', data: ofuData },
-            { label: 'Total', color: '#7132f5', type: 'line', data: totalData },
+            { label: 'Meta', color: 'var(--meta-color)', data: metaData },
+            { label: 'Google', color: 'var(--google-color)', data: googleData },
+            { label: 'OFU', color: 'var(--organic-color)', data: ofuData },
+            { label: 'Total', color: 'var(--purple)', type: 'line', data: totalData },
           ],
           yFmt: v => v != null ? v.toFixed(0) : '',
         });
@@ -8846,7 +8846,7 @@ function renderAdsSpendSection(key) {
         title: 'Cost % of Revenue',
         labels: mArr.map(m => fmt.monthShort(m)),
         series: [
-          { label: 'Cost %', color: AdsChart.C.purple || '#7132f5', type: 'line', data: chartRows.map(r => r.pct !== null ? r.pct * 100 : null) }
+          { label: 'Cost %', color: AdsChart.C.purple || 'var(--purple)', type: 'line', data: chartRows.map(r => r.pct !== null ? r.pct * 100 : null) }
         ],
         yFmt: v => v.toFixed(1) + '%'
       });
@@ -8867,7 +8867,7 @@ function renderAdsSpendSection(key) {
       html += `<tr><td>3rd Party Fees</td>${rows.map(r=>`<td class="num">${r.fees>0?fmt.money(r.fees):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(gFees)}</td></tr>`;
       html += `<tr class="total-row"><td>Total Mkt Cost</td>${rows.map(r=>`<td class="num">${r.totalMkt>0?fmt.money(r.totalMkt):'—'}</td>`).join('')}<td class="num">${fmt.money(gTotal)}</td></tr>`;
       html += `<tr><td>Revenue</td>${rows.map(r=>`<td class="num">${r.revenue>0?fmt.money(r.revenue):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(gRev)}</td></tr>`;
-      html += `<tr><td style="font-weight:700;color:var(--purple-deep);">Cost % of Rev</td>${rows.map(r=>`<td class="num" style="font-weight:700;color:${r.pct!==null&&r.pct>0.3?'var(--ads-color,#DC2626)':'var(--purple-deep)'}">${r.pct!==null?fmt.pct(r.pct):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${gPct!==null?fmt.pct(gPct):'—'}</td></tr>`;
+      html += `<tr><td style="font-weight:700;color:var(--purple-deep);">Cost % of Rev</td>${rows.map(r=>`<td class="num" style="font-weight:700;color:${r.pct!==null&&r.pct>0.3?'var(--ads-color,var(--adscost-color))':'var(--purple-deep)'}">${r.pct!==null?fmt.pct(r.pct):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${gPct!==null?fmt.pct(gPct):'—'}</td></tr>`;
       html += `</tbody></table></div>`;
     } else {
       html = `<div class="table-wrap"><table class="data"><thead><tr><th style="width:40px;min-width:40px;">Month</th><th class="num">Ads Cost</th><th class="num">3rd Party</th><th class="num">Total Mkt</th><th class="num">Revenue</th><th class="num">Cost%</th></tr></thead><tbody>`;
@@ -8877,7 +8877,7 @@ function renderAdsSpendSection(key) {
         html += `<td class="num">${r.fees>0?fmt.money(r.fees):'—'}</td>`;
         html += `<td class="num" style="font-weight:700;">${r.totalMkt>0?fmt.money(r.totalMkt):'—'}</td>`;
         html += `<td class="num">${r.revenue>0?fmt.money(r.revenue):'—'}</td>`;
-        html += `<td class="num" style="font-weight:700;color:${r.pct!==null&&r.pct>0.3?'var(--ads-color,#DC2626)':'var(--purple-deep)'}">${r.pct!==null?fmt.pct(r.pct):'—'}</td>`;
+        html += `<td class="num" style="font-weight:700;color:${r.pct!==null&&r.pct>0.3?'var(--ads-color,var(--adscost-color))':'var(--purple-deep)'}">${r.pct!==null?fmt.pct(r.pct):'—'}</td>`;
         html += `</tr>`;
       });
       html += `<tr class="total-row"><td>TOTAL</td><td class="num">${fmt.money(gAdsCost)}</td><td class="num">${fmt.money(gFees)}</td><td class="num">${fmt.money(gTotal)}</td><td class="num">${fmt.money(gRev)}</td><td class="num">${gPct!==null?fmt.pct(gPct):'—'}</td></tr>`;
@@ -9004,12 +9004,12 @@ function openAddChannelModal(targetSelectId) {
     <div class="modal-header" style="padding:16px 20px;background:var(--purple-bg);">
       <h3 style="margin:0;color:var(--purple-deep);">+ New Channel</h3>
     </div>
-    <div class="modal-body" style="padding:18px 20px;">
+    <div class="modal-body" style="padding: 16px 20px;">
       <div style="margin-bottom:16px;">
         <label style="display:block;font-size:11px;color:var(--gray);margin-bottom:6px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;">Name</label>
-        <input type="text" id="quickCh_name" placeholder="e.g. TikTok Ads" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;">
+        <input type="text" id="quickCh_name" placeholder="e.g. TikTok Ads" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius: 8px;font-size:14px;">
       </div>
-      <div style="margin-bottom:18px;">
+      <div style="margin-bottom: 16px;">
         <label style="display:block;font-size:11px;color:var(--gray);margin-bottom:6px;font-weight:600;letter-spacing:0.3px;text-transform:uppercase;">Platform</label>
         <div id="quickCh_platform_cards" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
           <button type="button" data-platform="meta" onclick="pickPlatformCard(this)" class="platform-card active">
@@ -9141,7 +9141,7 @@ function renderAdsCostEntry() {
     return `<tr style="${bg !== '#fff' ? 'background:'+bg+';' : ''}">
       <td><strong>${fmt.monthLabel(m)}</strong></td>
       <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+        <input type="number" class="as-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
       </td>
     </tr>`;
   }).join('');
@@ -9286,7 +9286,7 @@ function renderFeeEntry() {
     return `<tr style="${bg !== '#fff' ? 'background:'+bg+';' : ''}">
       <td><strong>${fmt.monthLabel(m)}</strong></td>
       <td class="num" style="padding:4px 8px;">
-        <input type="number" class="fee-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+        <input type="number" class="fee-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
       </td>
     </tr>`;
   }).join('');
@@ -9526,7 +9526,7 @@ function renderRevenueOutlet(mArr, locId) {
 
   let html = `<div class="card" id="revStore-${locId}" style="margin-bottom:14px;">
     <div style="margin-bottom:12px;">
-      <button onclick="setRevOutlet('all')" style="font-size:12px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;font-weight:600;">← All Outlets</button>
+      <button onclick="setRevOutlet('all')" style="font-size:12px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--border);border-radius: 16px;padding:4px 12px;cursor:pointer;font-weight:600;">← All Outlets</button>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
       <div>
@@ -9924,7 +9924,7 @@ function renderRevenueEntry() {
     if (newC != null) yearNew += newC;
     const filled = rec && (total > 0 || newC > 0);
     const rowBg = filled ? '' : 'background:rgba(0,0,0,0.02);';
-    const inStyle = 'width:100%;text-align:center;border:1px solid var(--border-light);padding:3px 6px;border-radius:4px;font-size:13px;line-height:1.4;';
+    const inStyle = 'width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;';
     html += `<tr style="${rowBg}">
       <td><strong>${mLabel} ${year}</strong></td>
       <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="${mKey}" data-field="total" value="${total ?? ''}" placeholder="0.00" style="${inStyle}"></td>
@@ -10089,10 +10089,10 @@ document.getElementById('locationForm').addEventListener('submit', e => {
 
 // v3.44: Color palette + picker — popover triggered from the color dot button
 const COLOR_PALETTE = [
-  '#7132f5', // purple (brand)
-  '#1877F2', // Meta blue
-  '#10B981', // green
-  '#F59E0B', // amber
+  'var(--purple)', // purple (brand)
+  'var(--meta-color)', // Meta blue
+  'var(--organic-color)', // green
+  'var(--followup-color)', // amber
   '#EF4444', // red
   '#3B82F6', // blue
   '#EC4899', // pink
@@ -10115,11 +10115,11 @@ function openColorPicker(event, kind, id) {
   const current = (item && item.color) || hashColor(item ? item.name : '');
   const pop = document.createElement('div');
   pop.id = 'colorPickerPop';
-  pop.style.cssText = `position:fixed;top:${rect.bottom + 6}px;left:${rect.left}px;z-index:10010;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:10px;display:grid;grid-template-columns:repeat(6, 24px);gap:6px;`;
+  pop.style.cssText = `position:fixed;top:${rect.bottom + 6}px;left:${rect.left}px;z-index:10010;background:#fff;border:1px solid var(--border);border-radius: 8px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:10px;display:grid;grid-template-columns:repeat(6, 24px);gap:6px;`;
   pop.innerHTML = COLOR_PALETTE.map(c => {
     const isCur = c.toLowerCase() === current.toLowerCase();
     return `<button type="button" data-color="${c}" style="width:24px;height:24px;border-radius:50%;border:${isCur ? '2px solid #000' : '1px solid var(--border)'};background:${c};cursor:pointer;padding:0;"></button>`;
-  }).join('') + `<button type="button" data-color="reset" title="重置为默认" style="grid-column:1 / span 6;margin-top:4px;padding:5px 8px;font-size:11px;border:1px solid var(--border);background:#fff;border-radius:6px;cursor:pointer;color:var(--gray);">↺ Reset to auto</button>`;
+  }).join('') + `<button type="button" data-color="reset" title="重置为默认" style="grid-column:1 / span 6;margin-top:4px;padding:5px 8px;font-size:11px;border:1px solid var(--border);background:#fff;border-radius: 8px;cursor:pointer;color:var(--gray);">↺ Reset to auto</button>`;
   document.body.appendChild(pop);
   pop.addEventListener('click', (e) => {
     const b = e.target.closest('[data-color]');
@@ -10365,8 +10365,8 @@ async function cloudBackupRefreshList() {
             <div style="font-size:11px;color:var(--silver);margin-top:2px;">${ageStr} · ${sizeKb} KB</div>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
-            <button onclick="window.open('${escapeHTML(b.url)}','_blank')" title="Open in Drive" style="padding:5px 8px;font-size:11px;background:#fff;border:1px solid var(--border);border-radius:6px;color:var(--gray);cursor:pointer;">Open</button>
-            <button onclick="cloudBackupRestore('${escapeHTML(b.id)}','${escapeHTML(b.name)}')" style="padding:5px 10px;font-size:11px;background:var(--purple);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:500;">Restore</button>
+            <button onclick="window.open('${escapeHTML(b.url)}','_blank')" title="Open in Drive" style="padding:5px 8px;font-size:11px;background:#fff;border:1px solid var(--border);border-radius: 8px;color:var(--gray);cursor:pointer;">Open</button>
+            <button onclick="cloudBackupRestore('${escapeHTML(b.id)}','${escapeHTML(b.name)}')" style="padding:5px 10px;font-size:11px;background:var(--purple);color:#fff;border:none;border-radius: 8px;cursor:pointer;font-weight:500;">Restore</button>
           </div>
         </div>
       `;
@@ -10412,7 +10412,7 @@ function cloudBackupRestore(backupId, backupName) {
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div style="background:rgba(220,38,38,0.06);border-left:3px solid var(--red);border-radius:6px;padding:10px 12px;margin-bottom:14px;">
+    <div style="background:rgba(220,38,38,0.06);border-left:3px solid var(--red);border-radius: 8px;padding:10px 12px;margin-bottom:14px;">
       <div style="font-size:13px;color:var(--red);font-weight:600;margin-bottom:4px;">⚠️ This will REPLACE current data</div>
       <div style="font-size:12px;color:var(--gray);">A safety snapshot of the current state will be taken first, so you can roll back if needed.</div>
     </div>
@@ -12227,9 +12227,9 @@ function applyNumHighlight(text) {
 }
 
 // AI avatar (purple gradient circle with "AI" text) — used in chat bubbles and headers
-const AI_AVATAR_SVG = `<div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;letter-spacing:0.3px;">AI</div>`;
+const AI_AVATAR_SVG = `<div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg, var(--purple), #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;letter-spacing:0.3px;">AI</div>`;
 
-const AI_AVATAR_SVG_LARGE = `<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, #7132f5, #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>`;
+const AI_AVATAR_SVG_LARGE = `<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, var(--purple), #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>`;
 
 // v3.69: escapeHTML is now defined globally in the first script block.
 // This duplicate is kept for safety — function declarations allow re-definition.
@@ -12400,7 +12400,7 @@ function renderChipsEditorList() {
   const list = document.getElementById('chipsEditorList');
   if (!list) return;
   list.innerHTML = chips.map((c, i) => `
-    <div id="chip-row-${i}" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;padding:10px;background:var(--surface);border-radius:10px;border:1px solid var(--border);">
+    <div id="chip-row-${i}" style="display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;padding:10px;background:var(--surface);border-radius: 8px;border:1px solid var(--border);">
       <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
         <input type="text" value="${c.label.replace(/"/g,'&quot;')}" placeholder="显示名称 (含 emoji)" 
           style="font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;"
@@ -12409,7 +12409,7 @@ function renderChipsEditorList() {
           style="font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:none;line-height:1.5;"
           id="chip-prompt-${i}">${c.prompt.replace(/</g,'&lt;')}</textarea>
       </div>
-      <button type="button" onclick="deleteChipRow(${i})" style="width:28px;height:28px;border:none;background:#fee2e2;color:#dc2626;border-radius:8px;cursor:pointer;font-size:14px;flex-shrink:0;margin-top:2px;">✕</button>
+      <button type="button" onclick="deleteChipRow(${i})" style="width:28px;height:28px;border:none;background:#fee2e2;color:var(--adscost-color);border-radius:8px;cursor:pointer;font-size:14px;flex-shrink:0;margin-top:2px;">✕</button>
     </div>
   `).join('') + `<p style="font-size:11px;color:var(--gray);text-align:center;margin-top:4px;">拖拽暂不支持；删除后保存即生效</p>`;
 }
@@ -13403,7 +13403,7 @@ history.pushState(null, '', location.href);
 </script>
 
 <!-- Chart tooltip -->
-<div id="chartTooltip" style="display:none;position:fixed;background:#1e1b2e;color:#fff;padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;pointer-events:none;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.25);white-space:nowrap;line-height:1.6;"></div>
+<div id="chartTooltip" style="display:none;position:fixed;background:#1e1b2e;color:#fff;padding: 8px 12px;border-radius:8px;font-size:12px;font-weight:600;pointer-events:none;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.25);white-space:nowrap;line-height:1.6;"></div>
 
 <script>
 // Auto-scroll input into view when keyboard appears (mobile)
@@ -13662,7 +13662,7 @@ function pendingSetTab(tab) {
 }
 
 const PENDING_TAB_META = {
-  'lead':              { label: 'Lead',      accent: '#7132f5' },
+  'lead':              { label: 'Lead',      accent: 'var(--purple)' },
   'appt':              { label: 'Appt',      accent: '#1D9E75' },
   'lead+appt':         { label: 'L+A',       accent: '#D85A30' }
 };
@@ -13701,7 +13701,7 @@ function pendingRender() {
         // Only shown when count > 0. Tabs back to equal width (flex:1) since label is now alone.
         // v4.96: Badge sits INSIDE tab top-right corner, no overflow
         const badgeHtml = count > 0
-          ? `<span class="tab-count-badge" style="position:absolute; top:3px; right:5px; min-width:14px; height:14px; padding:0 3px; background:var(--red); color:#fff; border-radius:7px; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; line-height:1;">${count}</span>`
+          ? `<span class="tab-count-badge" style="position:absolute; top:3px; right:5px; min-width:14px; height:14px; padding:0 3px; background:var(--red); color:#fff; border-radius: 8px; font-size:9px; font-weight:700; display:flex; align-items:center; justify-content:center; line-height:1;">${count}</span>`
           : '';
         return `<button class="filter-tab${isActive ? ' active' : ''}" onclick="pendingSetTab('${t}')" style="position:relative; white-space:nowrap; flex:1 1 0; min-width:0; padding:6px 10px; overflow:hidden;">
           ${esc(meta.label)}${badgeHtml}
@@ -13813,18 +13813,18 @@ function renderLeadOrApptCard(p, type, activeCh, locations, apptTime, locName, n
   // Type-specific banners
   let typeBanner = '';
   if (type === 'appt') {
-    typeBanner = `<div style="background:rgba(29,158,117,0.08); color:#085041; padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px;">📅 Appointment: <b>${esc(apptTime || '?')}</b>${locName ? ' @ ' + esc(locName) : ''}</div>`;
+    typeBanner = `<div style="background:rgba(29,158,117,0.08); color:#085041; padding:6px 10px; border-radius: 8px; font-size:12px; margin-bottom:10px;">📅 Appointment: <b>${esc(apptTime || '?')}</b>${locName ? ' @ ' + esc(locName) : ''}</div>`;
   } else if (type === 'lead+appt') {
-    typeBanner = `<div style="background:rgba(216,90,48,0.08); color:#712B13; padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px;">📅 Also booked: <b>${esc(apptTime || '?')}</b>${locName ? ' @ ' + esc(locName) : ''}</div>`;
+    typeBanner = `<div style="background:rgba(216,90,48,0.08); color:#712B13; padding:6px 10px; border-radius: 8px; font-size:12px; margin-bottom:10px;">📅 Also booked: <b>${esc(apptTime || '?')}</b>${locName ? ' @ ' + esc(locName) : ''}</div>`;
   }
 
   const conflictBanner = hasConflict
-    ? `<div style="background:rgba(217,119,6,0.10); color:#854F0B; padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px; border-left:3px solid #D97706;">⚠️ Tag mismatch — Lead tag and Appt source differ. Please verify.</div>`
+    ? `<div style="background:rgba(217,119,6,0.10); color:#854F0B; padding:6px 10px; border-radius: 8px; font-size:12px; margin-bottom:10px; border-left:3px solid #D97706;">⚠️ Tag mismatch — Lead tag and Appt source differ. Please verify.</div>`
     : '';
 
   const matchBanner = matched
-    ? `<div style="background:rgba(16,158,97,0.08); color:var(--green-dark); padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">✨ Auto-matched: <b>${esc(matched.name)}</b> (${esc(matched.platform)})</div>`
-    : `<div style="background:rgba(217,119,6,0.08); color:var(--amber); padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">⚠️ No match, please select manually</div>`;
+    ? `<div style="background:rgba(16,158,97,0.08); color:var(--green-dark); padding:6px 10px; border-radius: 8px; font-size:12px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">✨ Auto-matched: <b>${esc(matched.name)}</b> (${esc(matched.platform)})</div>`
+    : `<div style="background:rgba(217,119,6,0.08); color:var(--amber); padding:6px 10px; border-radius: 8px; font-size:12px; margin-bottom:10px; display:flex; align-items:center; gap:6px;">⚠️ No match, please select manually</div>`;
 
   const needsLocation = (type === 'appt' || type === 'lead+appt');
   const locationSelector = needsLocation ? `
@@ -13851,7 +13851,7 @@ function renderLeadOrApptCard(p, type, activeCh, locations, apptTime, locName, n
     <div id="pcard-${esc(p.id)}" style="background:var(--white); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:10px; box-shadow: var(--shadow-sm); transition: opacity 0.15s;">
       ${nameHeader}
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
-        <span style="background:var(--purple-bg); color:var(--purple-deep); padding:3px 10px; border-radius:6px; font-size:12px; font-weight:500;">GHL: ${esc(cleanTagDisplay)}</span>
+        <span style="background:var(--purple-bg); color:var(--purple-deep); padding: 4px 10px; border-radius: 8px; font-size:12px; font-weight:500;">GHL: ${esc(cleanTagDisplay)}</span>
         <span style="font-size:12px; color:var(--silver);">${esc(niceTime)}</span>
       </div>
       <div style="margin-top:10px;">${typeBanner}${conflictBanner}${matchBanner}</div>
@@ -13892,9 +13892,9 @@ function renderUpdateCard(p, locations, apptTime, locName, niceTime, esc) {
   const oldName = existingLead && existingLead.name && existingLead.name.trim() ? String(existingLead.name).trim() : '';
   const nameChangeBanner = newName
     ? (oldName && oldName !== newName
-        ? `<div style="background:rgba(133,91,251,0.06); color:var(--purple-deep); padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px;">👤 Name: <span style="text-decoration:line-through; opacity:0.55;">${esc(oldName)}</span> → <b>${esc(newName)}</b></div>`
+        ? `<div style="background:rgba(133,91,251,0.06); color:var(--purple-deep); padding:6px 10px; border-radius: 8px; font-size:12px; margin-bottom:10px;">👤 Name: <span style="text-decoration:line-through; opacity:0.55;">${esc(oldName)}</span> → <b>${esc(newName)}</b></div>`
         : (!oldName
-            ? `<div style="background:rgba(29,158,117,0.08); color:#085041; padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px;">👤 New name: <b>${esc(newName)}</b></div>`
+            ? `<div style="background:rgba(29,158,117,0.08); color:#085041; padding:6px 10px; border-radius: 8px; font-size:12px; margin-bottom:10px;">👤 New name: <b>${esc(newName)}</b></div>`
             : ''))
     : '';
 
@@ -13907,7 +13907,7 @@ function renderUpdateCard(p, locations, apptTime, locName, niceTime, esc) {
     <div id="pcard-${esc(p.id)}" style="background:var(--white); border:1px solid var(--border); border-radius:12px; padding:14px 16px; margin-bottom:10px; box-shadow: var(--shadow-sm); transition: opacity 0.15s;">
       ${nameHeader}
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-        <span style="background:rgba(186,117,23,0.12); color:#633806; padding:3px 10px; border-radius:6px; font-size:12px; font-weight:500;">🔄 Update Lead</span>
+        <span style="background:rgba(186,117,23,0.12); color:#633806; padding: 4px 10px; border-radius: 8px; font-size:12px; font-weight:500;">🔄 Update Lead</span>
         <span style="font-size:12px; color:var(--silver);">${esc(niceTime)}</span>
       </div>
       <div style="background:var(--surface); border-radius:8px; padding:10px 12px; margin-bottom:10px;">
@@ -13915,8 +13915,8 @@ function renderUpdateCard(p, locations, apptTime, locName, niceTime, esc) {
         <div style="font-size:13px; color:var(--black);">${leadInfo}</div>
       </div>
       ${nameChangeBanner}
-      <div style="background:rgba(29,158,117,0.08); color:#085041; padding:6px 10px; border-radius:6px; font-size:12px; margin-bottom:10px;">📅 New Appointment: <b>${esc(apptTime || '?')}</b>${locName ? ' @ ' + esc(locName) : ''}</div>
-      <div style="background:rgba(133,91,251,0.04); color:var(--purple-deep); padding:6px 10px; border-radius:6px; font-size:11px; margin-bottom:12px;">Will update: <b>status → booked</b>, <b>apptDate</b>, <b>location</b>${newName ? ', <b>name</b>' : ''}. <b>leadDate</b> and <b>channel</b> are preserved.</div>
+      <div style="background:rgba(29,158,117,0.08); color:#085041; padding:6px 10px; border-radius: 8px; font-size:12px; margin-bottom:10px;">📅 New Appointment: <b>${esc(apptTime || '?')}</b>${locName ? ' @ ' + esc(locName) : ''}</div>
+      <div style="background:rgba(133,91,251,0.04); color:var(--purple-deep); padding:6px 10px; border-radius: 8px; font-size:11px; margin-bottom:12px;">Will update: <b>status → booked</b>, <b>apptDate</b>, <b>location</b>${newName ? ', <b>name</b>' : ''}. <b>leadDate</b> and <b>channel</b> are preserved.</div>
       <div class="pending-loc-wrap" style="margin-bottom:14px;">
         <select id="loc-${esc(p.id)}" data-pop="1" data-pop-icon="location" data-pop-placeholder="Select location..." style="width:100%;">
           <option value="">Select location...</option>
@@ -14534,7 +14534,7 @@ function _pendingBatchAskDuplicate(existing, pendingItem, ch) {
         </div>
         <button class="modal-close" onclick="_batchDupResolve('cancel')">✕</button>
       </div>
-      <div style="padding:14px;background:var(--surface-2);border-radius:10px;margin-bottom:12px;">
+      <div style="padding:14px;background:var(--surface-2);border-radius: 8px;margin-bottom:12px;">
         <div style="font-size:13px;color:var(--gray);margin-bottom:6px;">Existing record in Leads</div>
         <div style="font-weight:600;margin-bottom:4px;">${esc(nameStr)}</div>
         <div style="font-size:13px;color:var(--gray);">
@@ -14624,7 +14624,7 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
         <button class="modal-close" onclick="_mergeResolve(false)">✕</button>
       </div>
 
-      <div style="background:var(--surface-2);border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--gray);">
+      <div style="background:var(--surface-2);border-radius: 8px;padding:12px;margin-bottom:14px;font-size:12px;color:var(--gray);">
         Lead Date will <b>not change</b>. You can pick the channel. Other fields below will be overwritten by the GHL appointment data.
       </div>
 
@@ -14636,7 +14636,7 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
         ${diffRow('✅ Status', oldStatus, newStatus, oldStatus !== newStatus)}
       </div>
 
-      <div style="margin-bottom:18px;">
+      <div style="margin-bottom: 16px;">
         <label style="display:block;font-size:13px;color:var(--gray);margin-bottom:6px;">📡 Channel</label>
         <select id="mergeChannelSelect" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff;">
           ${channelOptions}
