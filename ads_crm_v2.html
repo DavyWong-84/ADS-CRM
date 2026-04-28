@@ -2747,7 +2747,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.21</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.23</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4166,7 +4166,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '2.97'; // v5.21 — Monthly Breakdown 2 表去掉所有数字颜色（黑色默认），保留紫色 TOTAL 紫底 + 百分比灰色小字
+const DATA_VERSION = '2.99'; // v5.23 — TOTAL 行金额%上下排（br 换行）+ Outlet Comparison 4 张表也去掉颜色统一黑色
 
 // ---------- State ----------
 let state = {
@@ -9678,7 +9678,7 @@ function renderRevenueOutlet(mArr, locId) {
     </table></div>`;
   } else {
     // ─── Mobile Table 1: Customer Revenue (Month / New / Existing / Total) ───
-    html += `<div class="table-wrap"><table class="data" style="vertical-align:top;">
+    html += `<div class="table-wrap"><table class="data data-t" style="vertical-align:top;">
       <thead><tr>
         <th style="width:80px;min-width:80px;white-space:nowrap;">Revenue</th>
         <th class="num" style="">New</th>
@@ -9704,7 +9704,7 @@ function renderRevenueOutlet(mArr, locId) {
 
     // ─── Mobile Table 2: New Customer Source (Month / Ads / Walk-in / Total New) ───
     const walkInYr = yearNew - adsNewYr;
-    html += `<div class="table-wrap" style="margin-top:14px;"><table class="data" style="vertical-align:top;">
+    html += `<div class="table-wrap" style="margin-top:14px;"><table class="data data-t" style="vertical-align:top;">
       <thead><tr>
         <th style="width:80px;min-width:80px;white-space:nowrap;">New Source</th>
         <th class="num" style="">Ads Sales</th>
@@ -9727,8 +9727,8 @@ function renderRevenueOutlet(mArr, locId) {
     const yrWiPct = yearNew > 0 ? '('+(walkInYr/yearNew*100).toFixed(1)+'%)' : '';
     html += `<tr class="total-row" style="vertical-align:middle;">
       <td style="width:80px;min-width:80px;">TOTAL</td>
-      <td class="num" style="vertical-align:middle;">${fmt.money(adsNewYr)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${yrAdsPct}</span></td>
-      <td class="num" style="vertical-align:middle;">${fmt.money(walkInYr)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${yrWiPct}</span></td>
+      <td class="num" style="vertical-align:middle;">${fmt.money(adsNewYr)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${yrAdsPct}</span></td>
+      <td class="num" style="vertical-align:middle;">${fmt.money(walkInYr)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${yrWiPct}</span></td>
       <td class="num" style="vertical-align:middle;font-weight:700;">${fmt.money(yearNew)}</td>
     </tr></tbody></table></div>`;
   }
@@ -9936,7 +9936,7 @@ function renderRevenueSummary(mArr) {
     const wiYrPctOfNew = allYearNew > 0 ? '('+(allWalkInYr/allYearNew*100).toFixed(1)+'%)' : '';
     html += `<div class="card" style="margin-top:14px;">
       <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data">
+      <div class="table-wrap"><table class="data data-t">
         <thead><tr>
           <th style="width:80px;min-width:80px;">Revenue</th>
           <th class="num" style="">New</th>
@@ -9952,7 +9952,7 @@ function renderRevenueSummary(mArr) {
         </tr></tfoot>
       </table></div>
 
-      <div class="table-wrap" style="margin-top:14px;"><table class="data">
+      <div class="table-wrap" style="margin-top:14px;"><table class="data data-t">
         <thead><tr>
           <th style="width:80px;min-width:80px;">New Source</th>
           <th class="num" style="">Ads Sales</th>
@@ -9962,8 +9962,8 @@ function renderRevenueSummary(mArr) {
         <tbody>${tableRows2}</tbody>
         <tfoot><tr class="total-row" style="vertical-align:middle;">
           <td>TOTAL</td>
-          <td class="num" style="">${fmt.money(allYearAds)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${adsYrPctOfNew}</span></td>
-          <td class="num" style="">${fmt.money(allWalkInYr)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${wiYrPctOfNew}</span></td>
+          <td class="num" style="">${fmt.money(allYearAds)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${adsYrPctOfNew}</span></td>
+          <td class="num" style="">${fmt.money(allWalkInYr)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${wiYrPctOfNew}</span></td>
           <td class="num" style="font-weight:700;">${fmt.money(allYearNew)}</td>
         </tr></tfoot>
       </table></div>
@@ -10163,10 +10163,10 @@ function renderRevenueSummary(mArr) {
 
     html += `<div class="card" style="margin-top:14px;">
       <div class="section-title"><h3>Outlet Comparison ${yearLabel}</h3></div>
-      ${buildCmpTable('Total Revenue',              '% = outlet share of monthly total', 'var(--purple-deep)',  getTotal, getMonthBase,  true)}
-      ${buildCmpTable('New Customer Revenue',       '% = share of that outlet revenue',  'var(--green-dark)',   getNew,   getOutletBase, false)}
-      ${buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  'var(--gray)',         getOld,   getOutletBase, false)}
-      ${buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  'var(--meta-color)',   getAds,   getOutletBase, false)}
+      ${buildCmpTable('Total Revenue',              '% = outlet share of monthly total', '',  getTotal, getMonthBase,  true)}
+      ${buildCmpTable('New Customer Revenue',       '% = share of that outlet revenue',  '',  getNew,   getOutletBase, false)}
+      ${buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  '',  getOld,   getOutletBase, false)}
+      ${buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  '',  getAds,   getOutletBase, false)}
     </div>`;
   }
 
