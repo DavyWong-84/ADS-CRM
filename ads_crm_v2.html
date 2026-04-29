@@ -398,11 +398,21 @@ table.data th { text-align: left; padding: 10px 12px; color: var(--purple-deep);
 table.data td { padding: 12px 12px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
 table.data th:not(:last-child), table.data td:not(:last-child) { border-right: 1px solid var(--border-light); }
 /* First column sticky + thicker right border */
-table.data thead th:first-child, table.data tbody td:first-child { position: sticky; left: 0; z-index: 2; background: var(--white); border-right: 2px solid var(--border) !important; white-space: nowrap; }
-table.data thead tr:not(:first-child) th:first-child { background: var(--purple-bg); }
-table.data thead tr:first-child th:first-child { background: var(--purple-bg); }
-table.data tr.total-row td:first-child { background: var(--purple-bg); z-index: 3; }
-table.data tr.subheader td:first-child { background: var(--surface-2); z-index: 3; }
+/* v5.32: 强化 sticky 第一列隔离 — 修复横向滚动时第一列文字与其他列重叠的 bug
+   关键点: (1)写死 #fff 不用 var() 避免继承透明 (2)z-index 提到 4 压在所有同行 td 之上
+   (3)每种行类型(普通/total/subheader)的 first-child 都显式锁定背景色 */
+table.data thead th:first-child,
+table.data tbody td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  background: #fff;
+  border-right: 2px solid var(--border) !important;
+  white-space: nowrap;
+}
+table.data thead tr th:first-child { background: var(--purple-bg); z-index: 5; }
+table.data tr.total-row td:first-child { background: var(--purple-bg); z-index: 4; }
+table.data tr.subheader td:first-child { background: var(--surface-2); z-index: 4; }
 table.data tr.total-row td { background: var(--purple-bg); }
 table.data tr.subheader td { background: var(--surface-2); }
 table.data tr:last-child td { border-bottom: none; }
@@ -412,11 +422,22 @@ table.data .total-row { background: var(--purple-bg); font-weight: 600; }
 table.data .total-row td { border-bottom: none; background: var(--purple-bg); border-top: 2px solid var(--purple); }
 table.data .total-row td:first-child { color: var(--purple-deep); }
 table.data tr.subheader td { background: var(--purple-bg); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--purple-deep); font-weight: 700; padding: 0; border-bottom: none; }
-/* Transposed tables: no sticky first col, compact */
-table.data.data-t thead th:first-child, table.data.data-t tbody td:first-child, table.data.data-t tfoot td:first-child { position: static; border-right: 2px solid var(--border) !important; }
-table.data.data-t thead th:first-child { background: var(--purple-bg); }
-table.data.data-t tbody td:first-child { background: var(--white); }
+/* v5.32: data-t (transposed Revenue/Store comparison tables) — 现在也启用 sticky 第一列,
+   跟 Ads Spend 表格行为一致 (之前用 position: static 是历史遗留) */
+table.data.data-t thead th:first-child,
+table.data.data-t tbody td:first-child,
+table.data.data-t tfoot td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  background: #fff;
+  border-right: 2px solid var(--border) !important;
+  white-space: nowrap;
+}
+table.data.data-t thead th:first-child { background: var(--purple-bg); z-index: 5; }
+table.data.data-t tbody td:first-child { background: #fff; }
 table.data.data-t tr.total-row td:first-child { background: var(--purple-bg); }
+table.data.data-t tfoot td:first-child { background: var(--purple-bg); }
 table.data tr.subheader td:first-child { position: sticky; left: 0; z-index: 2; background: var(--purple-bg); padding: 8px 12px; }
 table.data tr.subheader td:not(:first-child) { padding: 0; border-right: none !important; }
 table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 0; }
@@ -602,8 +623,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   gap: 5px;
 }
 
-/* Legacy class aliases (backward compat — kept minimal) */
-.lead-row-1, .lead-row-2, .lead-meta { display: none; }
+/* v5.31: removed dead legacy class aliases (.lead-row-1/.lead-row-2/.lead-meta — DOM no longer uses them) */
 
 /* Lead status card = same structure as booked, but more compact (no lc-body row) */
 .lead-item.lead-compact-v2 { padding: 8px 12px; }
@@ -632,20 +652,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .pagination button:hover:not(:disabled) { border-color: var(--purple); color: var(--purple); }
 .pagination button.active { background: var(--purple); color: white; border-color: var(--purple); }
 .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
-/* v4.20: Desktop — make pagination sticky at top of the list-panel scroll area so it's always visible */
-@media (min-width: 768px) {
-  #listPagination:not(:empty) {
-    position: sticky;
-    top: 0;
-    z-index: 5;
-    background: var(--white);
-    padding: 8px 0 10px;
-    margin-bottom: 4px;
-    border-bottom: 1px solid var(--border);
-  }
-}
-/* v4.20+v4.22: hide numeric pagination on all screens — replaced by Load More button */
-#listPagination { display: none !important; }
+/* v5.31: removed dead #listPagination rules — element was removed from DOM in v4.23,
+   replaced by Load More button (see .load-more-btn below) */
 
 /* v4.20/v4.22: Load More button — shared style for mobile AND desktop */
 .load-more-btn {
@@ -813,22 +821,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .ai-guide-tooltip { max-width: calc(100vw - 30px); }
   .ai-guide-text { font-size: 12px; }
 }
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--adscost-color);
-  background: var(--adscost-color);
-  color: #fff;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.15s;
-  box-shadow: 0 1px 3px rgba(220,38,38,0.2);
-}
-.btn-delete-lead:hover { background: #B91C1C; border-color: #B91C1C; box-shadow: 0 2px 6px rgba(220,38,38,0.3); }
-.btn-delete-lead:active { transform: scale(0.97); }
+/* v5.31: removed orphan declaration block + dead .btn-delete-lead rules
+   (DOM uses .btn-delete-lead-v38 only — see line ~515) */
 .filter-tab .count { opacity: 0.7; margin-left: 4px; font-size: 12px; }
 /* v3.28: 紧凑双吸顶 — tabs sticky right below unified-header */
 .filter-tabs-sticky {
@@ -1787,8 +1781,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (min-width: 768px) {
   /* v4.22: Half-split — equal 50/50 columns. List filters/status tabs stay in left half, title spans full width above. */
   .contact-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; }
-  /* v4.23: Contact page now has a slim header (title only, no filters) — reduce spacer and sticky offsets */
-  #page-contact .unified-header-spacer { height: 70px; }
+  /* v5.33: title removed — header is even slimmer now (only padding + invisible search wrapper).
+     Reduce spacer to ~36px to match. */
+  #page-contact .unified-header-spacer { height: 36px; }
   /* v4.46: #page-contact fills space inside .main, accounting for topbar (64px) + main padding-top (24px) */
   body.on-contact-page #page-contact { height: calc(100vh - 88px); display: flex; flex-direction: column; }
   body.on-contact-page #page-contact .contact-layout {
@@ -1973,7 +1968,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   /* Bottom room for last card — clears bottom-nav (~56px) + FAB + safe-area */
   body.on-contact-page #leadList { padding-bottom: 12px; }
   body.on-contact-page #loadMoreWrap { padding-bottom: 140px; }  /* v4.20: clears bottom-nav + FAB */
-  body.on-contact-page .pagination#listPagination { margin-bottom: 0; }
+  /* v5.31: removed dead body.on-contact-page .pagination#listPagination rule */
 }
 #mobileActionBar .mab-search {
   position: relative;
@@ -2373,6 +2368,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 @media (min-width: 768px) {
   .unified-header-spacer { height: 115px; }
 }
+/* v5.33: page titles removed from 4 pages (Dashboard/Appt/Ads/Revenue) — header is shorter,
+   spacer reduced to 80px to remove dead vertical space. */
+@media (min-width: 768px) {
+  #page-summary .unified-header-spacer,
+  #page-store .unified-header-spacer,
+  #page-adsspend .unified-header-spacer,
+  #page-revenue .unified-header-spacer {
+    height: 80px;
+  }
+}
 /* Mobile: header is sticky (occupies flow) → spacer collapses to 0 */
 @media (max-width: 767px) {
   .unified-header-spacer { height: 0; }
@@ -2748,7 +2753,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.30</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.34</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2832,8 +2837,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header">
       <!-- Row 1: page title + inline search (mobile) + actions -->
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-        <h1 class="page-title" style="margin:0;">Contact</h1>
-        <!-- v4.09: Longer search box, aligned slightly below title -->
+        <!-- v5.33: removed page title (Contact) — kept hidden search wrapper for backward compat -->
         <div class="contact-title-search" style="display:none;position:relative;flex:0 0 180px;min-width:0;align-self:flex-end;">
           <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
           <input type="text" id="searchInputTitle" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value);toggleSearchClearBtn()" style="width:100%;height:34px;padding:0 30px 0 32px;font-size:13px;border:1px solid var(--border);border-radius: 8px;background:var(--surface-2);outline:none;">
@@ -3055,9 +3059,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- DASHBOARD PAGE (was Summary) -->
   <section class="page" id="page-summary">
     <div class="unified-header">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
-        <h1 class="page-title" style="margin:0;">Dashboard</h1>
-      </div>
+      <!-- v5.33: removed page title (Dashboard) — toolbar only -->
       <div class="compact-filter">
         <div class="toggle-group">
           <button class="toggle active" data-mode="single" onclick="setSummaryMode('single')">Month</button>
@@ -3083,9 +3085,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- STORE PAGE -->
   <section class="page" id="page-store">
     <div class="unified-header">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
-        <h1 class="page-title" style="margin:0;">Appt Report</h1>
-      </div>
+      <!-- v5.33: removed page title (Appt Report) — toolbar only -->
       <div class="compact-filter">
         <div class="toggle-group">
           <button class="toggle active" data-mode="month" onclick="setStoreMode('month')">Month</button>
@@ -3133,9 +3133,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- ADS SPEND PAGE -->
   <section class="page" id="page-adsspend">
     <div class="unified-header">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
-        <h1 class="page-title" style="margin:0;">Ads Spend</h1>
-      </div>
+      <!-- v5.33: removed page title (Ads Spend) — toolbar only -->
       <div class="compact-filter">
         <select id="adsYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
         <button type="button" class="date-btn cf-select" id="adsYearBtn" onclick="openYearPicker('adsYear', this)">
@@ -3230,9 +3228,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <!-- REVENUE PAGE -->
   <section class="page" id="page-revenue">
     <div class="unified-header">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
-        <h1 class="page-title" style="margin:0;">Revenue Outlet</h1>
-      </div>
+      <!-- v5.33: removed page title (Revenue Outlet) — toolbar only -->
       <div class="compact-filter">
         <select id="revYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
         <button type="button" class="date-btn cf-select" id="revYearBtn" onclick="openYearPicker('revYear', this)">
@@ -3901,7 +3897,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-nb-tag-chip { display:inline-block; background:var(--purple-bg); color:var(--purple); padding:2px 8px; border-radius: 8px; font-size:10px; font-weight:600; margin-right:4px; margin-bottom:2px; }
 .ai-nb-item-actions { position: absolute; top: 8px; right: 8px; display:flex; gap:4px; }
 .ai-nb-item-actions button { background:transparent; border:none; color:var(--gray); cursor:pointer; padding:2px 6px; border-radius:4px; font-size:12px; }
-.ai-nb-item-actions button:hover { background:var(--hover); color:#222; }
+.ai-nb-item-actions button:hover { background:var(--hover, var(--purple-bg)); color:#222; }
 .ai-nb-item-actions .del:hover { background:#fee; color:var(--adscost-color); }
 .ai-nb-tag-filter {
   padding: 4px 10px;
@@ -4167,7 +4163,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.06'; // v5.30 — Follow Up channel 不再显示 no-lead alert + Outlet Comparison 4 张表配色调亮（紫保持，其余亮版）
+const DATA_VERSION = '3.10'; // v5.34 — Outlet Comparison 5个子标题文字改回普通色 (只保留圆点颜色)
 
 // ---------- State ----------
 let state = {
@@ -8990,7 +8986,7 @@ function openAddFeeNameModal() {
     <div class="modal-header"><h3 style="margin:0;">Add Fee Name</h3></div>
     <div class="modal-body" style="padding:16px;">
       <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Fee Name</label>
+        <label style="display:block;font-size:12px;color:var(--text-secondary, var(--gray));margin-bottom:4px;">Fee Name</label>
         <input type="text" id="quickFee_name" placeholder="e.g. TikTok Mgmt" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
         <div style="font-size:11px;color:var(--gray);margin-top:4px;">输入后会自动出现在下拉选项里</div>
       </div>
@@ -9033,7 +9029,7 @@ function openAddOutletModal(targetSelectId) {
     <div class="modal-header"><h3 style="margin:0;">Add New Outlet</h3></div>
     <div class="modal-body" style="padding:16px;">
       <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:12px;color:var(--text-secondary);margin-bottom:4px;">Outlet Name</label>
+        <label style="display:block;font-size:12px;color:var(--text-secondary, var(--gray));margin-bottom:4px;">Outlet Name</label>
         <input type="text" id="quickLoc_name" placeholder="e.g. Bangsar" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
       </div>
       <div style="display:flex;gap:8px;">
@@ -10139,7 +10135,7 @@ function renderRevenueSummary(mArr) {
       }
       return `<div style="margin-top:18px;">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:${color};letter-spacing:0.4px;">● ${label.toUpperCase()}</div>
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:${color};">●</span> ${label.toUpperCase()}</div>
           <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">${hint}</div>
         </div>
         <div class="table-wrap">${tbl}</div>
