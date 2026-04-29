@@ -3248,18 +3248,21 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <!-- v5.41: Spending Power panel — 客户消费力分布 (人数 + 总收入 双表) -->
       <!-- v5.44: outlet select 已移到顶部 filter 行 (跟 Year/Channel 并排,只在此 tab 显示) -->
       <!-- v5.48: 加双色柱状图 (人数 + 收入双轴) -->
-      <!-- v5.49: 加 2 张趋势图 — Lower (RM 0-500, 蓝色系) + Higher (RM 500+, 紫色系) -->
+      <!-- v5.49: 加 2 张趋势折线图 (Lower 0-500 蓝色系 / Higher 500+ 紫色系) -->
       <div id="adsPanel_spend" style="display:none;">
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">● Customer Distribution</div>
-        <div id="chart_spend"></div>
-        <div style="font-size:12px;color:#185FA5;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">● Lower Spenders Trend · RM 0–500</div>
-        <div id="chart_spend_low"></div>
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">● Higher Spenders Trend · RM 500+</div>
-        <div id="chart_spend_high"></div>
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">● Customer Count by Spending Power</div>
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">● Customer Count by Spending Power</div>
         <div class="table-wrap"><table class="data" id="spendCountTable"></table></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">● Total Revenue by Spending Power</div>
         <div class="table-wrap"><table class="data" id="spendRevenueTable"></table></div>
+
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 8px;">● Customer Distribution (count vs revenue)</div>
+        <div id="chart_spend"></div>
+
+        <div style="font-size:12px;color:#0C447C;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 8px;">● Lower Spenders · RM 0–500</div>
+        <div id="chart_spend_low"></div>
+
+        <div style="font-size:12px;color:#3C3489;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 8px;">● Higher Spenders · RM 500+</div>
+        <div id="chart_spend_high"></div>
       </div>
     </div>
   </section>
@@ -4202,7 +4205,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.25'; // v5.49 — Spending Power 加 2 张趋势图: Lower(0-500蓝色系) + Higher(500+紫色系), 每档一条线随月份变化
+const DATA_VERSION = '3.25'; // v5.49 — Spending Power 加 2 张趋势图 (Lower 0-500 蓝色系 / Higher 500+ 紫色系) + 调整布局: 表格在前,3张图在后
 
 // ---------- State ----------
 let state = {
@@ -9126,32 +9129,28 @@ function renderSpendingPower() {
     yFmtRight: v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0)
   });
 
-  // v5.49: 5. 两张趋势折线图 — 6 档拆成低3档+高3档,各自Y轴自适应
-  // X轴=月份, Y轴=人数, 每档一条线
+  // v5.49: 5. 趋势折线图 — Lower (0-500) 蓝色系 + Higher (500+) 紫色系
+  // 每档一条折线, 12 个月趋势
   const monthLabels = mArr.map(m => fmt.monthShort(m));
-  // counts[mi][bi] → 转成每档的12月数据数组
-  const seriesData = SPEND_BUCKETS.map((_, bi) => mArr.map((_, mi) => counts[mi][bi]));
-
-  // Lower spenders: 0-100 / 100-200 / 200-500 (蓝色系: 浅→中→深)
+  // Lower: 0-100 / 100-200 / 200-500 (索引 0,1,2) 浅蓝→深蓝
   AdsChart.render('chart_spend_low', {
-    title: 'Lower Spenders by Month',
+    title: 'Lower Spenders Trend',
     labels: monthLabels,
     series: [
-      { label: '0-100',   color: '#B5D4F4', data: seriesData[0], type: 'line' },
-      { label: '100-200', color: '#378ADD', data: seriesData[1], type: 'line' },
-      { label: '200-500', color: '#0C447C', data: seriesData[2], type: 'line' }
+      { label: '0-100',   color: '#B5D4F4', type: 'line', data: counts.map(row => row[0]) },
+      { label: '100-200', color: '#378ADD', type: 'line', data: counts.map(row => row[1]) },
+      { label: '200-500', color: '#0C447C', type: 'line', data: counts.map(row => row[2]) }
     ],
     yFmt: v => v.toFixed(0)
   });
-
-  // Higher spenders: 500-1k / 1k-2k / 2k+ (紫色系: 浅→中→深)
+  // Higher: 500-1k / 1k-2k / 2k+ (索引 3,4,5) 浅紫→深紫
   AdsChart.render('chart_spend_high', {
-    title: 'Higher Spenders by Month',
+    title: 'Higher Spenders Trend',
     labels: monthLabels,
     series: [
-      { label: '500-1k', color: '#CECBF6', data: seriesData[3], type: 'line' },
-      { label: '1k-2k',  color: '#7F77DD', data: seriesData[4], type: 'line' },
-      { label: '2k+',    color: '#3C3489', data: seriesData[5], type: 'line' }
+      { label: '500-1k', color: '#CECBF6', type: 'line', data: counts.map(row => row[3]) },
+      { label: '1k-2k',  color: '#7F77DD', type: 'line', data: counts.map(row => row[4]) },
+      { label: '2k+',    color: '#3C3489', type: 'line', data: counts.map(row => row[5]) }
     ],
     yFmt: v => v.toFixed(0)
   });
