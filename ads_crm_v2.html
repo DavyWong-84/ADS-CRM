@@ -438,7 +438,9 @@ table.data.data-t thead th:first-child { background: var(--purple-bg); z-index: 
 table.data.data-t tbody td:first-child { background: #fff; }
 table.data.data-t tr.total-row td:first-child { background: var(--purple-bg); }
 table.data.data-t tfoot td:first-child { background: var(--purple-bg); }
-table.data tr.subheader td:first-child { position: sticky; left: 0; z-index: 2; background: var(--purple-bg); padding: 8px 12px; }
+/* v5.36: subheader 第一列 z-index 之前被这里覆盖回 2,导致紫色行横滚时文字依然重叠
+   提到 4,跟普通行/total行一致 */
+table.data tr.subheader td:first-child { position: sticky; left: 0; z-index: 4; background: var(--purple-bg); padding: 8px 12px; }
 table.data tr.subheader td:not(:first-child) { padding: 0; border-right: none !important; }
 table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 0; }
 /* Last column emphasis removed - use inline styles where needed */
@@ -1907,14 +1909,21 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 @media (max-width: 767px) {
   #contactBackBar { display: none; }
-  /* v4.30: Mobile — filters are moved INSIDE unified-header by JS, so they inherit
-     the header's sticky behavior. No own sticky/margin/shadow needed. */
+  /* v5.30: bumped padding-top from 8px → 14px so the search input
+     doesn't touch the unified-header's border-bottom line.
+     v5.36: search 已经自带 margin-top:8px, 这里 padding-top 缩到 6px 避免堆叠太大 */
   .contact-filters-inline {
-    padding: 8px 0 0;
+    padding: 6px 0 0;
     margin: 0;
     background: transparent;
   }
   .contact-filters-inline .compact-filter { margin-bottom: 6px; }
+  /* v5.35: ensure mobile search row spans full width */
+  .contact-filters-inline .contact-search-row {
+    width: 100%;
+    flex: 1 1 100%;
+    min-width: 0;
+  }
 }
 /* Mobile: form open = full screen */
 .contact-form-open .contact-list-panel { display: none !important; }
@@ -2753,7 +2762,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.34</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.36</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2838,9 +2847,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <!-- Row 1: page title + inline search (mobile) + actions -->
       <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
         <!-- v5.33: removed page title (Contact) — kept hidden search wrapper for backward compat -->
-        <div class="contact-title-search" style="display:none;position:relative;flex:0 0 180px;min-width:0;align-self:flex-end;">
+        <!-- v5.36: 下边距由 .contact-filters-inline 的 padding-top 提供, 这里只留 margin-top -->
+        <div class="contact-title-search" style="display:none;position:relative;flex:1 1 100%;min-width:0;margin:8px 0 0;">
           <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-          <input type="text" id="searchInputTitle" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value);toggleSearchClearBtn()" style="width:100%;height:34px;padding:0 30px 0 32px;font-size:13px;border:1px solid var(--border);border-radius: 8px;background:var(--surface-2);outline:none;">
+          <input type="text" id="searchInputTitle" autocomplete="off" placeholder="Search" oninput="onSearchInputChange(this.value);toggleSearchClearBtn()" style="width:100%;height:38px;padding:0 30px 0 32px;font-size:13px;border:1px solid var(--border);border-radius: 8px;background:var(--surface-2);outline:none;">
           <button type="button" id="searchClearBtn" onclick="clearTitleSearch()" aria-label="Clear" style="display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;border:none;background:var(--border);color:var(--gray);cursor:pointer;align-items:center;justify-content:center;padding:0;font-size:12px;line-height:1;">✕</button>
         </div>
         <!-- v5.10: Mobile + New Lead button removed — bottom-right floating + button is enough -->
@@ -4163,7 +4173,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.10'; // v5.34 — Outlet Comparison 5个子标题文字改回普通色 (只保留圆点颜色)
+const DATA_VERSION = '3.12'; // v5.36 — Contact手机端search间距收紧 + 修subheader紫色行横滚时左列文字重叠
 
 // ---------- State ----------
 let state = {
