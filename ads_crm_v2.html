@@ -2748,7 +2748,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.29</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.30</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4167,7 +4167,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.05'; // v5.29 — Inbox 修 merge bug：find 改最新匹配（按 leadDate 排序）+ 移除 >30 天自动 Follow Up；任何同号码都弹 modal
+const DATA_VERSION = '3.06'; // v5.30 — Follow Up channel 不再显示 no-lead alert + Outlet Comparison 4 张表配色调亮（紫保持，其余亮版）
 
 // ---------- State ----------
 let state = {
@@ -10171,10 +10171,10 @@ function renderRevenueSummary(mArr) {
     html += `<div class="card" style="margin-top:14px;">
       <div class="section-title"><h3>Outlet Comparison ${yearLabel}</h3></div>
       ${buildCmpTable('Total Revenue',              '% = outlet share of monthly total', 'var(--purple)',  getTotal,   getMonthBase,  true)}
-      ${buildCmpTable('New Customer Revenue',       '% = share of that outlet revenue',  '#0F5132',   getNew,     getOutletBase, false)}
-      ${buildCmpTable('Walk-in Revenue',            '% = share of that outlet revenue',  '#C2410C',   getWalkin,  getOutletBase, false)}
-      ${buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  '#78350F',   getOld,     getOutletBase, false)}
-      ${buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  '#1E40AF',   getAds,     getOutletBase, false)}
+      ${buildCmpTable('New Customer Revenue',       '% = share of that outlet revenue',  '#22C55E',   getNew,     getOutletBase, false)}
+      ${buildCmpTable('Walk-in Revenue',            '% = share of that outlet revenue',  '#FB923C',   getWalkin,  getOutletBase, false)}
+      ${buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  '#D97706',   getOld,     getOutletBase, false)}
+      ${buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  '#3B82F6',   getAds,     getOutletBase, false)}
     </div>`;
   }
 
@@ -11552,6 +11552,8 @@ function computeAlerts() {
   }
 
   state.channels.filter(c => c.active !== false).forEach(ch => {
+    // v5.30: Skip Follow Up channel — it's not an acquisition source, no leads is normal
+    if (ch.platform === 'followup') return;
     const chLeads = state.leads.filter(l => l.channelId === ch.id && l.leadDate);
     if (chLeads.length === 0) return;
     const lastDate = chLeads.map(l => l.leadDate).sort().pop();
