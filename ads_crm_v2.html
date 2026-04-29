@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.50</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.51</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3256,8 +3256,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div class="table-wrap"><table class="data" id="spendRevenueTable"></table></div>
 
         <div style="display:flex;align-items:center;justify-content:space-between;margin:32px 0 8px;flex-wrap:wrap;gap:8px;">
-          <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;">● Revenue &amp; Head Count by Spending Power</div>
-          <select id="spendChartMonth" class="cf-select" style="padding:4px 10px;font-size:11px;" onchange="renderSpendingPower()">
+          <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;flex:1 1 auto;">● Revenue &amp; Head Count by Spending Power</div>
+          <span id="popWrap_popSel_spendChartMonth" data-pop-wrap-for="spendChartMonth" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_spendChartMonth" class="pop-trigger" onclick="openPopover(event, 'popSel_spendChartMonth')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Full year</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="spendChartMonth" data-pop="1" class="cf-select" style="padding: 4px 10px; font-size: 11px; margin-left: auto; display: none;" onchange="renderSpendingPower()" data-pop-placeholder="Full year" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_spendChartMonth">
             <option value="all">Full year</option>
           </select>
         </div>
@@ -4210,7 +4213,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.26'; // v5.50 — 修Distribution图bug:Revenue改紫色柱(左轴)+HeadCount改橙色折线(右轴),加月份select只影响这张图
+const DATA_VERSION = '3.27'; // v5.51 — 修3个bug: (1)折线dot tooltip用yFmtRight (Head Count 不再显示RMxxx) (2)月份select加data-pop升级popover (3)Revenue tooltip用完整格式 RM x,xxx.xx
 
 // ---------- State ----------
 let state = {
@@ -4633,7 +4636,8 @@ const AdsChart = {
         const bh = Math.max((v / lMax) * cH, 2);
         const x = pL + barW * i + barW * 0.09 + bW * si;
         const y = pT + cH - bh;
-        const lbl = cfg.yFmt ? cfg.yFmt(v) : AdsChart.fmtK(v);
+        // v5.51: tooltip 优先用 tipFmt (完整格式如 RM x,xxx.xx), 没设才用 yFmt (Y轴紧凑格式)
+        const lbl = cfg.tipFmt ? cfg.tipFmt(v) : (cfg.yFmt ? cfg.yFmt(v) : AdsChart.fmtK(v));
         const month = cfg.labels[i] || '';
         const tip = encodeURIComponent(JSON.stringify({ label: s.label, month, value: lbl, color: s.color }));
         bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bW-1).toFixed(1)}" height="${bh.toFixed(1)}" fill="${s.color}" rx="3" opacity="0.92" style="cursor:pointer;" data-tip="${tip}" onclick="showChartTip(event,this)" ontouchstart="showChartTip(event,this)"/>`;
@@ -4659,9 +4663,11 @@ const AdsChart = {
       });
       if (d) linePaths += `<path d="${d.trim()}" fill="none" stroke="${clr}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`;
       // Uniform dots with tooltip
+      // v5.51 bug fix: 右轴 series 必须用 yFmtRight (之前一律用 yFmt 导致 Head Count 显示成 'RM166')
+      const dotFmt = useR ? (cfg.yFmtRight || (v => v.toFixed(0))) : (cfg.yFmt || AdsChart.fmtK);
       const validPts = pts.map((p, i) => ({ p, v: s.data[i], i })).filter(x => x.p && x.v != null && x.v !== 0);
       validPts.forEach(({ p, v, i }) => {
-        const lbl = cfg.yFmt ? cfg.yFmt(v) : AdsChart.fmtK(v);
+        const lbl = dotFmt(v);
         const month = cfg.labels[i] || '';
         const tip = encodeURIComponent(JSON.stringify({ label: s.label, month, value: lbl, color: clr }));
         lineDots += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#fff" stroke="${clr}" stroke-width="2" style="cursor:pointer;" data-tip="${tip}" onclick="showChartTip(event,this)" ontouchstart="showChartTip(event,this)"/>`;
@@ -9127,6 +9133,8 @@ function renderSpendingPower() {
     monthSel.innerHTML = '<option value="all">Full year</option>' +
       activeM.map(m => `<option value="${m}">${fmt.monthShort(m)}</option>`).join('');
     monthSel.value = activeM.includes(currentVal) || currentVal === 'all' ? currentVal : 'all';
+    // v5.51: 填完选项后必须调 upgradeAllPopSelects 让 popover 同步内容 (跟其他 select 一致)
+    if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects();
   }
   const selMonth = monthSel ? monthSel.value : 'all';
 
@@ -9151,7 +9159,9 @@ function renderSpendingPower() {
       { label: 'Head Count',   color: '#BA7517', type: 'line', axis: 'right', data: chartCounts } // 折线, 右轴
     ],
     rightAxis: true,
+    // Y 轴标签紧凑 (RM 22.7k); tooltip 用完整格式 (RM 22,750.00)
     yFmt: v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0),
+    tipFmt: v => fmt.money(v),
     yFmtRight: v => v.toFixed(0)
   });
 
