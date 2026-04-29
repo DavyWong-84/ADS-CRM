@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.41</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.45</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2915,7 +2915,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </button></span>
           </div>
           <!-- Filter row 2: Status tabs -->
-          <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
+          <div class="filter-tabs-wrap at-start" id="listFiltersWrap">
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
         </div>
@@ -3168,15 +3168,22 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
         </select>
+        <!-- v5.44: Outlet filter (只在 Spending Power tab 显示) -->
+        <span id="popWrap_popSel_spendOutletSelect" data-pop-wrap-for="spendOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_spendOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_spendOutletSelect')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="spendOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderSpendingPower()" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_spendOutletSelect">
+          <option value="all">All outlets</option>
+        </select>
       </div>
       <!-- v3.61: Pill tabs inside header -->
       <div class="pill-tabs-inheader">
         <button type="button" id="adsPill_cost" onclick="switchAdsTab('cost')" class="pill-tab active">Ads Cost</button>
         <button type="button" id="adsPill_roas" onclick="switchAdsTab('roas')" class="pill-tab">Sales &amp; ROAS</button>
+        <button type="button" id="adsPill_spend" onclick="switchAdsTab('spend')" class="pill-tab">Spending Power</button>
         <button type="button" id="adsPill_funnel" onclick="switchAdsTab('funnel')" class="pill-tab">Funnel</button>
         <button type="button" id="adsPill_cpl" onclick="switchAdsTab('cpl')" class="pill-tab">CPL / CPA / CPS</button>
         <button type="button" id="adsPill_tmkt" onclick="switchAdsTab('tmkt')" class="pill-tab">Marketing Cost</button>
-        <button type="button" id="adsPill_spend" onclick="switchAdsTab('spend')" class="pill-tab">Spending Power</button>
       </div>
     </div>
     <div class="unified-header-spacer unified-header-spacer-tall"></div>
@@ -3239,13 +3246,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- v5.41: Spending Power panel — 客户消费力分布 (人数 + 总收入 双表) -->
+      <!-- v5.44: outlet select 已移到顶部 filter 行 (跟 Year/Channel 并排,只在此 tab 显示) -->
       <div id="adsPanel_spend" style="display:none;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-          <span style="font-size:11px;color:var(--gray);font-weight:500;">Outlet:</span>
-          <select id="spendOutletSelect" class="cf-select" onchange="renderSpendingPower()">
-            <option value="all">All outlets</option>
-          </select>
-        </div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">● Customer Count by Spending Power</div>
         <div class="table-wrap"><table class="data" id="spendCountTable"></table></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">● Total Revenue by Spending Power</div>
@@ -4192,7 +4194,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.17'; // v5.41 — Ads Spend 加 Spending Power pill (客户消费力分布,6档,人数表+收入表,带年/Channel/Outlet联动)
+const DATA_VERSION = '3.21'; // v5.45 — Spending Power pill 调整位置 (Sales & ROAS 右边)
 
 // ---------- State ----------
 let state = {
@@ -8666,6 +8668,9 @@ function switchAdsTab(key) {
       pill.style.fontWeight = '';
     }
   });
+  // v5.44: 只在 Spending Power tab 显示 outlet select
+  const outletSel = document.getElementById('spendOutletSelect');
+  if (outletSel) outletSel.style.display = (key === 'spend') ? '' : 'none';
   // Re-render only the active section for performance
   renderAdsSpendSection(key);
 }
@@ -9014,9 +9019,11 @@ const SPEND_BUCKETS = [
 ];
 
 function getSpendBucketIndex(amount) {
-  if (!amount || amount <= 0) return -1;
+  // v5.43: spend=0 (done 但没填金额) 也归入 0-100 档,跟 Appt Show Up 总数一致
+  const a = Number(amount) || 0;
+  if (a < 0) return -1;
   for (let i = 0; i < SPEND_BUCKETS.length; i++) {
-    if (amount >= SPEND_BUCKETS[i].min && amount < SPEND_BUCKETS[i].max) return i;
+    if (a >= SPEND_BUCKETS[i].min && a < SPEND_BUCKETS[i].max) return i;
   }
   return -1;
 }
@@ -9059,7 +9066,6 @@ function renderSpendingPower() {
     if (!l.apptDate) return false;
     const m = l.apptDate.slice(0, 7);
     if (!inYear(m)) return false;
-    if (!l.spend || l.spend <= 0) return false;
     if (outletId !== 'all' && l.locationId !== outletId) return false;
     if (!matchChannel(l)) return false;
     return true;
@@ -9095,8 +9101,9 @@ function _buildSpendTable(mArr, data, type, isMobile) {
     return `<tbody><tr><td style="text-align:center;padding:30px;color:var(--gray);">${type==='count' ? '无成交客户数据' : '无成交收入数据'}</td></tr></tbody>`;
   }
 
-  const fmtVal = (v) => type === 'count' ? (v>0 ? v : '—') : (v>0 ? fmt.moneyK(v) : '—');
-  const fmtPct = (v, total) => total>0 && v>0 ? ((v/total)*100).toFixed(1)+'%' : '';
+  // v5.43: 金额用 fmt.money (RM xxx.xx 带小数点),不用 moneyK (整数+千分位)
+  const fmtVal = (v) => type === 'count' ? (v>0 ? v : '—') : (v>0 ? fmt.money(v) : '—');
+  const fmtPct = (v, total) => total>0 && v>0 ? '(' + ((v/total)*100).toFixed(1)+'%)' : '';
 
   // 行总(每个月该行总和) = 用于算占比分母
   const monthTotals = activeMonthIdxs.map(mi => data[mi].reduce((s,v)=>s+v,0));
