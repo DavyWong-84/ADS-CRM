@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.51</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.52</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4213,7 +4213,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.27'; // v5.51 — 修3个bug: (1)折线dot tooltip用yFmtRight (Head Count 不再显示RMxxx) (2)月份select加data-pop升级popover (3)Revenue tooltip用完整格式 RM x,xxx.xx
+const DATA_VERSION = '3.28'; // v5.52 — Spending Power: Head Count 颜色橙→黑, 折线圆圈上方永久显示数字 (新加 showLabel 选项 给AdsChart)
 
 // ---------- State ----------
 let state = {
@@ -4671,6 +4671,10 @@ const AdsChart = {
         const month = cfg.labels[i] || '';
         const tip = encodeURIComponent(JSON.stringify({ label: s.label, month, value: lbl, color: clr }));
         lineDots += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#fff" stroke="${clr}" stroke-width="2" style="cursor:pointer;" data-tip="${tip}" onclick="showChartTip(event,this)" ontouchstart="showChartTip(event,this)"/>`;
+        // v5.52: series 设 showLabel=true 时在 dot 上方画永久数字标签
+        if (s.showLabel) {
+          lineDots += `<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="${mobile?10:11}" font-weight="500" fill="${clr}">${lbl}</text>`;
+        }
       });
     });
 
@@ -9156,7 +9160,7 @@ function renderSpendingPower() {
     labels: chartLabels,
     series: [
       { label: 'Revenue (RM)', color: 'var(--purple)',  data: chartRevs }, // 柱, 左轴
-      { label: 'Head Count',   color: '#BA7517', type: 'line', axis: 'right', data: chartCounts } // 折线, 右轴
+      { label: 'Head Count',   color: '#000000', type: 'line', axis: 'right', showLabel: true, data: chartCounts } // 折线, 右轴, 圆圈上显示数字
     ],
     rightAxis: true,
     // Y 轴标签紧凑 (RM 22.7k); tooltip 用完整格式 (RM 22,750.00)
