@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.49</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.50</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3255,7 +3255,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">● Total Revenue by Spending Power</div>
         <div class="table-wrap"><table class="data" id="spendRevenueTable"></table></div>
 
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 8px;">● Customer Distribution (count vs revenue)</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:32px 0 8px;flex-wrap:wrap;gap:8px;">
+          <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;">● Revenue &amp; Head Count by Spending Power</div>
+          <select id="spendChartMonth" class="cf-select" style="padding:4px 10px;font-size:11px;" onchange="renderSpendingPower()">
+            <option value="all">Full year</option>
+          </select>
+        </div>
         <div id="chart_spend"></div>
 
         <div style="font-size:12px;color:#0C447C;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 8px;">● Lower Spenders · RM 0–500</div>
@@ -4205,7 +4210,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.25'; // v5.49 — Spending Power 加 2 张趋势图 (Lower 0-500 蓝色系 / Higher 500+ 紫色系) + 调整布局: 表格在前,3张图在后
+const DATA_VERSION = '3.26'; // v5.50 — 修Distribution图bug:Revenue改紫色柱(左轴)+HeadCount改橙色折线(右轴),加月份select只影响这张图
 
 // ---------- State ----------
 let state = {
@@ -9112,21 +9117,42 @@ function renderSpendingPower() {
   document.getElementById('spendCountTable').innerHTML   = _buildSpendTable(mArr, counts, 'count', isMobile);
   document.getElementById('spendRevenueTable').innerHTML = _buildSpendTable(mArr, revs,   'rev',   isMobile);
 
-  // v5.48: 4. 双色柱状图 — 6 档汇总, 左轴=人数, 右轴=收入
-  // 把 12 个月加总成每档的总人数/总收入,这样图能一眼看主力客群
-  const bucketTotals_count = SPEND_BUCKETS.map((_, bi) => counts.reduce((s, row) => s + row[bi], 0));
-  const bucketTotals_rev   = SPEND_BUCKETS.map((_, bi) => revs.reduce((s, row) => s + row[bi], 0));
+  // v5.50: 4. 双轴图 — 紫柱=Revenue (左轴), 橙折线=Head Count (右轴)
+  // 支持月份 select: "Full year" 用 12 月加总, 选某月用单月数据
+  // 同时填充月份 select 的选项 (Full year + 有数据的月份)
+  const monthSel = document.getElementById('spendChartMonth');
+  if (monthSel) {
+    const activeM = mArr.filter((_, mi) => counts[mi].some(v => v > 0) || revs[mi].some(v => v > 0));
+    const currentVal = monthSel.value || 'all';
+    monthSel.innerHTML = '<option value="all">Full year</option>' +
+      activeM.map(m => `<option value="${m}">${fmt.monthShort(m)}</option>`).join('');
+    monthSel.value = activeM.includes(currentVal) || currentVal === 'all' ? currentVal : 'all';
+  }
+  const selMonth = monthSel ? monthSel.value : 'all';
+
+  let chartCounts, chartRevs;
+  if (selMonth === 'all') {
+    // Full year: 12月加总到每档
+    chartCounts = SPEND_BUCKETS.map((_, bi) => counts.reduce((s, row) => s + row[bi], 0));
+    chartRevs   = SPEND_BUCKETS.map((_, bi) => revs.reduce((s, row) => s + row[bi], 0));
+  } else {
+    // 单月: 取那一行
+    const mi = mArr.indexOf(selMonth);
+    chartCounts = mi >= 0 ? [...counts[mi]] : SPEND_BUCKETS.map(() => 0);
+    chartRevs   = mi >= 0 ? [...revs[mi]]   : SPEND_BUCKETS.map(() => 0);
+  }
   const chartLabels = SPEND_BUCKETS.map(b => b.label);
+
   AdsChart.render('chart_spend', {
-    title: 'Customer Count vs Revenue by Spending Power',
+    title: '',
     labels: chartLabels,
     series: [
-      { label: 'Count',   color: 'var(--purple)',         data: bucketTotals_count, axis: 'left'  },
-      { label: 'Revenue', color: 'var(--followup-color)', data: bucketTotals_rev,   axis: 'right' }
+      { label: 'Revenue (RM)', color: 'var(--purple)',  data: chartRevs }, // 柱, 左轴
+      { label: 'Head Count',   color: '#BA7517', type: 'line', axis: 'right', data: chartCounts } // 折线, 右轴
     ],
     rightAxis: true,
-    yFmt: v => v.toFixed(0),
-    yFmtRight: v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0)
+    yFmt: v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0),
+    yFmtRight: v => v.toFixed(0)
   });
 
   // v5.49: 5. 趋势折线图 — Lower (0-500) 蓝色系 + Higher (500+) 紫色系
