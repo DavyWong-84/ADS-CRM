@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 910px;"><head>
+<html lang="en" style="--uheader-h: 57px; --app-vh: 910px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2759,14 +2759,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 <meta name="theme-color" content="var(--purple)">
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQWRzIENSTSDigJQgVG9iaWIgTGVlIiwic2hvcnRfbmFtZSI6IkFkcyBDUk0iLCJkZXNjcmlwdGlvbiI6IkFkcyBkYXRhICYgbGVhZCBtYW5hZ2VtZW50Iiwic3RhcnRfdXJsIjoiYWRzX2NybV92Mi5odG1sIiwic2NvcGUiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiM3MTMyZjUiLCJ0aGVtZV9jb2xvciI6IiM3MTMyZjUiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhkcFpIUm9QU0l4T1RJaUlHaGxhV2RvZEQwaU1Ua3lJaUIyYVdWM1FtOTRQU0l3SURBZ01Ua3lJREU1TWlJK0NpQWdQSEpsWTNRZ2QybGtkR2c5SWpFNU1pSWdhR1ZwWjJoMFBTSXhPVElpSUhKNFBTSTBNaUlnY25rOUlqUXlJaUJtYVd4c1BTSWpOekV6TW1ZMUlpOCtDaUFnUEhCaGRHZ2daRDBpVFRZeExqUWdORGt1TUNCTU9UWXVNQ0F5Tmk0MUlFd3hNekF1TmlBME9TNHdJRXd4TURrdU9DQTBPUzR3SUV3eE1Ea3VPQ0EyT1M0M0lFdzRNaTR5SURZNUxqY2dURGd5TGpJZ05Ea3VNQ0JhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU9ESXVNaUlnZVQwaU5UY3VOaUlnZDJsa2RHZzlJakkzTGpZaUlHaGxhV2RvZEQwaU1pNDFPU0lnY25nOUlqRXVNRFFpSUdacGJHdzlJaU0zTVRNeVpqVWlMejRLSUNBOGNtVmpkQ0I0UFNJNE1pNHlJaUI1UFNJMk1pNDRJaUIzYVdSMGFEMGlNamN1TmlJZ2FHVnBaMmgwUFNJeUxqVTVJaUJ5ZUQwaU1TNHdOQ0lnWm1sc2JEMGlJemN4TXpKbU5TSWdiM0JoWTJsMGVUMGlNQzQxSWk4K0NpQWdQSFJsZUhRZ2VEMGlPVFl1TUNJZ2VUMGlNVEU0TGpBNElpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqTTJMamtpSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0l4TGpVMElqNUJSRk04TDNSbGVIUStDaUFnUEhSbGVIUWdlRDBpT1RZdU1DSWdlVDBpTVRZd0xqTXlJaUJtYjI1MExXWmhiV2xzZVQwaUxXRndjR3hsTFhONWMzUmxiU3dnUW14cGJtdE5ZV05UZVhOMFpXMUdiMjUwTENBblUyVm5iMlVnVlVrbkxDQlNiMkp2ZEc4c0lDZElaV3gyWlhScFkyRWdUbVYxWlNjc0lFRnlhV0ZzTENCellXNXpMWE5sY21sbUlpQm1iMjUwTFhkbGFXZG9kRDBpT0RBd0lpQm1iMjUwTFhOcGVtVTlJak0yTGpraUlHWnBiR3c5SWlObVptWm1abVlpSUhSbGVIUXRZVzVqYUc5eVBTSnRhV1JrYkdVaUlHeGxkSFJsY2kxemNHRmphVzVuUFNJeExqVTBJajVEVWswOEwzUmxlSFErQ2p3dmMzWm5QZz09Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSTFNVElpSUdobGFXZG9kRDBpTlRFeUlpQjJhV1YzUW05NFBTSXdJREFnTlRFeUlEVXhNaUkrQ2lBZ1BISmxZM1FnZDJsa2RHZzlJalV4TWlJZ2FHVnBaMmgwUFNJMU1USWlJSEo0UFNJeE1USWlJSEo1UFNJeE1USWlJR1pwYkd3OUlpTTNNVE15WmpVaUx6NEtJQ0E4Y0dGMGFDQmtQU0pOTVRZekxqZ2dNVE13TGpZZ1RESTFOaTR3SURjd0xqY2dURE0wT0M0eUlERXpNQzQySUV3eU9USXVPU0F4TXpBdU5pQk1Namt5TGprZ01UZzFMamtnVERJeE9TNHhJREU0TlM0NUlFd3lNVGt1TVNBeE16QXVOaUJhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU1qRTVMakVpSUhrOUlqRTFNeTQySWlCM2FXUjBhRDBpTnpNdU55SWdhR1ZwWjJoMFBTSTJMamt4SWlCeWVEMGlNaTQzTmlJZ1ptbHNiRDBpSXpjeE16Sm1OU0l2UGdvZ0lEeHlaV04wSUhnOUlqSXhPUzR4SWlCNVBTSXhOamN1TkNJZ2QybGtkR2c5SWpjekxqY2lJR2hsYVdkb2REMGlOaTQ1TVNJZ2NuZzlJakl1TnpZaUlHWnBiR3c5SWlNM01UTXlaalVpSUc5d1lXTnBkSGs5SWpBdU5TSXZQZ29nSUR4MFpYaDBJSGc5SWpJMU5pNHdJaUI1UFNJek1UUXVPRGdpSUdadmJuUXRabUZ0YVd4NVBTSXRZWEJ3YkdVdGMzbHpkR1Z0TENCQ2JHbHVhMDFoWTFONWMzUmxiVVp2Ym5Rc0lDZFRaV2R2WlNCVlNTY3NJRkp2WW05MGJ5d2dKMGhsYkhabGRHbGpZU0JPWlhWbEp5d2dRWEpwWVd3c0lITmhibk10YzJWeWFXWWlJR1p2Ym5RdGQyVnBaMmgwUFNJNE1EQWlJR1p2Ym5RdGMybDZaVDBpT1RndU15SWdabWxzYkQwaUkyWm1abVptWmlJZ2RHVjRkQzFoYm1Ob2IzSTlJbTFwWkdSc1pTSWdiR1YwZEdWeUxYTndZV05wYm1jOUlqUXVNVEFpUGtGRVV6d3ZkR1Y0ZEQ0S0lDQThkR1Y0ZENCNFBTSXlOVFl1TUNJZ2VUMGlOREkzTGpVeUlpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqazRMak1pSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0kwTGpFd0lqNURVazA4TDNSbGVIUStDand2YzNablBnPT0iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJhbnkifV19">
 </head>
-<body class="sidebar-collapsed">
+<body class="">
 
 <header class="topbar">
   <div class="brand">
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.52</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.53</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2804,12 +2804,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <button id="topbarMobileMenuBtn" onclick="toggleMobileMenuPopover(event)" aria-label="Menu" title="Menu" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
       </button>
-      <div id="topbarMobileMenuPopover" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--border);border-radius: 8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:180px;padding:6px;z-index:200;">
-        <button onclick="closeMobileMenuPopover();nav('entry');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius: 8px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
+      <div id="topbarMobileMenuPopover" style="display: none; position: absolute; top: calc(100% + 6px); right: 0px; background: rgb(255, 255, 255); border: 1px solid var(--border); border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.12) 0px 6px 20px; min-width: 180px; padding: 6px; z-index: 200;">
+        <button onclick="closeMobileMenuPopover();nav('entry');" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--black); text-align: left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
           <span>Data Entry</span>
         </button>
-        <button onclick="closeMobileMenuPopover();nav('settings');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius: 8px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
+        <button onclick="closeMobileMenuPopover();nav('settings');" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--black); text-align: left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
           <span>Settings</span>
         </button>
@@ -2860,20 +2860,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <!-- v5.10: Mobile + New Lead button removed — bottom-right floating + button is enough -->
       </div>
       <!-- v4.30: Slot where filters go on mobile (JS moves .contact-filters-inline here when < 768px) -->
-      <div id="contactFiltersMobileSlot"></div>
-    </div>
-    <div class="unified-header-spacer"></div>
-
-    <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
-    <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-      <span>Searching: <strong id="searchActiveTerm"></strong></span>
-      <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
-    </div>
-
-    <div class="contact-layout">
-      <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 66.1875px; max-height: 843.812px;"><div class="contact-filters-inline">
+      <div id="contactFiltersMobileSlot"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <!-- v4.93: + New Lead button on left of search (desktop only) -->
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
@@ -2918,7 +2905,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
-        </div>
+        </div></div>
+    </div>
+    <div class="unified-header-spacer"></div>
+
+    <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
+    <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <span>Searching: <strong id="searchActiveTerm"></strong></span>
+      <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
+    </div>
+
+    <div class="contact-layout">
+      <!-- LEFT: List panel (contains filters + list + load more) -->
+      <div class="contact-list-panel" id="contactListPanel">
         <!-- v4.23: Filters moved here from unified-header -->
         
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
@@ -2927,7 +2927,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 66.1875px; height: 843.812px;">
+      <div class="contact-form-panel" id="contactFormPanel">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -2968,10 +2968,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-04-29</span>
+                      <span id="f_leadDate_label">2026-04-30</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-04-29">
+                    <input type="hidden" id="f_leadDate" value="2026-04-30">
                   </div>
                 </div>
               </div>
@@ -4213,7 +4213,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.28'; // v5.52 — Spending Power: Head Count 颜色橙→黑, 折线圆圈上方永久显示数字 (新加 showLabel 选项 给AdsChart)
+const DATA_VERSION = '3.29'; // v5.53 — Spending Power: 柱子改浅紫 #CECBF6, dot 上方加 % 副标签 (该档/全部 head count); AdsChart 加 subLabelFn 选项
 
 // ---------- State ----------
 let state = {
@@ -4672,8 +4672,16 @@ const AdsChart = {
         const tip = encodeURIComponent(JSON.stringify({ label: s.label, month, value: lbl, color: clr }));
         lineDots += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#fff" stroke="${clr}" stroke-width="2" style="cursor:pointer;" data-tip="${tip}" onclick="showChartTip(event,this)" ontouchstart="showChartTip(event,this)"/>`;
         // v5.52: series 设 showLabel=true 时在 dot 上方画永久数字标签
+        // v5.53: 若 series 还设了 subLabelFn(value, index) 则数字下面再画一行小副标签 (如 %)
         if (s.showLabel) {
-          lineDots += `<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="${mobile?10:11}" font-weight="500" fill="${clr}">${lbl}</text>`;
+          const sub = (typeof s.subLabelFn === 'function') ? s.subLabelFn(v, i) : null;
+          if (sub) {
+            // 双行: 主数字往上挪, 副标签贴近 dot
+            lineDots += `<text x="${p[0].toFixed(1)}" y="${(p[1]-15).toFixed(1)}" text-anchor="middle" font-size="${mobile?10:11}" font-weight="500" fill="${clr}">${lbl}</text>`;
+            lineDots += `<text x="${p[0].toFixed(1)}" y="${(p[1]-5).toFixed(1)}" text-anchor="middle" font-size="${mobile?8:9}" font-weight="400" fill="#666">${sub}</text>`;
+          } else {
+            lineDots += `<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="${mobile?10:11}" font-weight="500" fill="${clr}">${lbl}</text>`;
+          }
         }
       });
     });
@@ -9155,12 +9163,17 @@ function renderSpendingPower() {
   }
   const chartLabels = SPEND_BUCKETS.map(b => b.label);
 
+  // v5.53: 计算总 head count 用于 % 计算
+  const totalHeadCount = chartCounts.reduce((s, v) => s + v, 0);
+  const headCountPct = (v) => totalHeadCount > 0 ? ((v / totalHeadCount) * 100).toFixed(1) + '%' : '';
+
   AdsChart.render('chart_spend', {
     title: '',
     labels: chartLabels,
     series: [
-      { label: 'Revenue (RM)', color: 'var(--purple)',  data: chartRevs }, // 柱, 左轴
-      { label: 'Head Count',   color: '#000000', type: 'line', axis: 'right', showLabel: true, data: chartCounts } // 折线, 右轴, 圆圈上显示数字
+      { label: 'Revenue (RM)', color: '#CECBF6',  data: chartRevs }, // 柱, 左轴, 浅紫
+      // 折线, 右轴, 圆圈上方显示数字 + % (该档/全部)
+      { label: 'Head Count',   color: '#000000', type: 'line', axis: 'right', showLabel: true, subLabelFn: headCountPct, data: chartCounts }
     ],
     rightAxis: true,
     // Y 轴标签紧凑 (RM 22.7k); tooltip 用完整格式 (RM 22,750.00)
