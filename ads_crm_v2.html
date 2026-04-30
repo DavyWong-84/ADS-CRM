@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.65</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.66</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3131,6 +3131,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="storeSelect" data-pop="1" data-pop-icon="location" class="cf-select" data-pop-placeholder="All stores" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_storeSelect" style="display: none;"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
+        <!-- v5.66: Channel filter -->
+        <span id="popWrap_popSel_storeChannelSelect" data-pop-wrap-for="storeChannelSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_storeChannelSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_storeChannelSelect')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">A</span><span>All channels</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="storeChannelSelect" data-pop="1" data-pop-icon="channel" class="cf-select" data-pop-placeholder="All channels" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_storeChannelSelect" style="display: none;">
+          <option value="all">All channels</option>
+          <option value="meta">Meta</option>
+          <option value="google">Google</option>
+          <option value="ofu">Organic+FU</option>
+        </select>
       </div>
       <!-- v3.61: Pill tabs inside header — flows with topbar white area -->
       <div class="pill-tabs-inheader">
@@ -4223,7 +4233,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.41'; // v5.65 — Lead 流程修复: (1)Merge不强制booked,没apptDate保持原status (2)手动+lead删除30天自动FU,所有dup弹modal让用户选
+const DATA_VERSION = '3.42'; // v5.66 — Appt Report 加 channel filter (popover modal, 跟Spending Power/Funnel同款), calcStoreMetrics 自动按 state.storeChannelFilter 过滤
 
 // ---------- State ----------
 let state = {
@@ -4251,6 +4261,7 @@ let state = {
   storeYear: String(new Date().getFullYear()),
   storeMonth: new Date().toISOString().substring(0, 7),
   storeSelected: 'all',
+  storeChannelFilter: 'all', // v5.66: Appt Report 的 channel filter
   adsYear: String(new Date().getFullYear()),
   revYear: String(new Date().getFullYear()),
   revMode: 'detail'
@@ -8040,12 +8051,23 @@ function refreshStoreCustomSelects() {
 }
 
 
-function calcStoreMetrics(storeId, period) {
+function calcStoreMetrics(storeId, period, channelFilter) {
+  // v5.66: channelFilter 可显式传入,或读 state.storeChannelFilter (默认 'all')
+  // 'all' | 'meta' | 'google' | 'ofu' | channelId (具体子channel)
+  const cf = channelFilter || state.storeChannelFilter || 'all';
   // period = 'YYYY-MM' for month, 'YYYY' for year
   const isMonth = period.length === 7;
+  const matchChannel = (l) => {
+    if (cf === 'all') return true;
+    if (cf === 'meta')   return l.platform === 'meta';
+    if (cf === 'google') return l.platform === 'google';
+    if (cf === 'ofu')    return l.platform === 'organic' || l.platform === 'followup';
+    return l.channelId === cf;
+  };
   const leadsInPeriod = state.leads.filter(l => {
     if (!l.locationId || l.locationId !== storeId) return false;
-    return sw(l.apptDate, period);
+    if (!sw(l.apptDate, period)) return false;
+    return matchChannel(l);
   });
   // Leads by lead date in period (for lead-side metrics — but Lead has no store, so use appt date)
   // For store page, we count by appt date since that's when store sees the customer
@@ -13899,6 +13921,9 @@ function init() {
   if (storeToEl) storeToEl.addEventListener('change', e => { state.storeCustomTo = e.target.value; renderStore(); });
   const storeSelectEl = document.getElementById('storeSelect');
   if (storeSelectEl) storeSelectEl.addEventListener('change', e => { state.storeSelected = e.target.value; renderStore(); });
+  // v5.66: storeChannelSelect 监听
+  const storeChSelEl = document.getElementById('storeChannelSelect');
+  if (storeChSelEl) storeChSelEl.addEventListener('change', e => { state.storeChannelFilter = e.target.value; renderStore(); });
   // Contact page month/year picker bindings
   const listMonthEl = document.getElementById('listMonth');
   if (listMonthEl) listMonthEl.addEventListener('change', e => { state.listMonth = e.target.value; state.listPage = 1; saveState(); renderList(); });
