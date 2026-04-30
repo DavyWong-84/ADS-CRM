@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.69</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.70</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4233,7 +4233,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.45'; // v5.69 — 所有表格桌面也隐藏空月 (手机 + 电脑一致)
+const DATA_VERSION = '3.46'; // v5.70 — Appt Report By Race + AVG Spend by Race 桌面也隐藏空月
 
 // ---------- State ----------
 let state = {
@@ -8590,7 +8590,7 @@ function renderStore() {
         const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
         let tbl;
         if (!isMobile) {
-          const activeRD = mRaceData;
+          const activeRD = mRaceData.filter(d => d.s > 0); // v5.70: 桌面也隐藏空月
           const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
           const mHdr = activeRD.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
           tbl = `<div class="section-title"><h3>${title}</h3></div>
@@ -8641,7 +8641,7 @@ function renderStore() {
         });
         let avgTbl;
         if (!isMobile) {
-          const activeAvg = mAvgData;
+          const activeAvg = mAvgData.filter(d => d.hasData); // v5.70: 桌面也隐藏空月
           const mHdr2 = activeAvg.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
           avgTbl = `<div class="section-title" style="margin-top:20px;"><h3>AVG Spend by Race</h3></div>
             <div class="table-wrap"><table class="data data-t">
