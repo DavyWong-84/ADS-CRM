@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.67</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.69</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4233,7 +4233,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.43'; // v5.67 — Appt Report channel filter 真实生效: renderStore 用 try/finally 临时劫持 state.leads, 让所有 30+ 处 state.leads.filter 都自动遵守 channel 过滤
+const DATA_VERSION = '3.45'; // v5.69 — 所有表格桌面也隐藏空月 (手机 + 电脑一致)
 
 // ---------- State ----------
 let state = {
@@ -4954,20 +4954,25 @@ function buildResponsiveTable(title, h4Style, metrics, mArr, fmt12) {
   // totalValue: if provided, use this instead of sum for TOTAL column
   const isMobile = window.innerWidth < 767;
 
+  // v5.69: 桌面 + 手机一致 — 都只显示有数据的月份
+  const activeMonths = mArr.filter((m, mi) => metrics.some(met => (met.values[mi] || 0) !== 0));
+  const activeIdx = activeMonths.map(m => mArr.indexOf(m));
+
   if (!isMobile) {
-    const thd = `<thead><tr><th>Metric</th>${mArr.map(m => `<th class="num">${fmt12(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>`;
+    const thd = `<thead><tr><th>Metric</th>${activeMonths.map(m => `<th class="num">${fmt12(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>`;
     const rows = metrics.map(({ label, values, bold, formatter, totalValue }) => {
+      // TOTAL 仍用全年加总 (即使隐藏空月,总数还是全年12个月的)
       const total = totalValue !== undefined ? totalValue : values.reduce((s, v) => s + (v || 0), 0);
       const fw = bold ? 'font-weight:700;' : '';
+      const cells = activeIdx.map(i => `<td class="num" style="${fw}">${formatter(values[i])}</td>`).join('');
       return `<tr>
         <td style="${fw}">${label}</td>
-        ${values.map(v => `<td class="num" style="${fw}">${formatter(v)}</td>`).join('')}
+        ${cells}
         <td class="num" style="${fw}">${formatter(total)}</td>
       </tr>`;
     }).join('');
     return `<h4 style="${h4Style}">${title}</h4><div class="table-wrap"><table class="data">${thd}<tbody>${rows}</tbody></table></div>`;
   } else {
-    const activeMonths = mArr.filter((m, mi) => metrics.some(met => (met.values[mi] || 0) !== 0));
     const thd = `<thead><tr><th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>${metrics.map(met => `<th class="num"${met.bold?' style="font-weight:700;"':''}>${met.label}</th>`).join('')}</tr></thead>`;
     const rows = activeMonths.map(m => {
       const mi = mArr.indexOf(m);
@@ -8460,9 +8465,16 @@ function renderStore() {
         return tbl;
       };
 
-      // Summary table (all platforms combined) — always shown
+      // Summary table — 数据跟随顶部 channel filter (state.leads 已被 v5.67 劫持过滤)
+      // v5.68: 标题根据 channel filter 显示对应名字
+      const _chLabelMap = { 'all': 'All Platforms', 'meta': 'Meta', 'google': 'Google', 'ofu': 'Organic + Follow Up' };
+      const _curCh = state.storeChannelFilter || 'all';
+      const _chLabel = _chLabelMap[_curCh] || (() => {
+        const ch = state.channels.find(c => c.id === _curCh);
+        return ch ? ch.name : 'All Platforms';
+      })();
       {
-        const sumTitle = locFilter ? `${locsToShow[0]?.name||''} — All Platforms ${platYear}` : `All Outlets — All Platforms ${platYear}`;
+        const sumTitle = locFilter ? `${locsToShow[0]?.name||''} — ${_chLabel} ${platYear}` : `All Outlets — ${_chLabel} ${platYear}`;
         const isMobile = window.innerWidth < 767;
         let sumRows='', sTLd=0,sTA=0,sTS=0,sTN=0,sTSp=0;
         const sumLeadData=[], sumApptData=[], sumShowData=[];
@@ -8478,7 +8490,7 @@ function renderStore() {
           mData.push({m,ld,a,s,n,sp});
         });
         const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
-        const activeM = isMobile ? mData.filter(d => d.ld > 0 || d.a > 0) : mData;
+        const activeM = mData.filter(d => d.ld > 0 || d.a > 0); // v5.69: 桌面也隐藏空月
         if (!isMobile) {
           // Desktop: months as columns, metrics as rows
           const pb = (v, pct) => `${v}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
@@ -8531,7 +8543,7 @@ function renderStore() {
         }
         setTimeout(() => {
           AdsChart.render('chart_plat_all', {
-            title: 'All Platforms — Appt & Show Up',
+            title: _chLabel + ' — Appt & Show Up',
             labels: platMonths.map(m => fmt.monthShort(m)),
             series: [
               ...(!locFilter ? [{ label:'Lead', color: AdsChart.C.gray, data: sumLeadData }] : []),
@@ -8542,10 +8554,7 @@ function renderStore() {
           });
         }, 30);
       }
-
-      html += buildOnePlatTable('Meta', l => l.platform==='meta', 'chart_plat_meta', 'var(--meta-color)', '#93c5fd');
-      html += buildOnePlatTable('Google', l => l.platform==='google', 'chart_plat_google', 'var(--google-color)', '#fde68a');
-      html += buildOnePlatTable('Organic + Follow Up', l => l.platform==='organic'||l.platform==='followup', 'chart_plat_ofu', '#059669', '#6ee7b7');
+      // v5.68: 删除下面 3 组 (Meta / Google / Organic+FU) — 改用顶部 channel filter 切换上面那一组
     }
 
     if (tab === 'race') {
@@ -8880,7 +8889,7 @@ function renderAdsSpend() {
       // Desktop: metrics as rows, months as cols (transposed)
       // Mobile: months as rows, metrics as cols (hide empty months)
       const allM = mArr;
-      const activeM = isMobile ? allM.filter(m => state.adsSpend.some(a => a.month === m)) : allM;
+      const activeM = allM.filter(m => state.adsSpend.some(a => a.month === m)); // v5.69: 桌面也隐藏空月
       const metaVals=[], googleVals=[], totalVals=[], avgVals=[];
       let gMeta=0, gGoogle=0, gDays=0;
       activeM.forEach(m => {
@@ -8914,7 +8923,7 @@ function renderAdsSpend() {
       else if (tab === 'meta') filterChs = state.channels.filter(c => c.platform === 'meta');
       else filterChs = state.channels.filter(c => c.platform === 'google');
       const showChCols = !subCh && filterChs.length > 1;
-      const activeM = isMobile ? mArr.filter(m => state.adsSpend.filter(a=>a.month===m).some(a=>filterChs.find(c=>c.id===a.channelId))) : mArr;
+      const activeM = mArr.filter(m => state.adsSpend.filter(a=>a.month===m).some(a=>filterChs.find(c=>c.id===a.channelId))); // v5.69: 桌面也隐藏空月
       // Always month-as-rows for single channel (both desktop/mobile)
       let html = `<thead><tr><th>Month</th>${showChCols?filterChs.map(c=>`<th class="num">${c.name}</th>`).join(''):''}<th class="num">Total</th><th class="num">AVG/day</th></tr></thead><tbody>`;
       let grandTotal=0, totalDays=0;
@@ -9058,9 +9067,9 @@ function renderAdsSpendSection(key) {
     if (!tmktTable) return;
     const mArr = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
     const isMobile = window.innerWidth < 767;
-    const activeM = isMobile ? mArr.filter(m =>
+    const activeM = mArr.filter(m =>
       state.adsSpend.some(a => a.month === m) || state.thirdPartyFees.some(f => f.month === m)
-    ) : mArr;
+    ); // v5.69: 桌面也隐藏空月
 
     // v5.62: 按 Channel pill 过滤 ads cost + 3rd party (revenue 用总额不变)
     // tab='all' 不过滤; meta/google/ofu 各自挑对应 platform; subCh 进一步限定具体 channel
@@ -10201,9 +10210,9 @@ function renderRevenueSummary(mArr) {
   const wrap = document.getElementById('revenueReportWrap');
   const isMobile = window.innerWidth < 767;
   const locs = state.locations.filter(l => l.active !== false);
-  // On mobile only show active months
+  // v5.69: 桌面 + 手机都只显示有数据的月份
   const year = mArr[0].split('-')[0];
-  const activeM = isMobile ? mArr.filter(m => state.revenue.some(r => r.month === m)) : mArr;
+  const activeM = mArr.filter(m => state.revenue.some(r => r.month === m));
 
   // Compute year totals for summary card
   let grandTotal = 0, grandNew = 0;
@@ -10254,8 +10263,8 @@ function renderRevenueSummary(mArr) {
   // Table removed — chart only
 
   } // end placeholder
-  // All Outlets combined table — desktop shows 12 months; mobile shows active months only
-  const allM12 = isMobile ? mArr.filter(m => state.revenue.some(r => r.month === m)) : mArr;
+  // v5.69: 桌面 + 手机一致 — 都只显示有数据的月份
+  const allM12 = mArr.filter(m => state.revenue.some(r => r.month === m));
   let allYearTotal = 0, allYearNew = 0, allYearAds = 0;
   const allMData = [];
   allM12.forEach(m => {
@@ -10402,7 +10411,7 @@ function renderRevenueSummary(mArr) {
   //   - Total Revenue: % of monthly total (compare outlet contribution)
   //   - Others: % of outlet revenue for that month (compare metric within outlet)
   {
-    const cmpMonths = isMobile ? activeMonths : mArr;
+    const cmpMonths = activeMonths; // v5.69: 桌面也只用有数据的月份
     const yearLabel = year;
     const tcPlain = v => (v == null || v === 0) ? '—' : fmt.money(v);
 
