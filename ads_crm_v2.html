@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 910px; --uheader-h: 57px;"><head>
+<html lang="en" style="--uheader-h: 57px; --app-vh: 910px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.59</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.60</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3263,6 +3263,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </button></span><select id="spendChartMonth" data-pop="1" class="cf-select" style="padding: 4px 10px; font-size: 11px; margin-left: auto; display: none;" onchange="renderSpendingPower()" data-pop-placeholder="Full year" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_spendChartMonth">
             <option value="all">Full year</option>
           </select>
+        </div>
+        <!-- v5.60: 总数卡片 (Total Head Count + Total Ads Sales) -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+          <div style="background:var(--purple-bg);border-radius:6px;padding:10px;">
+            <div style="font-size:10px;color:var(--purple-deep);font-weight:500;letter-spacing:0.4px;text-transform:uppercase;">Total Head Count</div>
+            <div id="spendTotalHeadCount" style="font-size:22px;font-weight:500;color:var(--purple-deep);margin-top:2px;">0</div>
+          </div>
+          <div style="background:var(--purple-bg);border-radius:6px;padding:10px;">
+            <div style="font-size:10px;color:var(--purple-deep);font-weight:500;letter-spacing:0.4px;text-transform:uppercase;">Total Ads Sales</div>
+            <div id="spendTotalAdsSales" style="font-size:22px;font-weight:500;color:var(--purple-deep);margin-top:2px;">RM 0.00</div>
+          </div>
         </div>
         <div id="chart_spend"></div>
 
@@ -4213,7 +4224,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.35'; // v5.59 — Spending Power: 全部 Revenue 改名 Ads Sales (图标题/legend/表格标题)
+const DATA_VERSION = '3.36'; // v5.60 — Spending Power: 图上方加 Total Head Count + Total Ads Sales 紫底卡片; 右轴Y标签从橙→灰 (新加 rightAxisColor 选项)
 
 // ---------- State ----------
 let state = {
@@ -4610,7 +4621,7 @@ const AdsChart = {
       for (let i = 0; i <= gridN; i++) {
         const v = rStep * i;
         const y = pT + sYr(v);
-        yLblR += `<text x="${W-pR+6}" y="${(y+4).toFixed(1)}" text-anchor="start" font-size="${mobile?9:10}" fill="${this.C.orange}">${cfg.yFmtRight ? cfg.yFmtRight(v) : v.toFixed(1)+'x'}</text>`;
+        yLblR += `<text x="${W-pR+6}" y="${(y+4).toFixed(1)}" text-anchor="start" font-size="${mobile?9:10}" fill="${cfg.rightAxisColor || this.C.orange}">${cfg.yFmtRight ? cfg.yFmtRight(v) : v.toFixed(1)+'x'}</text>`;
       }
     }
 
@@ -9176,6 +9187,12 @@ function renderSpendingPower() {
   const totalRevAll = chartRevs.reduce((s, v) => s + v, 0);
   const xSubLabels = chartRevs.map(v => totalRevAll > 0 ? { text: '(' + ((v / totalRevAll) * 100).toFixed(1) + '%)', color: '#A32D2D' } : null);
 
+  // v5.60: 更新总数卡片
+  const totalHcEl = document.getElementById('spendTotalHeadCount');
+  const totalAsEl = document.getElementById('spendTotalAdsSales');
+  if (totalHcEl) totalHcEl.textContent = totalHeadCount > 0 ? totalHeadCount.toLocaleString('en-MY') : '0';
+  if (totalAsEl) totalAsEl.textContent = totalRevAll > 0 ? fmt.money(totalRevAll) : 'RM 0.00';
+
   AdsChart.render('chart_spend', {
     title: '',
     labels: chartLabels,
@@ -9186,6 +9203,7 @@ function renderSpendingPower() {
       { label: 'Head Count',   color: '#9CA3AF', labelColor: '#000000', type: 'line', axis: 'right', showLabel: true, subLabelFn: headCountPct, data: chartCounts }
     ],
     rightAxis: true,
+    rightAxisColor: '#64748B', // v5.60: 右轴Y标签从橙色→灰色 (因为我们的右轴 series 是 Head Count 不是 ROAS)
     // Y 轴标签紧凑 (RM 22.7k); tooltip 用完整格式 (RM 22,750.00)
     yFmt: v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0),
     tipFmt: v => fmt.money(v),
@@ -15480,7 +15498,7 @@ setInterval(syncTopbarToNavBadges, 2000);
 setTimeout(syncTopbarToNavBadges, 500);
 </script>
 
-<div class="toast">Config saved</div><div id="modalBackdrop" class="modal-backdrop"><div class="modal" id="modalInner">
+<div id="modalBackdrop" class="modal-backdrop"><div class="modal" id="modalInner">
       <div class="modal-header">
         <div class="modal-title">Push to GitHub</div>
         <button class="modal-close" onclick="window.__resolveConfirm__(false)">✕</button>
