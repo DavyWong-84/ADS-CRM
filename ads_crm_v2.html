@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.57</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.58</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4213,7 +4213,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.33'; // v5.57 — Spending Power: 折线改浅灰 #9CA3AF, dot 数字仍用黑色 (新加 labelColor 选项)
+const DATA_VERSION = '3.34'; // v5.58 — Spending Power: X轴标签下加红色 Revenue % (该档/全部 revenue); AdsChart 新加 xSubLabels 支持
 
 // ---------- State ----------
 let state = {
@@ -4562,7 +4562,8 @@ const AdsChart = {
     const mobile = W < 520;
     const H = mobile ? 210 : 260;
     const pL = mobile ? 50 : 58, pR = cfg.rightAxis ? (mobile ? 42 : 50) : 14;
-    const pT = 42, pB = mobile ? 36 : 42;
+    // v5.58: 若有 xSubLabels 底部多留 14px 给副标签
+    const pT = 42, pB = (mobile ? 36 : 42) + (cfg.xSubLabels ? 14 : 0);
     const cW = W - pL - pR, cH = H - pT - pB;
     const n = (cfg.labels || []).length;
     if (n === 0) { el.innerHTML = ''; return; }
@@ -4622,6 +4623,13 @@ const AdsChart = {
       if (i % xStep !== 0) return;
       const x = pL + barW * i + barW / 2;
       xLbls += `<text x="${x.toFixed(1)}" y="${(pT+cH+16).toFixed(1)}" text-anchor="middle" font-size="${mobile?9:10}" fill="#64748b">${lbl}</text>`;
+      // v5.58: cfg.xSubLabels[i] 存在则在 X 标签下方再画一行小标签 (可指定颜色)
+      if (cfg.xSubLabels && cfg.xSubLabels[i]) {
+        const sub = cfg.xSubLabels[i];
+        const subText = typeof sub === 'string' ? sub : sub.text;
+        const subColor = typeof sub === 'object' ? (sub.color || '#64748b') : '#64748b';
+        xLbls += `<text x="${x.toFixed(1)}" y="${(pT+cH+30).toFixed(1)}" text-anchor="middle" font-size="${mobile?8:9}" font-weight="500" fill="${subColor}">${subText}</text>`;
+      }
     });
 
     // Bar series
@@ -9164,9 +9172,14 @@ function renderSpendingPower() {
   const totalHeadCount = chartCounts.reduce((s, v) => s + v, 0);
   const headCountPct = (v) => totalHeadCount > 0 ? '(' + ((v / totalHeadCount) * 100).toFixed(1) + '%)' : '';
 
+  // v5.58: 计算每档 Revenue 占总 Revenue 的 % (X 轴下方显示, 红色)
+  const totalRevAll = chartRevs.reduce((s, v) => s + v, 0);
+  const xSubLabels = chartRevs.map(v => totalRevAll > 0 ? { text: '(' + ((v / totalRevAll) * 100).toFixed(1) + '%)', color: '#A32D2D' } : null);
+
   AdsChart.render('chart_spend', {
     title: '',
     labels: chartLabels,
+    xSubLabels,
     series: [
       { label: 'Revenue (RM)', color: '#CECBF6',  data: chartRevs }, // 柱, 左轴, 浅紫
       // 折线, 右轴, 圆圈上方显示数字 + % (该档/全部)
