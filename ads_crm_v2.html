@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.60</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.61</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3276,12 +3276,6 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           </div>
         </div>
         <div id="chart_spend"></div>
-
-        <div style="font-size:12px;color:#0C447C;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 8px;">● Lower Spenders · RM 0–500</div>
-        <div id="chart_spend_low"></div>
-
-        <div style="font-size:12px;color:#3C3489;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 8px;">● Higher Spenders · RM 500+</div>
-        <div id="chart_spend_high"></div>
       </div>
     </div>
   </section>
@@ -4224,7 +4218,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.36'; // v5.60 — Spending Power: 图上方加 Total Head Count + Total Ads Sales 紫底卡片; 右轴Y标签从橙→灰 (新加 rightAxisColor 选项)
+const DATA_VERSION = '3.37'; // v5.61 — Spending Power: 删 Lower/Higher Spenders 两张趋势图 (用户反馈不需要)
 
 // ---------- State ----------
 let state = {
@@ -9210,31 +9204,7 @@ function renderSpendingPower() {
     yFmtRight: v => v.toFixed(0)
   });
 
-  // v5.49: 5. 趋势折线图 — Lower (0-500) 蓝色系 + Higher (500+) 紫色系
-  // 每档一条折线, 12 个月趋势
-  const monthLabels = mArr.map(m => fmt.monthShort(m));
-  // Lower: 0-100 / 100-200 / 200-500 (索引 0,1,2) 浅蓝→深蓝
-  AdsChart.render('chart_spend_low', {
-    title: 'Lower Spenders Trend',
-    labels: monthLabels,
-    series: [
-      { label: '0-100',   color: '#B5D4F4', type: 'line', data: counts.map(row => row[0]) },
-      { label: '100-200', color: '#378ADD', type: 'line', data: counts.map(row => row[1]) },
-      { label: '200-500', color: '#0C447C', type: 'line', data: counts.map(row => row[2]) }
-    ],
-    yFmt: v => v.toFixed(0)
-  });
-  // Higher: 500-1k / 1k-2k / 2k+ (索引 3,4,5) 浅紫→深紫
-  AdsChart.render('chart_spend_high', {
-    title: 'Higher Spenders Trend',
-    labels: monthLabels,
-    series: [
-      { label: '500-1k', color: '#CECBF6', type: 'line', data: counts.map(row => row[3]) },
-      { label: '1k-2k',  color: '#7F77DD', type: 'line', data: counts.map(row => row[4]) },
-      { label: '2k+',    color: '#3C3489', type: 'line', data: counts.map(row => row[5]) }
-    ],
-    yFmt: v => v.toFixed(0)
-  });
+  // v5.61: Lower/Higher Spenders 两张趋势图已删除 (用户反馈不需要)
 }
 
 // type: 'count' (人数) | 'rev' (RM收入)
