@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.70</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.71</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4233,7 +4233,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.46'; // v5.70 — Appt Report By Race + AVG Spend by Race 桌面也隐藏空月
+const DATA_VERSION = '3.47'; // v5.71 — Merge 时 apptDate 标准化用 extractDateOnly (修复 NaN day overdue, 之前 substring(0,10) 对 'Tue May 05 2025' 这种格式失败)
 
 // ---------- State ----------
 let state = {
@@ -15387,7 +15387,11 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
     const oldChannel = existingLead.channelId || '';
     const newChannelId = defaultCh && defaultCh.id ? defaultCh.id : oldChannel;
     const oldApptDate = existingLead.apptDate || '';
-    const newApptDate = (pendingItem.apptDate || '').substring(0, 10);
+    // v5.71: 用 extractDateOnly 把 pendingItem.apptDate 标准化到 YYYY-MM-DD
+    // (之前 substring(0,10) 对 "Tue May 05 2025" 这种格式会得到 "Tue May 05" 导致 NaN day overdue)
+    const newApptDate = (typeof extractDateOnly === 'function')
+      ? extractDateOnly(pendingItem.apptDate || '')
+      : (pendingItem.apptDate || '').substring(0, 10);
     // v4.74b: Normalize loc id (legacy 'sunway' vs new 'st-sunway')
     const _locNorm = (id) => String(id || '').toLowerCase().replace(/^st-/, '');
     const oldLocId = existingLead.locationId || '';
