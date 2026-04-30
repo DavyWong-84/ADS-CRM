@@ -2766,7 +2766,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.53</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.54</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4213,7 +4213,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.29'; // v5.53 — Spending Power: 柱子改浅紫 #CECBF6, dot 上方加 % 副标签 (该档/全部 head count); AdsChart 加 subLabelFn 选项
+const DATA_VERSION = '3.30'; // v5.54 — Spending Power: dot subLabel (%) 从下方挪到右边
 
 // ---------- State ----------
 let state = {
@@ -4673,14 +4673,14 @@ const AdsChart = {
         lineDots += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="#fff" stroke="${clr}" stroke-width="2" style="cursor:pointer;" data-tip="${tip}" onclick="showChartTip(event,this)" ontouchstart="showChartTip(event,this)"/>`;
         // v5.52: series 设 showLabel=true 时在 dot 上方画永久数字标签
         // v5.53: 若 series 还设了 subLabelFn(value, index) 则数字下面再画一行小副标签 (如 %)
+        // v5.54: subLabel 改为放在 dot 右边 (不再放下面)
         if (s.showLabel) {
+          // 主数字 — dot 上方
+          lineDots += `<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="${mobile?10:11}" font-weight="500" fill="${clr}">${lbl}</text>`;
+          // 副标签 — dot 右边
           const sub = (typeof s.subLabelFn === 'function') ? s.subLabelFn(v, i) : null;
           if (sub) {
-            // 双行: 主数字往上挪, 副标签贴近 dot
-            lineDots += `<text x="${p[0].toFixed(1)}" y="${(p[1]-15).toFixed(1)}" text-anchor="middle" font-size="${mobile?10:11}" font-weight="500" fill="${clr}">${lbl}</text>`;
-            lineDots += `<text x="${p[0].toFixed(1)}" y="${(p[1]-5).toFixed(1)}" text-anchor="middle" font-size="${mobile?8:9}" font-weight="400" fill="#666">${sub}</text>`;
-          } else {
-            lineDots += `<text x="${p[0].toFixed(1)}" y="${(p[1]-9).toFixed(1)}" text-anchor="middle" font-size="${mobile?10:11}" font-weight="500" fill="${clr}">${lbl}</text>`;
+            lineDots += `<text x="${(p[0]+8).toFixed(1)}" y="${(p[1]+3).toFixed(1)}" text-anchor="start" font-size="${mobile?8:9}" font-weight="400" fill="#666">${sub}</text>`;
           }
         }
       });
