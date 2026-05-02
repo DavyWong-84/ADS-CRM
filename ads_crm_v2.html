@@ -1886,12 +1886,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
   #page-contact .lead-list::-webkit-scrollbar { width: 4px; }
   #page-contact .lead-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-  /* v4.52+v4.53: Load more aligned vertically with Save Lead button on right panel */
+  /* v5.92: 桌面去掉底部 120px 留白 (之前 v4.53 加来对齐 Save Lead 按钮, 但视觉上是大片空白) */
   #page-contact #loadMoreWrap {
     flex: 0 0 auto;
     position: static;
-    padding: 8px 0 8px;
-    margin: 0 0 120px;  /* v4.53: more lift — aligns with Save Lead button */
+    padding: 8px 0;
+    margin: 0;
     border-top: 1px solid var(--border);
     background: var(--white);
   }
@@ -2107,7 +2107,22 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .bottom-nav { display: none; }
   /* v5.81: 桌面隐藏 topbar (logo 整合进左侧 nav 顶部) */
   .topbar { display: none !important; }
-  .nav { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; width: 220px; background: var(--white); border-right: 1px solid var(--border); border-bottom: none; padding: 16px 10px; gap: 4px; overflow-y: auto; overflow-x: hidden; z-index: 10; }
+  .nav { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; width: 220px; background: #2C2C2A; border-right: 1px solid #3a3a38; border-bottom: none; padding: 16px 10px; gap: 4px; overflow-y: auto; overflow-x: hidden; z-index: 10; }
+  /* v5.92: 黑底 sidebar — 文字 / 图标用白色, hover 浅一点, active 紫色保留
+     v5.94: 调成灰色一点 (#2C2C2A 暖灰), 不那么死黑 */
+  .nav .nav-item { color: rgba(255,255,255,0.7); }
+  .nav .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .nav .nav-item.active { background: var(--purple); color: #fff; border-bottom: none; }
+  .nav .nav-item.active:hover { background: var(--purple); color: #fff; }
+  .nav .nav-brand-name { color: #fff; }
+  .nav .nav-brand-version { color: rgba(255,255,255,0.5); }
+  /* sidebar 底部 collapse 按钮也要适配 */
+  .nav .sidebar-collapse-btn,
+  .nav button[onclick*="toggleSidebar"] { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.15); background: transparent; }
+  .nav .sidebar-collapse-btn:hover,
+  .nav button[onclick*="toggleSidebar"]:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  /* 红色 badge (Alerts/Inbox 数字) 在黑底上保持原样 */
+  /* AI Assistant 圆形图标渐变保持 (已经有自己背景) */
   /* v5.81: Logo brand block at top of sidebar */
   .nav-brand {
     display: flex !important;
@@ -2118,29 +2133,29 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     border-radius: 8px;
   }
   .nav-brand .nav-brand-logo {
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     background: var(--purple);
-    border-radius: 8px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 700;
-    font-size: 17px;
+    font-size: 22px;
     flex-shrink: 0;
   }
   .nav-brand .nav-brand-text { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
-  .nav-brand .nav-brand-name { font-size: 16px; font-weight: 600; color: var(--black); }
-  .nav-brand .nav-brand-version { font-size: 10px; color: var(--silver); font-weight: 500; letter-spacing: 0.3px; margin-top: 2px; }
+  .nav-brand .nav-brand-name { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+  .nav-brand .nav-brand-version { font-size: 10px; color: rgba(255,255,255,0.5); font-weight: 500; letter-spacing: 0.3px; margin-top: 3px; }
   /* When sidebar collapsed, show only logo (no text) */
   body.sidebar-collapsed .nav-brand { padding: 6px 4px; justify-content: center; }
   body.sidebar-collapsed .nav-brand .nav-brand-text { display: none; }
-  .nav-item { padding: 12px 14px; font-size: 14px; font-weight: 500; color: var(--gray); border-bottom: none; border-radius: 8px; text-align: left; transition: all 0.15s; width: 100%; display: flex; align-items: center; gap: 10px; }
-  .nav-item:hover { background: var(--surface); color: var(--black); }
+  .nav-item { padding: 12px 14px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.7); border-bottom: none; border-radius: 8px; text-align: left; transition: all 0.15s; width: 100%; display: flex; align-items: center; gap: 10px; }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
   .nav-item.active { color: var(--white); background: var(--purple); border-bottom: none; }
   .nav-item .nav-icon { font-size: 16px; display: inline-flex; }
-  .nav-divider { height: 1px; background: var(--border); margin: 10px 4px; }
+  .nav-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 10px 4px; }
   .lead-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .lead-item.selected { border-color: var(--purple); background: var(--purple-bg); }
 @media (max-width: 767px) {
@@ -2943,10 +2958,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* v4.87: Hide horizontal scrollbar on Inbox tab bar */
 #pendingTabBar::-webkit-scrollbar { display: none; }
 
-/* v4.91: Tool nav-items in left sidebar (AI / Search / Alerts) - smaller styling */
+/* v4.91: Tool nav-items in left sidebar (AI / Search / Alerts) - smaller styling
+   v5.93: 黑底 sidebar 适配 — 文字白色 70%, hover 全白
+   v5.97: 字体跟其他 nav-item 统一为 14px (之前是 13px) */
 @media (min-width: 768px) {
-  .nav-item.nav-tool { font-size: 13px; color: var(--gray); }
-  .nav-item.nav-tool:hover { color: var(--purple); background: var(--surface); }
+  .nav-item.nav-tool { font-size: 14px; color: rgba(255,255,255,0.7); }
+  .nav-item.nav-tool:hover { color: #fff; background: rgba(255,255,255,0.06); }
   .nav-item.nav-tool .nav-icon { opacity: 0.85; }
   /* Hide topbar tool buttons on desktop (they live in left nav now) */
   #topbarTools { display: none !important; }
@@ -3011,7 +3028,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.90</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.97</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3067,10 +3084,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="nav-brand">
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
-      <div class="nav-brand-name">Ads CRM</div>
-      <div class="nav-brand-version">v5.90</div>
+      <div class="nav-brand-name">ADS CRM</div>
+      <div class="nav-brand-version">v5.97</div>
     </div>
   </div>
+  <div class="nav-divider"></div>
   <button class="nav-item nav-tool" onclick="openAIChat()" data-tooltip="AI Assistant"><span class="nav-icon"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#9b5fff);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:22px;letter-spacing:0.3px;">AI</span></span><span class="nav-label">AI Assistant</span></button>
   <button class="nav-item nav-tool" onclick="openGlobalSearch()" data-tooltip="Search"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span><span class="nav-label">Search</span></button>
   <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 8px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">1</span></button>
@@ -3184,7 +3202,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
         </div>
-        <div class="contact-form-empty" id="contactFormEmpty">
+        <div class="contact-form-empty" id="contactFormEmpty" style="display: none;">
           <!-- v4.22: Click-to-create welcome area — big round + button in the middle -->
           <button type="button" onclick="openNewLead()" class="welcome-new-lead-btn" aria-label="Create new lead">
             <span class="welcome-plus-circle">
@@ -3194,7 +3212,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <span class="welcome-plus-hint">or select a lead from the list</span>
           </button>
         </div>
-        <div id="contactFormWrap" style="display:none;">
+        <div id="contactFormWrap" style="display: block;">
           <div id="leadStepper"></div>
           <form id="leadForm" class="form-grid">
             <div class="step-card step-1">
@@ -3255,7 +3273,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                       <span id="f_apptDate_label"></span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_apptDate">
+                    <input type="hidden" id="f_apptDate" value="">
                   </div>
                 </div>
               </div>
@@ -3336,7 +3354,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
+        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -3345,7 +3363,69 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="summaryContent"></div>
+    <div id="summaryContent">
+    <div class="dash-row-2">
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Revenue →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">May 2026</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
+        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Meta — · G —</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">— shows</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — leads</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — appt</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — shows</div>
+      </div>
+    </div>
+    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
+      <div class="dash-section-label">Funnel — May 2026 →</div>
+      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
+        <div style="flex:4;background:var(--purple-bg);border-radius: 8px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">—</div>
+          <div style="font-size:11px;color:var(--purple);">Leads</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#0C447C;">—</div>
+          <div style="font-size:11px;color:#185FA5;">Appt</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#085041;">—</div>
+          <div style="font-size:11px;color:#0F6E56;">Show</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#633806;">RM 0</div>
+          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
+      <div class="dash-section-label">Revenue trend — 2026 →</div>
+      <div id="chart_dash_rev" style="margin-top:8px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1228 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1228" height="260" fill="white"></rect>
+      <line x1="58" y1="218.0" x2="1214" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1214" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1214" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1214" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1214" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1214" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1214" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1214" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1214" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1214" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1214" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1214" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="106.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="202.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="298.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="395.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="491.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="587.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="684.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="780.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="876.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="973.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1069.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1165.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="592" y="20" width="11" height="11" fill="var(--purple)" rx="2"></rect><text x="608" y="29" font-size="10" fill="#334155">Revenue</text>
+    </svg></div></div>
+    </div>
+  </div>
   </section>
 
   <!-- STORE PAGE -->
@@ -3353,17 +3433,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header">
       <!-- v5.33: removed page title (Appt Report) — toolbar only -->
       <div class="compact-filter">
-        <div class="toggle-group">
+        <div class="toggle-group" style="display: none;">
           <button class="toggle active" data-mode="month" onclick="setStoreMode('month')">Month</button>
           <button class="toggle" data-mode="year" onclick="setStoreMode('year')">Year</button>
           <button class="toggle" data-mode="custom" onclick="setStoreMode('custom')">Custom</button>
         </div>
         <select id="storeYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
-        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="display:none;" onclick="openYearPicker('storeYear', this)">
+        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="" onclick="openYearPicker('storeYear', this)">
           <span id="storeYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')">
+        <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')" style="display: none;">
           <span id="storeMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -3403,7 +3483,22 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer unified-header-spacer-tall"></div>
 
-    <div id="storeContent"></div>
+    <div id="storeContent"><div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">By Platform</div><div class="section-title"><h3>All Outlets — All Platforms 2026</h3></div>
+            <div class="table-wrap"><table class="data data-t">
+              <thead><tr><th>Metric</th><th class="num">TOTAL</th></tr></thead>
+              <tbody>
+                <tr><td>Lead</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td>Appt</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td>Show</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td>No Show</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td style="font-weight:600;">Sales</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td>AVG/Show</td><td class="num">—</td></tr>
+              </tbody>
+            </table></div>
+            <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1260 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1260" height="260" fill="white"></rect>
+      <text x="630" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">All Platforms — Appt &amp; Show Up</text><line x1="58" y1="218.0" x2="1246" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1246" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1246" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1246" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1246" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1246" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1246" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1246" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1246" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1246" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1246" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1246" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="107.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="206.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="305.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="404.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="503.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="602.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="701.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="800.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="899.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="998.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1097.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1196.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="520" y="20" width="11" height="11" fill="#94a3b8" rx="2"></rect><text x="536" y="29" font-size="10" fill="#334155">Lead</text><rect x="608" y="20" width="11" height="11" fill="var(--purple)" rx="2"></rect><text x="624" y="29" font-size="10" fill="#334155">Appt</text><rect x="696" y="20" width="11" height="11" fill="var(--organic-color)" rx="2"></rect><text x="712" y="29" font-size="10" fill="#334155">Show Up</text>
+    </svg></div></div></div>
   </section>
 
   <!-- ADS SPEND PAGE -->
@@ -3462,12 +3557,23 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="adsPanel_cost" style="display:block;">
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Ads Cost by Month</div>
         <div class="table-wrap">
-          <table class="data" id="adsSpendReport"></table>
+          <table class="data" id="adsSpendReport"><thead><tr><th>Metric</th><th class="num">TOTAL</th></tr></thead><tbody>
+          <tr><td>Meta</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>Google</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td style="font-weight:700;">Total</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>AVG/day</td><td class="num">—</td></tr>
+          </tbody></table>
         </div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Monthly Trend</div>
-        <div id="chart_cost"></div>
+        <div id="chart_cost"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1260 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1260" height="260" fill="white"></rect>
+      <text x="630" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">Ads Cost by Month</text><line x1="58" y1="218.0" x2="1246" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="42.0" x2="1246" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="107.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="206.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="305.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="404.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="503.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="602.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="701.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="800.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="899.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="998.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1097.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1196.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="564" y="20" width="11" height="11" fill="var(--meta-color)" rx="2"></rect><text x="580" y="29" font-size="10" fill="#334155">Meta</text><rect x="652" y="20" width="11" height="11" fill="var(--google-color)" rx="2"></rect><text x="668" y="29" font-size="10" fill="#334155">Google</text>
+    </svg></div></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Avg per Day</div>
-        <div id="chart_avgday"></div>
+        <div id="chart_avgday"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1260 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1260" height="260" fill="white"></rect>
+      <text x="630" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">Avg Daily Spend by Channel</text><line x1="58" y1="218.0" x2="1246" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="42.0" x2="1246" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="107.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="206.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="305.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="404.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="503.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="602.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="701.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="800.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="899.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="998.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1097.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1196.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><line x1="520" y1="26" x2="534" y2="26" stroke="var(--meta-color)" stroke-width="2.2"></line><circle cx="527" cy="26" r="3" fill="#fff" stroke="var(--meta-color)" stroke-width="2"></circle><text x="536" y="29" font-size="10" fill="#334155">Meta Avg/Day</text><line x1="608" y1="26" x2="622" y2="26" stroke="var(--google-color)" stroke-width="2.2"></line><circle cx="615" cy="26" r="3" fill="#fff" stroke="var(--google-color)" stroke-width="2"></circle><text x="624" y="29" font-size="10" fill="#334155">Google Avg/Day</text><line x1="696" y1="26" x2="710" y2="26" stroke="var(--purple)" stroke-width="2.2"></line><circle cx="703" cy="26" r="3" fill="#fff" stroke="var(--purple)" stroke-width="2"></circle><text x="712" y="29" font-size="10" fill="#334155">Total Avg/Day</text>
+    </svg></div></div>
       </div>
 
       <!-- Sales & ROAS panel -->
@@ -3565,7 +3671,138 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="revenueReportWrap"></div>
+    <div id="revenueReportWrap"><div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
+        <div style="font-size:12px;color:var(--gray);">0 months · 3 outlets</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
+        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">—</div>
+        <div style="font-size:12px;color:var(--green-dark);">● New: — · 0.0%</div>
+        <div style="font-size:12px;color:var(--gray);">● Old: — · 0.0%</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div onclick="setRevOutlet('st-sunway')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Sunway ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-cheras')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Cheras ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-eco')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">ECO ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div>
+    </div>
+  </div><div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
+      <div class="table-wrap"><table class="data data-t">
+        <thead><tr><th>Revenue</th><th class="num">TOTAL</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="">New</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
+          </tr>
+          <tr>
+            <td style="">Existing</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">Total Sales</td>
+            
+            <td class="num" style="font-weight:700;">—</td>
+          </tr>
+        </tbody>
+      </table></div>
+
+      <div class="table-wrap" style="margin-top:14px;"><table class="data data-t">
+        <thead><tr><th>New Source</th><th class="num">TOTAL</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="">Ads Sales</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
+          </tr>
+          <tr>
+            <td style="">Walk-in</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">Total New</td>
+            
+            <td class="num" style="font-weight:700;">—</td>
+          </tr>
+        </tbody>
+      </table></div>
+    </div><div id="chart_rev_all" style="margin-top:14px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1245 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1245" height="260" fill="white"></rect>
+      <text x="623" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">All Outlets — Revenue Breakdown</text><line x1="58" y1="218.0" x2="1231" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1231" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1231" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1231" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1231" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1231" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1231" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1231" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1231" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1231" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1231" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1231" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="106.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="204.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="302.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="400.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="497.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="595.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="693.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="791.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="888.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="986.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1084.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1182.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><line x1="468.5" y1="26" x2="482.5" y2="26" stroke="var(--organic-color)" stroke-width="2.2"></line><circle cx="475.5" cy="26" r="3" fill="#fff" stroke="var(--organic-color)" stroke-width="2"></circle><text x="484.5" y="29" font-size="10" fill="#334155">New Customer</text><line x1="556.5" y1="26" x2="570.5" y2="26" stroke="#94a3b8" stroke-width="2.2"></line><circle cx="563.5" cy="26" r="3" fill="#fff" stroke="#94a3b8" stroke-width="2"></circle><text x="572.5" y="29" font-size="10" fill="#334155">Old Customer</text><line x1="644.5" y1="26" x2="658.5" y2="26" stroke="var(--meta-color)" stroke-width="2.2"></line><circle cx="651.5" cy="26" r="3" fill="#fff" stroke="var(--meta-color)" stroke-width="2"></circle><text x="660.5" y="29" font-size="10" fill="#334155">Ads New Sales</text><line x1="732.5" y1="26" x2="746.5" y2="26" stroke="#000000" stroke-width="2.2"></line><circle cx="739.5" cy="26" r="3" fill="#fff" stroke="#000000" stroke-width="2"></circle><text x="748.5" y="29" font-size="10" fill="#334155">Total Sales</text>
+    </svg></div></div><div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>Outlet Comparison 2026</h3></div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:var(--purple);">●</span> TOTAL REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = outlet share of monthly total</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#22C55E;">●</span> NEW CUSTOMER REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#FB923C;">●</span> WALK-IN REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#D97706;">●</span> EXISTING CUSTOMER REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#3B82F6;">●</span> ADS SALES (PAID LEADS)</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+    </div></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -3585,7 +3822,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3595,59 +3832,22 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
         <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-    <thead><tr>
-      <th>Month</th>
-      <th class="num">Total (RM)</th>
-      <th class="num">New (RM)</th>
-    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr></tbody><tfoot><tr class="total-row">
-    <td>TOTAL 2026</td>
-    <td class="num">—</td>
-    <td class="num">—</td>
-  </tr></tfoot></table></div></div>
+        <div id="rv_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -3658,56 +3858,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
         <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-      <thead><tr>
-        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
-        <th class="num">Amount (RM)</th>
-      </tr></thead>
-      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-01" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-02" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-03" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-04" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-05" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-06" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-07" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr></tbody>
-      <tfoot><tr class="total-row">
-        <td>TOTAL 2026</td>
-        <td class="num">—</td>
-      </tr></tfoot>
-    </table></div></div>
+        <div id="as_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -3721,7 +3876,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
         <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
+        <div id="fee_entryTable" class="entry-card-table"></div>
       </div>
 
     </div>
@@ -4104,7 +4259,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="alertsTitleText" style="font-size:16px;font-weight:600;">Data Alerts</span>
-        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius: 8px;font-weight:600;">1</span>
+        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius: 8px;font-weight:600;">0</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <div id="alertsLangToggle" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;font-weight:600;">
@@ -4114,15 +4269,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
       </div>
     </div>
-    <div id="alertsContent" class="alerts-content"><div class="alerts-section-label">Needs attention (1)</div>
-        <div class="alert-item sev-med" onclick="_alertAct(0)">
-          <div class="alert-icon">🔌</div>
-          <div class="alert-body">
-            <div class="alert-title">Sheet sync not connected</div>
-            <div class="alert-desc">Data only saved locally. Configure in Settings → Google Sheet.</div>
-          </div>
-        </div>
-      </div>
+    <div id="alertsContent" class="alerts-content"></div>
   </div>
 </div>
 
@@ -4707,7 +4854,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.66'; // v5.90 — Alerts 全面修复+扩展: 周末工作日数, 排除Organic, race+spend合并, 限制最近30天, 当日预约提醒, +Revenue缺漏/Sheet断连/Inbox堆积 3 个新alert
+const DATA_VERSION = '3.73'; // v5.97 — nav-tool (AI/Search/Alerts/Inbox) 字体从 13px → 14px, 跟其他 nav-item 统一
 
 // ---------- State ----------
 let state = {
