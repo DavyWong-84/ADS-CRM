@@ -2662,6 +2662,81 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   margin-bottom: 4px;
 }
 
+/* v5.76: Channel/Store list rows in modal */
+.cl-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border-bottom: 0.5px solid var(--border);
+  transition: opacity 0.15s;
+}
+.cl-row:last-child { border-bottom: none; }
+.cl-row.inactive { opacity: 0.55; }
+.cl-row-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+.cl-row-info { min-width: 0; flex: 1; }
+.cl-row-name { font-size: 14px; font-weight: 500; color: var(--black); }
+.cl-row-meta { font-size: 11px; color: var(--silver); margin-top: 1px; }
+.cl-color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px var(--border);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: transform 0.1s;
+}
+.cl-color-dot:hover { transform: scale(1.15); }
+
+/* Pseudo-select (looks like input but opens modal) */
+.pseudo-select {
+  font-size: 13px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--white);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.15s;
+}
+.pseudo-select:hover { border-color: var(--purple); }
+.pseudo-select-chevron { color: var(--silver); }
+
+/* Color picker grid in color modal */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.color-swatch {
+  aspect-ratio: 1/1;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.1s;
+  border: none;
+  padding: 0;
+}
+.color-swatch:hover { transform: scale(1.08); }
+.color-swatch.selected::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+}
+.color-swatch.selected { box-shadow: 0 0 0 2px var(--purple); }
+
 
 
 /* v4.82: Remark icon + Reschedule chip + tooltip + modal */
@@ -2842,7 +2917,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.75</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.76</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4321,7 +4396,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.51'; // v5.75 — Settings 重新优化: iOS 风格分组卡片 (Workspace/Sync/Display/Data), 详情都在 modal 中, 状态显示在行右侧
+const DATA_VERSION = '3.52'; // v5.76 — Channels/Stores modal D 方案: iOS toggle + Platform 全 modal 选 + 颜色点 → 全 modal 颜色面板; inactive 行整体淡化
 
 // ---------- State ----------
 let state = {
@@ -11133,7 +11208,11 @@ function _buildSettingsModalBody(kind) {
         </div>
         <div class="settings-modal-input-row">
           <label>Platform</label>
-          <select id="modal_ch_platform">
+          <div id="modal_ch_platform_btn" class="pseudo-select" onclick="openPlatformPicker()" data-value="meta">
+            <span id="modal_ch_platform_label">Meta</span>
+            <span class="pseudo-select-chevron">›</span>
+          </div>
+          <select id="modal_ch_platform" style="display:none;">
             <option value="meta">Meta</option>
             <option value="google">Google</option>
             <option value="organic">Organic</option>
@@ -11263,17 +11342,45 @@ function _initSettingsModal(kind) {
   }
 }
 
-// Mirror the legacy lists into the modal
+// Mirror the legacy lists into the modal (v5.76: 用新 cl-row 风格 + iOS toggle + color picker modal)
 function _renderModalChannelsList() {
   const target = document.getElementById('modalChannelsList');
-  const orig = document.getElementById('channelsList');
-  if (target && orig) target.innerHTML = orig.innerHTML;
+  if (!target) return;
+  const platLabels = { meta: 'Meta', google: 'Google', organic: 'Organic', followup: 'Follow Up', other: 'Other' };
+  target.innerHTML = (state.channels || []).map(c => {
+    const isActive = c.active !== false;
+    const color = c.color || (typeof hashColor === 'function' ? hashColor(c.name) : '#888');
+    const platLabel = platLabels[c.platform] || c.platform || '?';
+    return `<div class="cl-row ${isActive ? '' : 'inactive'}">
+      <div class="cl-row-left">
+        <button type="button" class="cl-color-dot" onclick="openColorPicker(event, 'channel', '${esc(c.id)}')" title="改颜色" style="background:${color};"></button>
+        <div class="cl-row-info">
+          <div class="cl-row-name">${esc(c.name)}</div>
+          <div class="cl-row-meta">${platLabel} · from ${esc(c.addedMonth || '—')}</div>
+        </div>
+      </div>
+      <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setChannelActive('${esc(c.id)}', ${!isActive}); setTimeout(_renderModalChannelsList, 30);"></div>
+    </div>`;
+  }).join('');
 }
 
 function _renderModalStoresList() {
   const target = document.getElementById('modalStoresList');
-  const orig = document.getElementById('locationsList');
-  if (target && orig) target.innerHTML = orig.innerHTML;
+  if (!target) return;
+  target.innerHTML = (state.locations || []).map(l => {
+    const isActive = l.active !== false;
+    const color = l.color || (typeof hashColor === 'function' ? hashColor(l.name) : '#888');
+    return `<div class="cl-row ${isActive ? '' : 'inactive'}">
+      <div class="cl-row-left">
+        <button type="button" class="cl-color-dot" onclick="openColorPicker(event, 'location', '${esc(l.id)}')" title="改颜色" style="background:${color};"></button>
+        <div class="cl-row-info">
+          <div class="cl-row-name">${esc(l.name)}</div>
+          <div class="cl-row-meta">from ${esc(l.addedMonth || '—')}</div>
+        </div>
+      </div>
+      <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setLocationActive('${esc(l.id)}', ${!isActive}); setTimeout(_renderModalStoresList, 30);"></div>
+    </div>`;
+  }).join('');
 }
 
 // Wrappers — write modal input back to legacy hidden input, then call original handler
@@ -11333,6 +11440,68 @@ function modalBackupRefreshList() {
   }, 800);
 }
 
+// v5.76: Platform picker modal (replaces native select)
+function openPlatformPicker() {
+  const platforms = [
+    { value: 'meta', label: 'Meta' },
+    { value: 'google', label: 'Google' },
+    { value: 'organic', label: 'Organic' },
+    { value: 'followup', label: 'Follow Up' },
+    { value: 'other', label: 'Other' }
+  ];
+  const cur = document.getElementById('modal_ch_platform_btn')?.dataset.value || 'meta';
+  const html = `
+    <div class="modal-header">
+      <div class="modal-title">Select platform</div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+    </div>
+    <div style="padding: 8px 0;">
+      ${platforms.map(p => `
+        <div onclick="selectPlatform('${p.value}', '${p.label}')" style="padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 0.5px solid var(--border); transition: background 0.12s;" onmouseenter="this.style.background='rgba(0,0,0,0.02)'" onmouseleave="this.style.background=''">
+          <span style="font-size: 14px;">${p.label}</span>
+          ${p.value === cur ? '<span style="color: var(--purple); font-size: 16px;">✓</span>' : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+  showSubModal(html);
+}
+
+function selectPlatform(value, label) {
+  const btn = document.getElementById('modal_ch_platform_btn');
+  const lbl = document.getElementById('modal_ch_platform_label');
+  const sel = document.getElementById('modal_ch_platform');
+  if (btn) btn.dataset.value = value;
+  if (lbl) lbl.textContent = label;
+  if (sel) sel.value = value;
+  closeSubModal();
+}
+
+// Sub-modal stack — show one modal on top of another (platform picker over channel modal)
+function showSubModal(html) {
+  // Stash current modal HTML, then replace with sub-modal
+  const backdrop = document.querySelector('.modal-backdrop[style*="block"], .modal-backdrop:not([style])');
+  if (!backdrop) { showModal(html); return; }
+  const dlg = backdrop.querySelector('.modal-dialog');
+  if (!dlg) return;
+  if (!window._subModalStack) window._subModalStack = [];
+  window._subModalStack.push(dlg.innerHTML);
+  dlg.innerHTML = html;
+}
+
+function closeSubModal() {
+  const backdrop = document.querySelector('.modal-backdrop[style*="block"], .modal-backdrop:not([style])');
+  if (!backdrop || !window._subModalStack || window._subModalStack.length === 0) {
+    closeModal();
+    return;
+  }
+  const prev = window._subModalStack.pop();
+  const dlg = backdrop.querySelector('.modal-dialog');
+  if (dlg) dlg.innerHTML = prev;
+  // Re-init the parent modal (re-fill values etc.)
+  // We don't know which kind, but the inputs are still hooked up since they reference IDs
+}
+
 
 // Remove old sh_url listener since field no longer exists
 // document.getElementById('sh_url').addEventListener('change', ...);
@@ -11378,42 +11547,47 @@ const COLOR_PALETTE = [
 
 function openColorPicker(event, kind, id) {
   event.stopPropagation();
-  // Remove any existing picker
-  const old = document.getElementById('colorPickerPop');
-  if (old) old.remove();
-  const btn = event.currentTarget;
-  const rect = btn.getBoundingClientRect();
   const list = kind === 'channel' ? state.channels : state.locations;
   const item = list.find(x => x.id === id);
-  const current = (item && item.color) || hashColor(item ? item.name : '');
-  const pop = document.createElement('div');
-  pop.id = 'colorPickerPop';
-  pop.style.cssText = `position:fixed;top:${rect.bottom + 6}px;left:${rect.left}px;z-index:10010;background:#fff;border:1px solid var(--border);border-radius: 8px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:10px;display:grid;grid-template-columns:repeat(6, 24px);gap:6px;`;
-  pop.innerHTML = COLOR_PALETTE.map(c => {
-    const isCur = c.toLowerCase() === current.toLowerCase();
-    return `<button type="button" data-color="${c}" style="width:24px;height:24px;border-radius:50%;border:${isCur ? '2px solid #000' : '1px solid var(--border)'};background:${c};cursor:pointer;padding:0;"></button>`;
-  }).join('') + `<button type="button" data-color="reset" title="重置为默认" style="grid-column:1 / span 6;margin-top:4px;padding:5px 8px;font-size:11px;border:1px solid var(--border);background:#fff;border-radius: 8px;cursor:pointer;color:var(--gray);">↺ Reset to auto</button>`;
-  document.body.appendChild(pop);
-  pop.addEventListener('click', (e) => {
-    const b = e.target.closest('[data-color]');
-    if (!b) return;
-    const color = b.dataset.color;
-    if (color === 'reset') {
-      delete item.color;
-    } else {
-      item.color = color;
-    }
-    saveState();
-    pop.remove();
-    renderSettings();
-    if (typeof renderList === 'function') renderList(); // refresh Lead list chips
-  });
-  // Click outside to close
-  setTimeout(() => {
-    document.addEventListener('click', function close(e) {
-      if (!pop.contains(e.target)) { pop.remove(); document.removeEventListener('click', close); }
-    });
-  }, 50);
+  if (!item) return;
+  const current = (item.color || hashColor(item.name)).toLowerCase();
+  const itemName = item.name || '';
+  // v5.76: Open as full sub-modal (replaces popover)
+  const html = `
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Color</div>
+        <div style="font-size:12px;color:var(--silver);margin-top:2px;">${esc(itemName)}</div>
+      </div>
+      <button class="modal-close" onclick="closeSubModal()" aria-label="Close">✕</button>
+    </div>
+    <div style="padding: 8px 18px 18px;">
+      <div class="settings-modal-section-title" style="margin-top:8px;">Presets</div>
+      <div class="color-grid">
+        ${COLOR_PALETTE.map(c => `<button type="button" class="color-swatch ${c.toLowerCase() === current ? 'selected' : ''}" data-color="${c}" onclick="_pickColor('${kind}', '${esc(id)}', '${c}')" style="background:${c};"></button>`).join('')}
+      </div>
+      <button type="button" class="btn btn-outline btn-full" onclick="_pickColor('${kind}', '${esc(id)}', 'reset')">Reset to auto</button>
+    </div>
+  `;
+  showSubModal(html);
+}
+
+function _pickColor(kind, id, color) {
+  const list = kind === 'channel' ? state.channels : state.locations;
+  const item = list.find(x => x.id === id);
+  if (!item) return;
+  if (color === 'reset') delete item.color;
+  else item.color = color;
+  saveState();
+  closeSubModal();
+  // Re-render the underlying list (channels or stores)
+  if (kind === 'channel') {
+    if (typeof _renderModalChannelsList === 'function') _renderModalChannelsList();
+  } else {
+    if (typeof _renderModalStoresList === 'function') _renderModalStoresList();
+  }
+  renderSettings();
+  if (typeof renderList === 'function') renderList();
 }
 
 
