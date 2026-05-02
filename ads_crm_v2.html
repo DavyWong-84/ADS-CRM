@@ -2662,6 +2662,61 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   margin-bottom: 4px;
 }
 
+/* v5.79: Desktop master-detail layout */
+.settings-master-detail {
+  display: none;  /* hidden by default; only on desktop */
+}
+.settings-mobile-list {
+  display: block;  /* shown by default on mobile */
+}
+@media (min-width: 768px) {
+  .settings-master-detail {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  .settings-mobile-list { display: none; }
+}
+.settings-md-nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 14px;
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+  font-size: 14px;
+  color: var(--black);
+}
+.settings-md-nav-row:last-child { border-bottom: none; }
+.settings-md-nav-row:hover { background: rgba(0,0,0,0.02); }
+.settings-md-nav-row.active {
+  background: var(--purple-bg);
+  border-left: 3px solid var(--purple);
+  padding-left: 11px;
+  font-weight: 500;
+  color: var(--purple-deep);
+}
+.settings-md-nav-row.active .settings-md-nav-meta { color: var(--purple); }
+.settings-md-nav-row.danger { color: var(--red); }
+.settings-md-nav-meta { font-size: 12px; color: var(--silver); display: flex; align-items: center; gap: 6px; }
+
+.settings-md-detail {
+  background: var(--white);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  min-height: 480px;
+}
+.settings-md-detail-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--black);
+  margin-bottom: 20px;
+}
+
 /* v5.76: Channel/Store list rows in modal */
 .cl-row {
   display: flex;
@@ -2917,7 +2972,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.78</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.80</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3581,120 +3636,196 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer unified-header-spacer-single"></div>
 
-    <!-- v5.75: New iOS-style grouped settings.
-         Click any row → opens corresponding modal with detailed config.
-         Mobile: single column. Desktop: 2 columns. -->
-    <div class="settings-wrap">
-      <div class="settings-col-left">
+    <!-- v5.79: Mobile uses iOS-style list (rows open modal).
+         Desktop uses master-detail layout (left nav + right content). -->
 
-        <!-- WORKSPACE -->
+    <!-- ============ MOBILE: stacked rows that open modal ============ -->
+    <div class="settings-mobile-list">
+      <div class="settings-wrap">
+        <div class="settings-col-left">
+
+          <div class="settings-group">
+            <div class="settings-group-title">Workspace</div>
+            <div class="settings-group-card">
+              <div class="settings-row" onclick="openSettingsModal('channels')">
+                <div><div class="settings-row-label">Channels</div></div>
+                <div class="settings-row-value">
+                  <span id="settingsChannelStatus_m">4 active</span>
+                  <span class="settings-row-chevron">›</span>
+                </div>
+              </div>
+              <div class="settings-row" onclick="openSettingsModal('stores')">
+                <div><div class="settings-row-label">Stores</div></div>
+                <div class="settings-row-value">
+                  <span id="settingsStoreStatus_m">3 active</span>
+                  <span class="settings-row-chevron">›</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Display</div>
+            <div class="settings-group-card">
+              <div class="settings-row" onclick="toggleAIGuideRow()">
+                <div>
+                  <div class="settings-row-label">AI guide hints</div>
+                  <div class="settings-row-sublabel">Show usage tips on each page</div>
+                </div>
+                <div id="settingsAIToggle_m" class="settings-toggle on"></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="settings-col-right">
+
+          <div class="settings-group">
+            <div class="settings-group-title">Data sync</div>
+            <div class="settings-group-card">
+              <div class="settings-row" onclick="openSettingsModal('gsheet')">
+                <div><div class="settings-row-label">Google Sheet</div></div>
+                <div class="settings-row-value">
+                  <span id="settingsGSheetStatus_m">Not configured</span>
+                  <span class="settings-row-chevron">›</span>
+                </div>
+              </div>
+              <div class="settings-row" onclick="openSettingsModal('github')">
+                <div><div class="settings-row-label">GitHub deploy</div></div>
+                <div class="settings-row-value">
+                  <span id="settingsGitHubStatus_m">Configured</span>
+                  <span class="settings-row-chevron">›</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-group">
+            <div class="settings-group-title">Data</div>
+            <div class="settings-group-card">
+              <div class="settings-row" onclick="openSettingsModal('backup')">
+                <div>
+                  <div class="settings-row-label">Cloud backup</div>
+                  <div class="settings-row-sublabel">Daily auto-backup, kept 30 days</div>
+                </div>
+                <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
+              </div>
+              <div class="settings-row" onclick="exportAllData()">
+                <div>
+                  <div class="settings-row-label">Export data</div>
+                  <div class="settings-row-sublabel">Download all as JSON</div>
+                </div>
+                <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
+              </div>
+              <div class="settings-row danger" onclick="confirmClearCacheReload()">
+                <div>
+                  <div class="settings-row-label">Clear cache &amp; reload</div>
+                  <div class="settings-row-sublabel">Use when data is missing or outdated</div>
+                </div>
+                <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ DESKTOP: master-detail layout ============ -->
+    <div class="settings-master-detail">
+
+      <!-- LEFT: Navigation list -->
+      <div>
         <div class="settings-group">
           <div class="settings-group-title">Workspace</div>
           <div class="settings-group-card">
-            <div class="settings-row" onclick="openSettingsModal('channels')">
-              <div>
-                <div class="settings-row-label">Channels</div>
-              </div>
-              <div class="settings-row-value">
-                <span id="settingsChannelStatus">4 active</span>
-                <span class="settings-row-chevron">›</span>
-              </div>
+            <div class="settings-md-nav-row" data-section="channels" onclick="selectSettingsSection('channels')">
+              <span>Channels</span>
+              <span class="settings-md-nav-meta" id="settingsChannelStatus">4 active</span>
             </div>
-            <div class="settings-row" onclick="openSettingsModal('stores')">
-              <div>
-                <div class="settings-row-label">Stores</div>
-              </div>
-              <div class="settings-row-value">
-                <span id="settingsStoreStatus">3 active</span>
-                <span class="settings-row-chevron">›</span>
-              </div>
+            <div class="settings-md-nav-row" data-section="stores" onclick="selectSettingsSection('stores')">
+              <span>Stores</span>
+              <span class="settings-md-nav-meta" id="settingsStoreStatus">3 active</span>
             </div>
           </div>
         </div>
 
-        <!-- DISPLAY -->
+        <div class="settings-group">
+          <div class="settings-group-title">Data sync</div>
+          <div class="settings-group-card">
+            <div class="settings-md-nav-row" data-section="gsheet" onclick="selectSettingsSection('gsheet')">
+              <span>Google Sheet</span>
+              <span class="settings-md-nav-meta" id="settingsGSheetStatus">Not configured</span>
+            </div>
+            <div class="settings-md-nav-row active" data-section="github" onclick="selectSettingsSection('github')">
+              <span>GitHub deploy</span>
+              <span class="settings-md-nav-meta" id="settingsGitHubStatus">Configured</span>
+            </div>
+          </div>
+        </div>
+
         <div class="settings-group">
           <div class="settings-group-title">Display</div>
           <div class="settings-group-card">
-            <div class="settings-row" onclick="toggleAIGuideRow()">
-              <div>
-                <div class="settings-row-label">AI guide hints</div>
-                <div class="settings-row-sublabel">Show usage tips on each page</div>
-              </div>
+            <div class="settings-md-nav-row" onclick="event.stopPropagation();toggleAIGuideRow()">
+              <span>AI guide hints</span>
               <div id="settingsAIToggle" class="settings-toggle on"></div>
             </div>
           </div>
         </div>
 
-      </div>
-
-      <div class="settings-col-right">
-
-        <!-- DATA SYNC -->
-        <div class="settings-group">
-          <div class="settings-group-title">Data sync</div>
-          <div class="settings-group-card">
-            <div class="settings-row" onclick="openSettingsModal('gsheet')">
-              <div>
-                <div class="settings-row-label">Google Sheet</div>
-              </div>
-              <div class="settings-row-value">
-                <span id="settingsGSheetStatus">Not configured</span>
-                <span class="settings-row-chevron">›</span>
-              </div>
-            </div>
-            <div class="settings-row" onclick="openSettingsModal('github')">
-              <div>
-                <div class="settings-row-label">GitHub deploy</div>
-              </div>
-              <div class="settings-row-value">
-                <span id="settingsGitHubStatus">Configured</span>
-                <span class="settings-row-chevron">›</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- DATA -->
         <div class="settings-group">
           <div class="settings-group-title">Data</div>
           <div class="settings-group-card">
-            <div class="settings-row" onclick="openSettingsModal('backup')">
-              <div>
-                <div class="settings-row-label">Cloud backup</div>
-                <div class="settings-row-sublabel">Daily auto-backup, kept 30 days</div>
-              </div>
-              <div class="settings-row-value">
-                <span class="settings-row-chevron">›</span>
-              </div>
+            <div class="settings-md-nav-row" data-section="backup" onclick="selectSettingsSection('backup')">
+              <span>Cloud backup</span>
             </div>
-            <div class="settings-row" onclick="exportAllData()">
-              <div>
-                <div class="settings-row-label">Export data</div>
-                <div class="settings-row-sublabel">Download all as JSON</div>
-              </div>
-              <div class="settings-row-value">
-                <span class="settings-row-chevron">›</span>
-              </div>
+            <div class="settings-md-nav-row" onclick="exportAllData()">
+              <span>Export data</span>
             </div>
-            <div class="settings-row danger" onclick="confirmClearCacheReload()">
-              <div>
-                <div class="settings-row-label">Clear cache &amp; reload</div>
-                <div class="settings-row-sublabel">Use when data is missing or outdated</div>
-              </div>
-              <div class="settings-row-value">
-                <span class="settings-row-chevron">›</span>
-              </div>
+            <div class="settings-md-nav-row danger" onclick="confirmClearCacheReload()">
+              <span>Clear cache &amp; reload</span>
             </div>
           </div>
         </div>
-
       </div>
+
+      <!-- RIGHT: Detail content (replaced based on section) -->
+      <div class="settings-md-detail" id="settingsMdDetail"><div class="settings-md-detail-title">GitHub deploy</div>
+      <div class="settings-modal-section">
+        <div style="font-size:13px;color:var(--gray);line-height:1.5;margin-bottom:12px;">
+          推送后等 1-2 分钟 → Ctrl+Shift+R 刷新。
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Token (repo scope)</label>
+          <input type="password" id="modal_gh_token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;">Stored in browser only</div>
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Owner</label>
+          <input type="text" id="modal_gh_owner" placeholder="DavyWong-84">
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Repo</label>
+          <input type="text" id="modal_gh_repo" placeholder="ADS-CRM">
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Branch</label>
+          <input type="text" id="modal_gh_branch" value="main">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="modalGitHubPush()">Push to GitHub</button>
+          <button class="btn btn-ghost" onclick="modalGitHubSave()">Save config</button>
+        </div>
+        <div id="modal_gh_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"></div>
+      </div>
+    </div>
+
     </div>
 
     <!-- v5.75: Hidden legacy form/list anchors for backward compat with existing JS.
          These elements are referenced by existing functions (channelForm, channelsList, etc.)
-         but no longer visible — we render them inside the modals instead. -->
+         but no longer visible — we render them inside the modals/detail panel instead. -->
     <div id="legacySettingsAnchors" style="display:none;">
       <div id="channelsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -4396,7 +4527,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.54'; // v5.78 — Backup modal列表显示修复: cloudBackupRefreshList 同时写入hidden anchor + modal视图; 打开modal自动加载列表
+const DATA_VERSION = '3.56'; // v5.80 — Settings 桌面调整: 左导航 240px→320px, 修 AI toggle 圆球变形 (删除inline width尺寸冲突)
 
 // ---------- State ----------
 let state = {
@@ -11117,44 +11248,51 @@ function renderSettings() {
 
   // v5.75: Update settings row status displays
   updateSettingsRowStatuses();
+
+  // v5.79: Desktop master-detail — auto-select Channels by default if nothing selected yet
+  if (window.innerWidth >= 768 && !_currentSettingsSection) {
+    selectSettingsSection('channels');
+  } else if (window.innerWidth >= 768 && _currentSettingsSection) {
+    // Re-render current section (data may have changed)
+    selectSettingsSection(_currentSettingsSection);
+  }
 }
 
 // v5.75: Update status text on each settings row
 function updateSettingsRowStatuses() {
+  // v5.79: Update both desktop nav (#settingsXxxStatus) and mobile rows (#settingsXxxStatus_m)
+  const setBoth = (id, html) => {
+    const desktop = document.getElementById(id);
+    const mobile = document.getElementById(id + '_m');
+    if (desktop) desktop.innerHTML = html;
+    if (mobile) mobile.innerHTML = html;
+  };
+
   // Channels
   const chCount = (state.channels || []).filter(c => c.active !== false).length;
-  const chStatus = document.getElementById('settingsChannelStatus');
-  if (chStatus) chStatus.textContent = chCount + ' active';
+  setBoth('settingsChannelStatus', chCount + ' active');
 
   // Stores
   const stCount = (state.locations || []).filter(l => l.active !== false).length;
-  const stStatus = document.getElementById('settingsStoreStatus');
-  if (stStatus) stStatus.textContent = stCount + ' active';
+  setBoth('settingsStoreStatus', stCount + ' active');
 
   // Google Sheet
   const gsUrl = (typeof getGsUrl === 'function') ? getGsUrl() : '';
-  const gsStatus = document.getElementById('settingsGSheetStatus');
-  if (gsStatus) {
-    if (gsUrl) gsStatus.innerHTML = '<span class="settings-row-status-dot"></span>Connected';
-    else gsStatus.textContent = 'Not configured';
-  }
+  if (gsUrl) setBoth('settingsGSheetStatus', '<span class="settings-row-status-dot"></span>Connected');
+  else setBoth('settingsGSheetStatus', 'Not configured');
 
   // GitHub
   const ghOwner = document.getElementById('gh_owner')?.value;
   const ghRepo = document.getElementById('gh_repo')?.value;
   const ghToken = document.getElementById('gh_token')?.value;
-  const ghStatus = document.getElementById('settingsGitHubStatus');
-  if (ghStatus) {
-    if (ghOwner && ghRepo && ghToken) ghStatus.textContent = 'Configured';
-    else ghStatus.textContent = 'Not configured';
-  }
+  setBoth('settingsGitHubStatus', (ghOwner && ghRepo && ghToken) ? 'Configured' : 'Not configured');
 
-  // AI Toggle
-  const aiToggleBtn = document.getElementById('settingsAIToggle');
-  if (aiToggleBtn) {
-    const enabled = (typeof isAIGuideEnabled === 'function') ? isAIGuideEnabled() : false;
-    aiToggleBtn.classList.toggle('on', enabled);
-  }
+  // AI Toggle (both desktop and mobile have toggle elements)
+  const enabled = (typeof isAIGuideEnabled === 'function') ? isAIGuideEnabled() : false;
+  ['settingsAIToggle', 'settingsAIToggle_m'].forEach(id => {
+    const t = document.getElementById(id);
+    if (t) t.classList.toggle('on', enabled);
+  });
 }
 
 // v5.75: Toggle AI guide hints from settings row
@@ -11191,6 +11329,29 @@ function openSettingsModal(kind) {
   `;
   showModal(modalHTML);
   // After modal renders, sync the relevant config inputs into the modal copies
+  setTimeout(() => _initSettingsModal(kind), 30);
+}
+
+// v5.79: Desktop master-detail — select a section and render its content in right panel
+let _currentSettingsSection = null;
+function selectSettingsSection(kind) {
+  _currentSettingsSection = kind;
+  const titles = {
+    channels: 'Channels',
+    stores: 'Stores',
+    gsheet: 'Google Sheet sync',
+    github: 'GitHub deploy',
+    backup: 'Cloud backup'
+  };
+  const detail = document.getElementById('settingsMdDetail');
+  if (!detail) return;
+  // Update active state on left nav
+  document.querySelectorAll('#page-settings .settings-md-nav-row').forEach(el => {
+    el.classList.toggle('active', el.dataset.section === kind);
+  });
+  // Render same body that modal would (so we share UI)
+  const body = _buildSettingsModalBody(kind);
+  detail.innerHTML = `<div class="settings-md-detail-title">${titles[kind] || ''}</div>${body}`;
   setTimeout(() => _initSettingsModal(kind), 30);
 }
 
@@ -11337,6 +11498,7 @@ function _initSettingsModal(kind) {
 }
 
 // Mirror the legacy lists into the modal (v5.76: 用新 cl-row 风格 + iOS toggle + color picker modal)
+// v5.79: 同样的渲染函数也用于 desktop master-detail (id 都是 modalChannelsList / modalStoresList)
 function _renderModalChannelsList() {
   const target = document.getElementById('modalChannelsList');
   if (!target) return;
@@ -11353,7 +11515,7 @@ function _renderModalChannelsList() {
           <div class="cl-row-meta">${platLabel}</div>
         </div>
       </div>
-      <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setChannelActive('${esc(c.id)}', ${!isActive}); setTimeout(_renderModalChannelsList, 30);"></div>
+      <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setChannelActive('${esc(c.id)}', ${!isActive}); setTimeout(_renderModalChannelsList, 30); setTimeout(updateSettingsRowStatuses, 50);"></div>
     </div>`;
   }).join('');
 }
@@ -11371,7 +11533,7 @@ function _renderModalStoresList() {
           <div class="cl-row-name">${esc(l.name)}</div>
         </div>
       </div>
-      <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setLocationActive('${esc(l.id)}', ${!isActive}); setTimeout(_renderModalStoresList, 30);"></div>
+      <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setLocationActive('${esc(l.id)}', ${!isActive}); setTimeout(_renderModalStoresList, 30); setTimeout(updateSettingsRowStatuses, 50);"></div>
     </div>`;
   }).join('');
 }
@@ -11443,10 +11605,12 @@ function openPlatformPicker() {
     { value: 'other', label: 'Other' }
   ];
   const cur = document.getElementById('modal_ch_platform_btn')?.dataset.value || 'meta';
+  const onMobile = window.innerWidth < 768;
+  const closeFn = onMobile ? 'closeSubModal' : 'closeModal';
   const html = `
     <div class="modal-header">
       <div class="modal-title">Select platform</div>
-      <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+      <button class="modal-close" onclick="${closeFn}()" aria-label="Close">✕</button>
     </div>
     <div style="padding: 8px 0;">
       ${platforms.map(p => `
@@ -11457,7 +11621,8 @@ function openPlatformPicker() {
       `).join('')}
     </div>
   `;
-  showSubModal(html);
+  if (onMobile) showSubModal(html);
+  else showModal(html);
 }
 
 function selectPlatform(value, label) {
@@ -11467,7 +11632,9 @@ function selectPlatform(value, label) {
   if (btn) btn.dataset.value = value;
   if (lbl) lbl.textContent = label;
   if (sel) sel.value = value;
-  closeSubModal();
+  // v5.79: Close — 手机 sub modal, 桌面 normal modal
+  if (window.innerWidth < 768) closeSubModal();
+  else closeModal();
 }
 
 // Sub-modal stack — show one modal on top of another (platform picker over channel modal)
@@ -11545,14 +11712,15 @@ function openColorPicker(event, kind, id) {
   if (!item) return;
   const current = (item.color || hashColor(item.name)).toLowerCase();
   const itemName = item.name || '';
-  // v5.76: Open as full sub-modal (replaces popover)
+  // v5.79: 桌面 detail 模式没父 modal — 直接用 showModal; 手机模式还是 sub-modal
+  const onMobile = window.innerWidth < 768;
   const html = `
     <div class="modal-header">
       <div>
         <div class="modal-title">Color</div>
         <div style="font-size:12px;color:var(--silver);margin-top:2px;">${esc(itemName)}</div>
       </div>
-      <button class="modal-close" onclick="closeSubModal()" aria-label="Close">✕</button>
+      <button class="modal-close" onclick="${onMobile ? 'closeSubModal' : 'closeModal'}()" aria-label="Close">✕</button>
     </div>
     <div style="padding: 8px 18px 18px;">
       <div class="settings-modal-section-title" style="margin-top:8px;">Presets</div>
@@ -11562,7 +11730,8 @@ function openColorPicker(event, kind, id) {
       <button type="button" class="btn btn-outline btn-full" onclick="_pickColor('${kind}', '${esc(id)}', 'reset')">Reset to auto</button>
     </div>
   `;
-  showSubModal(html);
+  if (onMobile) showSubModal(html);
+  else showModal(html);
 }
 
 function _pickColor(kind, id, color) {
@@ -11572,12 +11741,20 @@ function _pickColor(kind, id, color) {
   if (color === 'reset') delete item.color;
   else item.color = color;
   saveState();
-  closeSubModal();
-  // Re-render the underlying list (channels or stores)
-  if (kind === 'channel') {
-    if (typeof _renderModalChannelsList === 'function') _renderModalChannelsList();
+  // v5.79: 关闭 modal — 桌面用 closeModal, 手机用 closeSubModal
+  if (window.innerWidth < 768) closeSubModal();
+  else closeModal();
+  // Re-render the underlying list
+  if (window.innerWidth >= 768 && _currentSettingsSection) {
+    // Desktop: re-render the detail panel
+    selectSettingsSection(_currentSettingsSection);
   } else {
-    if (typeof _renderModalStoresList === 'function') _renderModalStoresList();
+    // Mobile: re-render modal lists
+    if (kind === 'channel') {
+      if (typeof _renderModalChannelsList === 'function') _renderModalChannelsList();
+    } else {
+      if (typeof _renderModalStoresList === 'function') _renderModalStoresList();
+    }
   }
   renderSettings();
   if (typeof renderList === 'function') renderList();
