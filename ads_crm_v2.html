@@ -2573,6 +2573,95 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   .settings-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
 }
 
+/* v5.75: New iOS-style settings groups */
+.settings-group { margin-bottom: 22px; }
+.settings-group-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--silver);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
+  padding-left: 4px;
+}
+.settings-group-card {
+  background: var(--white);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 0.5px solid var(--border);
+  cursor: pointer;
+  transition: background 0.12s;
+  user-select: none;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row:hover { background: rgba(0,0,0,0.02); }
+.settings-row:active { background: rgba(0,0,0,0.04); }
+.settings-row-label { font-size: 14px; color: var(--black); font-weight: 400; }
+.settings-row-sublabel { font-size: 12px; color: var(--silver); margin-top: 2px; }
+.settings-row-value { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray); }
+.settings-row-chevron { color: var(--silver); font-size: 14px; line-height: 1; }
+.settings-row-status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--organic-color); }
+.settings-row-status-dot.warn { background: #f59e0b; }
+.settings-row-status-dot.err { background: var(--red); }
+.settings-row.danger .settings-row-label { color: var(--red); }
+
+/* iOS toggle switch */
+.settings-toggle {
+  width: 44px;
+  height: 26px;
+  background: #d3d1c7;
+  border-radius: 13px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.settings-toggle.on { background: var(--purple); }
+.settings-toggle::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: white;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+.settings-toggle.on::after { transform: translateX(18px); }
+
+/* Settings detail modal — full content modal */
+.settings-modal-content { padding: 0; }
+.settings-modal-section {
+  padding: 14px 18px;
+  border-bottom: 0.5px solid var(--border);
+}
+.settings-modal-section:last-child { border-bottom: none; }
+.settings-modal-section-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--silver);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 10px;
+}
+.settings-modal-input-row { margin-bottom: 12px; }
+.settings-modal-input-row:last-child { margin-bottom: 0; }
+.settings-modal-input-row label {
+  display: block;
+  font-size: 12px;
+  color: var(--gray);
+  margin-bottom: 4px;
+}
+
 
 
 /* v4.82: Remark icon + Reschedule chip + tooltip + modal */
@@ -2753,7 +2842,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.74</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.75</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3300,138 +3389,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="revenueReportWrap"><div class="card" style="margin-bottom:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-      <div>
-        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
-        <div style="font-size:12px;color:var(--gray);">0 months · 3 outlets</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
-        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">—</div>
-        <div style="font-size:12px;color:var(--green-dark);">● New: — · 0.0%</div>
-        <div style="font-size:12px;color:var(--gray);">● Old: — · 0.0%</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <div onclick="setRevOutlet('st-sunway')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">Sunway ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div><div onclick="setRevOutlet('st-cheras')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">Cheras ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div><div onclick="setRevOutlet('st-eco')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">ECO ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div>
-    </div>
-  </div><div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data data-t">
-        <thead><tr><th>Revenue</th><th class="num">TOTAL</th></tr></thead>
-        <tbody>
-          <tr>
-            <td style="">New</td>
-            
-            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
-          </tr>
-          <tr>
-            <td style="">Existing</td>
-            
-            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;">Total Sales</td>
-            
-            <td class="num" style="font-weight:700;">—</td>
-          </tr>
-        </tbody>
-      </table></div>
-
-      <div class="table-wrap" style="margin-top:14px;"><table class="data data-t">
-        <thead><tr><th>New Source</th><th class="num">TOTAL</th></tr></thead>
-        <tbody>
-          <tr>
-            <td style="">Ads Sales</td>
-            
-            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
-          </tr>
-          <tr>
-            <td style="">Walk-in</td>
-            
-            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;">Total New</td>
-            
-            <td class="num" style="font-weight:700;">—</td>
-          </tr>
-        </tbody>
-      </table></div>
-    </div><div id="chart_rev_all" style="margin-top:14px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1245 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
-      <rect width="1245" height="260" fill="white"></rect>
-      <text x="623" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">All Outlets — Revenue Breakdown</text><line x1="58" y1="218.0" x2="1231" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1231" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1231" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1231" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1231" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1231" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1231" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1231" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1231" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1231" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1231" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1231" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="106.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="204.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="302.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="400.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="497.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="595.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="693.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="791.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="888.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="986.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1084.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1182.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><line x1="468.5" y1="26" x2="482.5" y2="26" stroke="var(--organic-color)" stroke-width="2.2"></line><circle cx="475.5" cy="26" r="3" fill="#fff" stroke="var(--organic-color)" stroke-width="2"></circle><text x="484.5" y="29" font-size="10" fill="#334155">New Customer</text><line x1="556.5" y1="26" x2="570.5" y2="26" stroke="#94a3b8" stroke-width="2.2"></line><circle cx="563.5" cy="26" r="3" fill="#fff" stroke="#94a3b8" stroke-width="2"></circle><text x="572.5" y="29" font-size="10" fill="#334155">Old Customer</text><line x1="644.5" y1="26" x2="658.5" y2="26" stroke="var(--meta-color)" stroke-width="2.2"></line><circle cx="651.5" cy="26" r="3" fill="#fff" stroke="var(--meta-color)" stroke-width="2"></circle><text x="660.5" y="29" font-size="10" fill="#334155">Ads New Sales</text><line x1="732.5" y1="26" x2="746.5" y2="26" stroke="#000000" stroke-width="2.2"></line><circle cx="739.5" cy="26" r="3" fill="#fff" stroke="#000000" stroke-width="2"></circle><text x="748.5" y="29" font-size="10" fill="#334155">Total Sales</text>
-    </svg></div></div><div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>Outlet Comparison 2026</h3></div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:var(--purple);">●</span> TOTAL REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = outlet share of monthly total</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#22C55E;">●</span> NEW CUSTOMER REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#FB923C;">●</span> WALK-IN REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#D97706;">●</span> EXISTING CUSTOMER REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#3B82F6;">●</span> ADS SALES (PAID LEADS)</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-    </div></div>
+    <div id="revenueReportWrap"></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -3451,7 +3409,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3461,59 +3419,22 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
         <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-    <thead><tr>
-      <th>Month</th>
-      <th class="num">Total (RM)</th>
-      <th class="num">New (RM)</th>
-    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr></tbody><tfoot><tr class="total-row">
-    <td>TOTAL 2026</td>
-    <td class="num">—</td>
-    <td class="num">—</td>
-  </tr></tfoot></table></div></div>
+        <div id="rv_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -3524,56 +3445,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
         <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-      <thead><tr>
-        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
-        <th class="num">Amount (RM)</th>
-      </tr></thead>
-      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-01" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-02" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-03" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-04" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-05" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-06" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-07" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr></tbody>
-      <tfoot><tr class="total-row">
-        <td>TOTAL 2026</td>
-        <td class="num">—</td>
-      </tr></tfoot>
-    </table></div></div>
+        <div id="as_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -3587,7 +3463,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
         <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
+        <div id="fee_entryTable" class="entry-card-table"></div>
       </div>
 
     </div>
@@ -3630,14 +3506,122 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer unified-header-spacer-single"></div>
 
-    <!-- Desktop: 2 columns (left: Channels+Stores, right: GitHub+GSheet+Backup) -->
-    <!-- Mobile: all cards stacked in order -->
+    <!-- v5.75: New iOS-style grouped settings.
+         Click any row → opens corresponding modal with detailed config.
+         Mobile: single column. Desktop: 2 columns. -->
     <div class="settings-wrap">
       <div class="settings-col-left">
-        <!-- Channels -->
-        <div class="card">
-          <div class="section-title"><h3>Channels</h3></div>
-          <div id="channelsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
+
+        <!-- WORKSPACE -->
+        <div class="settings-group">
+          <div class="settings-group-title">Workspace</div>
+          <div class="settings-group-card">
+            <div class="settings-row" onclick="openSettingsModal('channels')">
+              <div>
+                <div class="settings-row-label">Channels</div>
+              </div>
+              <div class="settings-row-value">
+                <span id="settingsChannelStatus">4 active</span>
+                <span class="settings-row-chevron">›</span>
+              </div>
+            </div>
+            <div class="settings-row" onclick="openSettingsModal('stores')">
+              <div>
+                <div class="settings-row-label">Stores</div>
+              </div>
+              <div class="settings-row-value">
+                <span id="settingsStoreStatus">3 active</span>
+                <span class="settings-row-chevron">›</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISPLAY -->
+        <div class="settings-group">
+          <div class="settings-group-title">Display</div>
+          <div class="settings-group-card">
+            <div class="settings-row" onclick="toggleAIGuideRow()">
+              <div>
+                <div class="settings-row-label">AI guide hints</div>
+                <div class="settings-row-sublabel">Show usage tips on each page</div>
+              </div>
+              <div id="settingsAIToggle" class="settings-toggle on"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="settings-col-right">
+
+        <!-- DATA SYNC -->
+        <div class="settings-group">
+          <div class="settings-group-title">Data sync</div>
+          <div class="settings-group-card">
+            <div class="settings-row" onclick="openSettingsModal('gsheet')">
+              <div>
+                <div class="settings-row-label">Google Sheet</div>
+              </div>
+              <div class="settings-row-value">
+                <span id="settingsGSheetStatus">Not configured</span>
+                <span class="settings-row-chevron">›</span>
+              </div>
+            </div>
+            <div class="settings-row" onclick="openSettingsModal('github')">
+              <div>
+                <div class="settings-row-label">GitHub deploy</div>
+              </div>
+              <div class="settings-row-value">
+                <span id="settingsGitHubStatus">Configured</span>
+                <span class="settings-row-chevron">›</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DATA -->
+        <div class="settings-group">
+          <div class="settings-group-title">Data</div>
+          <div class="settings-group-card">
+            <div class="settings-row" onclick="openSettingsModal('backup')">
+              <div>
+                <div class="settings-row-label">Cloud backup</div>
+                <div class="settings-row-sublabel">Daily auto-backup, kept 30 days</div>
+              </div>
+              <div class="settings-row-value">
+                <span class="settings-row-chevron">›</span>
+              </div>
+            </div>
+            <div class="settings-row" onclick="exportAllData()">
+              <div>
+                <div class="settings-row-label">Export data</div>
+                <div class="settings-row-sublabel">Download all as JSON</div>
+              </div>
+              <div class="settings-row-value">
+                <span class="settings-row-chevron">›</span>
+              </div>
+            </div>
+            <div class="settings-row danger" onclick="confirmClearCacheReload()">
+              <div>
+                <div class="settings-row-label">Clear cache &amp; reload</div>
+                <div class="settings-row-sublabel">Use when data is missing or outdated</div>
+              </div>
+              <div class="settings-row-value">
+                <span class="settings-row-chevron">›</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- v5.75: Hidden legacy form/list anchors for backward compat with existing JS.
+         These elements are referenced by existing functions (channelForm, channelsList, etc.)
+         but no longer visible — we render them inside the modals instead. -->
+    <div id="legacySettingsAnchors" style="display:none;">
+      <div id="channelsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'channel', 'ch-simply5')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#6366F1;cursor:pointer;padding:0;flex-shrink:0;"></button>
         <div><strong>Simply 5</strong> <span style="color:var(--gray);font-size:12px;">· meta · from 2026-01</span></div>
@@ -3693,26 +3677,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
       </div>
     </div></div>
-          <form id="channelForm" class="settings-form" style="margin-top:14px;">
-            <div><label>Name</label><input type="text" id="ch_name" placeholder="e.g. TikTok"></div>
-            <div><label>Platform</label>
-              <select id="ch_platform">
-                <option value="meta">Meta</option>
-                <option value="google">Google</option>
-                <option value="organic">Organic</option>
-                <option value="followup">Follow Up</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div><label>Active from</label><input type="month" id="ch_added"></div>
-            <button type="submit" class="btn btn-outline btn-full">Add</button>
-          </form>
-        </div>
-
-        <!-- Stores -->
-        <div class="card">
-          <div class="section-title"><h3>Stores</h3></div>
-          <div id="locationsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
+      <form id="channelForm" class="settings-form"></form>
+      <input type="text" id="ch_name">
+      <select id="ch_platform"></select>
+      <input type="month" id="ch_added">
+      <div id="locationsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', 'st-sunway')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#6366F1;cursor:pointer;padding:0;flex-shrink:0;"></button>
         <div><strong>Sunway</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
@@ -3746,101 +3715,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
       </div>
     </div></div>
-          <form id="locationForm" class="settings-form" style="margin-top:14px;">
-            <div><label>Name</label><input type="text" id="loc_name" placeholder="e.g. Puchong"></div>
-            <div><label>Active from</label><input type="month" id="loc_added"></div>
-            <button type="submit" class="btn btn-outline btn-full">Add</button>
-          </form>
-        </div>
-      </div>
-
-      <div class="settings-col-right">
-        <!-- GitHub Deploy -->
-        <div class="card">
-          <div class="section-title"><h3>🚀 Push to GitHub</h3></div>
-          <div style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.5;">
-            推送后等 1-2 分钟 → Ctrl+Shift+R 刷新。
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <div>
-              <label style="font-size:12px;">Token</label>
-              <input type="password" id="gh_token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" style="font-size:13px;">
-              <div style="font-size:11px;color:var(--gray);margin-top:2px;">Stored in browser only · <strong>repo</strong> scope</div>
-            </div>
-            <div><label style="font-size:12px;">Owner</label><input type="text" id="gh_owner" placeholder="DavyWong-84" style="font-size:13px;"></div>
-            <div><label style="font-size:12px;">Repo</label><input type="text" id="gh_repo" placeholder="ADS-CRM" style="font-size:13px;"></div>
-            <div><label style="font-size:12px;">Branch</label><input type="text" id="gh_branch" value="main" style="font-size:13px;"><input type="hidden" id="gh_path" value="data.json"></div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn btn-primary" onclick="pushHTMLToGitHub()">🚀 Push</button>
-              <button class="btn btn-ghost" onclick="saveGitHubConfig()">💾 Save</button>
-            </div>
-            <div id="html_deploy_log" style="font-size:12px;color:var(--gray);min-height:16px;"><span style="color:var(--gray);">📖 Reading current HTML...</span></div>
-            <div id="gh_log" style="display:none;"></div>
-          </div>
-        </div>
-
-        <!-- Google Sheet Sync -->
-        <div class="card">
-          <div class="section-title"><h3>📊 Google Sheet Sync</h3></div>
-          <div style="font-size:12px;color:var(--gray);margin-bottom:10px;line-height:1.5;">
-            CRM → Sheet: 自动推送。Sheet → CRM: 打开 App 自动 Pull（也可手动）。
-          </div>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <div>
-              <label style="font-size:12px;">Apps Script URL</label>
-              <input type="text" id="gs_url" placeholder="https://script.google.com/macros/s/xxxxx/exec" autocomplete="off" style="font-size:12px;">
-            </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn btn-primary" onclick="gsPushAll()">⬆️ Push All</button>
-              <button class="btn btn-outline" onclick="gsPull()">⬇️ Pull</button>
-              <button class="btn btn-ghost" onclick="gsTest()">🔗 Test</button>
-            </div>
-            <div id="gs_log" style="font-size:12px;color:var(--gray);min-height:16px;"></div>
-          </div>
-        </div>
-
-        <!-- v3.32: AI Guide toggle -->
-        <div class="card">
-          <div class="section-title"><h3>💡 AI Guide Hints</h3></div>
-          <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">在不同页面停留 10 秒后，右上角会出现 AI 使用提示气泡（每天最多 3 次）。</p>
-          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;background:var(--purple-bg);border-radius:8px;">
-            <input type="checkbox" id="aiGuideToggle" onchange="setAIGuideEnabled(this.checked)" style="width:18px;height:18px;cursor:pointer;">
-            <div>
-              <div style="font-size:14px;font-weight:500;color:var(--black);">Show AI hints</div>
-              <div style="font-size:11.5px;color:var(--gray);">Turn off if you find them distracting</div>
-            </div>
-          </label>
-          <button class="btn btn-ghost" style="margin-top:8px;font-size:12px;padding:6px 12px;" onclick="resetAIGuideDismissals()">🔄 Reset dismissed tips</button>
-        </div>
-
-        <!-- Backup -->
-        <div class="card">
-          <div class="section-title"><h3>💾 Backup</h3></div>
-
-          <!-- v5.08: Cloud backup section (auto + manual + restore) -->
-          <div style="background:var(--surface);border-radius:8px;padding:12px;margin-bottom:14px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-              <div>
-                <div style="font-size:14px;font-weight:600;color:var(--black);">☁️ Cloud Backups</div>
-                <div style="font-size:12px;color:var(--gray);margin-top:2px;">Automatic daily backup at 3:00 AM, kept for 30 days</div>
-              </div>
-              <button class="btn btn-primary" style="padding:6px 14px;font-size:13px;" onclick="cloudBackupNow()">🔄 Backup Now</button>
-            </div>
-            <div id="backupListContainer" style="margin-top:12px;">
-              <div style="font-size:12px;color:var(--silver);text-align:center;padding:8px 0;">Click "Refresh List" to load backups</div>
-            </div>
-            <button class="btn btn-outline btn-full" style="margin-top:10px;font-size:13px;" onclick="cloudBackupRefreshList()">🔃 Refresh Backup List</button>
-          </div>
-
-          <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Or export all data as JSON:</p>
-          <button class="btn btn-gray btn-full" onclick="exportAllData()">Export All Data</button>
-          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
-            <div class="section-title"><h3>🔄 Clear Cache &amp; Reload</h3></div>
-            <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Clear browser cache and reload preloaded data. Use when data is missing or outdated.</p>
-            <button class="btn btn-full" style="background:var(--red);color:#fff;border-color:var(--red);" onclick="clearCacheReload()">Clear Cache &amp; Reload</button>
-          </div>
-        </div>
-      </div>
+      <form id="locationForm" class="settings-form"></form>
+      <input type="text" id="loc_name">
+      <input type="month" id="loc_added">
+      <input type="password" id="gh_token">
+      <input type="text" id="gh_owner">
+      <input type="text" id="gh_repo">
+      <input type="text" id="gh_branch" value="main">
+      <input type="hidden" id="gh_path" value="data.json">
+      <div id="html_deploy_log"><span style="color:var(--gray);">📖 Reading current HTML...</span></div>
+      <div id="gh_log" style="display:none;"></div>
+      <input type="text" id="gs_url">
+      <div id="gs_log"></div>
+      <input type="checkbox" id="aiGuideToggle">
+      <div id="backupListContainer"></div>
     </div>
   </section>
 </main>
@@ -4433,7 +4321,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.50'; // v5.74 — Activity log B方案: 编辑/Merge 时自动 append 事件 (status/appt/location/channel 变化), 多条记录显示
+const DATA_VERSION = '3.51'; // v5.75 — Settings 重新优化: iOS 风格分组卡片 (Workspace/Sync/Display/Data), 详情都在 modal 中, 状态显示在行右侧
 
 // ---------- State ----------
 let state = {
@@ -11151,7 +11039,300 @@ function renderSettings() {
   }).join('');
   document.getElementById('ch_added').value = todayStr().substring(0,7);
   document.getElementById('loc_added').value = todayStr().substring(0,7);
+
+  // v5.75: Update settings row status displays
+  updateSettingsRowStatuses();
 }
+
+// v5.75: Update status text on each settings row
+function updateSettingsRowStatuses() {
+  // Channels
+  const chCount = (state.channels || []).filter(c => c.active !== false).length;
+  const chStatus = document.getElementById('settingsChannelStatus');
+  if (chStatus) chStatus.textContent = chCount + ' active';
+
+  // Stores
+  const stCount = (state.locations || []).filter(l => l.active !== false).length;
+  const stStatus = document.getElementById('settingsStoreStatus');
+  if (stStatus) stStatus.textContent = stCount + ' active';
+
+  // Google Sheet
+  const gsUrl = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  const gsStatus = document.getElementById('settingsGSheetStatus');
+  if (gsStatus) {
+    if (gsUrl) gsStatus.innerHTML = '<span class="settings-row-status-dot"></span>Connected';
+    else gsStatus.textContent = 'Not configured';
+  }
+
+  // GitHub
+  const ghOwner = document.getElementById('gh_owner')?.value;
+  const ghRepo = document.getElementById('gh_repo')?.value;
+  const ghToken = document.getElementById('gh_token')?.value;
+  const ghStatus = document.getElementById('settingsGitHubStatus');
+  if (ghStatus) {
+    if (ghOwner && ghRepo && ghToken) ghStatus.textContent = 'Configured';
+    else ghStatus.textContent = 'Not configured';
+  }
+
+  // AI Toggle
+  const aiToggleBtn = document.getElementById('settingsAIToggle');
+  if (aiToggleBtn) {
+    const enabled = (typeof isAIGuideEnabled === 'function') ? isAIGuideEnabled() : false;
+    aiToggleBtn.classList.toggle('on', enabled);
+  }
+}
+
+// v5.75: Toggle AI guide hints from settings row
+function toggleAIGuideRow() {
+  if (typeof isAIGuideEnabled !== 'function' || typeof setAIGuideEnabled !== 'function') return;
+  const cur = isAIGuideEnabled();
+  setAIGuideEnabled(!cur);
+  updateSettingsRowStatuses();
+}
+
+// v5.75: Confirm before clearing cache (was direct btn click before)
+function confirmClearCacheReload() {
+  if (confirm('Clear browser cache and reload? Use this when data is missing or outdated.')) {
+    if (typeof clearCacheReload === 'function') clearCacheReload();
+  }
+}
+
+// v5.75: Open the appropriate settings modal
+function openSettingsModal(kind) {
+  const titles = {
+    channels: 'Channels',
+    stores: 'Stores',
+    gsheet: 'Google Sheet sync',
+    github: 'GitHub deploy',
+    backup: 'Cloud backup'
+  };
+  const body = _buildSettingsModalBody(kind);
+  const modalHTML = `
+    <div class="modal-header">
+      <div class="modal-title">${titles[kind] || 'Settings'}</div>
+      <button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button>
+    </div>
+    <div class="settings-modal-content">${body}</div>
+  `;
+  showModal(modalHTML);
+  // After modal renders, sync the relevant config inputs into the modal copies
+  setTimeout(() => _initSettingsModal(kind), 30);
+}
+
+function _buildSettingsModalBody(kind) {
+  if (kind === 'channels') {
+    return `
+      <div class="settings-modal-section">
+        <div id="modalChannelsList"></div>
+      </div>
+      <div class="settings-modal-section">
+        <div class="settings-modal-section-title">Add new channel</div>
+        <div class="settings-modal-input-row">
+          <label>Name</label>
+          <input type="text" id="modal_ch_name" placeholder="e.g. TikTok">
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Platform</label>
+          <select id="modal_ch_platform">
+            <option value="meta">Meta</option>
+            <option value="google">Google</option>
+            <option value="organic">Organic</option>
+            <option value="followup">Follow Up</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Active from</label>
+          <input type="month" id="modal_ch_added">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="modalAddChannel()">Add channel</button>
+      </div>
+    `;
+  }
+  if (kind === 'stores') {
+    return `
+      <div class="settings-modal-section">
+        <div id="modalStoresList"></div>
+      </div>
+      <div class="settings-modal-section">
+        <div class="settings-modal-section-title">Add new store</div>
+        <div class="settings-modal-input-row">
+          <label>Name</label>
+          <input type="text" id="modal_loc_name" placeholder="e.g. Puchong">
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Active from</label>
+          <input type="month" id="modal_loc_added">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="modalAddStore()">Add store</button>
+      </div>
+    `;
+  }
+  if (kind === 'gsheet') {
+    return `
+      <div class="settings-modal-section">
+        <div style="font-size:13px;color:var(--gray);line-height:1.5;margin-bottom:12px;">
+          CRM → Sheet 自动推送。Sheet → CRM 打开 App 自动 Pull (也可手动)。
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Apps Script URL</label>
+          <input type="text" id="modal_gs_url" placeholder="https://script.google.com/macros/s/xxxxx/exec" autocomplete="off" style="font-size:12px;">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="modalGSheetPush()">Push all</button>
+          <button class="btn btn-outline" onclick="modalGSheetPull()">Pull</button>
+          <button class="btn btn-ghost" onclick="modalGSheetTest()">Test</button>
+        </div>
+        <div id="modal_gs_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"></div>
+      </div>
+    `;
+  }
+  if (kind === 'github') {
+    return `
+      <div class="settings-modal-section">
+        <div style="font-size:13px;color:var(--gray);line-height:1.5;margin-bottom:12px;">
+          推送后等 1-2 分钟 → Ctrl+Shift+R 刷新。
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Token (repo scope)</label>
+          <input type="password" id="modal_gh_token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;">Stored in browser only</div>
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Owner</label>
+          <input type="text" id="modal_gh_owner" placeholder="DavyWong-84">
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Repo</label>
+          <input type="text" id="modal_gh_repo" placeholder="ADS-CRM">
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Branch</label>
+          <input type="text" id="modal_gh_branch" value="main">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="modalGitHubPush()">Push to GitHub</button>
+          <button class="btn btn-ghost" onclick="modalGitHubSave()">Save config</button>
+        </div>
+        <div id="modal_gh_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"></div>
+      </div>
+    `;
+  }
+  if (kind === 'backup') {
+    return `
+      <div class="settings-modal-section">
+        <div style="font-size:13px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
+          Automatic daily backup at 3:00 AM, kept for 30 days.
+        </div>
+        <button class="btn btn-primary btn-full" onclick="cloudBackupNow()">Backup now</button>
+      </div>
+      <div class="settings-modal-section">
+        <div class="settings-modal-section-title">Backup history</div>
+        <div id="modalBackupList">
+          <div style="font-size:12px;color:var(--silver);text-align:center;padding:8px 0;">Click below to load list</div>
+        </div>
+        <button class="btn btn-outline btn-full" style="margin-top:10px;" onclick="modalBackupRefreshList()">Refresh list</button>
+      </div>
+    `;
+  }
+  return '<div style="padding:20px;">Unknown setting</div>';
+}
+
+function _initSettingsModal(kind) {
+  if (kind === 'channels') {
+    _renderModalChannelsList();
+    const addedInp = document.getElementById('modal_ch_added');
+    if (addedInp) addedInp.value = todayStr().substring(0, 7);
+  }
+  if (kind === 'stores') {
+    _renderModalStoresList();
+    const addedInp = document.getElementById('modal_loc_added');
+    if (addedInp) addedInp.value = todayStr().substring(0, 7);
+  }
+  if (kind === 'gsheet') {
+    const orig = document.getElementById('gs_url');
+    const m = document.getElementById('modal_gs_url');
+    if (m && orig) m.value = orig.value || '';
+  }
+  if (kind === 'github') {
+    ['token', 'owner', 'repo', 'branch'].forEach(f => {
+      const orig = document.getElementById('gh_' + f);
+      const m = document.getElementById('modal_gh_' + f);
+      if (m && orig) m.value = orig.value || '';
+    });
+  }
+}
+
+// Mirror the legacy lists into the modal
+function _renderModalChannelsList() {
+  const target = document.getElementById('modalChannelsList');
+  const orig = document.getElementById('channelsList');
+  if (target && orig) target.innerHTML = orig.innerHTML;
+}
+
+function _renderModalStoresList() {
+  const target = document.getElementById('modalStoresList');
+  const orig = document.getElementById('locationsList');
+  if (target && orig) target.innerHTML = orig.innerHTML;
+}
+
+// Wrappers — write modal input back to legacy hidden input, then call original handler
+function modalAddChannel() {
+  document.getElementById('ch_name').value = document.getElementById('modal_ch_name').value;
+  document.getElementById('ch_platform').value = document.getElementById('modal_ch_platform').value;
+  document.getElementById('ch_added').value = document.getElementById('modal_ch_added').value;
+  document.getElementById('channelForm').dispatchEvent(new Event('submit'));
+  setTimeout(_renderModalChannelsList, 60);
+}
+
+function modalAddStore() {
+  document.getElementById('loc_name').value = document.getElementById('modal_loc_name').value;
+  document.getElementById('loc_added').value = document.getElementById('modal_loc_added').value;
+  document.getElementById('locationForm').dispatchEvent(new Event('submit'));
+  setTimeout(_renderModalStoresList, 60);
+}
+
+function _syncModalGSheet() {
+  document.getElementById('gs_url').value = document.getElementById('modal_gs_url').value;
+  document.getElementById('gs_url').dispatchEvent(new Event('change'));
+}
+function modalGSheetPush() { _syncModalGSheet(); if (typeof gsPushAll === 'function') gsPushAll(); _mirrorLog('gs_log', 'modal_gs_log'); }
+function modalGSheetPull() { _syncModalGSheet(); if (typeof gsPull === 'function') gsPull(); _mirrorLog('gs_log', 'modal_gs_log'); }
+function modalGSheetTest() { _syncModalGSheet(); if (typeof gsTest === 'function') gsTest(); _mirrorLog('gs_log', 'modal_gs_log'); }
+
+function _syncModalGitHub() {
+  ['token', 'owner', 'repo', 'branch'].forEach(f => {
+    const m = document.getElementById('modal_gh_' + f);
+    const orig = document.getElementById('gh_' + f);
+    if (m && orig) orig.value = m.value;
+  });
+}
+function modalGitHubPush() { _syncModalGitHub(); if (typeof pushHTMLToGitHub === 'function') pushHTMLToGitHub(); _mirrorLog('html_deploy_log', 'modal_gh_log'); }
+function modalGitHubSave() { _syncModalGitHub(); if (typeof saveGitHubConfig === 'function') saveGitHubConfig(); updateSettingsRowStatuses(); }
+
+// Mirror log content from hidden anchor into modal log periodically (since async ops update the legacy log)
+function _mirrorLog(srcId, targetId) {
+  const src = document.getElementById(srcId);
+  const tgt = document.getElementById(targetId);
+  if (!src || !tgt) return;
+  // poll a few times
+  let n = 0;
+  const tick = () => {
+    tgt.innerHTML = src.innerHTML;
+    if (++n < 20) setTimeout(tick, 500);
+  };
+  tick();
+}
+
+function modalBackupRefreshList() {
+  if (typeof cloudBackupRefreshList === 'function') cloudBackupRefreshList();
+  setTimeout(() => {
+    const orig = document.getElementById('backupListContainer');
+    const tgt = document.getElementById('modalBackupList');
+    if (orig && tgt) tgt.innerHTML = orig.innerHTML;
+  }, 800);
+}
+
 
 // Remove old sh_url listener since field no longer exists
 // document.getElementById('sh_url').addEventListener('change', ...);
