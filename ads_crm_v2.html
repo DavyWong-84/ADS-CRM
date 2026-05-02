@@ -2917,7 +2917,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.77</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.78</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4396,7 +4396,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.53'; // v5.77 — Channels/Stores modal 删除 'Active from' 字段 (该字段未被任何业务逻辑使用), modal输入 + 列表显示行都清掉
+const DATA_VERSION = '3.54'; // v5.78 — Backup modal列表显示修复: cloudBackupRefreshList 同时写入hidden anchor + modal视图; 打开modal自动加载列表
 
 // ---------- State ----------
 let state = {
@@ -11330,6 +11330,10 @@ function _initSettingsModal(kind) {
       if (m && orig) m.value = orig.value || '';
     });
   }
+  if (kind === 'backup') {
+    // v5.78: 打开 backup modal 自动加载列表 (不用用户再点 Refresh)
+    setTimeout(() => modalBackupRefreshList(), 100);
+  }
 }
 
 // Mirror the legacy lists into the modal (v5.76: 用新 cl-row 风格 + iOS toggle + color picker modal)
@@ -11422,13 +11426,11 @@ function _mirrorLog(srcId, targetId) {
   tick();
 }
 
-function modalBackupRefreshList() {
-  if (typeof cloudBackupRefreshList === 'function') cloudBackupRefreshList();
-  setTimeout(() => {
-    const orig = document.getElementById('backupListContainer');
-    const tgt = document.getElementById('modalBackupList');
-    if (orig && tgt) tgt.innerHTML = orig.innerHTML;
-  }, 800);
+async function modalBackupRefreshList() {
+  // v5.78: cloudBackupRefreshList 现在自动写入两处, 直接调用即可
+  if (typeof cloudBackupRefreshList === 'function') {
+    await cloudBackupRefreshList();
+  }
 }
 
 // v5.76: Platform picker modal (replaces native select)
@@ -11762,14 +11764,20 @@ async function cloudBackupNow() {
 }
 
 async function cloudBackupRefreshList() {
-  const container = document.getElementById('backupListContainer');
-  if (!container) return;
+  // v5.78: 同时更新 hidden anchor + modal 中的列表 (如果 modal 当前打开)
+  const containers = [
+    document.getElementById('backupListContainer'),
+    document.getElementById('modalBackupList')
+  ].filter(Boolean);
+  if (containers.length === 0) return;
+  const setAll = (html) => containers.forEach(c => c.innerHTML = html);
+
   const url = getGsUrl();
   if (!url) {
-    container.innerHTML = '<div style="font-size:12px;color:var(--red);text-align:center;padding:8px 0;">Apps Script URL not set</div>';
+    setAll('<div style="font-size:12px;color:var(--red);text-align:center;padding:8px 0;">Apps Script URL not set</div>');
     return;
   }
-  container.innerHTML = '<div style="font-size:12px;color:var(--silver);text-align:center;padding:8px 0;">Loading…</div>';
+  setAll('<div style="font-size:12px;color:var(--silver);text-align:center;padding:8px 0;">Loading…</div>');
   try {
     const r = await fetch(url, {
       method: 'POST',
@@ -11779,12 +11787,12 @@ async function cloudBackupRefreshList() {
     const d = await r.json();
     if (!d.success || !d.result || !d.result.success) {
       const err = (d.result && d.result.error) || d.error || 'unknown';
-      container.innerHTML = '<div style="font-size:12px;color:var(--red);text-align:center;padding:8px 0;">Failed: ' + escapeHTML(err) + '</div>';
+      setAll('<div style="font-size:12px;color:var(--red);text-align:center;padding:8px 0;">Failed: ' + escapeHTML(err) + '</div>');
       return;
     }
     const backups = d.result.backups || [];
     if (backups.length === 0) {
-      container.innerHTML = '<div style="font-size:12px;color:var(--silver);text-align:center;padding:8px 0;">No backups yet. Click "Backup Now" to create the first one.</div>';
+      setAll('<div style="font-size:12px;color:var(--silver);text-align:center;padding:8px 0;">No backups yet. Click "Backup Now" to create the first one.</div>');
       return;
     }
     // Render backup list
@@ -11809,14 +11817,14 @@ async function cloudBackupRefreshList() {
         </div>
       `;
     }).join('');
-    container.innerHTML = `
+    setAll(`
       <div style="font-size:11px;color:var(--silver);margin-bottom:6px;">${backups.length} backup(s):</div>
       <div style="background:#fff;border:1px solid var(--border);border-radius:8px;max-height:280px;overflow-y:auto;">
         ${html}
       </div>
-    `;
+    `);
   } catch (e) {
-    container.innerHTML = '<div style="font-size:12px;color:var(--red);text-align:center;padding:8px 0;">Network error: ' + escapeHTML(e.message) + '</div>';
+    setAll('<div style="font-size:12px;color:var(--red);text-align:center;padding:8px 0;">Network error: ' + escapeHTML(e.message) + '</div>');
   }
 }
 
