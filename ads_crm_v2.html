@@ -3011,7 +3011,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.88</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.90</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3027,7 +3027,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </button>
       <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-        <span id="alertsBadge" style="position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0px 4px; background: var(--red); color: rgb(255, 255, 255); border-radius: 8px; font-size: 10px; font-weight: 700; display: none; align-items: center; justify-content: center; border: 2px solid rgb(255, 255, 255); box-sizing: content-box;">0</span>
+        <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">1</span>
       </button>
       <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
@@ -3068,12 +3068,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">Ads CRM</div>
-      <div class="nav-brand-version">v5.88</div>
+      <div class="nav-brand-version">v5.90</div>
     </div>
   </div>
   <button class="nav-item nav-tool" onclick="openAIChat()" data-tooltip="AI Assistant"><span class="nav-icon"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#9b5fff);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:22px;letter-spacing:0.3px;">AI</span></span><span class="nav-label">AI Assistant</span></button>
   <button class="nav-item nav-tool" onclick="openGlobalSearch()" data-tooltip="Search"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span><span class="nav-label">Search</span></button>
-  <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius: 8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
+  <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 8px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">1</span></button>
   <button class="nav-item" data-page="pending" data-tooltip="Inbox" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span><span id="pendingBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius: 8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="contact" data-tooltip="Contact"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><span class="nav-label">Contact</span></button>
@@ -3585,7 +3585,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3595,22 +3595,59 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
         <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th>Month</th>
+      <th class="num">Total (RM)</th>
+      <th class="num">New (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2026</td>
+    <td class="num">—</td>
+    <td class="num">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -3621,11 +3658,56 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
         <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-01" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-02" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-03" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-04" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-05" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-06" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-07" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2026</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -3639,7 +3721,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
         <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -4022,7 +4104,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="alertsTitleText" style="font-size:16px;font-weight:600;">Data Alerts</span>
-        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius: 8px;font-weight:600;">0</span>
+        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius: 8px;font-weight:600;">1</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <div id="alertsLangToggle" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;font-weight:600;">
@@ -4032,7 +4114,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
       </div>
     </div>
-    <div id="alertsContent" class="alerts-content"></div>
+    <div id="alertsContent" class="alerts-content"><div class="alerts-section-label">Needs attention (1)</div>
+        <div class="alert-item sev-med" onclick="_alertAct(0)">
+          <div class="alert-icon">🔌</div>
+          <div class="alert-body">
+            <div class="alert-title">Sheet sync not connected</div>
+            <div class="alert-desc">Data only saved locally. Configure in Settings → Google Sheet.</div>
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 
@@ -4617,7 +4707,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.64'; // v5.88 — Activity log 全面修复: 1) saveDetailLead 之前完全没调 appendActivityLog 2) appendActivityLog 加 spend/showUp/race/name diff 3) _parseRemarkLine 识别所有 Field: from→to 格式
+const DATA_VERSION = '3.66'; // v5.90 — Alerts 全面修复+扩展: 周末工作日数, 排除Organic, race+spend合并, 限制最近30天, 当日预约提醒, +Revenue缺漏/Sheet断连/Inbox堆积 3 个新alert
 
 // ---------- State ----------
 let state = {
@@ -12925,19 +13015,34 @@ function computeAlerts() {
     return Math.floor((t2 - t1) / 86400000);
   };
 
+  // v5.90: 工作日数 (排除周六周日, 让"无 lead"判断更合理)
+  const businessDaysBetween = (d1, d2) => {
+    const start = new Date(d1 + 'T00:00:00');
+    const end = new Date(d2 + 'T00:00:00');
+    let count = 0;
+    const cur = new Date(start);
+    cur.setDate(cur.getDate() + 1);
+    while (cur <= end) {
+      const dow = cur.getDay();
+      if (dow !== 0 && dow !== 6) count++; // skip Sun(0) & Sat(6)
+      cur.setDate(cur.getDate() + 1);
+    }
+    return count;
+  };
+
   const DAYS_THRESHOLD = 3;
 
-  // ===== DAYS WITHOUT ENTRY =====
+  // ===== DAYS WITHOUT ENTRY (v5.90: 改用工作日数, 排除周末) =====
 
   const allLeadDates = state.leads.map(l => l.leadDate).filter(d => d).sort();
   const lastLeadDate = allLeadDates[allLeadDates.length - 1];
   if (lastLeadDate) {
-    const gap = daysBetween(lastLeadDate, today);
+    const gap = businessDaysBetween(lastLeadDate, today);
     if (gap > DAYS_THRESHOLD) {
       alerts.push({
         severity: gap > 7 ? 'high' : 'med',
         icon: '📭',
-        title: { en: `No new Lead for ${gap} days overall`, zh: `整体已 ${gap} 天无新 Lead` },
+        title: { en: `No new Lead for ${gap} business days overall`, zh: `整体已 ${gap} 个工作日无新 Lead` },
         desc: { en: `Last Lead was on ${lastLeadDate}. Verify team entry.`, zh: `最后一条 Lead 在 ${lastLeadDate}。请检查团队录入。` },
         action: () => { closeAlertsModal(); nav('contact'); }
       });
@@ -12946,32 +13051,34 @@ function computeAlerts() {
 
   state.channels.filter(c => c.active !== false).forEach(ch => {
     // v5.30: Skip Follow Up channel — it's not an acquisition source, no leads is normal
-    if (ch.platform === 'followup') return;
+    // v5.90: Also skip Organic — slower/sporadic by nature, no lead for a few days normal
+    if (ch.platform === 'followup' || ch.platform === 'organic') return;
     const chLeads = state.leads.filter(l => l.channelId === ch.id && l.leadDate);
     if (chLeads.length === 0) return;
     const lastDate = chLeads.map(l => l.leadDate).sort().pop();
-    const gap = daysBetween(lastDate, today);
+    const gap = businessDaysBetween(lastDate, today);
     if (gap > DAYS_THRESHOLD) {
       alerts.push({
         severity: gap > 7 ? 'high' : 'med',
         icon: '📡',
-        title: { en: `${ch.name} — no Lead for ${gap} days`, zh: `${ch.name} 已 ${gap} 天无 Lead` },
+        title: { en: `${ch.name} — no Lead for ${gap} business days`, zh: `${ch.name} 已 ${gap} 个工作日无 Lead` },
         desc: { en: `Last ${ch.name} Lead was on ${lastDate}.`, zh: `最后一条 ${ch.name} Lead 在 ${lastDate}。` },
         action: () => { closeAlertsModal(); state.listChannelId = ch.id; saveState(); nav('contact'); }
       });
     }
   });
 
+  // v5.90: Bug B fix — Location appointment 也用工作日数
   state.locations.filter(l => l.active !== false).forEach(loc => {
     const locLeads = state.leads.filter(l => l.locationId === loc.id && l.apptDate);
     if (locLeads.length === 0) return;
     const lastDate = locLeads.map(l => l.apptDate).sort().pop();
-    const gap = daysBetween(lastDate, today);
+    const gap = businessDaysBetween(lastDate, today);
     if (gap > DAYS_THRESHOLD) {
       alerts.push({
         severity: gap > 7 ? 'high' : 'med',
         icon: '🏢',
-        title: { en: `${loc.name} — no appointment for ${gap} days`, zh: `${loc.name} 已 ${gap} 天无新预约` },
+        title: { en: `${loc.name} — no appointment for ${gap} business days`, zh: `${loc.name} 已 ${gap} 个工作日无新预约` },
         desc: { en: `Last appointment on ${lastDate}. Check store foot traffic.`, zh: `最后预约日 ${lastDate}。门店客流情况？` },
         action: () => { closeAlertsModal(); nav('store'); }
       });
@@ -13014,7 +13121,19 @@ function computeAlerts() {
     if (l.status === 'booked' && l.apptDate) {
       const apptTime = new Date(l.apptDate + 'T00:00:00').getTime();
       const daysPast = Math.floor((Date.now() - apptTime) / 86400000);
-      if (daysPast > 3 && !l.showUp) {
+      // v5.90: Bug C fix — 当天/昨天的 booked 已过, 也提醒填 Show Up (不只 >3天)
+      if (daysPast >= 0 && daysPast <= 1 && !l.showUp) {
+        const name = l.name || l.contact || '(no name)';
+        const dayLabel = daysPast === 0 ? 'today' : 'yesterday';
+        const dayLabelZh = daysPast === 0 ? '今天' : '昨天';
+        alerts.push({
+          severity: 'med',
+          icon: '🔔',
+          title: { en: `${name} — Appt was ${dayLabel}`, zh: `${name} — 预约在${dayLabelZh}` },
+          desc: { en: `Update Show Up status (Show / No Show).`, zh: `请更新 Show Up 状态。` },
+          action: () => { closeAlertsModal(); nav('contact'); setTimeout(() => editLead(l.id), 100); }
+        });
+      } else if (daysPast > 3 && !l.showUp) {
         const name = l.name || l.contact || '(no name)';
         alerts.push({
           severity: 'high',
@@ -13027,34 +13146,32 @@ function computeAlerts() {
     }
   });
 
-  // No Show/Done without race
+  // v5.90: Bug G+H fix — Race/Spend 缺失合并成单条 alert (per lead), 只查最近 30 天
+  // 老 lead 数据 incomplete 是常态, 没必要每天提醒
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString().substring(0, 10);
   state.leads.forEach(l => {
-    if ((l.status === 'done' || l.status === 'noshow') && !l.race) {
-      const name = l.name || l.contact || '(no name)';
-      const stLabel = l.status === 'noshow' ? 'No Show' : 'Done';
-      alerts.push({
-        severity: 'low',
-        icon: '👥',
-        title: { en: `${name} — Race not set`, zh: `${name} — Race 未填` },
-        desc: { en: `Status is ${stLabel} but Race is empty.`, zh: `状态 ${stLabel} 但 Race 空白。` },
-        action: () => { closeAlertsModal(); nav('contact'); setTimeout(() => editLead(l.id), 100); }
-      });
-    }
-  });
+    if (l.status !== 'done' && l.status !== 'noshow') return;
+    // 用 apptDate 为准 (没就 leadDate)
+    const refDate = l.apptDate || l.leadDate || '';
+    if (refDate < thirtyDaysAgo) return; // 老的不报
 
-  // v5.05: Done without spend (allow 0 — that means customer came but didn't buy).
-  // Only alert if spend is truly null/undefined (never filled), not 0.
-  state.leads.forEach(l => {
+    const missing = [];
+    if (!l.race) missing.push('Race');
     if (l.status === 'done' && (l.spend === null || l.spend === undefined || l.spend === '')) {
-      const name = l.name || l.contact || '(no name)';
-      alerts.push({
-        severity: 'low',
-        icon: '💵',
-        title: { en: `${name} — Spend not set`, zh: `${name} — 金额未填` },
-        desc: { en: `Status is Done but Spend is empty. Enter 0 if no purchase.`, zh: `状态 Done 但金额空白。如果未消费请填 0。` },
-        action: () => { closeAlertsModal(); nav('contact'); setTimeout(() => editLead(l.id), 100); }
-      });
+      missing.push('Spend');
     }
+    if (missing.length === 0) return;
+
+    const name = l.name || l.contact || '(no name)';
+    const stLabel = l.status === 'noshow' ? 'No Show' : 'Done';
+    const fields = missing.join(' + ');
+    alerts.push({
+      severity: 'low',
+      icon: missing.includes('Spend') ? '💵' : '👥',
+      title: { en: `${name} — ${fields} not set`, zh: `${name} — ${fields} 未填` },
+      desc: { en: `Status is ${stLabel} but ${fields} ${missing.length > 1 ? 'are' : 'is'} empty.`, zh: `状态 ${stLabel} 但 ${fields} 空白。` },
+      action: () => { closeAlertsModal(); nav('contact'); setTimeout(() => editLead(l.id), 100); }
+    });
   });
 
   // ===== ANOMALY =====
@@ -13063,7 +13180,25 @@ function computeAlerts() {
     const prev = state.revenue.find(r => r.month === prevMonth(thisMonth) && r.locationId === loc.id);
     const cur = state.revenue.find(r => r.month === thisMonth && r.locationId === loc.id);
     if (prev && cur && prev.total > 0 && cur.total > 0) {
-      const ratio = cur.total / prev.total;
+      // v5.89: 当月还在进行中, 按已过去天数比例调整 prev (避免月初数据不完整就报警)
+      // 例子: 今天5月2日 (已过2天), 4月完整=RM74460, 比较时应该用 4月前2天的金额 (按比例)
+      const today = new Date();
+      const curMonthStr = today.toISOString().substring(0, 7);
+      let adjustedPrev = prev.total;
+      let isPartialMonth = false;
+      if (thisMonth === curMonthStr) {
+        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        const dayOfMonth = today.getDate();
+        const monthProgress = dayOfMonth / daysInMonth;
+        // 月初前 25% 不报警 (数据太少, 噪音大)
+        if (monthProgress < 0.25) {
+          isPartialMonth = true;
+        } else {
+          adjustedPrev = prev.total * monthProgress;
+        }
+      }
+      if (isPartialMonth) return; // 月进度 < 25%, skip 这个 loc 的 alert
+      const ratio = cur.total / adjustedPrev;
       const fmtPair = `${fmt.money(prev.total)} → ${fmt.money(cur.total)}`;
       if (ratio < 0.5) {
         const pct = Math.round((1 - ratio) * 100);
@@ -13105,7 +13240,23 @@ function computeAlerts() {
     const prev = state.adsSpend.find(a => a.month === prevMonth(thisMonth) && a.channelId === ch.id);
     const cur = state.adsSpend.find(a => a.month === thisMonth && a.channelId === ch.id);
     if (prev && cur && prev.amount > 0 && cur.amount > 0) {
-      const ratio = cur.amount / prev.amount;
+      // v5.89: 同 Revenue alert — 当月还在进行就按已过去天数比例调整 prev
+      const today = new Date();
+      const curMonthStr = today.toISOString().substring(0, 7);
+      let adjustedPrev = prev.amount;
+      let isPartialMonth = false;
+      if (thisMonth === curMonthStr) {
+        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+        const dayOfMonth = today.getDate();
+        const monthProgress = dayOfMonth / daysInMonth;
+        if (monthProgress < 0.25) {
+          isPartialMonth = true;
+        } else {
+          adjustedPrev = prev.amount * monthProgress;
+        }
+      }
+      if (isPartialMonth) return;
+      const ratio = cur.amount / adjustedPrev;
       if (ratio > 3) {
         const pct = Math.round(ratio * 100 - 100);
         const fmtPair = `${fmt.money(prev.amount)} → ${fmt.money(cur.amount)}`;
@@ -13119,6 +13270,59 @@ function computeAlerts() {
       }
     }
   });
+
+  // v5.90 NEW (D): Revenue 月份缺漏检测 — 中间断了一个月就报警
+  // 例: 1月、3月填了但 2月没填 (历史数据完整性)
+  state.locations.filter(l => l.active !== false).forEach(loc => {
+    const recs = state.revenue.filter(r => r.locationId === loc.id && r.total != null && r.total > 0);
+    if (recs.length < 2) return; // 数据少于 2 个月不能判断
+    const months = recs.map(r => r.month).sort();
+    const earliest = months[0];
+    const latest = months[months.length - 1];
+    // 列出 earliest..latest 之间所有月份, 找缺失的
+    const missing = [];
+    let cursor = earliest;
+    while (cursor < latest) {
+      cursor = (() => {
+        const [y, mm] = cursor.split('-').map(Number);
+        const d = new Date(y, mm, 1); // 下个月
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+      })();
+      if (cursor < latest && !months.includes(cursor)) missing.push(cursor);
+    }
+    if (missing.length > 0) {
+      alerts.push({
+        severity: 'med',
+        icon: '📊',
+        title: { en: `${loc.name} — Revenue gap detected`, zh: `${loc.name} — Revenue 月份有缺漏` },
+        desc: { en: `Missing month(s): ${missing.join(', ')}.`, zh: `缺失月份: ${missing.join(', ')}。` },
+        action: () => { closeAlertsModal(); nav('entry'); setTimeout(() => { if (typeof switchEntryTab === 'function') switchEntryTab('rv'); }, 100); }
+      });
+    }
+  });
+
+  // v5.90 NEW (E): Apps Script URL 没配置 (无法同步到 Sheet)
+  const gsUrl = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  if (!gsUrl) {
+    alerts.push({
+      severity: 'med',
+      icon: '🔌',
+      title: { en: `Sheet sync not connected`, zh: `Sheet 同步未连接` },
+      desc: { en: `Data only saved locally. Configure in Settings → Google Sheet.`, zh: `数据只存本地。请前往 Settings → Google Sheet 配置。` },
+      action: () => { closeAlertsModal(); nav('settings'); }
+    });
+  }
+
+  // v5.90 NEW (F): Inbox 堆积 (>=10 条 pending)
+  if (typeof pendingData !== 'undefined' && Array.isArray(pendingData) && pendingData.length >= 10) {
+    alerts.push({
+      severity: pendingData.length >= 20 ? 'high' : 'med',
+      icon: '📬',
+      title: { en: `${pendingData.length} pending leads in Inbox`, zh: `Inbox 有 ${pendingData.length} 条待处理` },
+      desc: { en: `Process them to keep Lead List up to date.`, zh: `请尽快处理以保持 Lead List 更新。` },
+      action: () => { closeAlertsModal(); nav('pending'); }
+    });
+  }
 
   return alerts;
 }
