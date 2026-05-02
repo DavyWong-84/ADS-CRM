@@ -635,20 +635,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .lead-item.lead-compact-v2 .lc-name { font-size: 14px; }
 .lead-item.lead-compact-v2 .lc-foot { margin-top: 0; font-size: 12px; }
 
-/* Lead flag stars (yellow / blue / green) — click to toggle
-   Note: data-flag key stays as "red" for backward compatibility with saved data,
-   but visually rendered as sky blue since v3.76 */
-.lc-flags { display: inline-flex; gap: 4px; margin-left: 6px; }
-.lc-flag { cursor: pointer; width: 22px; height: 22px; font-size: 20px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s, color 0.15s; }
-.lc-flag:hover { transform: scale(1.2); }
-/* Unlit stars = very light pastel of their own color */
-.lc-flag:not(.active)[data-flag="yellow"] { color: #fef3c7; }
-.lc-flag:not(.active)[data-flag="red"]    { color: #dbeafe; }
-.lc-flag:not(.active)[data-flag="green"]  { color: #d1fae5; }
-/* Lit stars = saturated color */
-.lc-flag.active[data-flag="yellow"] { color: #facc15; }
-.lc-flag.active[data-flag="red"]    { color: #0ea5e9; }
-.lc-flag.active[data-flag="green"]  { color: var(--organic-color); }
+/* v5.72: 删除 lead flag stars CSS (3个星星功能不再使用) */
 
 /* Pagination */
 .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -2766,7 +2753,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.71</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.73</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -2782,7 +2769,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </button>
       <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-        <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">5</span>
+        <span id="alertsBadge" style="position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0px 4px; background: var(--red); color: rgb(255, 255, 255); border-radius: 8px; font-size: 10px; font-weight: 700; display: none; align-items: center; justify-content: center; border: 2px solid rgb(255, 255, 255); box-sizing: content-box;">0</span>
       </button>
       <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
@@ -2821,7 +2808,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 <nav class="nav" id="navDesktop">
   <button class="nav-item nav-tool" onclick="openAIChat()" data-tooltip="AI Assistant"><span class="nav-icon"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#9b5fff);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:22px;letter-spacing:0.3px;">AI</span></span><span class="nav-label">AI Assistant</span></button>
   <button class="nav-item nav-tool" onclick="openGlobalSearch()" data-tooltip="Search"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span><span class="nav-label">Search</span></button>
-  <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 8px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">5</span></button>
+  <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius: 8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
   <button class="nav-item" data-page="pending" data-tooltip="Inbox" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span><span id="pendingBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius: 8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="contact" data-tooltip="Contact"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><span class="nav-label">Contact</span></button>
@@ -2891,10 +2878,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               <button class="toggle" data-mode="year" onclick="setListMode('year')">Year</button>
             </div>
             <button type="button" class="date-btn cf-select" id="listMonth_btn" onclick="openMonthPicker('listMonth')">
-              <span id="listMonth_label">Apr 2026</span>
+              <span id="listMonth_label">May 2026</span>
               <span class="date-btn-icon">📅</span>
             </button>
-            <input type="hidden" id="listMonth" value="2026-04">
+            <input type="hidden" id="listMonth" value="2026-05">
             <button type="button" class="date-btn cf-select" id="listYearBtn" style="display:none;" onclick="openYearPicker('listYear', this)">
               <span id="listYear_label">2026</span>
               <span class="date-btn-icon">📅</span>
@@ -2968,10 +2955,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-04-30</span>
+                      <span id="f_leadDate_label">2026-05-02</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-04-30">
+                    <input type="hidden" id="f_leadDate" value="2026-05-02">
                   </div>
                 </div>
               </div>
@@ -3085,10 +3072,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span class="date-btn-icon">📅</span>
         </button>
         <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
-          <span id="summaryMonth_label">Apr 2026</span>
+          <span id="summaryMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <input type="hidden" id="summaryMonth" value="2026-04">
+        <input type="hidden" id="summaryMonth" value="2026-05">
       </div>
     </div>
     <div class="unified-header-spacer"></div>
@@ -3112,10 +3099,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span class="date-btn-icon">📅</span>
         </button>
         <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')">
-          <span id="storeMonth_label">Apr 2026</span>
+          <span id="storeMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <input type="hidden" id="storeMonth" value="2026-04">
+        <input type="hidden" id="storeMonth" value="2026-05">
         <button type="button" class="date-btn cf-select" id="storeFromMonth_btn" style="display:none;" onclick="openMonthPicker('storeFromMonth')">
           <span id="storeFromMonth_label">From</span>
           <span class="date-btn-icon">📅</span>
@@ -4233,7 +4220,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.47'; // v5.71 — Merge 时 apptDate 标准化用 extractDateOnly (修复 NaN day overdue, 之前 substring(0,10) 对 'Tue May 05 2025' 这种格式失败)
+const DATA_VERSION = '3.49'; // v5.73 — Merge 后卡片立即显示 outlet (之前只写 locationId, 没写 location 名字字符串, 卡片渲染读字符串导致延迟显示)
 
 // ---------- State ----------
 let state = {
@@ -7024,12 +7011,7 @@ function renderList() {
       const cls = isToday ? 'today-appt' : (isOverdue ? 'overdue' : '');
       const selected = l.id === currentEditingId ? ' selected' : '';
       const statusLabel = l.status === 'noshow' ? 'No show' : (l.status.charAt(0).toUpperCase() + l.status.slice(1));
-      const flags = l.flags || {};
-      // v3.76: tooltip label uses 'blue' for the second star while the data key stays 'red' (backward compat)
-      const flagTitle = { yellow: 'yellow', red: 'blue', green: 'green' };
-      const starHTML = ['yellow', 'red', 'green'].map(c =>
-        `<span class="lc-flag ${flags[c] ? 'active' : ''}" data-flag="${c}" onclick="toggleLeadFlag(event, '${l.id}', '${c}')" title="${flagTitle[c]}">★</span>`
-      ).join('');
+      // v5.72: 删除 3 个星星 flag 功能 (Davy 反馈已不再使用)
       // Lead = same layout as booked, but more compact (no appt date, no amount)
       if (l.status === 'lead') {
         // Parse creation time from id (format: L-{base36_timestamp}...)
@@ -7051,7 +7033,6 @@ function renderList() {
             <div class="lc-name">${esc(l.name || l.contact || '(no contact)')}${remarkIconHTML(l)}</div>
             <div style="display:flex;align-items:center;gap:4px;">
               ${rescheduleChipHTML(l)}
-              <span class="lc-flags">${starHTML}</span>
               <span class="badge badge-lead">Lead</span>
             </div>
           </div>
@@ -7080,7 +7061,6 @@ function renderList() {
           <div class="lc-name">${esc(l.name || l.contact || '(no data)')}${remarkIconHTML(l)}</div>
           <div style="display:flex;align-items:center;gap:4px;">
             ${rescheduleChipHTML(l)}
-            <span class="lc-flags">${starHTML}</span>
             <span class="badge badge-${l.status}">${statusLabel}</span>
           </div>
         </div>
@@ -7148,17 +7128,7 @@ function setListChannelFilter(v) { state.listChannelId = v; state.listPage = 1; 
 // v3.39: sort by updated / lead / appt
 function setListSort(v) { state.listSort = v; state.listPage = 1; saveState(); renderList(); }
 
-// Toggle a star flag on a lead (red/yellow/green). Synced across devices via Sheet.
-function toggleLeadFlag(event, leadId, flagColor) {
-  event.stopPropagation();
-  const lead = state.leads.find(l => l.id === leadId);
-  if (!lead) return;
-  if (!lead.flags) lead.flags = {};
-  lead.flags[flagColor] = !lead.flags[flagColor];
-  saveState();
-  gsUpsert('Leads', gsLeadForSheet(lead));
-  renderList();
-}
+// v5.72: 删除 toggleLeadFlag 函数 (3 个星星功能不再使用)
 
 // v4.50: Prevent mouse wheel from changing number input values (Chrome/Safari default).
 // When focused number input receives wheel, let page scroll instead (or do nothing).
@@ -15486,7 +15456,11 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
       }
       if (newName) leadUpdate.name = newName;
       if (newApptDate) leadUpdate.apptDate = newApptDate;
-      if (newLocId) leadUpdate.locationId = newLocId;
+      if (newLocId) {
+        leadUpdate.locationId = newLocId;
+        // v5.73: 同步写 location 名字 (卡片渲染读 l.location 字符串, 不写会导致 merge 后等 15-30 秒才显示 outlet)
+        if (newLocName && newLocName.name) leadUpdate.location = newLocName.name;
+      }
 
       try {
         const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
@@ -15515,7 +15489,11 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
               }
               if (newName) found.name = newName;
               if (newApptDate) found.apptDate = newApptDate;
-              if (newLocId) found.locationId = newLocId;
+              if (newLocId) {
+                found.locationId = newLocId;
+                // v5.73: 同步本地 found.location, 让卡片立即显示 outlet (不用等 gsPullSilent)
+                if (newLocName && newLocName.name) found.location = newLocName.name;
+              }
               if (typeof saveState === 'function') saveState();
             }
           }
