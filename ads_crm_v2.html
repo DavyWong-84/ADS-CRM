@@ -2917,7 +2917,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.76</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.77</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -4396,7 +4396,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.52'; // v5.76 — Channels/Stores modal D 方案: iOS toggle + Platform 全 modal 选 + 颜色点 → 全 modal 颜色面板; inactive 行整体淡化
+const DATA_VERSION = '3.53'; // v5.77 — Channels/Stores modal 删除 'Active from' 字段 (该字段未被任何业务逻辑使用), modal输入 + 列表显示行都清掉
 
 // ---------- State ----------
 let state = {
@@ -11220,10 +11220,6 @@ function _buildSettingsModalBody(kind) {
             <option value="other">Other</option>
           </select>
         </div>
-        <div class="settings-modal-input-row">
-          <label>Active from</label>
-          <input type="month" id="modal_ch_added">
-        </div>
         <button class="btn btn-primary btn-full" onclick="modalAddChannel()">Add channel</button>
       </div>
     `;
@@ -11238,10 +11234,6 @@ function _buildSettingsModalBody(kind) {
         <div class="settings-modal-input-row">
           <label>Name</label>
           <input type="text" id="modal_loc_name" placeholder="e.g. Puchong">
-        </div>
-        <div class="settings-modal-input-row">
-          <label>Active from</label>
-          <input type="month" id="modal_loc_added">
         </div>
         <button class="btn btn-primary btn-full" onclick="modalAddStore()">Add store</button>
       </div>
@@ -11320,13 +11312,11 @@ function _buildSettingsModalBody(kind) {
 function _initSettingsModal(kind) {
   if (kind === 'channels') {
     _renderModalChannelsList();
-    const addedInp = document.getElementById('modal_ch_added');
-    if (addedInp) addedInp.value = todayStr().substring(0, 7);
+    // v5.77: 不再初始化 modal_ch_added (字段已删除)
   }
   if (kind === 'stores') {
     _renderModalStoresList();
-    const addedInp = document.getElementById('modal_loc_added');
-    if (addedInp) addedInp.value = todayStr().substring(0, 7);
+    // v5.77: 不再初始化 modal_loc_added (字段已删除)
   }
   if (kind === 'gsheet') {
     const orig = document.getElementById('gs_url');
@@ -11356,7 +11346,7 @@ function _renderModalChannelsList() {
         <button type="button" class="cl-color-dot" onclick="openColorPicker(event, 'channel', '${esc(c.id)}')" title="改颜色" style="background:${color};"></button>
         <div class="cl-row-info">
           <div class="cl-row-name">${esc(c.name)}</div>
-          <div class="cl-row-meta">${platLabel} · from ${esc(c.addedMonth || '—')}</div>
+          <div class="cl-row-meta">${platLabel}</div>
         </div>
       </div>
       <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setChannelActive('${esc(c.id)}', ${!isActive}); setTimeout(_renderModalChannelsList, 30);"></div>
@@ -11375,7 +11365,6 @@ function _renderModalStoresList() {
         <button type="button" class="cl-color-dot" onclick="openColorPicker(event, 'location', '${esc(l.id)}')" title="改颜色" style="background:${color};"></button>
         <div class="cl-row-info">
           <div class="cl-row-name">${esc(l.name)}</div>
-          <div class="cl-row-meta">from ${esc(l.addedMonth || '—')}</div>
         </div>
       </div>
       <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setLocationActive('${esc(l.id)}', ${!isActive}); setTimeout(_renderModalStoresList, 30);"></div>
@@ -11387,14 +11376,16 @@ function _renderModalStoresList() {
 function modalAddChannel() {
   document.getElementById('ch_name').value = document.getElementById('modal_ch_name').value;
   document.getElementById('ch_platform').value = document.getElementById('modal_ch_platform').value;
-  document.getElementById('ch_added').value = document.getElementById('modal_ch_added').value;
+  // v5.77: addedMonth 字段已无用, 不再设值 (legacy form handler 会自动用 todayStr)
+  document.getElementById('ch_added').value = '';
   document.getElementById('channelForm').dispatchEvent(new Event('submit'));
   setTimeout(_renderModalChannelsList, 60);
 }
 
 function modalAddStore() {
   document.getElementById('loc_name').value = document.getElementById('modal_loc_name').value;
-  document.getElementById('loc_added').value = document.getElementById('modal_loc_added').value;
+  // v5.77: addedMonth 字段已无用
+  document.getElementById('loc_added').value = '';
   document.getElementById('locationForm').dispatchEvent(new Event('submit'));
   setTimeout(_renderModalStoresList, 60);
 }
