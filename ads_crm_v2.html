@@ -3011,7 +3011,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.84</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v5.88</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3068,7 +3068,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">Ads CRM</div>
-      <div class="nav-brand-version">v5.84</div>
+      <div class="nav-brand-version">v5.88</div>
     </div>
   </div>
   <button class="nav-item nav-tool" onclick="openAIChat()" data-tooltip="AI Assistant"><span class="nav-icon"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#9b5fff);color:#fff;font-size:10px;font-weight:700;text-align:center;line-height:22px;letter-spacing:0.3px;">AI</span></span><span class="nav-label">AI Assistant</span></button>
@@ -4382,38 +4382,76 @@ function rescheduleChipHTML(l) {
 
 // v4.98: Parse a remark line into structured event data for timeline rendering
 function _parseRemarkLine(line) {
+  // v5.88: 重构识别所有 "X: from → to" 格式
   // Examples:
-  //   "[Auto] 25 Apr 14:40 Reschedule: 2026-04-30 → 2026-06-15, Location: Sunway → Cheras"
-  //   "[Auto] 25 Apr 14:40 Reschedule: 2026-04-30 → 2026-06-15"
-  //   "[Auto] 25 Apr 14:40 Location: Sunway → Cheras"
+  //   "[Auto] 25 Apr 14:40 Status: booked → done"
+  //   "[Auto] 25 Apr 14:40 Spend: — → RM 1,500"
+  //   "[Auto] 25 Apr 14:40 Appt: Tue 05 May → Wed 06 May"
   //   "[Auto] 25 Apr 13:30 Lead received · Simply 5 · Appt 30 Apr 2:30 PM @ Sunway"
-  //   "[Auto] 25 Apr 13:30 Appt received · Simply 5 · 30 Apr 2:30 PM @ Sunway"
+  //   "[Auto] 25 Apr 13:30 Appt merged · Tue 05 May @ Cheras · Simply 5"
   const m = line.match(/^\[Auto\]\s+([0-9]+\s+\w+\s+[0-9:]+)\s+(.+)$/);
   if (!m) {
-    // Not auto-generated — treat as user-written note
     return { type: 'note', timestamp: '', body: line };
   }
   const ts = m[1];
   const rest = m[2];
 
-  // Reschedule / Location change events
-  if (/^Reschedule:|^Location:/i.test(rest)) {
+  // Lead/Appt received — 已有结构化显示
+  if (/^Lead received/i.test(rest) || /^Appt received/i.test(rest)) {
+    return { type: 'received', timestamp: ts, body: rest };
+  }
+
+  // Appt merged — 复合消息, plain 显示
+  if (/^Appt merged/i.test(rest)) {
+    return { type: 'merged', timestamp: ts, body: rest };
+  }
+
+  // 单个字段变化: "Field: from → to" 或 "Field set: → value" 或 "Field cleared"
+  // 支持已知字段: Status / Appt / Location / Channel / Spend / Show up / Race / Name / Reschedule
+  const knownFields = ['Status', 'Appt', 'Location', 'Channel', 'Spend', 'Show up', 'Race', 'Name', 'Reschedule'];
+  for (const field of knownFields) {
+    // Match "Field: from → to" (single change)
+    const reChange = new RegExp('^' + field.replace(/\s/g, '\\s') + ':\\s*([^→]+?)\\s*→\\s*(.+)$', 'i');
+    const cm = rest.match(reChange);
+    if (cm) {
+      return {
+        type: 'change',
+        timestamp: ts,
+        changes: [{ kind: field, from: cm[1].trim(), to: cm[2].trim() }]
+      };
+    }
+    // Match "Field set: → value"
+    const reSet = new RegExp('^' + field.replace(/\s/g, '\\s') + '\\s+set:?\\s*→?\\s*(.+)$', 'i');
+    const sm = rest.match(reSet);
+    if (sm) {
+      return {
+        type: 'change',
+        timestamp: ts,
+        changes: [{ kind: field, from: '—', to: sm[1].trim() }]
+      };
+    }
+    // Match "Field cleared"
+    const reClear = new RegExp('^' + field.replace(/\s/g, '\\s') + '\\s+cleared$', 'i');
+    if (reClear.test(rest)) {
+      return {
+        type: 'change',
+        timestamp: ts,
+        changes: [{ kind: field, from: '(was set)', to: '—' }]
+      };
+    }
+  }
+
+  // 多个变化合在一起, 用 ", " 分隔: "Reschedule: A → B, Location: C → D"
+  if (/:\s*[^→]+\s*→/.test(rest)) {
     const changes = [];
-    // Split on ", " but only when it's between change clauses
-    const partRegex = /(Reschedule|Location):\s*([^→]+?)\s*→\s*([^,]+?)(?=,\s*(Reschedule|Location):|$)/g;
+    const partRegex = /(Reschedule|Location|Status|Appt|Channel|Spend|Show up|Race|Name):\s*([^→]+?)\s*→\s*([^,]+?)(?=,\s*(?:Reschedule|Location|Status|Appt|Channel|Spend|Show up|Race|Name):|$)/g;
     let pm;
     while ((pm = partRegex.exec(rest)) !== null) {
       changes.push({ kind: pm[1], from: pm[2].trim(), to: pm[3].trim() });
     }
-    if (changes.length === 0) {
-      return { type: 'change', timestamp: ts, body: rest };
+    if (changes.length > 0) {
+      return { type: 'change', timestamp: ts, changes: changes };
     }
-    return { type: 'change', timestamp: ts, changes: changes };
-  }
-
-  // Lead received / Appt received
-  if (/^Lead received/i.test(rest) || /^Appt received/i.test(rest)) {
-    return { type: 'received', timestamp: ts, body: rest };
   }
 
   // Anything else — generic auto event
@@ -4437,7 +4475,10 @@ function _renderRemarkTimeline(fullText) {
     let bodyHtml = '';
     if (event.type === 'change' && event.changes) {
       bodyHtml = event.changes.map(c => {
-        const label = c.kind === 'Reschedule' ? 'Date' : (c.kind === 'Location' ? 'Location' : c.kind);
+        // v5.88: 用真实字段名作为 label (不再硬编码 Reschedule→Date)
+        // Reschedule 旧数据保留映射到 Date 显示, 其他字段直接用 kind 名字
+        let label = c.kind;
+        if (c.kind === 'Reschedule') label = 'Date';
         const isLastChange = (c === event.changes[event.changes.length-1]);
         return `<div style="margin-bottom:${isLastChange ? '0' : '6px'};">
           <div style="font-size:11px; color:var(--silver); margin-bottom:2px; text-transform:uppercase; letter-spacing:0.4px;">${escFn(label)}</div>
@@ -4448,6 +4489,9 @@ function _renderRemarkTimeline(fullText) {
           </div>
         </div>`;
       }).join('');
+    } else if (event.type === 'merged') {
+      // v5.88: Appt merged - 显示成 plain text (已经是复合消息)
+      bodyHtml = `<div style="font-size:13px; line-height:1.4; color:var(--black); font-weight:500;">${escFn(event.body)}</div>`;
     } else if (event.type === 'received') {
       // v5.04: Structured display — parse "Lead received · Channel · Appt DATE TIME @ Loc"
       // and render as Label/Value rows (more professional than long sentence)
@@ -4573,7 +4617,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.60'; // v5.84 — 桌面顶部留白进一步压缩: main padding-top 24→8px, unified-header padding 16→0 顶部
+const DATA_VERSION = '3.64'; // v5.88 — Activity log 全面修复: 1) saveDetailLead 之前完全没调 appendActivityLog 2) appendActivityLog 加 spend/showUp/race/name diff 3) _parseRemarkLine 识别所有 Field: from→to 格式
 
 // ---------- State ----------
 let state = {
@@ -4792,6 +4836,7 @@ function _formatApptForLog(dateStr) {
 function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
   // 比对 oldLead 和 newLead 的关键字段, 把变化的事件 append 到 remark
   // eventLabel = 'merge' | 'edit' | undefined (= edit)
+  // v5.88: 加入 spend / showUp / race / name diff
   const events = [];
   const ts = _activityNowStr();
 
@@ -4807,7 +4852,7 @@ function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
     if (eventLabel === 'merge') {
       // Merge 用复合消息 (下面 case 'merge' 处理), skip
     } else if (!oldAppt && newAppt) {
-      events.push(`[Auto] ${ts} Appt set · ${_formatApptForLog(newAppt)}`);
+      events.push(`[Auto] ${ts} Appt set: → ${_formatApptForLog(newAppt)}`);
     } else if (oldAppt && !newAppt) {
       events.push(`[Auto] ${ts} Appt cleared`);
     } else {
@@ -4819,7 +4864,7 @@ function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
   const oldLoc = oldLead.location || '';
   const newLoc = newLead.location || '';
   if (oldLoc !== newLoc && eventLabel !== 'merge') {
-    if (!oldLoc && newLoc) events.push(`[Auto] ${ts} Location: → ${newLoc}`);
+    if (!oldLoc && newLoc) events.push(`[Auto] ${ts} Location: — → ${newLoc}`);
     else if (oldLoc && !newLoc) events.push(`[Auto] ${ts} Location cleared`);
     else events.push(`[Auto] ${ts} Location: ${oldLoc} → ${newLoc}`);
   }
@@ -4831,7 +4876,45 @@ function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
     events.push(`[Auto] ${ts} Channel: ${oldCh || '?'} → ${newCh || '?'}`);
   }
 
-  // 5. Merge 专用复合消息
+  // 5. Name 变化 (v5.88)
+  const oldName = (oldLead.name || '').trim();
+  const newName = (newLead.name || '').trim();
+  if (oldName !== newName && eventLabel !== 'merge') {
+    if (!oldName && newName) events.push(`[Auto] ${ts} Name set: → ${newName}`);
+    else if (oldName && !newName) events.push(`[Auto] ${ts} Name cleared`);
+    else events.push(`[Auto] ${ts} Name: ${oldName} → ${newName}`);
+  }
+
+  // 6. Show up 变化 (v5.88)
+  const oldShowUp = oldLead.showUp || '';
+  const newShowUp = newLead.showUp || '';
+  if (oldShowUp !== newShowUp && eventLabel !== 'merge') {
+    if (!oldShowUp && newShowUp) events.push(`[Auto] ${ts} Show up: → ${newShowUp}`);
+    else if (oldShowUp && !newShowUp) events.push(`[Auto] ${ts} Show up cleared`);
+    else events.push(`[Auto] ${ts} Show up: ${oldShowUp} → ${newShowUp}`);
+  }
+
+  // 7. Spend 变化 (v5.88) — 这是用户问的"多少钱"显示
+  // 注意 spend 可以是 null / 0 / number, 0 也是有效值
+  const oldSpend = (oldLead.spend === null || oldLead.spend === undefined) ? null : Number(oldLead.spend);
+  const newSpend = (newLead.spend === null || newLead.spend === undefined) ? null : Number(newLead.spend);
+  if (oldSpend !== newSpend && eventLabel !== 'merge') {
+    const fmtMoney = (v) => (v === null || v === undefined) ? '—' : 'RM ' + v.toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    if (oldSpend === null && newSpend !== null) events.push(`[Auto] ${ts} Spend set: → ${fmtMoney(newSpend)}`);
+    else if (oldSpend !== null && newSpend === null) events.push(`[Auto] ${ts} Spend cleared`);
+    else events.push(`[Auto] ${ts} Spend: ${fmtMoney(oldSpend)} → ${fmtMoney(newSpend)}`);
+  }
+
+  // 8. Race 变化 (v5.88)
+  const oldRace = oldLead.race || '';
+  const newRace = newLead.race || '';
+  if (oldRace !== newRace && eventLabel !== 'merge') {
+    if (!oldRace && newRace) events.push(`[Auto] ${ts} Race set: → ${newRace}`);
+    else if (oldRace && !newRace) events.push(`[Auto] ${ts} Race cleared`);
+    else events.push(`[Auto] ${ts} Race: ${oldRace} → ${newRace}`);
+  }
+
+  // 9. Merge 专用复合消息
   if (eventLabel === 'merge') {
     let parts = [];
     if (newAppt) parts.push(_formatApptForLog(newAppt));
@@ -6080,12 +6163,17 @@ function saveLead(base) {
 
   // v5.74: Activity log diff — 编辑时 (existingLead 存在) 自动 append 事件到 remark
   // 注意: 用户在 form 里手动编辑了 remark, 我们以用户输入为基础 append 事件
+  // v5.88: 加入 spend / showUp / race / name 字段, 让 done 时显示金额变化
   const _proposedNewLead = {
     status,
     apptDate: apptDate || null,
     location: loc?.name || null,
     channelName: ch?.name || '',
-    channel: ch?.name || ''
+    channel: ch?.name || '',
+    spend,
+    showUp: showUp || '',
+    race: race || null,
+    name
   };
   const finalRemark = existingLead
     ? appendActivityLog(remark, existingLead, _proposedNewLead, 'edit')
@@ -6413,12 +6501,25 @@ function saveDetailLead() {
   // v3.65: Preserve flags (star markers) from existing lead
   const existing = state.leads.find(x => x.id === currentEditingId);
   const preservedFlags = existing?.flags || {};
+
+  // v5.88: Activity log diff — detail 面板编辑 (之前漏了 appendActivityLog 调用!)
+  const _proposedNewLead = {
+    status, apptDate: apptDate || null, location: loc?.name || null,
+    channelName: ch?.name || '', channel: ch?.name || '',
+    spend, showUp: showUp || '', race: race || null, name
+  };
+  const finalRemark = existing
+    ? appendActivityLog(remark, existing, _proposedNewLead, 'edit')
+    : remark;
+
   const lead = {
-    id: currentEditingId, week: isoWeek(leadDate), leadDate, channelId,
+    id: currentEditingId, week: isoWeek(leadDate), channelId,
+    leadDate,
     channel: ch?.name || '', channelName: ch?.name || '', platform: ch?.platform || '', contact,
     apptDate: apptDate || null, name, race: race || null,
     locationId: locationId || null, location: loc?.name || null,
-    spend, showUp: showUp || '', status, remark,
+    spend, showUp: showUp || '', status,
+    remark: finalRemark,  // v5.88
     flags: preservedFlags,
     updatedAt: new Date().toISOString()
   };
@@ -7372,7 +7473,14 @@ function renderList() {
     periodMatch = resolveListFilter();
   }
   if (periodMatch) {
-    filteredLeads = filteredLeads.filter(l => periodMatch(l.leadDate));
+    // v5.87: filter 字段跟 listSort 联动 — Lead 模式按 leadDate, Appt 模式按 apptDate, Updated 模式按 updatedAt (fallback leadDate)
+    const sortMode = state.listSort || 'updated';
+    const getDate = (l) => {
+      if (sortMode === 'appt') return l.apptDate || '';
+      if (sortMode === 'updated') return (l.updatedAt || l.leadDate || '').substring(0, 10);
+      return l.leadDate || ''; // 'lead'
+    };
+    filteredLeads = filteredLeads.filter(l => periodMatch(getDate(l)));
   }
   if (state.listChannelId) {
     filteredLeads = filteredLeads.filter(l => l.channelId === state.listChannelId);
@@ -15695,21 +15803,8 @@ async function pendingConfirm(pendingId) {
   // Guard against double-click
   if (_pendingInFlight.has(pendingId)) return;
 
-  // v5.06: If cache is older than 30 seconds, pull fresh first to avoid
-  // operating on a stale card (GHL may have already updated/cancelled it).
-  const cacheTs = parseInt(localStorage.getItem(PENDING_CACHE_TS_KEY) || '0', 10);
-  const cacheAge = Date.now() - cacheTs;
-  if (cacheAge > 30000) {
-    if (typeof toast === 'function') toast('Verifying latest data…');
-    await pendingRefresh('silent');
-    // After refresh, check if this pending row still exists
-    const stillExists = pendingData.find(x => x.id === pendingId);
-    if (!stillExists) {
-      if (typeof toast === 'function') toast('⚠️ This card was already processed elsewhere — refreshing inbox');
-      pendingRender();
-      return;
-    }
-  }
+  // v5.85: 移除 30 秒缓存检查 (导致 add 等 5 秒). 改成乐观更新 — 立即加到 state,
+  // 后台跑 confirm 请求, 失败才回滚. 用户感知是"秒加".
 
   const p = pendingData.find(x => x.id === pendingId);
   if (!p) return;
@@ -15748,15 +15843,8 @@ async function pendingConfirm(pendingId) {
     }
   }
 
-  // Lock AND update UI to show processing state
+  // Lock to prevent double-click
   _pendingInFlight.add(pendingId);
-  const card = document.getElementById('pcard-' + pendingId);
-  const addBtn = document.getElementById('paddbtn-' + pendingId);
-  const delBtn = document.getElementById('pdelbtn-' + pendingId);
-  if (card) card.style.opacity = '0.55';
-  if (card) card.style.pointerEvents = 'none';
-  if (addBtn) { addBtn.textContent = '⏳ Adding...'; addBtn.disabled = true; }
-  if (delBtn) delBtn.disabled = true;
 
   const now = new Date();
   const leadId = 'L-' + now.getTime().toString(36) + '-' + Math.random().toString(36).substr(2, 5);
@@ -15783,15 +15871,13 @@ async function pendingConfirm(pendingId) {
     spend: 0,
     remark: buildAutoRemarkForNewLead(p, ch, (typeof state !== 'undefined' && state.locations) ? state.locations : []),
     status: isAppt ? 'booked' : 'lead',
-    flags: ''
+    flags: '',
+    updatedAt: new Date().toISOString()  // v5.87: 跑到 Updated 排序顶部
   };
 
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
   if (!url) {
     _pendingInFlight.delete(pendingId);
-    if (card) { card.style.opacity = ''; card.style.pointerEvents = ''; }
-    if (addBtn) { addBtn.textContent = 'Add'; addBtn.disabled = false; }
-    if (delBtn) delBtn.disabled = false;
     if (typeof toast === 'function') toast('⚠️ Apps Script URL not set');
     return;
   }
@@ -15808,9 +15894,6 @@ async function pendingConfirm(pendingId) {
   if (existingLead) {
     // Always ask user (no more 30-day auto Follow Up)
     _pendingInFlight.delete(pendingId);
-    if (card) { card.style.opacity = ''; card.style.pointerEvents = ''; }
-    if (addBtn) { addBtn.textContent = 'Add'; addBtn.disabled = false; }
-    if (delBtn) delBtn.disabled = false;
     const decision = await _pendingBatchAskDuplicate(existingLead, p, ch);
     if (decision === 'skip' || decision === 'cancel') return;
     if (decision === 'merge') {
@@ -15823,42 +15906,54 @@ async function pendingConfirm(pendingId) {
     if (decision === 'force_new') {
       // Re-lock and proceed (user wants to force new record)
       _pendingInFlight.add(pendingId);
-      if (card) { card.style.opacity = '0.55'; card.style.pointerEvents = 'none'; }
-      if (addBtn) { addBtn.textContent = '⏳ Adding...'; addBtn.disabled = true; }
-      if (delBtn) delBtn.disabled = true;
     }
   }
 
-  // Immediately remove from local UI so it can't be clicked again even across refreshes
+  // v5.85: 乐观更新 — 立即加到 state + 立即 toast + 立即 render
+  // 用户感知是"秒加". 后台跑 confirmpending 请求, 失败才回滚.
+  if (typeof state !== 'undefined' && state.leads) {
+    state.leads.push(leadRecord);
+    if (typeof saveState === 'function') saveState();
+  }
+  // Remove from inbox immediately
   pendingData = pendingData.filter(x => x.id !== pendingId);
+  if (typeof toast === 'function') toast('✅ Added to Leads: ' + leadRecord.channelName);
+  pendingRender();
+  if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
+  // Refresh main lead list if visible
+  if (typeof renderList === 'function') renderList();
+  _pendingInFlight.delete(pendingId);
 
-  try {
-    const r = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'confirmpending', id: pendingId, leadRecord: leadRecord }),
-      headers: { 'Content-Type': 'text/plain' }
-    });
-    const d = await r.json();
-    if (d.success) {
+  // 后台 fire-and-forget 同步到 Apps Script. 失败才回滚 + 提示.
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'confirmpending', id: pendingId, leadRecord: leadRecord }),
+    headers: { 'Content-Type': 'text/plain' }
+  }).then(r => r.json()).then(d => {
+    if (!d.success) {
+      // 回滚: 从 state 删除, 把 pending 放回去
       if (typeof state !== 'undefined' && state.leads) {
-        state.leads.push(leadRecord);
+        const idx = state.leads.findIndex(l => l.id === leadId);
+        if (idx >= 0) state.leads.splice(idx, 1);
         if (typeof saveState === 'function') saveState();
       }
-      if (typeof toast === 'function') toast('✅ Added to Leads: ' + leadRecord.channelName);
-      pendingRender();
-      if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
-    } else {
       pendingData.push(p);
       pendingRender();
-      if (typeof toast === 'function') toast('❌ Failed: ' + (d.error || 'unknown'));
+      if (typeof renderList === 'function') renderList();
+      if (typeof toast === 'function') toast('❌ Failed: ' + (d.error || 'unknown') + ' — reverted');
     }
-  } catch (e) {
+  }).catch(e => {
+    // 网络错误: 也回滚
+    if (typeof state !== 'undefined' && state.leads) {
+      const idx = state.leads.findIndex(l => l.id === leadId);
+      if (idx >= 0) state.leads.splice(idx, 1);
+      if (typeof saveState === 'function') saveState();
+    }
     pendingData.push(p);
     pendingRender();
-    if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
-  } finally {
-    _pendingInFlight.delete(pendingId);
-  }
+    if (typeof renderList === 'function') renderList();
+    if (typeof toast === 'function') toast('❌ Network error — reverted: ' + e.message);
+  });
 }
 
 // v4.66: Handle 'update' type — modify existing lead, don't create new
@@ -15879,13 +15974,6 @@ async function pendingConfirmUpdate(p) {
   }
 
   _pendingInFlight.add(pendingId);
-  const card = document.getElementById('pcard-' + pendingId);
-  const addBtn = document.getElementById('paddbtn-' + pendingId);
-  const delBtn = document.getElementById('pdelbtn-' + pendingId);
-  if (card) card.style.opacity = '0.55';
-  if (card) card.style.pointerEvents = 'none';
-  if (addBtn) { addBtn.textContent = '⏳ Updating...'; addBtn.disabled = true; }
-  if (delBtn) delBtn.disabled = true;
 
   const apptDateStr = extractDateOnly(p.apptDate);
   // v5.02: If GHL sent a customer name, include it in the update so existing
@@ -15902,55 +15990,78 @@ async function pendingConfirmUpdate(p) {
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
   if (!url) {
     _pendingInFlight.delete(pendingId);
-    if (card) { card.style.opacity = ''; card.style.pointerEvents = ''; }
-    if (addBtn) { addBtn.textContent = '🔄 Apply Update'; addBtn.disabled = false; }
-    if (delBtn) delBtn.disabled = false;
     if (typeof toast === 'function') toast('⚠️ Apps Script URL not set');
     return;
   }
 
-  // Optimistic UI — remove from local data
+  // v5.85: 乐观更新 — 立即更新 state + render, 后台跑同步
+  // 保存原始值用于失败回滚
+  let snapshot = null;
+  if (typeof state !== 'undefined' && state.leads) {
+    const existing = state.leads.find(l => l.id === p.existingLeadId);
+    if (existing) {
+      snapshot = { status: existing.status, apptDate: existing.apptDate, locationId: existing.locationId, name: existing.name, updatedAt: existing.updatedAt };
+      existing.status = 'booked';
+      existing.apptDate = apptDateStr;
+      existing.locationId = locationId;
+      if (newName) existing.name = newName;
+      existing.updatedAt = new Date().toISOString();  // v5.87: 跑到 Updated 排序顶部
+      if (typeof saveState === 'function') saveState();
+    }
+  }
+  // Remove from inbox immediately
   pendingData = pendingData.filter(x => x.id !== pendingId);
+  if (typeof toast === 'function') toast('✅ Updated lead: status=booked, appt=' + apptDateStr);
+  pendingRender();
+  if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
+  if (typeof renderList === 'function') renderList();
+  _pendingInFlight.delete(pendingId);
 
-  try {
-    const r = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'confirmpending',
-        id: pendingId,
-        leadRecord: leadUpdate,
-        mode: 'update'  // v2.4 Apps Script recognizes this
-      }),
-      headers: { 'Content-Type': 'text/plain' }
-    });
-    const d = await r.json();
-    if (d.success) {
-      // Update local state too
-      if (typeof state !== 'undefined' && state.leads) {
-        const existing = state.leads.find(l => l.id === p.existingLeadId);
-        if (existing) {
-          existing.status = 'booked';
-          existing.apptDate = apptDateStr;
-          existing.locationId = locationId;
-          if (newName) existing.name = newName;  // v5.02
+  // 后台 fire-and-forget. 失败回滚.
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      action: 'confirmpending',
+      id: pendingId,
+      leadRecord: leadUpdate,
+      mode: 'update'
+    }),
+    headers: { 'Content-Type': 'text/plain' }
+  }).then(r => r.json()).then(d => {
+    if (!d.success) {
+      // 回滚
+      if (snapshot && typeof state !== 'undefined' && state.leads) {
+        const ex = state.leads.find(l => l.id === p.existingLeadId);
+        if (ex) {
+          ex.status = snapshot.status;
+          ex.apptDate = snapshot.apptDate;
+          ex.locationId = snapshot.locationId;
+          ex.name = snapshot.name;
           if (typeof saveState === 'function') saveState();
         }
       }
-      if (typeof toast === 'function') toast('✅ Updated lead: status=booked, appt=' + apptDateStr);
-      pendingRender();
-      if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
-    } else {
       pendingData.push(p);
       pendingRender();
-      if (typeof toast === 'function') toast('❌ Failed: ' + (d.error || 'unknown'));
+      if (typeof renderList === 'function') renderList();
+      if (typeof toast === 'function') toast('❌ Failed: ' + (d.error || 'unknown') + ' — reverted');
     }
-  } catch (e) {
+  }).catch(e => {
+    // 网络错误也回滚
+    if (snapshot && typeof state !== 'undefined' && state.leads) {
+      const ex = state.leads.find(l => l.id === p.existingLeadId);
+      if (ex) {
+        ex.status = snapshot.status;
+        ex.apptDate = snapshot.apptDate;
+        ex.locationId = snapshot.locationId;
+        ex.name = snapshot.name;
+        if (typeof saveState === 'function') saveState();
+      }
+    }
     pendingData.push(p);
     pendingRender();
-    if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
-  } finally {
-    _pendingInFlight.delete(pendingId);
-  }
+    if (typeof renderList === 'function') renderList();
+    if (typeof toast === 'function') toast('❌ Network error — reverted: ' + e.message);
+  });
 }
 
 async function pendingDelete(pendingId) {
@@ -16361,52 +16472,80 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
       try {
         const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
         if (!url) { if (typeof toast === 'function') toast('❌ No Sheet URL configured'); _mergeResolve(false); return; }
-        const r = await fetch(url, {
+
+        // v5.85: 乐观更新 — 立即更新 state + render, 后台跑 fetch (失败回滚)
+        // 保存原始值用于失败回滚
+        let snapshot = null;
+        if (state.leads) {
+          const found = state.leads.find(l => l.id === existingLead.id);
+          if (found) {
+            snapshot = {
+              status: found.status, remark: found.remark,
+              channelId: found.channelId, channelName: found.channelName, platform: found.platform,
+              name: found.name, apptDate: found.apptDate,
+              locationId: found.locationId, location: found.location,
+              updatedAt: found.updatedAt
+            };
+            // 立即应用更新
+            found.status = newStatus;
+            found.remark = _mergedRemark;
+            if (chosenCh) {
+              found.channelId = chosenCh.id;
+              found.channelName = chosenCh.name;
+              found.platform = chosenCh.platform;
+            }
+            if (newName) found.name = newName;
+            if (newApptDate) found.apptDate = newApptDate;
+            if (newLocId) {
+              found.locationId = newLocId;
+              if (newLocName && newLocName.name) found.location = newLocName.name;
+            }
+            found.updatedAt = new Date().toISOString();  // v5.87: 跑到 Updated 排序顶部
+            if (typeof saveState === 'function') saveState();
+          }
+        }
+        // Remove pending row from local data immediately
+        pendingData = pendingData.filter(x => x.id !== pendingItem.id);
+        if (typeof pendingRender === 'function') pendingRender();
+        if (typeof renderList === 'function') renderList();
+        if (typeof renderSummary === 'function') renderSummary();
+        if (typeof toast === 'function') toast('✅ Merged into ' + (existingLead.name || existingLead.contact));
+        _mergeResolve(true);
+
+        // 后台 fire-and-forget. 失败才回滚.
+        fetch(url, {
           method: 'POST',
           body: JSON.stringify({
             action: 'confirmpending',
             id: pendingItem.id,
             leadRecord: leadUpdate,
-            mode: 'update'  // tells Apps Script to PATCH existing Lead
+            mode: 'update'
           }),
           headers: { 'Content-Type': 'text/plain' }
-        });
-        const d = await r.json();
-        if (d.success || d.action === 'updated_existing_lead') {
-          // Update local state
-          if (state.leads) {
-            const found = state.leads.find(l => l.id === existingLead.id);
-            if (found) {
-              found.status = newStatus;
-              found.remark = _mergedRemark; // v5.74: 本地立即同步 activity log
-              if (chosenCh) {
-                found.channelId = chosenCh.id;
-                found.channelName = chosenCh.name;
-                found.platform = chosenCh.platform;
-              }
-              if (newName) found.name = newName;
-              if (newApptDate) found.apptDate = newApptDate;
-              if (newLocId) {
-                found.locationId = newLocId;
-                // v5.73: 同步本地 found.location, 让卡片立即显示 outlet (不用等 gsPullSilent)
-                if (newLocName && newLocName.name) found.location = newLocName.name;
-              }
-              if (typeof saveState === 'function') saveState();
+        }).then(r => r.json()).then(d => {
+          if (!(d.success || d.action === 'updated_existing_lead')) {
+            // 回滚
+            if (snapshot && state.leads) {
+              const ex = state.leads.find(l => l.id === existingLead.id);
+              if (ex) { Object.assign(ex, snapshot); if (typeof saveState === 'function') saveState(); }
             }
+            pendingData.push(pendingItem);
+            if (typeof pendingRender === 'function') pendingRender();
+            if (typeof renderList === 'function') renderList();
+            if (typeof toast === 'function') toast('❌ Merge failed: ' + (d.error || 'unknown') + ' — reverted');
           }
-          // Remove pending row from local data
-          pendingData = pendingData.filter(x => x.id !== pendingItem.id);
+        }).catch(e => {
+          if (snapshot && state.leads) {
+            const ex = state.leads.find(l => l.id === existingLead.id);
+            if (ex) { Object.assign(ex, snapshot); if (typeof saveState === 'function') saveState(); }
+          }
+          pendingData.push(pendingItem);
           if (typeof pendingRender === 'function') pendingRender();
           if (typeof renderList === 'function') renderList();
-          if (typeof renderSummary === 'function') renderSummary();
-          if (typeof toast === 'function') toast('✅ Merged into ' + (existingLead.name || existingLead.contact));
-          _mergeResolve(true);
-        } else {
-          if (typeof toast === 'function') toast('❌ Merge failed: ' + (d.error || 'unknown'));
-          _mergeResolve(false);
-        }
+          if (typeof toast === 'function') toast('❌ Network error — reverted: ' + e.message);
+        });
       } catch (e) {
-        if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
+        if (typeof toast === 'function') toast('❌ Error: ' + e.message);
         _mergeResolve(false);
       }
     };
