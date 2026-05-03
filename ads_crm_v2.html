@@ -3031,7 +3031,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.10</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.11</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3088,7 +3088,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.10</div>
+      <div class="nav-brand-version">v6.11</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4744,7 +4744,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.86'; // v6.10 — 真凶找到! line 14943 全局监听 .nav-item click → nav(dataset.page), AI/Search/Alerts 按钮没 dataset.page → nav(undefined) 触发 v6.05 关闭 modal 逻辑, 立刻关掉刚开的 backdrop. 修复: nav 开头检查 page 是空就返回
+const DATA_VERSION = '3.87'; // v6.11 — AI/Search/Alerts 互斥切换: 打开一个时关掉其他两个 + 高亮当前按钮 (active 紫色) + 移除主菜单 active 状态
 
 // ---------- State ----------
 let state = {
@@ -13391,6 +13391,7 @@ function refreshAlertsBadge() {
 }
 
 function openAlertsModal() {
+  _switchNavTool('alerts');
   const bd = document.getElementById('alertsBackdrop');
   if (!bd) return;
   bd.classList.add('open');
@@ -13915,7 +13916,33 @@ function setAIModel(m) {
   if (lbl) lbl.textContent = 'Gemini ' + (m.includes('pro') ? 'Pro' : (m.includes('lite') ? 'Lite' : 'Flash'));
 }
 
+// v6.11: 切换 nav-tool (AI/Search/Alerts) 时, 先关掉其他两个 + 关掉主 page active + 高亮当前
+function _switchNavTool(activeBtnId) {
+  // 关掉其他两个 modal (如果已打开)
+  const aiBd = document.getElementById('aiChatBackdrop');
+  const sBd = document.getElementById('globalSearchBackdrop');
+  const aBd = document.getElementById('alertsBackdrop');
+  if (aiBd && aiBd.classList.contains('open') && activeBtnId !== 'ai' && typeof closeAIChat === 'function') closeAIChat();
+  if (sBd && sBd.classList.contains('open') && activeBtnId !== 'search' && typeof closeGlobalSearch === 'function') closeGlobalSearch();
+  if (aBd && aBd.classList.contains('open') && activeBtnId !== 'alerts' && typeof closeAlertsModal === 'function') closeAlertsModal();
+  // 桌面端: 关掉所有 .page active (整页效果, AI/Search/Alerts 替代主 page) + 高亮 nav-tool 按钮
+  if (window.innerWidth >= 768) {
+    document.querySelectorAll('.nav-item, .bottom-nav-item').forEach(n => {
+      n.classList.remove('active');
+    });
+    // 高亮当前 nav-tool 按钮
+    const btnIdMap = { ai: 'AI Assistant', search: 'Search', alerts: 'Alerts' };
+    const label = btnIdMap[activeBtnId];
+    if (label) {
+      document.querySelectorAll('.nav-item.nav-tool .nav-label').forEach(lbl => {
+        if (lbl.textContent === label) lbl.closest('.nav-item').classList.add('active');
+      });
+    }
+  }
+}
+
 function openAIChat() {
+  _switchNavTool('ai');
   const bd = document.getElementById('aiChatBackdrop');
   if (!bd) return;
   bd.classList.add('open');
@@ -14892,6 +14919,7 @@ let _gsSelectedIdx = 0;
 let _gsResults = [];
 
 function openGlobalSearch() {
+  _switchNavTool('search');
   const bd = document.getElementById('globalSearchBackdrop');
   const inp = document.getElementById('globalSearchInput');
   if (!bd || !inp) return;
