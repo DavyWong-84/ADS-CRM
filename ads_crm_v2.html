@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.27</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.28</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.27</div>
+      <div class="nav-brand-version">v6.28</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4704,7 +4704,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.03'; // v6.27 step1 — ChartJS wrapper 扩展支持 bar / line 混合 (准备改其他图)
+const DATA_VERSION = '4.04'; // v6.28 step2 — 9 个折线图升级 Chart.js (cpl/cpl_total/dash_rev/ov_appt/ov_sales/plat_all/tmkt/rev_outlet/rev_all)
 
 // ---------- State ----------
 let state = {
@@ -5498,21 +5498,17 @@ const ChartJS = {
           pointHoverBackgroundColor: color,
           pointHoverBorderColor: '#fff',
           pointHoverBorderWidth: 2,
-          fill: useGradient && seriesArr.length === 1  // 只单线渐变
+          fill: useGradient,
+          spanGaps: true
         });
-        if (useGradient && seriesArr.length === 1) {
+        if (useGradient) {
+          // Vercel Analytics 风格: 颜色从 alpha 渐变到 0
+          // 单线 25% / 多线略浅以减少重叠糊感
+          const topAlpha = seriesArr.length === 1 ? 0.25 : 0.15;
           const gradient = ctx2d.createLinearGradient(0, 0, 0, H);
-          gradient.addColorStop(0, this._hexAlpha(color, 0.25));
+          gradient.addColorStop(0, this._hexAlpha(color, topAlpha));
           gradient.addColorStop(1, this._hexAlpha(color, 0));
           ds.backgroundColor = gradient;
-        }
-        // v6.27: 多线 (≥2 但 <3) 也渐变
-        if (useGradient && seriesArr.length >= 2 && seriesArr.length < 3) {
-          const gradient = ctx2d.createLinearGradient(0, 0, 0, H);
-          gradient.addColorStop(0, this._hexAlpha(color, 0.18));
-          gradient.addColorStop(1, this._hexAlpha(color, 0));
-          ds.backgroundColor = gradient;
-          ds.fill = true;
         }
       } else {
         // 柱状 series 配置 — 圆角, 适度透明
@@ -5709,8 +5705,12 @@ function renderCplChart(mArr, monthData, tab, fullData) {
       { label:'CPS', color:AdsChart.C.purple, type:'line', data: monthData.map(d => d.showUps>0&&d.cost>0 ? d.cost/d.showUps : null) },
     ];
   }
-  AdsChart.render('chart_cpl', { title:'Cost Efficiency Trend', labels, series,
-    yFmt: v => v!=null&&v>=1000?'RM'+(v/1000).toFixed(1)+'k':'RM'+(v||0).toFixed(0) });
+  // v6.28: USE_CHARTJS 切换
+  const cplCfg = { title: 'Cost Efficiency Trend', labels, series,
+    yFmt: v => v!=null&&v>=1000?'RM'+(v/1000).toFixed(1)+'k':'RM'+(v||0).toFixed(0),
+    fillStyle: 'gradient' };
+  if (USE_CHARTJS) ChartJS.render('chart_cpl', cplCfg);
+  else AdsChart.render('chart_cpl', cplCfg);
 }
 
 
@@ -5770,8 +5770,11 @@ function renderCplTotalChart(mArr, tab, fullData, monthData) {
         data: monthData.map(d => d.showUps>0&&d.cost>0 ? d.cost/d.showUps : null) },
     ];
   }
-  AdsChart.render('chart_cpl_total', { title:'Total CPL / CPA / CPS', labels, series,
-    yFmt: v => v!=null ? 'RM'+v.toFixed(0) : '' });
+  const cplTotalCfg = { title: 'Total CPL / CPA / CPS', labels, series,
+    yFmt: v => v!=null ? 'RM'+v.toFixed(0) : '',
+    fillStyle: 'gradient' };
+  if (USE_CHARTJS) ChartJS.render('chart_cpl_total', cplTotalCfg);
+  else AdsChart.render('chart_cpl_total', cplTotalCfg);
 }
 
 // ---- Chart tooltip ----
@@ -8482,12 +8485,15 @@ function renderDashboardMonth() {
   `;
 
   setTimeout(() => {
-    AdsChart.render('chart_dash_rev', {
+    const dashRevCfg = {
       title: '',
       labels: mArr.map(m2 => fmt.monthShort(m2)),
       series: [{ label: 'Revenue', color: 'var(--purple)', data: revData.map(v => v > 0 ? v : null) }],
       yFmt: v => v >= 1000 ? 'RM'+(v/1000).toFixed(0)+'k' : 'RM'+v.toFixed(0),
-    });
+      fillStyle: 'gradient'
+    };
+    if (USE_CHARTJS) ChartJS.render('chart_dash_rev', dashRevCfg);
+    else AdsChart.render('chart_dash_rev', dashRevCfg);
   }, 30);
 }
 
@@ -8594,12 +8600,15 @@ function renderDashboardYear() {
   `;
 
   setTimeout(() => {
-    AdsChart.render('chart_dash_rev', {
+    const dashRevCfg = {
       title: '',
       labels: mArr.map(m2 => fmt.monthShort(m2)),
       series: [{ label: 'Revenue', color: 'var(--purple)', data: revData.map(v => v > 0 ? v : null) }],
       yFmt: v => v >= 1000 ? 'RM'+(v/1000).toFixed(0)+'k' : 'RM'+v.toFixed(0),
-    });
+      fillStyle: 'gradient'
+    };
+    if (USE_CHARTJS) ChartJS.render('chart_dash_rev', dashRevCfg);
+    else AdsChart.render('chart_dash_rev', dashRevCfg);
   }, 30);
 }
 
@@ -9224,7 +9233,7 @@ function renderStore() {
 
       // Lead + Appt + Show chart
       setTimeout(() => {
-        AdsChart.render('chart_ov_appt', {
+        const ovApptCfg = {
           title: 'Lead → Appt → Show Up',
           labels: ovLabels,
           series: [
@@ -9233,19 +9242,25 @@ function renderStore() {
             { label:'Show Up', color: AdsChart.C.green, data: ovShowData },
           ],
           yFmt: v => v != null ? v.toFixed(0) : '',
-        });
+          fillStyle: 'gradient'
+        };
+        if (USE_CHARTJS) ChartJS.render('chart_ov_appt', ovApptCfg);
+        else AdsChart.render('chart_ov_appt', ovApptCfg);
         // AVG Spend per Show
         const ovAvgData = ovChartMonths.map(m => {
           const mL = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && (!locFilter || l.locationId===locFilter));
           const s = mL.length, sp = mL.reduce((sum,l)=>sum+(l.spend||0),0);
           return s > 0 ? sp/s : null;
         });
-        AdsChart.render('chart_ov_sales', {
+        const ovSalesCfg = {
           title: 'AVG Spend per Show',
           labels: ovLabels,
           series: [{ label:'AVG/Show', color: AdsChart.C.orange, type:'line', data: ovAvgData }],
           yFmt: v => v != null ? 'RM'+(v).toFixed(0) : '',
-        });
+          fillStyle: 'gradient'
+        };
+        if (USE_CHARTJS) ChartJS.render('chart_ov_sales', ovSalesCfg);
+        else AdsChart.render('chart_ov_sales', ovSalesCfg);
         document.getElementById('chart_ov_rate').style.display = 'none';
 
 
@@ -9425,7 +9440,7 @@ function renderStore() {
             <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"></div>`;
         }
         setTimeout(() => {
-          AdsChart.render('chart_plat_all', {
+          const platAllCfg = {
             title: _chLabel + ' — Appt & Show Up',
             labels: platMonths.map(m => fmt.monthShort(m)),
             series: [
@@ -9434,7 +9449,10 @@ function renderStore() {
               { label:'Show Up', color: AdsChart.C.green, data: sumShowData },
             ],
             yFmt: v => v!=null ? v.toFixed(0) : '',
-          });
+            fillStyle: 'gradient'
+          };
+          if (USE_CHARTJS) ChartJS.render('chart_plat_all', platAllCfg);
+          else AdsChart.render('chart_plat_all', platAllCfg);
         }, 30);
       }
       // v5.68: 删除下面 3 组 (Meta / Google / Organic+FU) — 改用顶部 channel filter 切换上面那一组
@@ -10003,14 +10021,17 @@ function renderAdsSpendSection(key) {
         const pct = revenue > 0 ? totalMkt / revenue : null;
         return { m, pct };
       });
-      AdsChart.render('chart_tmkt', {
+      const tmktCfg = {
         title: 'Cost % of Revenue',
         labels: mArr.map(m => fmt.monthShort(m)),
         series: [
           { label: 'Cost %', color: AdsChart.C.purple || 'var(--purple)', type: 'line', data: chartRows.map(r => r.pct !== null ? r.pct * 100 : null) }
         ],
-        yFmt: v => v.toFixed(1) + '%'
-      });
+        yFmt: v => v.toFixed(1) + '%',
+        fillStyle: 'gradient'
+      };
+      if (USE_CHARTJS) ChartJS.render('chart_tmkt', tmktCfg);
+      else AdsChart.render('chart_tmkt', tmktCfg);
     }, 30);
 
     // Table
@@ -11077,7 +11098,7 @@ function renderRevenueOutlet(mArr, locId) {
       return r && r.total ? Math.max(0, r.total - (r.newCustomer||0)) : null;
     });
     // v3.67: Combined chart — 4 lines matching table column colors
-    AdsChart.render('chart_rev_outlet', {
+    const revOutletCfg = {
       title: locName + ' — Revenue Breakdown',
       labels,
       series: [
@@ -11086,8 +11107,10 @@ function renderRevenueOutlet(mArr, locId) {
         { label: 'Ads New Sales', color: AdsChart.C.meta, type: 'line', data: adsVals },
         { label: 'Total Sales', color: '#000000', type: 'line', data: totalVals },
       ],
-      yFmt,
-    });
+      yFmt
+    };
+    if (USE_CHARTJS) ChartJS.render('chart_rev_outlet', revOutletCfg);
+    else AdsChart.render('chart_rev_outlet', revOutletCfg);
   }, 30);
 }
 
@@ -11520,7 +11543,7 @@ function renderRevenueSummary(mArr) {
       return t != null ? Math.max(0, (t||0) - (n||0)) : null;
     });
     // v3.67: Combined chart — 4 lines matching table column colors
-    AdsChart.render('chart_rev_all', {
+    const revAllCfg = {
       title: 'All Outlets — Revenue Breakdown',
       labels,
       series: [
@@ -11529,8 +11552,10 @@ function renderRevenueSummary(mArr) {
         { label: 'Ads New Sales', color: AdsChart.C.meta, type: 'line', data: adsData },
         { label: 'Total Sales', color: '#000000', type: 'line', data: totalData },
       ],
-      yFmt,
-    });
+      yFmt
+    };
+    if (USE_CHARTJS) ChartJS.render('chart_rev_all', revAllCfg);
+    else AdsChart.render('chart_rev_all', revAllCfg);
   }, 30);
 }
 
