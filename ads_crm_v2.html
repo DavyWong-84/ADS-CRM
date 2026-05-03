@@ -3031,7 +3031,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.14</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.16</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3088,7 +3088,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.14</div>
+      <div class="nav-brand-version">v6.16</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3357,7 +3357,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
+        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -3366,7 +3366,69 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="summaryContent"></div>
+    <div id="summaryContent">
+    <div class="dash-row-2">
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Revenue →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">May 2026</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
+        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Meta — · G —</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">— shows</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — leads</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — appt</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — shows</div>
+      </div>
+    </div>
+    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
+      <div class="dash-section-label">Funnel — May 2026 →</div>
+      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
+        <div style="flex:4;background:var(--purple-bg);border-radius: 8px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">—</div>
+          <div style="font-size:11px;color:var(--purple);">Leads</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#0C447C;">—</div>
+          <div style="font-size:11px;color:#185FA5;">Appt</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#085041;">—</div>
+          <div style="font-size:11px;color:#0F6E56;">Show</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#633806;">RM 0</div>
+          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
+      <div class="dash-section-label">Revenue trend — 2026 →</div>
+      <div id="chart_dash_rev" style="margin-top:8px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 550 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="550" height="260" fill="white"></rect>
+      <line x1="58" y1="218.0" x2="536" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="536" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="536" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="536" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="536" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="536" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="536" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="536" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="536" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="536" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="536" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="536" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="77.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="117.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="157.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="197.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="237.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="277.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="316.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="356.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="396.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="436.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="476.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="516.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="253" y="20" width="11" height="11" fill="var(--purple)" rx="2"></rect><text x="269" y="29" font-size="10" fill="#334155">Revenue</text>
+    </svg></div></div>
+    </div>
+  </div>
   </section>
 
   <!-- STORE PAGE -->
@@ -3374,17 +3436,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header">
       <!-- v5.33: removed page title (Appt Report) — toolbar only -->
       <div class="compact-filter">
-        <div class="toggle-group">
+        <div class="toggle-group" style="display: none;">
           <button class="toggle active" data-mode="month" onclick="setStoreMode('month')">Month</button>
           <button class="toggle" data-mode="year" onclick="setStoreMode('year')">Year</button>
           <button class="toggle" data-mode="custom" onclick="setStoreMode('custom')">Custom</button>
         </div>
         <select id="storeYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
-        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="display:none;" onclick="openYearPicker('storeYear', this)">
+        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="" onclick="openYearPicker('storeYear', this)">
           <span id="storeYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')">
+        <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')" style="display: none;">
           <span id="storeMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -3424,7 +3486,28 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer unified-header-spacer-tall"></div>
 
-    <div id="storeContent"></div>
+    <div id="storeContent"><div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">By Platform</div><div class="section-title"><h3>All Outlets — All Platforms 2026</h3></div>
+            <div class="table-wrap"><table class="data">
+              <thead><tr>
+                <th style="width:44px;">Month</th>
+                <th class="num">Lead</th>
+                <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th>
+              </tr></thead>
+              <tbody><tr><td colspan="7" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr></tbody>
+              <tfoot><tr class="total-row">
+                <td>TOTAL</td>
+                <td class="num">—</td>
+                <td class="num">—</td>
+                <td class="num">—</td>
+                <td class="num">—</td>
+                <td class="num">—</td>
+                <td class="num">—</td>
+              </tr></tfoot>
+            </table></div>
+            <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 582 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="582" height="260" fill="white"></rect>
+      <text x="291" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">All Platforms — Appt &amp; Show Up</text><line x1="58" y1="218.0" x2="568" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="568" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="568" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="568" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="568" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="568" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="568" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="568" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="568" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="568" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="568" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="568" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">1</text><text x="79.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="121.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="164.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="206.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="249.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="291.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="334.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="376.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="419.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="461.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="504.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="546.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="181" y="20" width="11" height="11" fill="#94a3b8" rx="2"></rect><text x="197" y="29" font-size="10" fill="#334155">Lead</text><rect x="269" y="20" width="11" height="11" fill="var(--purple)" rx="2"></rect><text x="285" y="29" font-size="10" fill="#334155">Appt</text><rect x="357" y="20" width="11" height="11" fill="var(--organic-color)" rx="2"></rect><text x="373" y="29" font-size="10" fill="#334155">Show Up</text>
+    </svg></div></div></div>
   </section>
 
   <!-- ADS SPEND PAGE -->
@@ -3483,12 +3566,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="adsPanel_cost" style="display:block;">
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Ads Cost by Month</div>
         <div class="table-wrap">
-          <table class="data" id="adsSpendReport"></table>
+          <table class="data" id="adsSpendReport"><thead><tr><th style="width:36px;min-width:36px;">Month</th><th class="num">Meta</th><th class="num">Google</th><th class="num">Total</th><th class="num">Avg/day</th></tr></thead><tbody><tr class="total-row"><td>TOTAL</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr></tbody></table>
         </div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Monthly Trend</div>
-        <div id="chart_cost"></div>
+        <div id="chart_cost"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 582 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="582" height="260" fill="white"></rect>
+      <text x="291" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">Ads Cost by Month</text><line x1="58" y1="218.0" x2="568" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="42.0" x2="568" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="79.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="121.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="164.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="206.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="249.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="291.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="334.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="376.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="419.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="461.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="504.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="546.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="225" y="20" width="11" height="11" fill="var(--meta-color)" rx="2"></rect><text x="241" y="29" font-size="10" fill="#334155">Meta</text><rect x="313" y="20" width="11" height="11" fill="var(--google-color)" rx="2"></rect><text x="329" y="29" font-size="10" fill="#334155">Google</text>
+    </svg></div></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Avg per Day</div>
-        <div id="chart_avgday"></div>
+        <div id="chart_avgday"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 566 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="566" height="260" fill="white"></rect>
+      <text x="283" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">Avg Daily Spend by Channel</text><line x1="58" y1="218.0" x2="552" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="42.0" x2="552" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="78.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="119.7" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="160.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="202.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="243.3" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="284.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="325.6" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="366.7" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="407.9" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="449.1" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="490.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="531.4" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><line x1="173" y1="26" x2="187" y2="26" stroke="var(--meta-color)" stroke-width="2.2"></line><circle cx="180" cy="26" r="3" fill="#fff" stroke="var(--meta-color)" stroke-width="2"></circle><text x="189" y="29" font-size="10" fill="#334155">Meta Avg/Day</text><line x1="261" y1="26" x2="275" y2="26" stroke="var(--google-color)" stroke-width="2.2"></line><circle cx="268" cy="26" r="3" fill="#fff" stroke="var(--google-color)" stroke-width="2"></circle><text x="277" y="29" font-size="10" fill="#334155">Google Avg/Day</text><line x1="349" y1="26" x2="363" y2="26" stroke="var(--purple)" stroke-width="2.2"></line><circle cx="356" cy="26" r="3" fill="#fff" stroke="var(--purple)" stroke-width="2"></circle><text x="365" y="29" font-size="10" fill="#334155">Total Avg/Day</text>
+    </svg></div></div>
       </div>
 
       <!-- Sales & ROAS panel -->
@@ -3973,6 +4062,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="html_deploy_log"><span style="color:var(--gray);">📖 Reading current HTML...</span></div>
       <div id="gh_log" style="display:none;"></div>
       <input type="text" id="gs_url">
+      <input type="text" id="gs_token">
       <div id="gs_log"></div>
       <input type="checkbox" id="aiGuideToggle">
       <div id="backupListContainer"></div>
@@ -4658,7 +4748,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.90'; // v6.14 — 清 v6.13 debug log; Apps Script v2.15 修 merge 后 remark/channel 不持久化
+const DATA_VERSION = '3.92'; // v6.16 — 自审 3 修: 后端 Channels 移出 SCHEMAS 防 pull 挂掉 / 鉴权任一 token 启用 / Push All flags stringify
 
 // ---------- State ----------
 let state = {
@@ -4706,9 +4796,19 @@ function loadState() {
         if (state.listPeriod && state.listPeriod !== 'all') state.listPeriod = 'all';
         return;
       }
+      // v6.15 P1-2 修复: 版本不一致 (但有旧数据) — 不立刻覆盖, 保留旧数据等 Sheet pull
+      // 之前: 这里直接走下面的 PRELOADED 重置 + saveState() → Sheet pull 失败时本地副本永久丢失
+      // 现在: 加载旧数据但标记 _versionMismatch, gsPullSilent 成功后才 saveState 升版本
+      if (parsed && parsed.leads && parsed.leads.length > 0) {
+        state = { ...state, ...parsed };
+        state._versionMismatch = true;  // 标记: 不要立刻保存, 等 Sheet pull 成功
+        if (state.listPeriod && state.listPeriod !== 'all') state.listPeriod = 'all';
+        console.warn('[loadState] Version mismatch — keeping old data until Sheet pull succeeds');
+        return;
+      }
     }
   } catch (e) { console.error(e); }
-  // Init from preloaded (or force-refresh on version bump)
+  // Init from preloaded (or force-refresh on version bump with no prior data)
   state.version = DATA_VERSION;
   state.leads = PRELOADED.leads || [];
   state.adsSpend = PRELOADED.adsSpend || [];
@@ -11619,6 +11719,11 @@ function _buildSettingsModalBody(kind) {
           <label>Apps Script URL</label>
           <input type="text" id="modal_gs_url" placeholder="https://script.google.com/macros/s/xxxxx/exec" autocomplete="off" style="font-size:12px;">
         </div>
+        <div class="settings-modal-input-row">
+          <label>Admin Token <span style="color:var(--gray);font-weight:400;font-size:11px;">(可选,鉴权用)</span></label>
+          <input type="password" id="modal_gs_token" placeholder="留空 = 跳过鉴权 (兼容旧部署)" autocomplete="off" style="font-size:12px;">
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;">在 Apps Script Script Properties 设 ADMIN_TOKEN 后填这里</div>
+        </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn-primary" onclick="modalGSheetPush()">Push all</button>
           <button class="btn btn-outline" onclick="modalGSheetPull()">Pull</button>
@@ -11692,6 +11797,10 @@ function _initSettingsModal(kind) {
     const orig = document.getElementById('gs_url');
     const m = document.getElementById('modal_gs_url');
     if (m && orig) m.value = orig.value || '';
+    // v6.15: 同步 token
+    const origTok = document.getElementById('gs_token');
+    const mTok = document.getElementById('modal_gs_token');
+    if (mTok && origTok) mTok.value = origTok.value || '';
   }
   if (kind === 'github') {
     ['token', 'owner', 'repo', 'branch'].forEach(f => {
@@ -11768,6 +11877,13 @@ function modalAddStore() {
 function _syncModalGSheet() {
   document.getElementById('gs_url').value = document.getElementById('modal_gs_url').value;
   document.getElementById('gs_url').dispatchEvent(new Event('change'));
+  // v6.15: 同步 token
+  const tokEl = document.getElementById('gs_token');
+  const mTokEl = document.getElementById('modal_gs_token');
+  if (tokEl && mTokEl) {
+    tokEl.value = mTokEl.value;
+    tokEl.dispatchEvent(new Event('change'));
+  }
 }
 function modalGSheetPush() { _syncModalGSheet(); if (typeof gsPushAll === 'function') gsPushAll(); _mirrorLog('gs_log', 'modal_gs_log'); }
 function modalGSheetPull() { _syncModalGSheet(); if (typeof gsPull === 'function') gsPull(); _mirrorLog('gs_log', 'modal_gs_log'); }
@@ -12008,6 +12124,9 @@ function loadGitHubConfig() {
     if (pathEl) pathEl.value = cfg.path || 'data.json';
     const gsEl = document.getElementById('gs_url');
     if (gsEl) gsEl.value = cfg.gsUrl || '';
+    // v6.15: 加载 GS token
+    const gsTokEl = document.getElementById('gs_token');
+    if (gsTokEl) gsTokEl.value = cfg.gsToken || '';
     return cfg;
   } catch (e) { return {}; }
 }
@@ -12133,7 +12252,7 @@ async function cloudBackupNow() {
   try {
     const r = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ action: 'backup_now' }),
+      body: JSON.stringify(gsPostBody({ action: 'backup_now' })),
       headers: { 'Content-Type': 'text/plain' }
     });
     const d = await r.json();
@@ -12167,7 +12286,7 @@ async function cloudBackupRefreshList() {
   try {
     const r = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ action: 'list_backups' }),
+      body: JSON.stringify(gsPostBody({ action: 'list_backups' })),
       headers: { 'Content-Type': 'text/plain' }
     });
     const d = await r.json();
@@ -12277,7 +12396,7 @@ async function cloudBackupRestoreConfirm(backupId, backupName) {
   try {
     const r = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ action: 'restore_backup', backupId: backupId, tabs: selected }),
+      body: JSON.stringify(gsPostBody({ action: 'restore_backup', backupId: backupId, tabs: selected })),
       headers: { 'Content-Type': 'text/plain' }
     });
     const d = await r.json();
@@ -12334,6 +12453,38 @@ function getGsUrl() {
     return cfg.gsUrl || '';
   } catch(e) { return ''; }
 }
+
+// v6.15 P0 修复: token 鉴权 — 防 Apps Script URL 泄露后被滥用
+// 兼容: token 留空时 (旧部署没设 ADMIN_TOKEN) 后端会跳过校验
+function getGsToken() {
+  const el = document.getElementById('gs_token');
+  if (el && el.value.trim()) {
+    const tok = el.value.trim();
+    try {
+      const cfg = JSON.parse(localStorage.getItem(GH_CFG_KEY) || '{}');
+      if (cfg.gsToken !== tok) { cfg.gsToken = tok; localStorage.setItem(GH_CFG_KEY, JSON.stringify(cfg)); }
+    } catch(e) {}
+    return tok;
+  }
+  try {
+    const cfg = JSON.parse(localStorage.getItem(GH_CFG_KEY) || '{}');
+    return cfg.gsToken || '';
+  } catch(e) { return ''; }
+}
+
+// helper: 自动给请求 body 加 token
+function gsPostBody(payload) {
+  const tok = getGsToken();
+  return tok ? { ...payload, token: tok } : payload;
+}
+
+// helper: 自动给 GET URL 加 token 参数
+function gsGetUrl(baseUrl, action, extraParams) {
+  const tok = getGsToken();
+  const params = new URLSearchParams({ action, ...(extraParams || {}) });
+  if (tok) params.set('token', tok);
+  return baseUrl + '?' + params.toString();
+}
 function gsLog(msg, isError) {
   const el = document.getElementById('gs_log');
   if (el) { el.textContent = msg; el.style.color = isError ? 'var(--adscost-color)' : 'var(--organic-color)'; }
@@ -12344,7 +12495,7 @@ async function gsTest() {
   if (!url) { gsLog('Please enter Apps Script URL', true); return; }
   gsLog('Testing connection...');
   try {
-    const r = await fetch(url + '?action=pull');
+    const r = await fetch(gsGetUrl(url, 'pull'));
     const d = await r.json();
     if (d.success) {
       const counts = Object.entries(d.data).map(([k,v]) => `${k}: ${v.length}`).join(', ');
@@ -12361,11 +12512,20 @@ async function gsPushAll() {
   if (!await showConfirm('Push ALL CRM data to Google Sheet? This will overwrite Sheet data.', { title: 'Push All', okText: 'Push', danger: true })) return;
   gsLog('⬆️ Enriching & pushing all data...');
   try {
-    // Enrich leads with missing fields (exclude remark from Sheet)
+    // v6.15 P1-1 修复: 保留 remark + flags + status — 之前剥掉导致 Push All 清空全部 activity log
+    // 仅排除 channel 字段 (跟 channelName 重复, 后端 schema 没这字段)
+    // v6.16 修复: flags 是 object (例如 {red:true}), 必须 stringify 否则 Sheet cell 写入 [object Object]
+    //   逻辑跟 single upsert (gsUpsert 准备 record) 保持一致
+    const stringifyFlags = (flags) => {
+      if (!flags) return '';
+      if (typeof flags === 'string') return flags;
+      if (typeof flags === 'object' && Object.keys(flags).some(k => flags[k])) return JSON.stringify(flags);
+      return '';
+    };
     const enrichedLeads = state.leads.map(l => {
       const ch = getChannel(l.channelId);
       const loc = state.locations.find(x => x.id === l.locationId);
-      const { remark, channel, ...rest } = l;
+      const { channel, flags, ...rest } = l;  // 把 flags 也解构出来, 避免 ...rest 透传 object
       return {
         ...rest,
         week: l.week || (l.leadDate ? isoWeek(l.leadDate) : ''),
@@ -12373,6 +12533,8 @@ async function gsPushAll() {
         platform: l.platform || (ch ? ch.platform : ''),
         locationName: l.location || (loc ? loc.name : ''),
         showUp: l.showUp || '',
+        remark: l.remark || '',  // 显式保留 remark — 防 activity log 被清
+        flags: stringifyFlags(flags),  // stringify object → string, 防 Sheet 写入 [object Object]
         updatedAt: l.updatedAt || new Date().toISOString()
       };
     });
@@ -12404,7 +12566,7 @@ async function gsPushAll() {
         ThirdPartyFees: state.thirdPartyFees
       }
     };
-    const r = await fetch(url, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain' } });
+    const r = await fetch(url, { method: 'POST', body: JSON.stringify(gsPostBody(payload)), headers: { 'Content-Type': 'text/plain' } });
     const d = await r.json();
     if (d.success) {
       gsLog(`✅ Pushed! Leads: ${state.leads.length}, Ads: ${state.adsSpend.length}, Rev: ${state.revenue.length}, Fees: ${state.thirdPartyFees.length}`);
@@ -12420,9 +12582,19 @@ async function gsPullSilent() {
   if (!url) return; // No URL configured — skip silently
   // v3.69: CRITICAL — flush pending local writes BEFORE pulling, otherwise
   // this pull would overwrite leads/revenue that haven't made it to Sheet yet.
-  try { await flushPendingQueue(); } catch (e) { console.warn('[Auto-pull] flush pending failed:', e); }
+  // v6.15 P1-3 修复: flush 失败时停止 pull (返回 false = 还有未同步项)
+  let flushOk = true;
+  try { flushOk = await flushPendingQueue(); } catch (e) {
+    console.warn('[Auto-pull] flush pending failed:', e);
+    flushOk = false;
+  }
+  if (!flushOk) {
+    console.warn('[Auto-pull] BLOCKED: pending queue still has items — pull would overwrite local changes');
+    if (typeof toast === 'function') toast('⚠️ 有未同步数据,自动同步暂停 — 点击右上角同步按钮重试');
+    return;
+  }
   try {
-    const r = await fetch(url + '?action=pull');
+    const r = await fetch(gsGetUrl(url, 'pull'));
     const d = await r.json();
     if (!d.success) { console.warn('[Auto-pull] failed:', d.error); return; }
     const sheetLeads = d.data.Leads || [];
@@ -12573,6 +12745,12 @@ async function gsPullSilent() {
     if (skipped.length > 0) {
       console.warn('[Auto-pull] Protected local tables from empty Sheet:', skipped.join(', '));
     }
+    // v6.15 P1-2 配套: pull 成功 → 清除版本不一致标记 + 升级到当前版本号
+    if (state._versionMismatch) {
+      delete state._versionMismatch;
+      state.version = DATA_VERSION;
+      console.log('[Auto-pull] Sheet pull success — cleared version mismatch flag, upgraded to ' + DATA_VERSION);
+    }
     saveState();
     const msg = skipped.length > 0
       ? `⚠️ Synced (${skipped.length} table(s) protected)`
@@ -12605,7 +12783,7 @@ async function gsPull() {
   if (!url) { gsLog('Please enter Apps Script URL', true); return; }
   gsLog('⬇️ Pulling from Sheet...');
   try {
-    const r = await fetch(url + '?action=pull');
+    const r = await fetch(gsGetUrl(url, 'pull'));
     const d = await r.json();
     if (!d.success) { gsLog('❌ Pull failed: ' + (d.error || 'Unknown'), true); return; }
     const sheetLeads = d.data.Leads || [];
@@ -12886,7 +13064,7 @@ async function flushPendingQueue() {
       const body = op.action === 'delete'
         ? { action: 'delete', sheet: op.sheet, id: op.id }
         : { action: 'upsert', sheet: op.sheet, record: op.record };
-      const r = await fetch(url, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'text/plain' } });
+      const r = await fetch(url, { method: 'POST', body: JSON.stringify(gsPostBody(body)), headers: { 'Content-Type': 'text/plain' } });
       if (!r.ok) throw new Error('HTTP ' + r.status);
       // Try parsing response; Apps Script may return {success:true}
       try {
@@ -12911,7 +13089,7 @@ async function gsUpsert(sheetName, record) {
   const url = getGsUrl();
   if (!url) return;
   try {
-    const r = await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'upsert', sheet: sheetName, record }), headers: { 'Content-Type': 'text/plain' } });
+    const r = await fetch(url, { method: 'POST', body: JSON.stringify(gsPostBody({ action: 'upsert', sheet: sheetName, record })), headers: { 'Content-Type': 'text/plain' } });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     // Optional: check JSON success flag if server returns one
     try {
@@ -12929,7 +13107,7 @@ async function gsDelete(sheetName, id) {
   const url = getGsUrl();
   if (!url) return;
   try {
-    const r = await fetch(url, { method: 'POST', body: JSON.stringify({ action: 'delete', sheet: sheetName, id }), headers: { 'Content-Type': 'text/plain' } });
+    const r = await fetch(url, { method: 'POST', body: JSON.stringify(gsPostBody({ action: 'delete', sheet: sheetName, id })), headers: { 'Content-Type': 'text/plain' } });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     try {
       const d = await r.json();
@@ -13678,7 +13856,7 @@ function pushNoteToSheet(note) {
     fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'saveAINote', note: note })
+      body: JSON.stringify(gsPostBody({ action: 'saveAINote', note: note }))
     }).catch(() => {}); // fire and forget
   } catch(e) {}
 }
@@ -13690,7 +13868,7 @@ function pushNoteDeleteToSheet(note) {
     fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'deleteAINote', id: note.id })
+      body: JSON.stringify(gsPostBody({ action: 'deleteAINote', id: note.id }))
     }).catch(() => {});
   } catch(e) {}
 }
@@ -13703,7 +13881,7 @@ async function pullNotebookFromSheet() {
   }
   toast('正在从 Sheet 拉取笔记...');
   try {
-    const res = await fetch(url + '?action=pullAINotes');
+    const res = await fetch(gsGetUrl(url, 'pullAINotes'));
     const data = await res.json();
     if (data && Array.isArray(data.notes)) {
       const merged = mergeNotes(getAINotes(), data.notes);
@@ -14476,7 +14654,7 @@ async function sendAIMessage() {
     const res = await fetch(gsUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'askAI', question: q, model, context, history })
+      body: JSON.stringify(gsPostBody({ action: 'askAI', question: q, model, context, history }))
     });
     return await res.json();
   }
@@ -15432,7 +15610,7 @@ async function pendingBadgeUpdate() {
   try {
     const r = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ action: 'pullpending' }),
+      body: JSON.stringify(gsPostBody({ action: 'pullpending' })),
       headers: { 'Content-Type': 'text/plain' }
     });
     const d = await r.json();
@@ -15526,7 +15704,7 @@ async function pendingRefresh(mode) {
   try {
     const r = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ action: 'pullpending' }),
+      body: JSON.stringify(gsPostBody({ action: 'pullpending' })),
       headers: { 'Content-Type': 'text/plain' }
     });
     const d = await r.json();
@@ -16131,7 +16309,7 @@ async function pendingConfirm(pendingId) {
   // 后台 fire-and-forget 同步到 Apps Script. 失败才回滚 + 提示.
   fetch(url, {
     method: 'POST',
-    body: JSON.stringify({ action: 'confirmpending', id: pendingId, leadRecord: leadRecord }),
+    body: JSON.stringify(gsPostBody({ action: 'confirmpending', id: pendingId, leadRecord: leadRecord })),
     headers: { 'Content-Type': 'text/plain' }
   }).then(r => r.json()).then(d => {
     if (!d.success) {
@@ -16224,12 +16402,12 @@ async function pendingConfirmUpdate(p) {
   // 后台 fire-and-forget. 失败回滚.
   fetch(url, {
     method: 'POST',
-    body: JSON.stringify({
+    body: JSON.stringify(gsPostBody({
       action: 'confirmpending',
       id: pendingId,
       leadRecord: leadUpdate,
       mode: 'update'
-    }),
+    })),
     headers: { 'Content-Type': 'text/plain' }
   }).then(r => r.json()).then(d => {
     if (!d.success) {
@@ -16287,7 +16465,7 @@ async function pendingDelete(pendingId) {
   try {
     const r = await fetch(url, {
       method: 'POST',
-      body: JSON.stringify({ action: 'deletepending', id: pendingId }),
+      body: JSON.stringify(gsPostBody({ action: 'deletepending', id: pendingId })),
       headers: { 'Content-Type': 'text/plain' }
     });
     const d = await r.json();
@@ -16487,7 +16665,7 @@ async function _pendingBatchSaveOne(p, ch, phone, remark) {
   // 后台跑 fetch. 失败回滚.
   fetch(url, {
     method: 'POST',
-    body: JSON.stringify({ action: 'confirmpending', id: p.id, leadRecord: leadRecord }),
+    body: JSON.stringify(gsPostBody({ action: 'confirmpending', id: p.id, leadRecord: leadRecord })),
     headers: { 'Content-Type': 'text/plain' }
   }).then(r => r.json()).then(d => {
     if (!d.success) {
@@ -16741,12 +16919,12 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
         // 后台 fire-and-forget. 失败才回滚.
         fetch(url, {
           method: 'POST',
-          body: JSON.stringify({
+          body: JSON.stringify(gsPostBody({
             action: 'confirmpending',
             id: pendingItem.id,
             leadRecord: leadUpdate,
             mode: 'update'
-          }),
+          })),
           headers: { 'Content-Type': 'text/plain' }
         }).then(r => r.json()).then(d => {
           if (!(d.success || d.action === 'updated_existing_lead')) {
