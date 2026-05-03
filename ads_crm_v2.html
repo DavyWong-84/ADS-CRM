@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.31</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.32</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.31</div>
+      <div class="nav-brand-version">v6.32</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4704,7 +4704,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.07'; // v6.31 — Weekly Leads 删 Total 线 + 柱顶标数 (W1) · Funnel 改水平横条漏斗 (F1)
+const DATA_VERSION = '4.08'; // v6.32 — 修 bug: Funnel 选 outlet 时数据不跟着变 (一直用 fullData 漏 outlet 过滤)
 
 // ---------- State ----------
 let state = {
@@ -5711,12 +5711,13 @@ function renderRoasChart(mArr, tab, monthData, fullData) {
 
 function renderFunnelChart(mArr, monthData, tab, fullData) {
   if (!document.getElementById('chart_funnel')) return;
-  const src = tab==='all' ? fullData : monthData;
   // v6.31 F1: 改成水平横条漏斗 (本月或所选时段累计).
   //   失去 12 月趋势, 但本月转化更直观: 每行显示 Lead/Appt/Show Up + 转化%+流失数.
-  const totalLeads = src.reduce((s, d) => s + (d.totalLeads || 0), 0);
-  const totalAppts = src.reduce((s, d) => s + (d.appts || 0), 0);
-  const totalShows = src.reduce((s, d) => s + (d.showUps || 0), 0);
+  // v6.32 修 bug: 一律用 monthData (永远按 outlet 过滤). 之前 tab='all' 时用 fullData,
+  //   但 fullData = calcMonthMetrics 不带 outlet 过滤, 导致选 outlet 时 funnel 数字不变.
+  const totalLeads = monthData.reduce((s, d) => s + (d.totalLeads || 0), 0);
+  const totalAppts = monthData.reduce((s, d) => s + (d.appts || 0), 0);
+  const totalShows = monthData.reduce((s, d) => s + (d.showUps || 0), 0);
 
   _renderFunnelHorizontal('chart_funnel', totalLeads, totalAppts, totalShows);
 }
