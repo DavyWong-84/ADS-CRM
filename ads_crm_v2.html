@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.30</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.31</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.30</div>
+      <div class="nav-brand-version">v6.31</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4704,7 +4704,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.06'; // v6.30 step3 — funnel 改堆叠柱(B) + weekly_leads 改堆叠柱+折线(A)
+const DATA_VERSION = '4.07'; // v6.31 — Weekly Leads 删 Total 线 + 柱顶标数 (W1) · Funnel 改水平横条漏斗 (F1)
 
 // ---------- State ----------
 let state = {
@@ -5528,11 +5528,45 @@ const ChartJS = {
     const chart = new Chart(canvas, {
       type: chartType,
       data: { labels: cfg.labels || [], datasets: datasets },
+      // v6.31: per-chart inline plugins (不污染全局)
+      plugins: [
+        // stackTopLabels: 堆叠柱顶标 Total 数字 (替代之前的 Total 折线 series)
+        {
+          id: 'stackTopLabels',
+          afterDatasetsDraw(c) {
+            if (!cfg.stackTopLabels) return;
+            const ctx = c.ctx;
+            const labels = c.data.labels || [];
+            // 计算每个 X 位置的 stack total (只算 bar series, 跳过 line)
+            labels.forEach((_, idx) => {
+              let total = 0;
+              let topY = null;
+              c.data.datasets.forEach((ds, di) => {
+                if (ds.type === 'line') return;
+                const v = ds.data[idx];
+                if (v == null) return;
+                total += v;
+                const meta = c.getDatasetMeta(di);
+                const point = meta.data[idx];
+                if (point && (topY === null || point.y < topY)) topY = point.y;
+              });
+              if (total === 0 || topY === null) return;
+              ctx.save();
+              ctx.fillStyle = '#1f2937';
+              ctx.font = '500 11px sans-serif';
+              ctx.textAlign = 'center';
+              ctx.fillText(total.toString(), c.getDatasetMeta(0).data[idx].x, topY - 6);
+              ctx.restore();
+            });
+          }
+        }
+      ],
       options: {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 400 },
         interaction: { mode: 'index', intersect: false },
+        layout: cfg.stackTopLabels ? { padding: { top: 20 } } : {},
         plugins: {
           legend: { display: false },
           tooltip: {
@@ -5677,44 +5711,69 @@ function renderRoasChart(mArr, tab, monthData, fullData) {
 
 function renderFunnelChart(mArr, monthData, tab, fullData) {
   if (!document.getElementById('chart_funnel')) return;
-  const labels = mArr.map(m => fmt.monthShort(m));
   const src = tab==='all' ? fullData : monthData;
-  // v6.30: 改成堆叠柱 (mockup B). 数据变换: 从底到顶 = Show Up / (Appt-Show Up) / (Leads-Appt)
-  //   柱总高度 = Leads (最大值), 颜色分 3 层显示漏斗收窄.
-  //   tooltip 通过 origData 显示原始值 (200, 320, 487), 而不是堆叠的差值.
-  const leadsArr = src.map(d => d.totalLeads || 0);
-  const apptArr  = src.map(d => d.appts || 0);
-  const showArr  = src.map(d => d.showUps || 0);
-  // 堆叠层数据 (确保 ≥ 0)
-  const showStack = showArr;
-  const apptStack = apptArr.map((v, i) => Math.max(0, v - showArr[i]));
-  const leadStack = leadsArr.map((v, i) => Math.max(0, v - apptArr[i]));
+  // v6.31 F1: 改成水平横条漏斗 (本月或所选时段累计).
+  //   失去 12 月趋势, 但本月转化更直观: 每行显示 Lead/Appt/Show Up + 转化%+流失数.
+  const totalLeads = src.reduce((s, d) => s + (d.totalLeads || 0), 0);
+  const totalAppts = src.reduce((s, d) => s + (d.appts || 0), 0);
+  const totalShows = src.reduce((s, d) => s + (d.showUps || 0), 0);
 
-  const series = [
-    // 顺序: 堆叠从底到顶
-    { label:'Show Up', color:AdsChart.C.green,   data: showStack, origData: showArr },
-    { label:'Appt',    color:AdsChart.C.purple2, data: apptStack, origData: apptArr },
-    { label:'Leads',   color:AdsChart.C.purple,  data: leadStack, origData: leadsArr },
-  ];
-  const funnelCfg = {
-    title: 'Conversion Funnel', labels, series,
-    yFmt: v => v.toFixed(0),
-    stacked: true,
-    tooltipMode: 'origData',  // v6.30: tooltip 显示 origData 而不是 stack data
-    reverseLegend: true  // v6.30: legend 反向显示 (Lead 在前, Show Up 在后, 符合漏斗直觉)
-  };
-  if (USE_CHARTJS) ChartJS.render('chart_funnel', funnelCfg);
-  else {
-    // 旧 AdsChart 不支持堆叠 + origData, 回滚时用原始数据
-    AdsChart.render('chart_funnel', { title:'Conversion Funnel', labels,
-      series: [
-        { label:'Leads',   color:AdsChart.C.purple,  data: leadsArr },
-        { label:'Appt',    color:AdsChart.C.purple2, data: apptArr },
-        { label:'Show Up', color:AdsChart.C.green,   data: showArr },
-      ],
-      yFmt: v => v.toFixed(0)
-    });
+  _renderFunnelHorizontal('chart_funnel', totalLeads, totalAppts, totalShows);
+}
+
+// v6.31: 水平横条漏斗 (替代旧 12 月趋势柱状)
+function _renderFunnelHorizontal(elId, leads, appts, shows) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+
+  if (leads === 0 && appts === 0 && shows === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--gray);font-size:13px;">No data</div>';
+    return;
   }
+
+  const stages = [
+    { label: 'Lead',    value: leads, color: '#7132f5' },
+    { label: 'Appt',    value: appts, color: '#a78bfa' },
+    { label: 'Show Up', value: shows, color: '#10B981' }
+  ];
+  const maxValue = Math.max(...stages.map(s => s.value), 1);
+
+  let html = `
+    <div style="background:#fff;border-radius:8px;padding:18px 16px;border:1px solid #ede9f6;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px;">
+        <div style="font-size:13px;font-weight:600;color:#475569;">Conversion Funnel</div>
+        <div style="font-size:11px;color:#94a3b8;">Lead → Appt → Show Up</div>
+      </div>
+  `;
+
+  stages.forEach((s, i) => {
+    const prev = i > 0 ? stages[i-1] : null;
+    const convPct = prev && prev.value > 0 ? ((s.value / prev.value) * 100).toFixed(1) : null;
+    const dropN = prev ? prev.value - s.value : null;
+    const widthPct = (s.value / maxValue) * 100;
+    const labelInBar = widthPct >= 12;  // 太短的条不在条内显示数字, 改放外面
+
+    html += `
+      <div style="margin-bottom:${i < stages.length - 1 ? '14px' : '0'};">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+          <span style="font-size:13px;font-weight:500;color:#1f2937;">${s.label}</span>
+          <span style="font-size:13px;">
+            <strong style="color:#1f2937;">${s.value.toLocaleString('en-MY')}</strong>
+            ${convPct ? `<span style="color:#64748b;margin-left:8px;">→ ${convPct}% conv.</span>` : ''}
+            ${dropN > 0 ? `<span style="color:#dc2626;margin-left:8px;">−${dropN.toLocaleString('en-MY')} drop</span>` : ''}
+          </span>
+        </div>
+        <div style="height:28px;background:#f1f5f9;border-radius:4px;overflow:hidden;">
+          <div style="width:${widthPct}%;height:100%;background:${s.color};transition:width 0.5s ease;display:flex;align-items:center;padding:0 10px;">
+            ${labelInBar ? `<span style="font-size:11px;color:rgba(255,255,255,0.95);font-weight:500;">${(widthPct).toFixed(0)}% of Lead</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  html += '</div>';
+  el.innerHTML = html;
 }
 
 function renderCplChart(mArr, monthData, tab, fullData) {
@@ -9705,7 +9764,7 @@ function renderStore() {
         const metaData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m) && l.platform === 'meta').length; return c || null; });
         const googleData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m) && l.platform === 'google').length; return c || null; });
         const ofuData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m) && (l.platform === 'organic' || l.platform === 'followup')).length; return c || null; });
-        const totalData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m)).length; return c || null; });
+        // v6.31: totalData 已移除 (Total 折线删了, 改用柱顶 stackTopLabels)
         const weeklyLeadsCfg = {
           title: 'Monthly Leads — ' + wYear,
           labels: chartLabels,
@@ -9713,10 +9772,11 @@ function renderStore() {
             { label: 'Meta', color: 'var(--meta-color)', data: metaData },
             { label: 'Google', color: 'var(--google-color)', data: googleData },
             { label: 'OFU', color: 'var(--organic-color)', data: ofuData },
-            { label: 'Total', color: 'var(--purple)', type: 'line', data: totalData },
+            // v6.31 W1: 删掉 Total 折线 — 它就是堆叠柱顶, 重复信息. 改用 stackTopLabels 标在柱顶.
           ],
           yFmt: v => v != null ? v.toFixed(0) : '',
-          stacked: true  // v6.30: 柱状堆叠 (Meta+Google+OFU 累加), Total 折线穿过
+          stacked: true,
+          stackTopLabels: true  // v6.31: 柱顶标 Total 数字 (替代之前的 Total 折线)
         };
         if (USE_CHARTJS) ChartJS.render('chart_weekly_leads', weeklyLeadsCfg);
         else AdsChart.render('chart_weekly_leads', weeklyLeadsCfg);
