@@ -3049,7 +3049,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.23</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.24</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3105,7 +3105,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.23</div>
+      <div class="nav-brand-version">v6.24</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4702,7 +4702,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.99'; // v6.23 — codex 第 6 轮: P3 后端 result.error 冒泡 + P6 手动 Pull 防覆盖 + P7 GitHub config 保留 gsToken + P11 Fee 编辑同步 Sheet
+const DATA_VERSION = '4.00'; // v6.24 — codex 第 7 轮 P1+P2+P3: 鉴权裸奔 banner + 后端 LockService + pending_already_processed 回滚乐观 lead
 
 // ---------- State ----------
 let state = {
@@ -12543,6 +12543,80 @@ async function gsPushAll() {
   } catch (e) { gsLog('❌ Push failed: ' + e.message, true); }
 }
 
+// v6.24 P1: 鉴权状态检查 — 启动时查 backend, 裸奔显示一次警告 banner
+async function checkAuthStatusBanner() {
+  const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  if (!url) return; // 没配 Sheet, 不查
+  // 24 小时只提醒一次
+  const dismissedAt = parseInt(localStorage.getItem('ads_crm_auth_banner_dismissed') || '0', 10);
+  if (Date.now() - dismissedAt < 24 * 60 * 60 * 1000) return;
+
+  try {
+    const r = await fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'action=auth_status');
+    const d = await r.json();
+    if (!d.success) return;
+    if (d.legacyMode === true) {
+      // 裸奔 — 弹 banner
+      _showAuthWarningBanner();
+    }
+  } catch (e) {
+    console.warn('[Auth check] failed:', e);
+  }
+}
+
+function _showAuthWarningBanner() {
+  // 防重复弹
+  if (document.getElementById('authWarningBanner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'authWarningBanner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#dc2626;color:#fff;padding:10px 16px;z-index:9999;font-size:13px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.2);';
+  banner.innerHTML = `
+    <span style="font-size:18px;">⚠️</span>
+    <div style="flex:1;">
+      <strong>后端裸奔风险</strong> ·
+      Apps Script 没设 ADMIN_TOKEN, 任何拿到 URL 的人都能访问/删除/恢复你全部数据.
+      <a href="https://docs.anthropic.com" onclick="event.preventDefault(); _openAuthGuide();" style="color:#fff;text-decoration:underline;">如何修复 →</a>
+    </div>
+    <button onclick="_dismissAuthBanner()" style="background:rgba(255,255,255,0.2);color:#fff;border:none;padding:6px 12px;border-radius: 6px;cursor:pointer;font-size:12px;">24h 不再提示</button>
+    <button onclick="this.parentElement.remove();" style="background:transparent;color:#fff;border:none;font-size:18px;cursor:pointer;padding:0 4px;">✕</button>
+  `;
+  document.body.appendChild(banner);
+}
+
+function _dismissAuthBanner() {
+  localStorage.setItem('ads_crm_auth_banner_dismissed', String(Date.now()));
+  const b = document.getElementById('authWarningBanner');
+  if (b) b.remove();
+}
+
+function _openAuthGuide() {
+  const html = `
+    <div class="modal-header">
+      <div class="modal-title">如何启用后端鉴权 (5 分钟)</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div style="padding:16px;font-size:13px;line-height:1.7;">
+      <p><strong>问题:</strong> 现在 Apps Script URL 任何人拿到都能调用. 万一不小心截图或员工把 HTML 发给外人, 你的客户数据/广告数据/AI 笔记全部可被读写.</p>
+      <p><strong>修法 (5 分钟):</strong></p>
+      <ol style="padding-left:20px;">
+        <li>打开 <a href="https://script.google.com" target="_blank" style="color:var(--purple);">script.google.com</a> → 进入你的 Ads CRM 项目</li>
+        <li>左侧 ⚙️ Project Settings</li>
+        <li>滚到底部 "Script Properties" → 点 Add property</li>
+        <li>Property = <code>ADMIN_TOKEN</code>, Value = 随机长字符串 (例如打开命令行: <code>openssl rand -hex 32</code>; 或随便键盘乱按 50 个字符)</li>
+        <li>再加一个: Property = <code>GHL_TOKEN</code>, Value = 另一个随机长字符串 (跟 ADMIN_TOKEN 不同)</li>
+        <li>Save</li>
+        <li>然后回 CRM Settings → Google Sheet → 把 ADMIN_TOKEN 填到 "GS Token" 字段 → Save Config</li>
+        <li>GHL webhook 那边: 在 Custom Data 里加 <code>token</code> = (GHL_TOKEN 的值)</li>
+      </ol>
+      <p style="margin-top:16px;"><strong>验证生效:</strong> 启用后, 没 token 的人调你 URL 会得到 "Unauthorized". 你的 CRM 因为已经填了 token 仍能正常用.</p>
+      <div style="display:flex;gap:8px;margin-top:16px;">
+        <button class="btn btn-primary" onclick="closeModal()" style="flex:1;">明白了</button>
+      </div>
+    </div>
+  `;
+  if (typeof showModal === 'function') showModal(html);
+}
+
 // Silent auto-pull on app open. No confirm, no page reload, no toast on failure.
 async function gsPullSilent() {
   const url = getGsUrl();
@@ -15675,6 +15749,10 @@ function init() {
   if (typeof pendingRefresh === 'function') {
     try { pendingRefresh('silent'); } catch (e) { console.warn('[Pending pre-pull] error:', e); }
   }
+  // v6.24 P1 鉴权状态检查 — 后端裸奔时弹一次警告 banner
+  //   不强制关闭, 给 Davy 选择. 第一次启动检测, 裸奔就提示.
+  //   用户可以 dismiss 24 小时, localStorage 记录.
+  setTimeout(() => { try { checkAuthStatusBanner(); } catch (e) { console.warn('[Auth banner] error:', e); } }, 2000);
   // v3.69: Retry pending queue when network returns
   window.addEventListener('online', async () => {
     console.log('[Network] back online — flushing queue');
@@ -16668,11 +16746,32 @@ async function pendingConfirm(pendingId) {
   _pendingInFlight.delete(pendingId);
 
   // 后台 fire-and-forget 同步到 Apps Script. 失败才回滚 + 提示.
+  // v6.24 P3 修复: 收到 pending_already_processed 也要回滚乐观 lead — 之前漏了.
+  //   场景: 多设备同时 confirm 同一 pending → A 设备成功创建 lead, B 设备得到 pending_already_processed.
+  //   之前: B 设备保留乐观 lead (跟 A 设备 leadId 不同) → push all 时假 lead 写到 Sheet → 真重复.
+  //   现在: 检测到 pending_already_processed → 删除本地刚 push 的 lead + toast 提示 + 触发 pull 拿 A 的真 lead.
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(gsPostBody({ action: 'confirmpending', id: pendingId, leadRecord: leadRecord })),
     headers: { 'Content-Type': 'text/plain' }
   }).then(r => r.json()).then(d => {
+    // pending_already_processed: 也算"成功"但需要回滚乐观 lead
+    if (d.success && d.result && d.result.action === 'pending_already_processed') {
+      // 删除本地刚乐观 push 的假 lead
+      if (typeof state !== 'undefined' && state.leads) {
+        const idx = state.leads.findIndex(l => l.id === leadId);
+        if (idx >= 0) state.leads.splice(idx, 1);
+        if (typeof saveState === 'function') saveState();
+      }
+      if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理过, 即将刷新');
+      // Sheet 上有 A 设备创建的真 lead — pull 拿回来
+      if (typeof gsPullSilent === 'function') {
+        setTimeout(() => gsPullSilent(), 500);
+      }
+      pendingRender();
+      if (typeof renderList === 'function') renderList();
+      return;
+    }
     if (!d.success) {
       // 回滚: 从 state 删除, 把 pending 放回去
       if (typeof state !== 'undefined' && state.leads) {
@@ -16771,6 +16870,24 @@ async function pendingConfirmUpdate(p) {
     })),
     headers: { 'Content-Type': 'text/plain' }
   }).then(r => r.json()).then(d => {
+    // v6.24 P3: pending_already_processed 也要回滚 — 后端没真改 lead, 我们的乐观更新是错的
+    if (d.success && d.result && d.result.action === 'pending_already_processed') {
+      if (snapshot && typeof state !== 'undefined' && state.leads) {
+        const ex = state.leads.find(l => l.id === p.existingLeadId);
+        if (ex) {
+          ex.status = snapshot.status;
+          ex.apptDate = snapshot.apptDate;
+          ex.locationId = snapshot.locationId;
+          ex.name = snapshot.name;
+          if (typeof saveState === 'function') saveState();
+        }
+      }
+      if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理过, 即将刷新');
+      if (typeof gsPullSilent === 'function') setTimeout(() => gsPullSilent(), 500);
+      pendingRender();
+      if (typeof renderList === 'function') renderList();
+      return;
+    }
     if (!d.success) {
       // 回滚
       if (snapshot && typeof state !== 'undefined' && state.leads) {
@@ -17044,9 +17161,16 @@ async function _pendingBatchSaveOne(p, ch, phone, remark) {
     if (!ok) {
       throw new Error((d.result && d.result.error) || d.error || 'upstream failure');
     }
-    // 如果是 pending_already_processed, 可能本地刚 push 的 lead 是多余的, 但 sheet pull 会清理
+    // v6.24 P3 修复: pending_already_processed 也要回滚本地乐观 lead, 不能保留.
+    //   之前 v6.18 只 console.warn 不删, 导致 push all 时假 lead 写到 Sheet 制造真重复.
     if (d.result && d.result.action === 'pending_already_processed') {
-      console.warn('[batch] pending already processed by another device:', p.id);
+      console.warn('[batch] pending already processed by another device, rolling back optimistic lead:', p.id);
+      if (typeof state !== 'undefined' && state.leads) {
+        const idx = state.leads.findIndex(l => l.id === leadId);
+        if (idx >= 0) state.leads.splice(idx, 1);
+      }
+      // pending 不放回 — 它已经被另一设备处理掉了, sheet 上已经有真 lead. 等 pull 拿回来.
+      // 这里返回 true 是因为 pending 确实"成功处理了", 只是不是我们处理的, 不算 batch failed.
     }
     return true;
   } catch (e) {
@@ -17300,6 +17424,19 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
           })),
           headers: { 'Content-Type': 'text/plain' }
         }).then(r => r.json()).then(d => {
+          // v6.24 P3: pending_already_processed 也回滚 (merge modal)
+          if (d.success && d.result && d.result.action === 'pending_already_processed') {
+            if (snapshot && state.leads) {
+              const ex = state.leads.find(l => l.id === existingLead.id);
+              if (ex) { Object.assign(ex, snapshot); if (typeof saveState === 'function') saveState(); }
+            }
+            if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理过, 即将刷新');
+            if (typeof gsPullSilent === 'function') setTimeout(() => gsPullSilent(), 500);
+            if (typeof pendingRender === 'function') pendingRender();
+            if (typeof renderList === 'function') renderList();
+            _mergeResolve(true);
+            return;
+          }
           if (!(d.success || d.action === 'updated_existing_lead')) {
             // 回滚
             if (snapshot && state.leads) {
