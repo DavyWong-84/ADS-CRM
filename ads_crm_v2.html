@@ -3049,7 +3049,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.24</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.25</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3105,7 +3105,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.24</div>
+      <div class="nav-brand-version">v6.25</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4702,7 +4702,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.00'; // v6.24 — codex 第 7 轮 P1+P2+P3: 鉴权裸奔 banner + 后端 LockService + pending_already_processed 回滚乐观 lead
+const DATA_VERSION = '4.01'; // v6.25 — 关掉启动鉴权 banner (Davy 暂不启用 token)
 
 // ---------- State ----------
 let state = {
@@ -15749,10 +15749,9 @@ function init() {
   if (typeof pendingRefresh === 'function') {
     try { pendingRefresh('silent'); } catch (e) { console.warn('[Pending pre-pull] error:', e); }
   }
-  // v6.24 P1 鉴权状态检查 — 后端裸奔时弹一次警告 banner
-  //   不强制关闭, 给 Davy 选择. 第一次启动检测, 裸奔就提示.
-  //   用户可以 dismiss 24 小时, localStorage 记录.
-  setTimeout(() => { try { checkAuthStatusBanner(); } catch (e) { console.warn('[Auth banner] error:', e); } }, 2000);
+  // v6.25: 关掉启动时的自动鉴权检测 banner — Davy 决定暂不启用 token, banner 太烦.
+  //   想查鉴权状态的话, Settings → Google Sheet Sync 区域有按钮 (手动触发).
+  // setTimeout(() => { try { checkAuthStatusBanner(); } catch (e) { console.warn('[Auth banner] error:', e); } }, 2000);
   // v3.69: Retry pending queue when network returns
   window.addEventListener('online', async () => {
     console.log('[Network] back online — flushing queue');
