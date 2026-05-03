@@ -3376,7 +3376,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
+        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -3385,7 +3385,69 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="summaryContent"></div>
+    <div id="summaryContent">
+    <div class="dash-row-2">
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Revenue →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">May 2026</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
+        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Meta — · G —</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">— shows</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — leads</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — appt</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — shows</div>
+      </div>
+    </div>
+    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
+      <div class="dash-section-label">Funnel — May 2026 →</div>
+      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
+        <div style="flex:4;background:var(--purple-bg);border-radius: 8px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">—</div>
+          <div style="font-size:11px;color:var(--purple);">Leads</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#0C447C;">—</div>
+          <div style="font-size:11px;color:#185FA5;">Appt</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#085041;">—</div>
+          <div style="font-size:11px;color:#0F6E56;">Show</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#633806;">RM 0</div>
+          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
+      <div class="dash-section-label">Revenue trend — 2026 →</div>
+      <div id="chart_dash_rev" style="margin-top:8px;"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1228 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1228" height="260" fill="white"></rect>
+      <line x1="58" y1="218.0" x2="1214" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="202.0" x2="1214" y2="202.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="186.0" x2="1214" y2="186.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="170.0" x2="1214" y2="170.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="154.0" x2="1214" y2="154.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="138.0" x2="1214" y2="138.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="122.0" x2="1214" y2="122.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="106.0" x2="1214" y2="106.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="90.0" x2="1214" y2="90.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="74.0" x2="1214" y2="74.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="58.0" x2="1214" y2="58.0" stroke="#ede9f6" stroke-width="1"></line><line x1="58" y1="42.0" x2="1214" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="206.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="190.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="174.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="158.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="142.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="126.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="110.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="94.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="78.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="62.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="106.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="202.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="298.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="395.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="491.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="587.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="684.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="780.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="876.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="973.2" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1069.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1165.8" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><rect x="592" y="20" width="11" height="11" fill="var(--purple)" rx="2"></rect><text x="608" y="29" font-size="10" fill="#334155">Revenue</text>
+    </svg></div></div>
+    </div>
+  </div>
   </section>
 
   <!-- STORE PAGE -->
@@ -3502,12 +3564,31 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div id="adsPanel_cost" style="display:block;">
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Ads Cost by Month</div>
         <div class="table-wrap">
-          <table class="data" id="adsSpendReport"></table>
+          <table class="data" id="adsSpendReport"><thead><tr><th>Metric</th><th class="num">TOTAL</th></tr></thead><tbody>
+          <tr><td>Meta</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>Google</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td style="font-weight:700;">Total</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>AVG/day</td><td class="num">—</td></tr>
+          </tbody></table>
         </div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Monthly Trend</div>
-        <div id="chart_cost"></div>
+        <div id="chart_cost">
+      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">Ads Cost by Month</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Meta</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#CA8A04;"></span>Google</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:230px;">
+          <canvas role="img" aria-label="Ads Cost by Month" width="1526" height="287" style="display: block; box-sizing: border-box; height: 230px; width: 1220px;"></canvas>
+        </div>
+      </div></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Avg per Day</div>
-        <div id="chart_avgday"></div>
+        <div id="chart_avgday"><div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;"><svg width="100%" viewBox="0 0 1260 260" xmlns="http://www.w3.org/2000/svg" style="display:block;overflow:visible;">
+      <rect width="1260" height="260" fill="white"></rect>
+      <text x="630" y="16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--purple)">Avg Daily Spend by Channel</text><line x1="58" y1="218.0" x2="1246" y2="218.0" stroke="#c4b8e0" stroke-width="1.5"></line><line x1="58" y1="42.0" x2="1246" y2="42.0" stroke="#ede9f6" stroke-width="1"></line><text x="52" y="222.0" text-anchor="end" font-size="10" fill="#94a3b8">RM0</text><text x="52" y="46.0" text-anchor="end" font-size="10" fill="#94a3b8">RM1</text><text x="107.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jan</text><text x="206.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Feb</text><text x="305.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Mar</text><text x="404.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Apr</text><text x="503.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">May</text><text x="602.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jun</text><text x="701.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Jul</text><text x="800.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Aug</text><text x="899.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Sep</text><text x="998.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Oct</text><text x="1097.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Nov</text><text x="1196.5" y="234.0" text-anchor="middle" font-size="10" fill="#64748b">Dec</text><line x1="520" y1="26" x2="534" y2="26" stroke="var(--meta-color)" stroke-width="2.2"></line><circle cx="527" cy="26" r="3" fill="#fff" stroke="var(--meta-color)" stroke-width="2"></circle><text x="536" y="29" font-size="10" fill="#334155">Meta Avg/Day</text><line x1="608" y1="26" x2="622" y2="26" stroke="var(--google-color)" stroke-width="2.2"></line><circle cx="615" cy="26" r="3" fill="#fff" stroke="var(--google-color)" stroke-width="2"></circle><text x="624" y="29" font-size="10" fill="#334155">Google Avg/Day</text><line x1="696" y1="26" x2="710" y2="26" stroke="var(--purple)" stroke-width="2.2"></line><circle cx="703" cy="26" r="3" fill="#fff" stroke="var(--purple)" stroke-width="2"></circle><text x="712" y="29" font-size="10" fill="#334155">Total Avg/Day</text>
+    </svg></div></div>
       </div>
 
       <!-- Sales & ROAS panel -->
@@ -5458,8 +5539,11 @@ const ChartJS = {
         borderColor: color,
         borderWidth: 2,
         tension: 0.4,
-        pointRadius: 0,
-        pointHoverRadius: 5,
+        pointRadius: 3,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: color,
+        pointBorderWidth: 2,
+        pointHoverRadius: 6,
         pointHoverBackgroundColor: color,
         pointHoverBorderColor: '#fff',
         pointHoverBorderWidth: 2,
