@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 791.2000122070312px; --uheader-h: 57px;"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3031,7 +3031,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.18</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.19</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3069,12 +3069,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <button id="topbarMobileMenuBtn" onclick="toggleMobileMenuPopover(event)" aria-label="Menu" title="Menu" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
       </button>
-      <div id="topbarMobileMenuPopover" style="display: none; position: absolute; top: calc(100% + 6px); right: 0px; background: rgb(255, 255, 255); border: 1px solid var(--border); border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.12) 0px 6px 20px; min-width: 180px; padding: 6px; z-index: 200;">
-        <button onclick="closeMobileMenuPopover();nav('entry');" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--black); text-align: left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
+      <div id="topbarMobileMenuPopover" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--border);border-radius: 8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:180px;padding:6px;z-index:200;">
+        <button onclick="closeMobileMenuPopover();nav('entry');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius: 8px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
           <span>Data Entry</span>
         </button>
-        <button onclick="closeMobileMenuPopover();nav('settings');" style="display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 12px; background: transparent; border-width: medium; border-style: none; border-color: currentcolor; border-image: initial; border-radius: 8px; cursor: pointer; font-size: 14px; color: var(--black); text-align: left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
+        <button onclick="closeMobileMenuPopover();nav('settings');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius: 8px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
           <span>Settings</span>
         </button>
@@ -3088,7 +3088,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.18</div>
+      <div class="nav-brand-version">v6.19</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3133,7 +3133,20 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <!-- v5.10: Mobile + New Lead button removed — bottom-right floating + button is enough -->
       </div>
       <!-- v4.30: Slot where filters go on mobile (JS moves .contact-filters-inline here when < 768px) -->
-      <div id="contactFiltersMobileSlot"><div class="contact-filters-inline">
+      <div id="contactFiltersMobileSlot"></div>
+    </div>
+    <div class="unified-header-spacer"></div>
+
+    <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
+    <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      <span>Searching: <strong id="searchActiveTerm"></strong></span>
+      <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
+    </div>
+
+    <div class="contact-layout">
+      <!-- LEFT: List panel (contains filters + list + load more) -->
+      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 791px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <!-- v4.93: + New Lead button on left of search (desktop only) -->
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
@@ -3178,20 +3191,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
             <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
           </div>
-        </div></div>
-    </div>
-    <div class="unified-header-spacer"></div>
-
-    <!-- Search active indicator (mobile only — desktop shows value in toolbar input) -->
-    <div id="searchActiveBar" class="mobile-only-search-bar" style="display:none;margin-bottom:10px;padding:8px 12px;background:var(--purple-bg);border:1px solid var(--purple);border-radius:8px;font-size:12px;color:var(--purple);align-items:center;gap:8px;">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-      <span>Searching: <strong id="searchActiveTerm"></strong></span>
-      <button type="button" onclick="clearSearchQuery()" style="margin-left:auto;background:transparent;border:0;color:var(--purple);cursor:pointer;font-size:12px;font-weight:600;">✕ Clear</button>
-    </div>
-
-    <div class="contact-layout">
-      <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel">
+        </div>
         <!-- v4.23: Filters moved here from unified-header -->
         
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
@@ -3200,7 +3200,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 791px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -3824,7 +3824,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
               <span>Google Sheet</span>
               <span class="settings-md-nav-meta" id="settingsGSheetStatus">Not configured</span>
             </div>
-            <div class="settings-md-nav-row" data-section="github" onclick="selectSettingsSection('github')">
+            <div class="settings-md-nav-row active" data-section="github" onclick="selectSettingsSection('github')">
               <span>GitHub deploy</span>
               <span class="settings-md-nav-meta" id="settingsGitHubStatus">Configured</span>
             </div>
@@ -3858,9 +3858,35 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- RIGHT: Detail content (replaced based on section) -->
-      <div class="settings-md-detail" id="settingsMdDetail">
-        <div style="text-align:center;padding:60px 20px;color:var(--silver);font-size:14px;">Select a section on the left</div>
+      <div class="settings-md-detail" id="settingsMdDetail"><div class="settings-md-detail-title">GitHub deploy</div>
+      <div class="settings-modal-section">
+        <div style="font-size:13px;color:var(--gray);line-height:1.5;margin-bottom:12px;">
+          推送后等 1-2 分钟 → Ctrl+Shift+R 刷新。
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Token (repo scope)</label>
+          <input type="password" id="modal_gh_token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;">Stored in browser only</div>
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Owner</label>
+          <input type="text" id="modal_gh_owner" placeholder="DavyWong-84">
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Repo</label>
+          <input type="text" id="modal_gh_repo" placeholder="ADS-CRM">
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Branch</label>
+          <input type="text" id="modal_gh_branch" value="main">
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="modalGitHubPush()">Push to GitHub</button>
+          <button class="btn btn-ghost" onclick="modalGitHubSave()">Save config</button>
+        </div>
+        <div id="modal_gh_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"></div>
       </div>
+    </div>
 
     </div>
 
@@ -4659,7 +4685,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.94'; // v6.18 — codex 第三轮 P1+P2 修: Pending confirm 防重复 (后端) + Batch Add 改 await (前端) + PRE-RESTORE 列表可见 (后端)
+const DATA_VERSION = '3.95'; // v6.19 — codex 第四轮 P1+P2+P5: 笔记 schema 升级 (双写双读) + 同步失败提示 + matchNotesByQuery 扫 question/answer
 
 // ---------- State ----------
 let state = {
@@ -13557,19 +13583,30 @@ function matchNotesByQuery(query) {
   const saved = getAINotes();
   if (saved.length === 0) return [];
   const q = query.toLowerCase();
-  // Score each note by tag match count + recency
+  const qWords = q.split(/\s+/).filter(w => w.length > 1);
+  // v6.19 P5 修复: 之前只扫 tags + summary, 错过 question/answer (核心字段).
+  //   现在: tags 高分 (10), question/answer/summary 中分 (3), source 低分 (1).
+  //   还扫 state.channels / state.locations 名字, 让"Sunway 的笔记"能匹配自定义店名.
   const scored = saved.map(n => {
     let score = 0;
+    // 1) Tag 完全匹配 (最强信号)
     (n.tags || []).forEach(t => {
       if (q.includes(t.toLowerCase())) score += 10;
     });
-    // Also match summary keywords
-    if (n.summary && q.split(/\s+/).some(w => w.length > 1 && n.summary.toLowerCase().includes(w))) {
-      score += 3;
-    }
+    // 2) Question 关键词匹配
+    const question = String(n.question || '').toLowerCase();
+    if (question && qWords.some(w => question.includes(w))) score += 4;
+    // 3) Answer 关键词匹配 (这是新笔记主要内容)
+    const answer = String(n.answer || n.full || n.summary || '').toLowerCase();
+    if (answer && qWords.some(w => answer.includes(w))) score += 3;
+    // 4) 旧 summary 关键词 (兼容)
+    const summary = String(n.summary || '').toLowerCase();
+    if (summary && qWords.some(w => summary.includes(w))) score += 3;
+    // 5) Source 类型匹配 (correction / teaching / manual)
+    if (n.source && q.includes(String(n.source).toLowerCase())) score += 1;
     return { note: n, score };
   });
-  // If no tag matches at all, don't inject random notes
+  // 没有任何匹配就不注入随机笔记 (保持原行为, 防 AI 被无关笔记带偏)
   const matched = scored.filter(s => s.score > 0).sort((a,b) => b.score - a.score).slice(0, 5);
   return matched.map(m => m.note);
 }
@@ -13766,28 +13803,47 @@ function submitAddNote() {
 function renderPendingNoteRec() { return ''; }
 
 // ====== v3.21: Google Sheet sync for notes ======
-function pushNoteToSheet(note) {
+// v6.19 P2 修复: 不再 fire-and-forget — 失败时 toast 提示用户
+async function pushNoteToSheet(note) {
   const url = getGsUrl();
   if (!url) return; // no sheet configured, localStorage only
   try {
-    fetch(url, {
+    const r = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(gsPostBody({ action: 'saveAINote', note: note }))
-    }).catch(() => {}); // fire and forget
-  } catch(e) {}
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    let parsed = null;
+    try { parsed = await r.json(); } catch (e) { /* 非 JSON 视为成功 */ }
+    if (parsed && parsed.success === false) {
+      throw new Error(parsed.error || 'upstream failure');
+    }
+  } catch (e) {
+    console.warn('[AI Note push] failed:', note && note.id, e.message);
+    if (typeof toast === 'function') toast('⚠️ 笔记同步失败 (' + e.message + ')，已存本地，下次手动 Pull 重试');
+  }
 }
 
-function pushNoteDeleteToSheet(note) {
+async function pushNoteDeleteToSheet(note) {
   const url = getGsUrl();
   if (!url || !note || !note.id) return;
   try {
-    fetch(url, {
+    const r = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(gsPostBody({ action: 'deleteAINote', id: note.id }))
-    }).catch(() => {});
-  } catch(e) {}
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    let parsed = null;
+    try { parsed = await r.json(); } catch (e) { /* 非 JSON 视为成功 */ }
+    if (parsed && parsed.success === false) {
+      throw new Error(parsed.error || 'upstream failure');
+    }
+  } catch (e) {
+    console.warn('[AI Note delete] failed:', note.id, e.message);
+    if (typeof toast === 'function') toast('⚠️ 笔记删除同步失败 (' + e.message + ')，本地已删，Sheet 可能仍存');
+  }
 }
 
 async function pullNotebookFromSheet() {
