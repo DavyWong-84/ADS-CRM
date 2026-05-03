@@ -3031,7 +3031,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.06</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.07</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3088,7 +3088,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.06</div>
+      <div class="nav-brand-version">v6.07</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4116,7 +4116,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   <div class="ai-modal">
     <div class="ai-header">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:26px;height:26px;" id="aiHeaderAvatar"></div>
+        <div style="width:26px;height:26px;" id="aiHeaderAvatar"><div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg, var(--purple), #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;letter-spacing:0.3px;">AI</div></div>
         <div style="display:flex;flex-direction:column;line-height:1.15;">
           <span style="font-size:14px;font-weight:500;color:#1a1a1a;letter-spacing:-0.2px;">Ask CRM</span>
           <span id="aiModelLabel" style="font-size:9.5px;color:var(--gray);font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-top:1px;">Gemini Flash</span>
@@ -4145,8 +4145,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <!-- Inline Settings Panel (collapsible) -->
     <!-- v3.23: Settings moved to standalone Modal (see aiSettingsBackdrop below) -->
 
-    <div id="aiMessages" class="ai-messages"></div>
-    <div class="ai-quick-actions" id="aiQuickActions"></div>
+    <div id="aiMessages" class="ai-messages">
+      <div class="ai-empty">
+        <div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, var(--purple), #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>
+        <div class="ai-empty-title">你的 CRM 分析助手</div>
+        <div style="font-size:12px;color:var(--gray);">Click a quick action below or type your question</div>
+      </div>
+    </div>
+    <div class="ai-quick-actions" id="aiQuickActions"><button class="ai-chip" data-chip-idx="0">💰 每月营业额</button><button class="ai-chip" data-chip-idx="1">💸 每月 Ads Spend</button><button class="ai-chip" data-chip-idx="2">🎯 每月 ROAS</button><button class="ai-chip" data-chip-idx="3">📡 每月 Lead</button><button class="ai-chip" data-chip-idx="4">🏢 门店月度营业额</button><button class="ai-chip" data-chip-idx="5">🏆 门店本月对比</button><button class="ai-chip" data-chip-idx="6">🎪 渠道本月对比</button><button class="ai-chip" data-chip-idx="7">📊 本月 vs 上月</button></div>
     <div class="ai-input-wrap">
       <div class="ai-input-wrap-inner">
         <textarea id="aiInput" placeholder="问我任何数据问题..." rows="1" onkeydown="_aiInputKey(event)"></textarea>
@@ -4398,12 +4404,15 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .ai-nb-tag-filter:hover { border-color: var(--purple); }
 
 /* v6.05: 桌面端整页方案 — 写在 style 最末尾, 确保覆盖前面所有 .ai-modal/.gs-modal/.alerts-modal 定义.
-   手机端 (<768px) 完全不受影响, 保持原浮窗 modal. */
+   手机端 (<768px) 完全不受影响, 保持原浮窗 modal.
+   v6.07: 真凶找到 — line 926 #aiChatBackdrop.open 有 'display:block !important'
+          这里强制 display:flex 才能让 dialog 撑满 */
 @media (min-width: 768px) {
   /* Backdrop: 透明背景, 占满 sidebar 右边的区域 */
   #aiChatBackdrop.open,
   #globalSearchBackdrop.open,
   #alertsBackdrop.open {
+    display: flex !important;
     background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -4735,7 +4744,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.82'; // v6.06 — debug 版: openAIChat 加详细 log, 看 dialog 实际位置/尺寸/computed style
+const DATA_VERSION = '3.83'; // v6.07 — 真凶: #aiChatBackdrop.open 有 'display:block !important' 让 backdrop 不是 flex 容器, dialog 不能撑满. 加 display:flex !important 覆盖.
 
 // ---------- State ----------
 let state = {
@@ -13903,26 +13912,8 @@ function setAIModel(m) {
 
 function openAIChat() {
   const bd = document.getElementById('aiChatBackdrop');
-  console.log('[v6.06 AI] bd:', bd, 'innerWidth:', window.innerWidth);
-  if (!bd) { console.log('[v6.06 AI] no bd, return'); return; }
+  if (!bd) return;
   bd.classList.add('open');
-  console.log('[v6.06 AI] after add open:', bd.className);
-  console.log('[v6.06 AI] computed display:', getComputedStyle(bd).display, 'inset:', getComputedStyle(bd).inset);
-  const dialog = bd.querySelector('.ai-modal');
-  console.log('[v6.06 AI] dialog:', dialog);
-  if (dialog) {
-    console.log('[v6.06 AI] dialog computed:', {
-      position: getComputedStyle(dialog).position,
-      top: getComputedStyle(dialog).top,
-      left: getComputedStyle(dialog).left,
-      width: getComputedStyle(dialog).width,
-      height: getComputedStyle(dialog).height,
-      display: getComputedStyle(dialog).display,
-      visibility: getComputedStyle(dialog).visibility,
-    });
-    const rect = dialog.getBoundingClientRect();
-    console.log('[v6.06 AI] dialog rect:', { top: rect.top, left: rect.left, width: rect.width, height: rect.height });
-  }
   // v3.32: Mark "used AI today" → no more guide tooltips today
   if (typeof aiGuideMarkOpened === 'function') aiGuideMarkOpened();
   if (typeof hideAIGuideTooltip === 'function') hideAIGuideTooltip();
