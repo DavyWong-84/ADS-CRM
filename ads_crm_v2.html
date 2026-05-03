@@ -3031,7 +3031,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.04</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.06</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3088,7 +3088,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.04</div>
+      <div class="nav-brand-version">v6.06</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4026,7 +4026,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <kbd class="gs-kbd desktop-only-hint">ESC</kbd>
       <button type="button" onclick="closeGlobalSearch()" class="gs-close" aria-label="Close">✕</button>
     </div>
-    <div id="globalSearchResults" class="gs-results"></div>
+    <div id="globalSearchResults" class="gs-results">
+      <div class="gs-empty">
+        <div style="font-size:32px;margin-bottom:8px;">🔍</div>
+        <div style="font-size:14px;color:var(--black);font-weight:500;margin-bottom:4px;">Type to search</div>
+        <div style="font-size:12px;color:var(--gray);">Leads · Channels · Pages · Sections</div>
+      </div>
+    </div>
     <div class="gs-footer">
       <div class="gs-footer-hint"><kbd class="gs-kbd">↑↓</kbd> Navigate</div>
       <div class="gs-footer-hint"><kbd class="gs-kbd">↵</kbd> Open</div>
@@ -4043,7 +4049,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="alertsTitleText" style="font-size:16px;font-weight:600;">Data Alerts</span>
-        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius: 8px;font-weight:600;">0</span>
+        <span id="alertsCountBadge" style="font-size:11px;padding:2px 8px;background:var(--purple-bg);color:var(--purple);border-radius: 8px;font-weight:600;">6</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center;">
         <div id="alertsLangToggle" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;font-weight:600;">
@@ -4053,7 +4059,55 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
       </div>
     </div>
-    <div id="alertsContent" class="alerts-content"></div>
+    <div id="alertsContent" class="alerts-content"><div class="alerts-section-label">Needs attention (6)</div>
+        <div class="alert-item sev-med" onclick="_alertAct(0)">
+          <div class="alert-icon">📊</div>
+          <div class="alert-body">
+            <div class="alert-title">Sunway — Revenue missing for Apr 2026</div>
+            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(1)">
+          <div class="alert-icon">📊</div>
+          <div class="alert-body">
+            <div class="alert-title">Cheras — Revenue missing for Apr 2026</div>
+            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(2)">
+          <div class="alert-icon">📊</div>
+          <div class="alert-body">
+            <div class="alert-title">ECO — Revenue missing for Apr 2026</div>
+            <div class="alert-desc">Last month Revenue missing. Go to Data Entry → Revenue.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(3)">
+          <div class="alert-icon">💰</div>
+          <div class="alert-body">
+            <div class="alert-title">Simply 5 — Ads Spend missing for Apr 2026</div>
+            <div class="alert-desc">Last month cost missing. Go to Data Entry → Ads Cost.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(4)">
+          <div class="alert-icon">💰</div>
+          <div class="alert-body">
+            <div class="alert-title">Google Ads — Ads Spend missing for Apr 2026</div>
+            <div class="alert-desc">Last month cost missing. Go to Data Entry → Ads Cost.</div>
+          </div>
+        </div>
+      
+        <div class="alert-item sev-med" onclick="_alertAct(5)">
+          <div class="alert-icon">🔌</div>
+          <div class="alert-body">
+            <div class="alert-title">Sheet sync not connected</div>
+            <div class="alert-desc">Data only saved locally. Configure in Settings → Google Sheet.</div>
+          </div>
+        </div>
+      </div>
   </div>
 </div>
 
@@ -4342,6 +4396,49 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .ai-nb-tag-filter.active { background: var(--purple); color: #fff; border-color: var(--purple); }
 .ai-nb-tag-filter:hover { border-color: var(--purple); }
+
+/* v6.05: 桌面端整页方案 — 写在 style 最末尾, 确保覆盖前面所有 .ai-modal/.gs-modal/.alerts-modal 定义.
+   手机端 (<768px) 完全不受影响, 保持原浮窗 modal. */
+@media (min-width: 768px) {
+  /* Backdrop: 透明背景, 占满 sidebar 右边的区域 */
+  #aiChatBackdrop.open,
+  #globalSearchBackdrop.open,
+  #alertsBackdrop.open {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    inset: 0 0 0 220px !important;
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+  }
+  /* sidebar 折叠状态 */
+  body.sidebar-collapsed #aiChatBackdrop.open,
+  body.sidebar-collapsed #globalSearchBackdrop.open,
+  body.sidebar-collapsed #alertsBackdrop.open {
+    inset: 0 0 0 60px !important;
+  }
+  /* 各自 dialog 撑满 backdrop */
+  #aiChatBackdrop.open .ai-modal,
+  #globalSearchBackdrop.open .gs-modal,
+  #alertsBackdrop.open .alerts-modal {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    inset: auto !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    height: 100% !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
 </style>
 
 <!-- Chips Editor Modal -->
@@ -4638,7 +4735,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.80'; // v6.04 — 完全回滚 v6.00-v6.03 所有"整页"改动 (CSS + nav 关闭逻辑), AI/Search/Alerts 恢复为原浮窗 modal
+const DATA_VERSION = '3.82'; // v6.06 — debug 版: openAIChat 加详细 log, 看 dialog 实际位置/尺寸/computed style
 
 // ---------- State ----------
 let state = {
@@ -5028,6 +5125,15 @@ function syncHeaderHeight() {
 function nav(page) {
   // Map old page names to contact
   if (page === 'lead' || page === 'list') page = 'contact';
+  // v6.05: 桌面整页 modal 切菜单时要关闭它们
+  if (window.innerWidth >= 768) {
+    const aiBd = document.getElementById('aiChatBackdrop');
+    if (aiBd && aiBd.classList.contains('open') && typeof closeAIChat === 'function') closeAIChat();
+    const sBd = document.getElementById('globalSearchBackdrop');
+    if (sBd && sBd.classList.contains('open') && typeof closeGlobalSearch === 'function') closeGlobalSearch();
+    const aBd = document.getElementById('alertsBackdrop');
+    if (aBd && aBd.classList.contains('open') && typeof closeAlertsModal === 'function') closeAlertsModal();
+  }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const pageEl = document.getElementById('page-' + page);
   if (!pageEl) return;
@@ -13797,8 +13903,26 @@ function setAIModel(m) {
 
 function openAIChat() {
   const bd = document.getElementById('aiChatBackdrop');
-  if (!bd) return;
+  console.log('[v6.06 AI] bd:', bd, 'innerWidth:', window.innerWidth);
+  if (!bd) { console.log('[v6.06 AI] no bd, return'); return; }
   bd.classList.add('open');
+  console.log('[v6.06 AI] after add open:', bd.className);
+  console.log('[v6.06 AI] computed display:', getComputedStyle(bd).display, 'inset:', getComputedStyle(bd).inset);
+  const dialog = bd.querySelector('.ai-modal');
+  console.log('[v6.06 AI] dialog:', dialog);
+  if (dialog) {
+    console.log('[v6.06 AI] dialog computed:', {
+      position: getComputedStyle(dialog).position,
+      top: getComputedStyle(dialog).top,
+      left: getComputedStyle(dialog).left,
+      width: getComputedStyle(dialog).width,
+      height: getComputedStyle(dialog).height,
+      display: getComputedStyle(dialog).display,
+      visibility: getComputedStyle(dialog).visibility,
+    });
+    const rect = dialog.getBoundingClientRect();
+    console.log('[v6.06 AI] dialog rect:', { top: rect.top, left: rect.left, width: rect.width, height: rect.height });
+  }
   // v3.32: Mark "used AI today" → no more guide tooltips today
   if (typeof aiGuideMarkOpened === 'function') aiGuideMarkOpened();
   if (typeof hideAIGuideTooltip === 'function') hideAIGuideTooltip();
