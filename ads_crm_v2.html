@@ -3031,7 +3031,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.19</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.20</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3088,7 +3088,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.19</div>
+      <div class="nav-brand-version">v6.20</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4685,7 +4685,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.95'; // v6.19 — codex 第四轮 P1+P2+P5: 笔记 schema 升级 (双写双读) + 同步失败提示 + matchNotesByQuery 扫 question/answer
+const DATA_VERSION = '3.96'; // v6.20 — 铃铛补强 5 条 + AI Quick Numbers (本地拦截 5 模式) + 月报 chip + AI 回答标 [Source]
 
 // ---------- State ----------
 let state = {
@@ -13410,6 +13410,102 @@ function computeAlerts() {
     });
   }
 
+  // ============================================================
+  // v6.20 数据完整性检查 (codex 第四轮 audit 补强)
+  // 这些是数据录入错误检测, 不是业务异常.
+  // 如果发现说明前端漏校验或者 GHL 推送有问题.
+  // ============================================================
+
+  // (G) 重复电话 — 同一 phone 出现 2+ 条 lead
+  //     不算 follow-up 渠道 (那是设计上一个客户多条 lead 的合规情况)
+  const phoneMap = {};
+  state.leads.forEach(l => {
+    if (!l.contact) return;
+    if (!phoneMap[l.contact]) phoneMap[l.contact] = [];
+    phoneMap[l.contact].push(l);
+  });
+  const dupePhones = Object.entries(phoneMap).filter(([phone, list]) => {
+    if (list.length < 2) return false;
+    // 排除全部都是 follow-up channel 的 (这是合规多条)
+    const allFollowUp = list.every(l => {
+      const ch = (l.channelName || l.channel || '').toLowerCase();
+      return ch.indexOf('follow') >= 0;
+    });
+    return !allFollowUp;
+  });
+  if (dupePhones.length > 0) {
+    alerts.push({
+      severity: dupePhones.length >= 5 ? 'high' : 'med',
+      icon: '☎️',
+      title: { en: `${dupePhones.length} phone(s) with duplicate Leads`, zh: `${dupePhones.length} 个电话有重复 Lead` },
+      desc: { en: `Same phone in multiple Lead records. Check Lead List.`, zh: `同一电话出现多条 Lead 记录。请到 Lead List 检查。` },
+      action: () => { closeAlertsModal(); nav('contact'); }
+    });
+  }
+
+  // (H) Lead 没有 channel — 录入时漏选渠道
+  const noChannelLeads = state.leads.filter(l => {
+    if (!l.id) return false;
+    const ch = l.channelId || l.channelName || l.channel;
+    return !ch || String(ch).trim() === '';
+  });
+  if (noChannelLeads.length > 0) {
+    alerts.push({
+      severity: noChannelLeads.length >= 5 ? 'high' : 'med',
+      icon: '📡',
+      title: { en: `${noChannelLeads.length} Lead(s) without channel`, zh: `${noChannelLeads.length} 条 Lead 没有渠道` },
+      desc: { en: `Channel missing — fix in Lead List for accurate ROAS.`, zh: `渠道缺失会影响 ROAS 计算。请到 Lead List 补齐。` },
+      action: () => { closeAlertsModal(); nav('contact'); }
+    });
+  }
+
+  // (I) Booked 但没 apptDate — 状态和数据不一致
+  const bookedNoDate = state.leads.filter(l => l.status === 'booked' && (!l.apptDate || String(l.apptDate).trim() === ''));
+  if (bookedNoDate.length > 0) {
+    alerts.push({
+      severity: 'med',
+      icon: '📅',
+      title: { en: `${bookedNoDate.length} Booked Lead(s) missing appt date`, zh: `${bookedNoDate.length} 条 Booked 但没填预约日期` },
+      desc: { en: `Status=booked but apptDate is empty. Check Lead List.`, zh: `状态是 booked 但 apptDate 空。请到 Lead List 修复。` },
+      action: () => { closeAlertsModal(); nav('contact'); }
+    });
+  }
+
+  // (J) 有 apptDate 但没 outlet (locationId) — 预约了但不知道在哪间店
+  const apptNoLocation = state.leads.filter(l => {
+    if (!l.apptDate || String(l.apptDate).trim() === '') return false;
+    return !l.locationId || String(l.locationId).trim() === '';
+  });
+  if (apptNoLocation.length > 0) {
+    alerts.push({
+      severity: apptNoLocation.length >= 5 ? 'high' : 'med',
+      icon: '🏪',
+      title: { en: `${apptNoLocation.length} appointment(s) without outlet`, zh: `${apptNoLocation.length} 条预约没有门店` },
+      desc: { en: `Appt scheduled but outlet unset. Affects per-store reports.`, zh: `预约日期有了但没填门店。会影响门店报表。` },
+      action: () => { closeAlertsModal(); nav('contact'); }
+    });
+  }
+
+  // (K) Pending 同步队列卡住 — localStorage 里有未同步的写入
+  try {
+    const queueRaw = localStorage.getItem('ads_crm_pending_queue');
+    if (queueRaw) {
+      const queue = JSON.parse(queueRaw);
+      if (Array.isArray(queue) && queue.length > 0) {
+        alerts.push({
+          severity: queue.length >= 10 ? 'high' : 'med',
+          icon: '⏳',
+          title: { en: `${queue.length} pending sync operation(s)`, zh: `${queue.length} 项数据等待同步` },
+          desc: { en: `Local changes not yet pushed to Sheet. Click 🔄 in topbar to retry.`, zh: `本地修改还没推到 Sheet。点 topbar 🔄 重试。` },
+          action: () => {
+            closeAlertsModal();
+            if (typeof flushPendingQueueManual === 'function') flushPendingQueueManual();
+          }
+        });
+      }
+    }
+  } catch (e) { /* ignore parse errors */ }
+
   return alerts;
 }
 
@@ -14468,6 +14564,7 @@ function askAIQuick(q) {
 // ===== QUICK CHIPS MANAGEMENT =====
 const AI_CHIPS_KEY = 'ads_crm_ai_chips';
 const DEFAULT_CHIPS = [
+  { label: '📋 本月经营月报', prompt: '生成本月月报' },
   { label: '💰 每月营业额', prompt: '列出每个月的营业额（含 New 和 Old）' },
   { label: '💸 每月 Ads Spend', prompt: '列出每个月的 Ads Spend（Meta + Google 分开显示）' },
   { label: '🎯 每月 ROAS', prompt: '列出每个月的 Total ROAS、Meta ROAS、Google ROAS' },
@@ -14571,6 +14668,242 @@ function saveChips() {
   if (typeof toast === 'function') toast('快捷问题已保存 ✓');
 }
 
+// v6.20 Quick Numbers: 本地拦截 5 个高频问题, 不走 Gemini.
+// 设计原则:
+//   1. 只拦截匹配明确的 (例如 "本月 ROAS"), 含糊的 fallback 走 AI
+//   2. 数据来自 state, 调用现成 metric 函数, 100% 准
+//   3. 末尾标 [Source: ...] + [⚡ Quick Answer] 让用户知道是本地秒答
+//   4. 这是为了**速度 + 准确 + 省钱**, 不是为了替代 AI
+//
+// 命中模式 (中英都识别):
+//   今天/yesterday/昨天 lead → 今日/昨日 lead 数
+//   本月/this month sales/营业额/revenue → 本月营业额 + vs 上月
+//   本月/this month roas → 本月 Total/Meta/Google ROAS
+//   本月/this month meta spend/cost/花费 → Meta 花费
+//   本月/this month google spend/cost/花费 → Google 花费
+function tryQuickAnswer(q) {
+  if (!q) return null;
+  const ql = q.toLowerCase().trim();
+  // 长查询 (>40 字) 多半是复杂问题, 不拦截
+  if (q.length > 40) return null;
+  // 含 "为什么/怎么办/建议/why/should/recommend" 之类要分析的, 不拦截
+  // 注意: 不能用 'how' 一个词, 因为 'how many' 是简单查询不是分析
+  if (/为什么|怎么办|建议|分析|why|should|recommend|how\s+can|how\s+do|how\s+should/i.test(q)) return null;
+
+  const today = todayStr();
+  const thisMonth = today.substring(0, 7);
+  const yesterday = (() => {
+    const d = new Date(); d.setDate(d.getDate() - 1);
+    return d.toISOString().substring(0, 10);
+  })();
+  const lastMonth = (() => {
+    const [y, m] = thisMonth.split('-').map(Number);
+    const d = new Date(y, m - 2, 1);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  })();
+
+  const fmtMoney = (n) => 'RM ' + Math.round(n).toLocaleString('en-MY');
+  const fmtPct = (n) => (n >= 0 ? '+' : '') + n.toFixed(1) + '%';
+  const fmtRoas = (n) => n.toFixed(2) + 'x';
+  const sourceTag = (parts) => `\n\n[⚡ Quick Answer · Source: ${parts.join(' + ')}]`;
+
+  // 模式 1: 今天/昨天 lead 数
+  const todayLeadMatch = /^(今天|today|今日)\s*(有多少|几个|多少|how many)?\s*(lead|线索)/i.test(q) ||
+                        /^(lead|线索)\s*(今天|today|今日)/i.test(q);
+  const yestLeadMatch = /^(昨天|yesterday|昨日)\s*(有多少|几个|多少|how many)?\s*(lead|线索)/i.test(q) ||
+                       /^(lead|线索)\s*(昨天|yesterday|昨日)/i.test(q);
+  if (todayLeadMatch || yestLeadMatch) {
+    const targetDate = todayLeadMatch ? today : yesterday;
+    const dateLabel = todayLeadMatch ? '今天' : '昨天';
+    const leads = state.leads.filter(l => l.leadDate === targetDate);
+    const booked = leads.filter(l => l.status === 'booked').length;
+    const done = leads.filter(l => l.status === 'done').length;
+    return `📌 ${dateLabel} (${targetDate}) 共 ${leads.length} 条 Lead\n\n` +
+           `Booked: ${booked} · Done: ${done} · Lead: ${leads.length - booked - done}` +
+           sourceTag(['Leads ' + targetDate]);
+  }
+
+  // 模式 2: 本月营业额 / sales / revenue
+  if (/^(本月|这个月|this\s*month).*?(营业额|sales|revenue|收入)/i.test(q) ||
+      /^(营业额|sales|revenue|收入).*?(本月|这个月|this\s*month)/i.test(q)) {
+    const thisRev = state.revenue.filter(r => r.month === thisMonth)
+      .reduce((s, r) => s + (Number(r.total) || 0), 0);
+    const lastRev = state.revenue.filter(r => r.month === lastMonth)
+      .reduce((s, r) => s + (Number(r.total) || 0), 0);
+    const newRev = state.revenue.filter(r => r.month === thisMonth)
+      .reduce((s, r) => s + (Number(r.newCustomer) || 0), 0);
+    if (thisRev === 0) {
+      return `📌 本月 (${thisMonth}) 营业额暂无数据\n\n` +
+             `如果已营业, 请到 Revenue Outlet 录入。上月 (${lastMonth}) 营业额: ${fmtMoney(lastRev)}` +
+             sourceTag(['Revenue ' + thisMonth]);
+    }
+    const change = lastRev > 0 ? ((thisRev - lastRev) / lastRev * 100) : 0;
+    const arrow = change >= 0 ? '🟢' : (change < -10 ? '🔴' : '🟡');
+    return `📌 本月 (${thisMonth}) 营业额 ${fmtMoney(thisRev)}\n\n` +
+           `${arrow} 比上月 ${fmtMoney(lastRev)} ${change === 0 ? '持平' : fmtPct(change)}\n` +
+           `新客营业额: ${fmtMoney(newRev)} (${thisRev > 0 ? (newRev/thisRev*100).toFixed(1) : 0}%)` +
+           sourceTag(['Revenue ' + thisMonth, 'Revenue ' + lastMonth]);
+  }
+
+  // 模式 3: 本月 ROAS
+  if (/^(本月|这个月|this\s*month).*?roas/i.test(q) ||
+      /^roas.*?(本月|这个月|this\s*month)/i.test(q)) {
+    const monthLeads = state.leads.filter(l => {
+      const apptM = (l.apptDate || '').substring(0, 7);
+      return apptM === thisMonth && (l.status === 'done' || l.status === 'pending');
+    });
+    const totalSales = monthLeads.reduce((s, l) => s + (Number(l.spend) || 0), 0);
+    const metaSales = monthLeads.filter(l => (l.platform || '') === 'meta')
+      .reduce((s, l) => s + (Number(l.spend) || 0), 0);
+    const googleSales = monthLeads.filter(l => (l.platform || '') === 'google')
+      .reduce((s, l) => s + (Number(l.spend) || 0), 0);
+    const ads = state.adsSpend.filter(a => a.month === thisMonth);
+    const metaCost = ads.filter(a => (a.platform || '') === 'meta')
+      .reduce((s, a) => s + (Number(a.amount) || 0), 0);
+    const googleCost = ads.filter(a => (a.platform || '') === 'google')
+      .reduce((s, a) => s + (Number(a.amount) || 0), 0);
+    const totalCost = metaCost + googleCost;
+    if (totalCost === 0) {
+      return `📌 本月 (${thisMonth}) 还没填广告成本\n\n请到 Ads Spend 录入数据后才能算 ROAS。` +
+             sourceTag(['AdsSpend ' + thisMonth]);
+    }
+    const totalRoas = totalSales / totalCost;
+    const metaRoas = metaCost > 0 ? (metaSales / metaCost) : 0;
+    const googleRoas = googleCost > 0 ? (googleSales / googleCost) : 0;
+    const status = (r) => r >= 1.5 ? '🟢' : (r >= 1.0 ? '🟡' : '🔴');
+    return `📌 本月 (${thisMonth}) Total ROAS ${status(totalRoas)} ${fmtRoas(totalRoas)} (花 1 块赚回 ${totalRoas.toFixed(2)} 块)\n\n` +
+           `Meta: ${status(metaRoas)} ${fmtRoas(metaRoas)} (花 ${fmtMoney(metaCost)}, 卖 ${fmtMoney(metaSales)})\n` +
+           `Google: ${status(googleRoas)} ${fmtRoas(googleRoas)} (花 ${fmtMoney(googleCost)}, 卖 ${fmtMoney(googleSales)})` +
+           sourceTag(['Leads ' + thisMonth, 'AdsSpend ' + thisMonth]);
+  }
+
+  // 模式 4: 本月 Meta / Google 花费
+  const metaCostMatch = /^(本月|这个月|this\s*month).*?meta.*?(花费|spend|cost|成本)/i.test(q) ||
+                       /meta.*?(本月|这个月|this\s*month).*?(花费|spend|cost|成本)/i.test(q);
+  const googleCostMatch = /^(本月|这个月|this\s*month).*?google.*?(花费|spend|cost|成本)/i.test(q) ||
+                         /google.*?(本月|这个月|this\s*month).*?(花费|spend|cost|成本)/i.test(q);
+  if (metaCostMatch || googleCostMatch) {
+    const platform = metaCostMatch ? 'meta' : 'google';
+    const platLabel = metaCostMatch ? 'Meta' : 'Google';
+    const thisCost = state.adsSpend.filter(a => a.month === thisMonth && (a.platform || '') === platform)
+      .reduce((s, a) => s + (Number(a.amount) || 0), 0);
+    const lastCost = state.adsSpend.filter(a => a.month === lastMonth && (a.platform || '') === platform)
+      .reduce((s, a) => s + (Number(a.amount) || 0), 0);
+    if (thisCost === 0) {
+      return `📌 本月 (${thisMonth}) ${platLabel} 暂无 Ads Spend 数据\n\n` +
+             `上月 ${platLabel}: ${fmtMoney(lastCost)}` +
+             sourceTag(['AdsSpend ' + thisMonth]);
+    }
+    const change = lastCost > 0 ? ((thisCost - lastCost) / lastCost * 100) : 0;
+    const arrow = change >= 0 ? '🔴' : '🟢';  // cost 升是不好
+    return `📌 本月 (${thisMonth}) ${platLabel} 花费 ${fmtMoney(thisCost)}\n\n` +
+           `${arrow} 比上月 ${fmtMoney(lastCost)} ${change === 0 ? '持平' : fmtPct(change)}` +
+           sourceTag(['AdsSpend ' + thisMonth, 'AdsSpend ' + lastMonth]);
+  }
+
+  // 模式 5: 月报 (本月/上月经营报告)
+  if (/(本月|这个月|this\s*month|上月|上个月|last\s*month).*?(月报|经营.*报告|monthly\s*report|月度)/i.test(q) ||
+      /(月报|经营.*报告|monthly\s*report|月度).*?(本月|这个月|this\s*month|上月|上个月|last\s*month)/i.test(q) ||
+      /^生成.*?(本月|上月|月报|月度)/i.test(q) ||
+      /^(monthly\s*report|月报|经营月报)$/i.test(q)) {
+    const isLast = /上月|上个月|last\s*month/i.test(q);
+    const targetM = isLast ? lastMonth : thisMonth;
+    return buildMonthlyReport(targetM);
+  }
+
+  // 不匹配任何 → fallback 走 AI
+  return null;
+}
+
+// v6.20 Monthly Report — 固定格式, 纯本地算, 不让 AI 自由发挥
+function buildMonthlyReport(mStr) {
+  const fmtMoney = (n) => 'RM ' + Math.round(n).toLocaleString('en-MY');
+  const fmtPct = (n) => (n >= 0 ? '+' : '') + n.toFixed(1) + '%';
+  const fmtRoas = (n) => (n == null || !isFinite(n)) ? 'N/A' : n.toFixed(2) + 'x';
+  const status = (r) => r == null ? '⚪' : (r >= 1.5 ? '🟢' : (r >= 1.0 ? '🟡' : '🔴'));
+
+  const cur = (typeof buildMonthSummary === 'function') ? buildMonthSummary(mStr) : null;
+  if (!cur) return '⚠️ buildMonthSummary 函数不可用, 月报无法生成';
+
+  // 上月数据 for 对比
+  const [y, m] = mStr.split('-').map(Number);
+  const prevDate = new Date(y, m - 2, 1);
+  const prevM = prevDate.getFullYear() + '-' + String(prevDate.getMonth() + 1).padStart(2, '0');
+  const prev = buildMonthSummary(prevM);
+
+  // 计算变化
+  const revChange = prev.revenue_total > 0
+    ? (cur.revenue_total - prev.revenue_total) / prev.revenue_total * 100 : null;
+  const adsCostChange = prev.ads_cost_total > 0
+    ? (cur.ads_cost_total - prev.ads_cost_total) / prev.ads_cost_total * 100 : null;
+  const revArrow = revChange == null ? '⚪' : (revChange >= 0 ? '🟢' : (revChange < -10 ? '🔴' : '🟡'));
+  const costArrow = adsCostChange == null ? '⚪' : (adsCostChange <= 0 ? '🟢' : (adsCostChange > 30 ? '🔴' : '🟡'));
+
+  // 找最大问题 — 简单规则
+  const issues = [];
+  if (cur.revenue_total === 0) issues.push('本月营业额还没录入');
+  if (cur.ads_cost_total === 0) issues.push('本月 Ads Spend 还没录入');
+  if (cur.roas_total != null && cur.roas_total < 1.0) issues.push(`Total ROAS ${fmtRoas(cur.roas_total)} 已亏损 (花 1 块只赚回 ${cur.roas_total.toFixed(2)} 块)`);
+  if (cur.roas_meta != null && cur.roas_meta < 1.0) issues.push(`Meta ROAS ${fmtRoas(cur.roas_meta)} 拖累`);
+  if (cur.roas_google != null && cur.roas_google < 1.0) issues.push(`Google ROAS ${fmtRoas(cur.roas_google)} 拖累`);
+  if (revChange != null && revChange < -20) issues.push(`营业额比上月跌 ${Math.abs(revChange).toFixed(1)}%`);
+  if (adsCostChange != null && adsCostChange > 50) issues.push(`Ads Spend 比上月飙升 ${adsCostChange.toFixed(1)}%`);
+  // 漏斗转化
+  const apptRate = cur.leads_by_status.lead + cur.leads_by_status.booked + cur.leads_by_status.done > 0
+    ? (cur.leads_by_status.booked + cur.leads_by_status.done) / (cur.leads_by_status.lead + cur.leads_by_status.booked + cur.leads_by_status.done + cur.leads_by_status.noshow) * 100
+    : 0;
+  const showRate = (cur.leads_by_status.booked + cur.leads_by_status.done + cur.leads_by_status.noshow) > 0
+    ? cur.leads_by_status.done / (cur.leads_by_status.booked + cur.leads_by_status.done + cur.leads_by_status.noshow) * 100
+    : 0;
+  if (showRate > 0 && showRate < 50) issues.push(`Show-up rate 只有 ${showRate.toFixed(1)}%`);
+
+  // 门店数据
+  const storeLines = [];
+  Object.entries(cur.revenue_by_store || {}).forEach(([name, data]) => {
+    const newPct = data.total > 0 ? (data.new / data.total * 100).toFixed(1) : '0';
+    storeLines.push(`  ${name}: ${fmtMoney(data.total)} (新客 ${fmtMoney(data.new)} = ${newPct}%)`);
+  });
+
+  // 拼接报告
+  const lines = [];
+  lines.push(`📋 **${mStr} 经营月报**`);
+  lines.push('');
+  lines.push(`📌 营业额: ${revArrow} ${fmtMoney(cur.revenue_total)}` +
+    (revChange != null ? ` (上月 ${fmtMoney(prev.revenue_total)}, ${fmtPct(revChange)})` : ''));
+  lines.push(`   新客: ${fmtMoney(cur.revenue_new)} (${cur.new_customer_pct}%) · 老客: ${fmtMoney(cur.revenue_old)}`);
+  lines.push('');
+  lines.push(`💰 Ads Spend: ${costArrow} ${fmtMoney(cur.ads_cost_total)}` +
+    (adsCostChange != null ? ` (${fmtPct(adsCostChange)} vs 上月)` : ''));
+  lines.push(`   Meta: ${fmtMoney(cur.ads_cost_meta)} · Google: ${fmtMoney(cur.ads_cost_google)}`);
+  lines.push('');
+  lines.push(`🎯 ROAS:`);
+  lines.push(`   Total: ${status(cur.roas_total)} ${fmtRoas(cur.roas_total)}` +
+    (cur.roas_total != null ? ` (花 1 赚回 ${cur.roas_total.toFixed(2)} 块)` : ''));
+  lines.push(`   Meta: ${status(cur.roas_meta)} ${fmtRoas(cur.roas_meta)}`);
+  lines.push(`   Google: ${status(cur.roas_google)} ${fmtRoas(cur.roas_google)}`);
+  lines.push('');
+  if (storeLines.length > 0) {
+    lines.push(`🏢 门店表现:`);
+    lines.push(...storeLines);
+    lines.push('');
+  }
+  lines.push(`📊 漏斗 (Lead → Appt → Show):`);
+  lines.push(`   Lead 总: ${cur.leads_by_status.lead + cur.leads_by_status.booked + cur.leads_by_status.done + cur.leads_by_status.noshow}`);
+  lines.push(`   Booked: ${cur.leads_by_status.booked + cur.leads_by_status.done + cur.leads_by_status.noshow} (Appt rate ${apptRate.toFixed(1)}%)`);
+  lines.push(`   Done: ${cur.leads_by_status.done} (Show rate ${showRate.toFixed(1)}%)`);
+  lines.push(`   No-show: ${cur.leads_by_status.noshow}`);
+  lines.push('');
+  if (issues.length > 0) {
+    lines.push(`⚠️ 主要问题:`);
+    issues.forEach(i => lines.push(`   - ${i}`));
+  } else {
+    lines.push(`✅ 没有发现重大问题`);
+  }
+  lines.push('');
+  lines.push(`[⚡ Quick Answer · Source: Revenue ${mStr}, AdsSpend ${mStr}, Leads ${mStr}, Revenue ${prevM}, AdsSpend ${prevM}]`);
+  return lines.join('\n');
+}
+
 async function sendAIMessage() {
   if (_aiBusy) return;
   const inp = document.getElementById('aiInput');
@@ -14604,6 +14937,21 @@ async function sendAIMessage() {
     });
     _aiHistory.push({ role: 'user', text: q });
     _aiHistory.push({ role: 'model', text: `📝 已记下：${taught.length > 60 ? taught.substring(0, 60) + '...' : taught}\n\n下次遇到相关问题我会参考这条笔记。` });
+    inp.value = '';
+    saveAIHistory();
+    renderAIMessages();
+    return;
+  }
+
+  // v6.20 Quick Numbers: 本地拦截高频简单问题, 不走 Gemini.
+  //   省钱 (Gemini Flash 一次几分钱, 80% 问题不必花)
+  //   省时间 (本地 100ms vs Gemini 3-5s)
+  //   100% 数字准确 (AI 偶尔会算错)
+  //   只拦截非常明确匹配的 — 不确定就 fallback 走 AI
+  const quickAns = tryQuickAnswer(q);
+  if (quickAns) {
+    _aiHistory.push({ role: 'user', text: q });
+    _aiHistory.push({ role: 'model', text: quickAns });
     inp.value = '';
     saveAIHistory();
     renderAIMessages();
