@@ -66,6 +66,20 @@ html, body {
 }
 button { font-family: inherit; cursor: pointer; border: none; background: none; font-size: inherit; color: inherit; }
 input, select, textarea { font-family: inherit; font-size: 15px; outline: none; border: 1px solid var(--border); background: var(--white); padding: 12px 13px; border-radius: 8px; width: 100%; color: var(--black); transition: border-color 0.15s, box-shadow 0.15s; }
+
+/* v6.21 iOS 防输入放大: iOS Safari 在 input 字号 < 16px 时聚焦会自动放大页面.
+   禁止 user-scalable 阻止用户主动放大, 但阻止不了系统的 focus 放大.
+   唯一修法: 移动端所有 input/select/textarea 字号 >= 16px.
+   覆盖局部更小字号的设置 (如 .contact-form-panel input 13px).
+   桌面端不受影响, 仍用 15px. */
+@media (max-width: 767px) {
+  input, select, textarea,
+  .contact-form-panel input, .contact-form-panel select, .contact-form-panel textarea,
+  .settings-form input, .settings-form select,
+  .ai-input-wrap textarea {
+    font-size: 16px !important;
+  }
+}
 input:focus, select:focus, textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-subtle); }
 select { appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23686b82' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-position: right 12px center; background-repeat: no-repeat; padding-right: 36px; }
 label { display: block; font-size: 13px; font-weight: 500; color: var(--gray); margin-bottom: 6px; }
@@ -2051,7 +2065,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     transform: none !important;
     width: calc(100% - 40px);
     max-width: 480px;
-    max-height: calc(100vh - 40px);
+    /* v6.21 P5 修复: 用 dvh 让键盘弹出时表单自动缩小, Save 按钮不被键盘挡.
+       100vh 在 iOS Safari 是固定全屏高度, 键盘上来不会变.
+       100dvh 跟 visualViewport 走, 老浏览器 (iOS<16) 不支持 dvh, fallback 到 100vh. */
+    max-height: calc(100vh - 40px);  /* fallback for老浏览器 */
+    max-height: calc(100dvh - 40px); /* 现代浏览器优先用 dvh */
     height: fit-content !important;
     height: -moz-fit-content !important;
     background: var(--white);
@@ -3031,7 +3049,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.20</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.21</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3062,7 +3080,6 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <button onclick="nav('settings')" aria-label="Settings" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
-      
     </div>
     <!-- v4.65: Mobile-only menu button — opens inline popover (no modal) -->
     <div style="position:relative;display:none;" id="topbarMobileMenuWrap">
@@ -3088,7 +3105,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.20</div>
+      <div class="nav-brand-version">v6.21</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4685,7 +4702,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '3.96'; // v6.20 — 铃铛补强 5 条 + AI Quick Numbers (本地拦截 5 模式) + 月报 chip + AI 回答标 [Source]
+const DATA_VERSION = '3.97'; // v6.21 — UI 修: topbar 多余 </button> 删 + form 100dvh 防键盘挡 + 移动端 input 字号 16px 防 iOS 输入放大
 
 // ---------- State ----------
 let state = {
