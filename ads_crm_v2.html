@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.34</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.35</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.34</div>
+      <div class="nav-brand-version">v6.35</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3260,10 +3260,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-05-03</span>
+                      <span id="f_leadDate_label">2026-05-07</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-05-03">
+                    <input type="hidden" id="f_leadDate" value="2026-05-07">
                   </div>
                 </div>
               </div>
@@ -4704,7 +4704,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.10'; // v6.34 — 修 funnel tab='all' 分支硬编码 fullData, outlet 过滤现在生效
+const DATA_VERSION = '4.11'; // v6.35 调试 — Ads Spend filter UI 跟实际 value 不一致问题
 
 // ---------- State ----------
 let state = {
@@ -5362,6 +5362,8 @@ const AdsChart = {
 // 切换: USE_CHARTJS = false 立刻回旧版 AdsChart
 // ============================================================
 const USE_CHARTJS = true;  // 改 false 立刻回旧版
+// v6.35: filter 调试. 改 false 关闭日志.
+window._dbgFilterCheck = true;
 
 const ChartJS = {
   // 缓存所有 chart 实例, 重新渲染时先 destroy 防内存泄漏
@@ -9887,6 +9889,23 @@ function setAdsTab(tab, subChannel) {
 }
 
 function renderAdsSpend() {
+  // v6.35 调试: 检查所有 filter 初始化时 UI 显示 vs 真实 value
+  if (window._dbgFilterCheck) {
+    const dbg = {};
+    ['adsYear', 'adsPlatformSelect', 'adsSubSelect', 'spendOutletSelect', 'funnelOutletSelect'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        // 看 popover trigger 上显示的文字
+        const popId = el.dataset.popId;
+        const wrap = popId ? document.getElementById('popWrap_' + popId) : null;
+        const triggerText = wrap ? wrap.textContent.trim() : '(no popover)';
+        dbg[id] = { value: el.value, displayed: triggerText, hidden: el.dataset.popHidden };
+      }
+    });
+    dbg.state_adsTab = state.adsTab;
+    dbg.state_adsSubChannel = state.adsSubChannel;
+    console.log('[Ads Spend filter check]', dbg);
+  }
   // Sync pill visual state
   const currentAdsTab = _adsTab || 'cost';
   ['cost', 'roas', 'funnel', 'cpl', 'tmkt', 'spend'].forEach(k => {
