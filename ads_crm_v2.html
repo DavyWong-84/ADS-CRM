@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.35</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.36</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.35</div>
+      <div class="nav-brand-version">v6.36</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4704,7 +4704,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.11'; // v6.35 调试 — Ads Spend filter UI 跟实际 value 不一致问题
+const DATA_VERSION = '4.12'; // v6.36 — 修 Ads Spend filter 跟数据不一致 (state.adsTab vs popover desync)
 
 // ---------- State ----------
 let state = {
@@ -4750,6 +4750,9 @@ function loadState() {
         // v3.91: migrate — Today/Yday chips and channel filter removed from mobile UI.
         // Reset their state so users can still see all leads.
         if (state.listPeriod && state.listPeriod !== 'all') state.listPeriod = 'all';
+        // v6.36: 清旧持久化的 adsTab/adsSubChannel — 这俩从 v6.36 起不再持久化.
+        //   清掉防新版加载时 popover 显示 'All' 但 state 还是旧值.
+        delete state.adsTab; delete state.adsSubChannel;
         return;
       }
       // v6.15 P1-2 修复: 版本不一致 (但有旧数据) — 不立刻覆盖, 保留旧数据等 Sheet pull
@@ -4759,6 +4762,8 @@ function loadState() {
         state = { ...state, ...parsed };
         state._versionMismatch = true;  // 标记: 不要立刻保存, 等 Sheet pull 成功
         if (state.listPeriod && state.listPeriod !== 'all') state.listPeriod = 'all';
+        // v6.36: 清旧 adsTab/adsSubChannel
+        delete state.adsTab; delete state.adsSubChannel;
         console.warn('[loadState] Version mismatch — keeping old data until Sheet pull succeeds');
         return;
       }
@@ -4803,6 +4808,8 @@ function ensureLegacyChannels() {
 function saveState() {
   const toSave = { ...state };
   delete toSave.listPage; delete toSave.listSearch;
+  // v6.36: 不持久化 Ads Spend 的 tab/subChannel filter — 每次刷新页面回 'all', 防 popover 跟 state 不一致.
+  delete toSave.adsTab; delete toSave.adsSubChannel;
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch (e) { console.error(e); }
   // Refresh alerts badge after data changes
   if (typeof refreshAlertsBadge === 'function') refreshAlertsBadge();
@@ -5363,7 +5370,7 @@ const AdsChart = {
 // ============================================================
 const USE_CHARTJS = true;  // 改 false 立刻回旧版
 // v6.35: filter 调试. 改 false 关闭日志.
-window._dbgFilterCheck = true;
+window._dbgFilterCheck = false;
 
 const ChartJS = {
   // 缓存所有 chart 实例, 重新渲染时先 destroy 防内存泄漏
@@ -9889,6 +9896,32 @@ function setAdsTab(tab, subChannel) {
 }
 
 function renderAdsSpend() {
+  // v6.36 修 bug: 进 Ads Spend 时用 state 反向同步 select 和 popover.
+  //   之前 popover 显示 "All channels" 但 state.adsTab='google', 数据按 google 算.
+  //   修法: 用 state.adsTab 重置 platSel.value, 再触发 popover 刷新.
+  const _stateTab = state.adsTab || 'all';
+  const _stateSubCh = state.adsSubChannel;
+  const _platSel = document.getElementById('adsPlatformSelect');
+  const _subSel = document.getElementById('adsSubSelect');
+  if (_platSel && _platSel.value !== _stateTab) {
+    _platSel.value = _stateTab;
+    if (typeof refreshSelectPopover === 'function') refreshSelectPopover(_platSel);
+  }
+  // adsSubSelect: meta tab 才显示, sub channel 选定也要同步
+  if (_subSel) {
+    if (_stateTab === 'meta') {
+      // 重建 sub channel options + 设值
+      const metaChs = state.channels.filter(c => c.platform === 'meta');
+      _subSel.innerHTML = '<option value="all">All Meta</option>' + metaChs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      _subSel.value = _stateSubCh || 'all';
+      if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_subSel, false);
+      if (typeof refreshSelectPopover === 'function') refreshSelectPopover(_subSel);
+    } else {
+      _subSel.innerHTML = '';
+      if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_subSel, true);
+    }
+  }
+
   // v6.35 调试: 检查所有 filter 初始化时 UI 显示 vs 真实 value
   if (window._dbgFilterCheck) {
     const dbg = {};
