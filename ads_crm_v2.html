@@ -10284,6 +10284,24 @@ function renderSpendingPower() {
   const subCh = state.adsSubChannel || null; // 子 channel 过滤
   const outletId = (document.getElementById('spendOutletSelect') || {}).value || 'all';
 
+  // v6.35 调试: 显示真实 filter 值 vs popover trigger 显示的文字
+  if (window._dbgFilterCheck) {
+    const platSel = document.getElementById('adsPlatformSelect');
+    const platPopId = platSel?.dataset?.popId;
+    const platTrigger = platPopId ? document.getElementById('popWrap_' + platPopId)?.textContent.trim() : '?';
+    const outletPopId = document.getElementById('spendOutletSelect')?.dataset?.popId;
+    const outletTrigger = outletPopId ? document.getElementById('popWrap_' + outletPopId)?.textContent.trim() : '?';
+    console.log('[Spending Power render]', {
+      'state.adsTab': state.adsTab,
+      'state.adsSubChannel': state.adsSubChannel,
+      'platSel.value': platSel?.value,
+      'platTrigger 显示': platTrigger,
+      'outletSel.value': outletId,
+      'outletTrigger 显示': outletTrigger,
+      year, tab_used: tab
+    });
+  }
+
   // 1. 过滤 leads: status=done + 当年 apptDate + 有 spend + outlet/channel匹配
   const inYear = (m) => m && m.startsWith(year);
   const matchChannel = (l) => {
