@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.65</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.66</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.65</div>
+      <div class="nav-brand-version">v6.66</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3645,7 +3645,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3655,59 +3655,22 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
         <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-    <thead><tr>
-      <th>Month</th>
-      <th class="num">Total (RM)</th>
-      <th class="num">New (RM)</th>
-    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr></tbody><tfoot><tr class="total-row">
-    <td>TOTAL 2026</td>
-    <td class="num">—</td>
-    <td class="num">—</td>
-  </tr></tfoot></table></div></div>
+        <div id="rv_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -3718,56 +3681,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
         <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-      <thead><tr>
-        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
-        <th class="num">Amount (RM)</th>
-      </tr></thead>
-      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-01" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-02" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-03" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-04" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-05" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-06" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="2026-07" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
-    </tr></tbody>
-      <tfoot><tr class="total-row">
-        <td>TOTAL 2026</td>
-        <td class="num">—</td>
-      </tr></tfoot>
-    </table></div></div>
+        <div id="as_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -3781,7 +3699,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
         <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
+        <div id="fee_entryTable" class="entry-card-table"></div>
       </div>
 
     </div>
@@ -4806,7 +4724,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.41'; // v6.65 — codex audit P1+P2: Batch Add outlet 读 select / UTC 日期统一 todayStr() / Funnel By Ads Count 隐藏 Sales%
+const DATA_VERSION = '4.42'; // v6.66 — codex audit P2: HTML escape 4 处 / Settings 加 Auth Mode 状态显示
 
 // ---------- State ----------
 let state = {
@@ -7417,20 +7335,20 @@ function handleDuplicate(existing, incoming) {
     <div class="modal-header">
       <div>
         <div class="modal-title">Duplicate contact found</div>
-        <div style="font-size:13px;color:var(--gray);margin-top:4px;">${incoming.contact}</div>
+        <div style="font-size:13px;color:var(--gray);margin-top:4px;">${esc(incoming.contact)}</div>
       </div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div style="padding:14px;background:var(--surface-2);border-radius: 8px;margin-bottom:16px;">
       <div style="font-size:13px;color:var(--gray);margin-bottom:6px;">Existing record</div>
-      <div style="font-weight:600;margin-bottom:4px;">${existing.name || '(no name)'}</div>
+      <div style="font-weight:600;margin-bottom:4px;">${esc(existing.name) || '(no name)'}</div>
       <div style="font-size:13px;color:var(--gray);">
-        ${existing.channel} · Lead ${fmt.date(existing.leadDate)}${existing.apptDate ? ' · Appt ' + fmt.date(existing.apptDate) : ''}<br>
-        Status: <span class="badge badge-${existing.status}">${existing.status}</span>
+        ${esc(existing.channel)} · Lead ${fmt.date(existing.leadDate)}${existing.apptDate ? ' · Appt ' + fmt.date(existing.apptDate) : ''}<br>
+        Status: <span class="badge badge-${esc(existing.status)}">${esc(existing.status)}</span>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
-      <button class="btn btn-outline" onclick="closeModal();editLead('${existing.id}')">View / Edit existing</button>
+      <button class="btn btn-outline" onclick="closeModal();editLead('${esc(existing.id)}')">View / Edit existing</button>
       <button class="btn btn-primary" onclick="closeModal();forceNewLead()">Add as new record</button>
       <button class="btn btn-gray" onclick="closeModal()">Cancel</button>
     </div>
@@ -8127,7 +8045,7 @@ function renderList() {
   if (chSel) {
     const activeChannels = state.channels.filter(c => c.active !== false);
     chSel.innerHTML = '<option value="">All channels</option>' +
-      activeChannels.map(c => `<option value="${c.id}" ${c.id === state.listChannelId ? 'selected' : ''}>${c.name}</option>`).join('');
+      activeChannels.map(c => `<option value="${esc(c.id)}" ${c.id === state.listChannelId ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
   }
   // v3.39: sync sort dropdown to state
   const sortSel = document.getElementById('listSortSelect');
@@ -10365,10 +10283,10 @@ function renderAdsSpendSection(key) {
       html = `<div class="table-wrap"><table class="data"><thead><tr><th>Fee Name</th>${mHdr}${totalHdr}</tr></thead><tbody>`;
       feeNames.forEach(name => {
         const rowTotal = activeMonths.reduce((s,m) => s + ((lookup[m+'|'+name]||{}).amount||0), 0);
-        html += `<tr><td style="font-weight:500;">${name}</td>`;
+        html += `<tr><td style="font-weight:500;">${esc(name)}</td>`;
         activeMonths.forEach(m => {
           const f = lookup[m+'|'+name];
-          html += f ? `<td class="num" style="cursor:pointer;" title="Edit" onclick="editFee('${f.id}')">${fmt.money(f.amount)}</td>`
+          html += f ? `<td class="num" style="cursor:pointer;" title="Edit" onclick="editFee('${esc(f.id)}')">${fmt.money(f.amount)}</td>`
                     : `<td class="num" style="color:var(--gray);">—</td>`;
         });
         html += `<td class="num" style="font-weight:700;">${fmt.money(rowTotal)}</td></tr>`;
@@ -10383,7 +10301,7 @@ function renderAdsSpendSection(key) {
       html += `<td class="num">${fmt.money(grandTotal)}</td></tr></tbody></table></div>`;
     } else {
       // Mobile: months as rows, fee names as cols
-      const nameHdr = feeNames.map(n => `<th class="num" style="font-size:11px;">${n}</th>`).join('');
+      const nameHdr = feeNames.map(n => `<th class="num" style="font-size:11px;">${esc(n)}</th>`).join('');
       html = `<div class="table-wrap"><table class="data"><thead><tr><th style="width:36px;min-width:36px;">Month</th>${nameHdr}<th class="num">Total</th></tr></thead><tbody>`;
       activeMonths.forEach(m => {
         const mTotal = filteredFees.filter(f=>f.month===m).reduce((s,f)=>s+(f.amount||0),0);
@@ -10847,7 +10765,7 @@ function _renderSpendingPowerTable(elId, labels, counts, sales) {
   const totalSales = sales.reduce((s, v) => s + v, 0);
 
   if (totalCount === 0 && totalSales === 0) {
-    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--gray);font-size:13px;">无数据</div>';
+    el.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--gray);font-size:13px;">No data</div>';
     return;
   }
 
@@ -10929,7 +10847,7 @@ function _buildSpendTable(mArr, data, type, isMobile) {
   // 找出有数据的月份(避免显示一堆空月)
   const activeMonthIdxs = mArr.map((_, mi) => data[mi].some(v => v > 0) ? mi : -1).filter(x => x >= 0);
   if (activeMonthIdxs.length === 0) {
-    return `<tbody><tr><td style="text-align:center;padding:30px;color:var(--gray);">${type==='count' ? '无成交客户数据' : '无成交收入数据'}</td></tr></tbody>`;
+    return `<tbody><tr><td style="text-align:center;padding:30px;color:var(--gray);">${type==='count' ? 'No customer data' : 'No revenue data'}</td></tr></tbody>`;
   }
 
   // v5.43: 金额用 fmt.money (RM xxx.xx 带小数点),不用 moneyK (整数+千分位)
@@ -11511,15 +11429,15 @@ function editFee(id) {
       </div>
       <div>
         <label style="font-size:12px;font-weight:600;color:var(--gray);margin-bottom:4px;display:block;">Name</label>
-        <input type="text" id="modal_fee_name" value="${f.name}" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+        <input type="text" id="modal_fee_name" value="${esc(f.name)}" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
       </div>
       <div>
         <label style="font-size:12px;font-weight:600;color:var(--gray);margin-bottom:4px;display:block;">Amount (RM)</label>
-        <input type="number" id="modal_fee_amount" value="${f.amount}" step="0.01" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
+        <input type="number" id="modal_fee_amount" value="${esc(f.amount)}" step="0.01" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;">
       </div>
       <div style="display:flex;gap:8px;margin-top:4px;">
-        <button class="btn btn-primary" style="flex:1;" onclick="saveEditFee('${f.id}')">Save</button>
-        <button class="btn btn-ghost btn-danger" onclick="deleteFeeDirect('${f.id}');closeModal();">Delete</button>
+        <button class="btn btn-primary" style="flex:1;" onclick="saveEditFee('${esc(f.id)}')">Save</button>
+        <button class="btn btn-ghost btn-danger" onclick="deleteFeeDirect('${esc(f.id)}');closeModal();">Delete</button>
         <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
       </div>
     </div>`;
@@ -12645,6 +12563,17 @@ function _buildSettingsModalBody(kind) {
           <button class="btn btn-ghost" onclick="modalGSheetTest()">Test</button>
         </div>
         <div id="modal_gs_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"></div>
+        <!-- v6.66 codex P1 #3: Auth Mode status display, info-only -->
+        <div id="modal_gs_authstatus" style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:12px;display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+            <div>
+              <span style="color:var(--gray);">Auth Mode:</span>
+              <strong id="modal_gs_authstatus_label" style="margin-left:6px;">Checking...</strong>
+            </div>
+            <button onclick="checkAuthStatusForSettings()" style="background:transparent;border:none;color:var(--purple);cursor:pointer;font-size:11px;text-decoration:underline;padding:0;">Refresh</button>
+          </div>
+          <div id="modal_gs_authstatus_detail" style="font-size:11px;color:var(--gray);margin-top:4px;line-height:1.5;"></div>
+        </div>
       </div>
     `;
   }
@@ -12716,6 +12645,8 @@ function _initSettingsModal(kind) {
     const origTok = document.getElementById('gs_token');
     const mTok = document.getElementById('modal_gs_token');
     if (mTok && origTok) mTok.value = origTok.value || '';
+    // v6.66 codex P1 #3: 自动查后端 auth 状态 (后台跑, 不阻塞 modal 打开)
+    setTimeout(() => { try { checkAuthStatusForSettings(); } catch (e) { console.warn('[Auth status] error:', e); } }, 200);
   }
   if (kind === 'github') {
     ['token', 'owner', 'repo', 'branch'].forEach(f => {
@@ -13725,6 +13656,59 @@ function _openAuthGuide() {
     </div>
   `;
   if (typeof showModal === 'function') showModal(html);
+}
+
+// v6.66 codex P1 #3: Settings displays backend Auth Mode status (info-only, non-intrusive)
+//   Depends on: backend v2.23+ auth_status GET endpoint
+//   Shows: ✅ Protected (token enabled) or ⚠️ Legacy (no token, anyone with URL can access)
+async function checkAuthStatusForSettings() {
+  const wrap = document.getElementById('modal_gs_authstatus');
+  const label = document.getElementById('modal_gs_authstatus_label');
+  const detail = document.getElementById('modal_gs_authstatus_detail');
+  if (!wrap || !label) return;
+
+  wrap.style.display = 'block';
+  label.textContent = 'Checking...';
+  label.style.color = 'var(--gray)';
+  if (detail) detail.textContent = '';
+
+  const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  if (!url) {
+    label.textContent = '— No Apps Script URL';
+    label.style.color = 'var(--gray)';
+    return;
+  }
+
+  try {
+    const r = await fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + 'action=auth_status');
+    const d = await r.json();
+    if (!d.success) {
+      label.textContent = '⚠️ Check failed';
+      label.style.color = 'var(--amber)';
+      if (detail) detail.textContent = d.error || 'Backend may not be on latest version (needs v2.23+)';
+      return;
+    }
+    if (d.legacyMode === true) {
+      label.textContent = '⚠️ Legacy (unprotected)';
+      label.style.color = '#dc2626';
+      if (detail) detail.innerHTML = 'Backend has no ADMIN_TOKEN/GHL_TOKEN set. Anyone with the URL can read/modify/delete data. <a href="#" onclick="event.preventDefault();_openAuthGuide();" style="color:var(--purple);">How to enable protection →</a>';
+    } else {
+      const adminOn = d.adminTokenSet === true;
+      const ghlOn = d.ghlTokenSet === true;
+      label.textContent = '✅ Protected';
+      label.style.color = '#10b981';
+      if (detail) {
+        const parts = [];
+        if (adminOn) parts.push('ADMIN_TOKEN set');
+        if (ghlOn) parts.push('GHL_TOKEN set');
+        detail.textContent = parts.join(' · ') + ' · Token authentication enabled';
+      }
+    }
+  } catch (e) {
+    label.textContent = '⚠️ Check failed';
+    label.style.color = 'var(--amber)';
+    if (detail) detail.textContent = 'Network error or backend not on latest version: ' + (e.message || e);
+  }
 }
 
 // Silent auto-pull on app open. No confirm, no page reload, no toast on failure.
