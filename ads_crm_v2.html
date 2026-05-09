@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.36</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.38</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.36</div>
+      <div class="nav-brand-version">v6.38</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3260,10 +3260,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-05-07</span>
+                      <span id="f_leadDate_label">2026-05-09</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-05-07">
+                    <input type="hidden" id="f_leadDate" value="2026-05-09">
                   </div>
                 </div>
               </div>
@@ -4704,7 +4704,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.12'; // v6.36 — 修 Ads Spend filter 跟数据不一致 (state.adsTab vs popover desync)
+const DATA_VERSION = '4.14'; // v6.38 — 修 v6.37 的 SyntaxError (today 重复声明)
 
 // ---------- State ----------
 let state = {
@@ -13947,51 +13947,55 @@ function computeAlerts() {
 
   // ===== ANOMALY =====
 
-  state.locations.filter(l => l.active !== false).forEach(loc => {
-    const prev = state.revenue.find(r => r.month === prevMonth(thisMonth) && r.locationId === loc.id);
-    const cur = state.revenue.find(r => r.month === thisMonth && r.locationId === loc.id);
-    if (prev && cur && prev.total > 0 && cur.total > 0) {
-      // v5.89: 当月还在进行中, 按已过去天数比例调整 prev (避免月初数据不完整就报警)
-      // 例子: 今天5月2日 (已过2天), 4月完整=RM74460, 比较时应该用 4月前2天的金额 (按比例)
-      const today = new Date();
-      const curMonthStr = today.toISOString().substring(0, 7);
-      let adjustedPrev = prev.total;
-      let isPartialMonth = false;
-      if (thisMonth === curMonthStr) {
-        const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-        const dayOfMonth = today.getDate();
-        const monthProgress = dayOfMonth / daysInMonth;
-        // 月初前 25% 不报警 (数据太少, 噪音大)
-        if (monthProgress < 0.25) {
-          isPartialMonth = true;
-        } else {
-          adjustedPrev = prev.total * monthProgress;
-        }
-      }
-      if (isPartialMonth) return; // 月进度 < 25%, skip 这个 loc 的 alert
-      const ratio = cur.total / adjustedPrev;
-      const fmtPair = `${fmt.money(prev.total)} → ${fmt.money(cur.total)}`;
+  // v6.37: 改用 Ads Sales 同期对比 (lead.spend by apptDate), 真公平对比 N 天 vs 上月 N 天
+  //   之前 v5.89 用 Revenue 按月进度比例估算, 误导用户 (报"vs last month"但其实是按比例).
+  //   现在: 上月同 N 天 ads sales vs 本月迄今 ads sales, 直接 1:1.
+  //   优点: 真公平, 不需要估算, 早期就能用.
+  //   注意: 比的是 Ads Sales (done leads spend), 不是 Revenue. 但更敏感, 早期发现广告问题.
+  const curMonthStr = new Date().toISOString().substring(0, 7);
+  // 只在当月才做同期对比 (历史月份 thisMonth !== curMonthStr 时不报)
+  if (thisMonth === curMonthStr && curDay >= 5) {
+    // 月初 < 5 天数据噪音太大, 不报警
+    const prevM = prevMonth(thisMonth);
+    // 计算 N 天的 ads sales (done + 有 spend + 在指定 apptDate 范围)
+    const calcAdsSalesForRange = (yyyymm, locId, startDay, endDay) => {
+      return state.leads.filter(l => {
+        if (l.status !== 'done') return false;
+        if (!l.apptDate || !l.apptDate.startsWith(yyyymm)) return false;
+        if (l.locationId !== locId) return false;
+        const day = parseInt(l.apptDate.substring(8, 10), 10);
+        return day >= startDay && day <= endDay;
+      }).reduce((s, l) => s + (l.spend || 0), 0);
+    };
+    state.locations.filter(l => l.active !== false).forEach(loc => {
+      const curSales = calcAdsSalesForRange(thisMonth, loc.id, 1, curDay);
+      const prevSales = calcAdsSalesForRange(prevM, loc.id, 1, curDay);
+      // 两边都要有数据才比 (防上月对应天数也没数据导致误判)
+      if (prevSales <= 0 || curSales <= 0) return;
+      const ratio = curSales / prevSales;
+      const dayLabel = `1-${curDay}日`;
+      const fmtPair = `${prevM} ${dayLabel}: ${fmt.money(prevSales)} → ${thisMonth} ${dayLabel}: ${fmt.money(curSales)}`;
       if (ratio < 0.5) {
         const pct = Math.round((1 - ratio) * 100);
         alerts.push({
           severity: 'high',
           icon: '📉',
-          title: { en: `${loc.name} — Revenue dropped ${pct}% vs last month`, zh: `${loc.name} — 本月 Revenue 较上月下降 ${pct}%` },
+          title: { en: `${loc.name} — Ads Sales down ${pct}% vs same period last month`, zh: `${loc.name} — 同期 Ads Sales 比上月下降 ${pct}%` },
           desc: { en: `${fmtPair}. Please verify.`, zh: `${fmtPair}。请核实。` },
-          action: () => { closeAlertsModal(); nav('revenue'); }
+          action: () => { closeAlertsModal(); nav('adsspend'); }
         });
       } else if (ratio > 3) {
         const pct = Math.round(ratio * 100 - 100);
         alerts.push({
           severity: 'high',
           icon: '📈',
-          title: { en: `${loc.name} — Revenue jumped ${pct}% vs last month`, zh: `${loc.name} — 本月 Revenue 较上月上升 ${pct}%` },
+          title: { en: `${loc.name} — Ads Sales jumped ${pct}% vs same period last month`, zh: `${loc.name} — 同期 Ads Sales 比上月上升 ${pct}%` },
           desc: { en: `${fmtPair}. Please verify.`, zh: `${fmtPair}。请核实。` },
-          action: () => { closeAlertsModal(); nav('revenue'); }
+          action: () => { closeAlertsModal(); nav('adsspend'); }
         });
       }
-    }
-  });
+    });
+  }
 
   state.revenue.forEach(r => {
     if (r.total != null && r.newCustomer != null && r.newCustomer > r.total) {
