@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.61</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.62</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.61</div>
+      <div class="nav-brand-version">v6.62</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3481,7 +3481,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <span id="popWrap_popSel_funnelOutletSelect" data-pop-wrap-for="funnelOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect">
+  </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection(_adsTab || 'funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect">
           <option value="all">All outlets</option>
         </select>
         <!-- v6.52: Funnel view select — By Outlet Count (apptDate) / By Ads Count (leadDate) -->
@@ -4724,7 +4724,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.37'; // v6.61 — CPL tab: 隐藏上面 Cost Efficiency Trend 图 (Meta/Google 6 条线), 保留 Total CPL/CPA/CPS 图
+const DATA_VERSION = '4.38'; // v6.62 — codex P1+P2 修: outlet ≠ all 时 ROAS/CPL/CPA/CPS 显示 "—" + 黄底提示, CPL tab 也显示 outlet filter, 删 setTimeout hack
 
 // ---------- State ----------
 let state = {
@@ -6361,13 +6361,21 @@ function renderFunnelTab() {
       ], mArr, fmtMS);
 
     // v6.59: 合并表 (CPL → CPA → CPS), 跟随顶部 channel filter, 不再 Meta/Google 分行
+    // v6.62: outlet ≠ all 时, cost 不分 outlet 导致 CPL/CPA/CPS 数学错位, 隐藏数字 + 加提示
     const _cplCombo = document.getElementById('cplComboWrap');
     if (_cplCombo) {
-      _cplCombo.innerHTML = buildResponsiveTable('Cost per Lead / Appt / Sale', cplH4, [
-        { label: 'CPL', values: fullData.map(m => m.totalLeads>0 ? m.totalAdsCost/m.totalLeads : null), formatter: fmtAvg, totalValue: tLeads>0 ? tCost/tLeads : null },
-        { label: 'CPA', values: fullData.map((m,i) => apptsByMonth[i]>0 ? m.totalAdsCost/apptsByMonth[i] : null), formatter: fmtAvg, totalValue: tAppts>0 ? tCost/tAppts : null },
-        { label: 'CPS', values: fullData.map((m,i) => showsByMonth[i]>0 ? m.totalAdsCost/showsByMonth[i] : null), formatter: fmtAvg, totalValue: tShows>0 ? tCost/tShows : null },
-      ], mArr, fmtMS);
+      const _outletFiltered = funnelOutletId !== 'all';
+      const warningHtml = _outletFiltered
+        ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ CPL / CPA / CPS hidden when outlet filter is on (ads cost not split by outlet)</div>'
+        : '';
+      const tableHtml = _outletFiltered
+        ? '<div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">—</div>'
+        : buildResponsiveTable('Cost per Lead / Appt / Sale', cplH4, [
+            { label: 'CPL', values: fullData.map(m => m.totalLeads>0 ? m.totalAdsCost/m.totalLeads : null), formatter: fmtAvg, totalValue: tLeads>0 ? tCost/tLeads : null },
+            { label: 'CPA', values: fullData.map((m,i) => apptsByMonth[i]>0 ? m.totalAdsCost/apptsByMonth[i] : null), formatter: fmtAvg, totalValue: tAppts>0 ? tCost/tAppts : null },
+            { label: 'CPS', values: fullData.map((m,i) => showsByMonth[i]>0 ? m.totalAdsCost/showsByMonth[i] : null), formatter: fmtAvg, totalValue: tShows>0 ? tCost/tShows : null },
+          ], mArr, fmtMS);
+      _cplCombo.innerHTML = warningHtml + tableHtml;
     }
   } else {
     const sCost = monthData.reduce((s,d) => s+d.cost, 0);
@@ -6410,13 +6418,21 @@ function renderFunnelTab() {
       [{ label:'CPS', values:monthData.map((d,i) => showsArr[i]>0&&d.cost>0 ? d.cost/showsArr[i] : null), formatter:fmtAvg, totalValue: sShowsAdj>0&&sCost>0 ? sCost/sShowsAdj : null }], mArr, fmtMS);
 
     // v6.59: 合并表 (CPL → CPA → CPS), 单平台模式
+    // v6.62: outlet ≠ all 时同样隐藏 (cost 不分 outlet)
     const _cplCombo2 = document.getElementById('cplComboWrap');
     if (_cplCombo2) {
-      _cplCombo2.innerHTML = buildResponsiveTable('Cost per Lead / Appt / Sale', cplH4, [
-        { label: 'CPL', values: monthData.map(d => d.totalLeads>0&&d.cost>0 ? d.cost/d.totalLeads : null), formatter: fmtAvg, totalValue: sLeads>0&&sCost>0 ? sCost/sLeads : null },
-        { label: 'CPA', values: monthData.map((d,i) => apptsArr[i]>0&&d.cost>0 ? d.cost/apptsArr[i] : null), formatter: fmtAvg, totalValue: sApptsAdj>0&&sCost>0 ? sCost/sApptsAdj : null },
-        { label: 'CPS', values: monthData.map((d,i) => showsArr[i]>0&&d.cost>0 ? d.cost/showsArr[i] : null), formatter: fmtAvg, totalValue: sShowsAdj>0&&sCost>0 ? sCost/sShowsAdj : null },
-      ], mArr, fmtMS);
+      const _outletFiltered2 = funnelOutletId !== 'all';
+      const warningHtml2 = _outletFiltered2
+        ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ CPL / CPA / CPS hidden when outlet filter is on (ads cost not split by outlet)</div>'
+        : '';
+      const tableHtml2 = _outletFiltered2
+        ? '<div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">—</div>'
+        : buildResponsiveTable('Cost per Lead / Appt / Sale', cplH4, [
+            { label: 'CPL', values: monthData.map(d => d.totalLeads>0&&d.cost>0 ? d.cost/d.totalLeads : null), formatter: fmtAvg, totalValue: sLeads>0&&sCost>0 ? sCost/sLeads : null },
+            { label: 'CPA', values: monthData.map((d,i) => apptsArr[i]>0&&d.cost>0 ? d.cost/apptsArr[i] : null), formatter: fmtAvg, totalValue: sApptsAdj>0&&sCost>0 ? sCost/sApptsAdj : null },
+            { label: 'CPS', values: monthData.map((d,i) => showsArr[i]>0&&d.cost>0 ? d.cost/showsArr[i] : null), formatter: fmtAvg, totalValue: sShowsAdj>0&&sCost>0 ? sCost/sShowsAdj : null },
+          ], mArr, fmtMS);
+      _cplCombo2.innerHTML = warningHtml2 + tableHtml2;
     }
   }
 
@@ -6424,7 +6440,10 @@ function renderFunnelTab() {
   const _fullDataForCharts = (tab === 'all') ? mArr.map(m => calcMonthMetrics(m)) : null;
   setTimeout(() => {
     renderRoasChart(mArr, tab, monthData, _fullDataForCharts || []);
-    renderFunnelChart(mArr, monthData, tab, _fullDataForCharts || []);
+    // v6.62: funnel tab 时由 renderFunnelComboTable 同步画 chart_funnel (跟 view filter 一致), 这里跳过
+    if (_adsTab !== 'funnel') {
+      renderFunnelChart(mArr, monthData, tab, _fullDataForCharts || []);
+    }
     renderCplChart(mArr, monthData, tab, _fullDataForCharts || []);
     renderCplTotalChart(mArr, tab, _fullDataForCharts || [], monthData);
   }, 30);
@@ -9974,13 +9993,15 @@ function switchAdsTab(key) {
       outletSel.style.display = (key === 'spend') ? '' : 'none';
     }
   }
-  // v5.63: Funnel outlet select 类似处理 (只在 Funnel tab 显示)
+  // v5.63: Funnel outlet select (只在 Funnel tab 显示)
+  // v6.62: 也在 CPL tab 显示 (CPL/CPA/CPS 也用 outlet filter, 跟 Funnel 共享 state)
   const funnelOutletSel = document.getElementById('funnelOutletSelect');
   if (funnelOutletSel) {
+    const showOutlet = (key === 'funnel' || key === 'cpl');
     if (typeof setPopoverSelectHidden === 'function') {
-      setPopoverSelectHidden(funnelOutletSel, key !== 'funnel');
+      setPopoverSelectHidden(funnelOutletSel, !showOutlet);
     } else {
-      funnelOutletSel.style.display = (key === 'funnel') ? '' : 'none';
+      funnelOutletSel.style.display = showOutlet ? '' : 'none';
     }
   }
   // v6.52: Funnel view select (By Outlet Count / By Ads Count)
@@ -10030,8 +10051,10 @@ function renderAdsSpend() {
   }
   const _funnelOutletSel = document.getElementById('funnelOutletSelect');
   if (_funnelOutletSel) {
-    if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_funnelOutletSel, _curTab !== 'funnel');
-    else _funnelOutletSel.style.display = _curTab === 'funnel' ? '' : 'none';
+    // v6.62: funnel + cpl 都显示
+    const showOutlet = (_curTab === 'funnel' || _curTab === 'cpl');
+    if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_funnelOutletSel, !showOutlet);
+    else _funnelOutletSel.style.display = showOutlet ? '' : 'none';
   }
   const _funnelViewSel = document.getElementById('funnelViewSelect');
   if (_funnelViewSel) {
@@ -10505,14 +10528,17 @@ function renderFunnelComboTable() {
     tTotal += total; tBooked += booked; tShow += showUp; tSales += adsSales;
     if (adsCost != null) tCost += adsCost;
 
+    // v6.62: outlet ≠ all 时, ROAS 数学有问题 (cost 不分 outlet, sales 分了), 显示 "—" 防误导
+    const roasShown = useOutletFilter ? null : roas;
+
     rows += `<tr>
       <td>${fmt.monthShort(m)}</td>
       <td class="num">${fmtNum(total)}</td>
       <td class="num">${fmtNum(booked)}${bookedPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(bookedPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(showUp)}${showPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(showPct)})</span>` : ''}</td>
-      <td class="num">${fmtMoney(adsCost)}</td>
+      <td class="num">${useOutletFilter ? '—' : fmtMoney(adsCost)}</td>
       <td class="num">${fmtMoney(adsSales)}</td>
-      <td class="num">${fmtRoas(roas)}</td>
+      <td class="num">${fmtRoas(roasShown)}</td>
     </tr>`;
   });
 
@@ -10521,7 +10547,9 @@ function renderFunnelComboTable() {
   const totalRoas = (tab === 'ofu' || tCost === 0) ? null : tSales / tCost;
   const totalCostShow = tab === 'ofu' ? null : tCost;
 
-  wrap.innerHTML = `<div class="table-wrap"><table class="data">
+  wrap.innerHTML = `
+  ${useOutletFilter ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ Ads Cost / ROAS hidden when outlet filter is on (ads cost not split by outlet)</div>' : ''}
+  <div class="table-wrap"><table class="data">
     <thead><tr>
       <th style="width:44px;">Month</th>
       <th class="num">Total Lead</th><th class="num">Booked</th>
@@ -10534,18 +10562,15 @@ function renderFunnelComboTable() {
       <td class="num">${fmtNum(tTotal)}</td>
       <td class="num">${fmtNum(tBooked)}${totalBookedPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalBookedPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(tShow)}${totalShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalShowPct)})</span>` : ''}</td>
-      <td class="num">${fmtMoney(totalCostShow)}</td>
+      <td class="num">${useOutletFilter ? '—' : fmtMoney(totalCostShow)}</td>
       <td class="num">${fmtMoney(tSales)}</td>
-      <td class="num">${fmtRoas(totalRoas)}</td>
+      <td class="num">${useOutletFilter ? '—' : fmtRoas(totalRoas)}</td>
     </tr></tfoot>
   </table></div>`;
 
-  // v6.53: 漏斗图也跟 view filter 联动 (老 renderFunnelChart 永远按 apptDate 算, 这里覆盖)
-  // v6.54 修 bug: 老 renderFunnelChart 在 setTimeout 30ms 内调用, 必须等它跑完再覆盖, 否则被反向覆盖
+  // v6.62: 漏斗图同步画 (老 renderFunnelChart 在 funnel tab 时已被 renderFunnelTab 跳过, 不再竞争)
   if (typeof _renderFunnelHorizontal === 'function') {
-    setTimeout(() => {
-      _renderFunnelHorizontal('chart_funnel', tTotal, tBooked, tShow);
-    }, 60);
+    _renderFunnelHorizontal('chart_funnel', tTotal, tBooked, tShow);
   }
 }
 
