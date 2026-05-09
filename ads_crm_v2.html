@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.58</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.60</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.58</div>
+      <div class="nav-brand-version">v6.60</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3468,22 +3468,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <span id="popWrap_popSel_adsSubSelect" data-pop-wrap-for="adsSubSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_adsSubSelect" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_adsSubSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>All</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
-        </select>
+  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect"></select>
         <!-- v5.44: Outlet filter (只在 Spending Power tab 显示) -->
-        <span id="popWrap_popSel_spendOutletSelect" data-pop-wrap-for="spendOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_spendOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_spendOutletSelect')" aria-haspopup="listbox">
+        <span id="popWrap_popSel_spendOutletSelect" data-pop-wrap-for="spendOutletSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_spendOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_spendOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="spendOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderSpendingPower()" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_spendOutletSelect">
-          <option value="all">All outlets</option>
-        </select>
+  </button></span><select id="spendOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderSpendingPower()" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_spendOutletSelect"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
         <!-- v5.63: Outlet filter (只在 Funnel tab 显示, v6.43: 也用于 Funnel 内 cohort 表) -->
         <span id="popWrap_popSel_funnelOutletSelect" data-pop-wrap-for="funnelOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect">
-          <option value="all">All outlets</option>
-        </select>
+  </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
         <!-- v6.52: Funnel view select — By Outlet Count (apptDate) / By Ads Count (leadDate) -->
         <span id="popWrap_popSel_funnelViewSelect" data-pop-wrap-for="funnelViewSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelViewSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelViewSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>By Outlet Count</span></span>
@@ -3496,10 +3491,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <!-- v3.61: Pill tabs inside header -->
       <div class="pill-tabs-inheader">
         <!-- v6.44: Funnel 放第一, Cost/Sales&ROAS 隐藏 (Davy 不再用) -->
-        <button type="button" id="adsPill_funnel" onclick="switchAdsTab('funnel')" class="pill-tab active">Funnel</button>
+        <button type="button" id="adsPill_funnel" onclick="switchAdsTab('funnel')" class="pill-tab">Funnel</button>
         <button type="button" id="adsPill_cost" onclick="switchAdsTab('cost')" class="pill-tab" style="display:none;">Ads Cost</button>
         <button type="button" id="adsPill_roas" onclick="switchAdsTab('roas')" class="pill-tab" style="display:none;">Sales &amp; ROAS</button>
-        <button type="button" id="adsPill_spend" onclick="switchAdsTab('spend')" class="pill-tab">Spending Power</button>
+        <button type="button" id="adsPill_spend" onclick="switchAdsTab('spend')" class="pill-tab active">Spending Power</button>
         <button type="button" id="adsPill_cpl" onclick="switchAdsTab('cpl')" class="pill-tab">CPL / CPA / CPS</button>
         <button type="button" id="adsPill_tmkt" onclick="switchAdsTab('tmkt')" class="pill-tab">Marketing Cost</button>
       </div>
@@ -3508,15 +3503,42 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div id="adsspend_content">
       <!-- Ads Cost panel -->
-      <div id="adsPanel_cost" style="display:block;">
+      <div id="adsPanel_cost" style="display: none;">
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Ads Cost by Month</div>
         <div class="table-wrap">
-          <table class="data" id="adsSpendReport"></table>
+          <table class="data" id="adsSpendReport"><thead><tr><th>Metric</th><th class="num">TOTAL</th></tr></thead><tbody>
+          <tr><td>Meta</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>Google</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td style="font-weight:700;">Total</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>AVG/day</td><td class="num">—</td></tr>
+          </tbody></table>
         </div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Monthly Trend</div>
-        <div id="chart_cost"></div>
+        <div id="chart_cost">
+      <div style="position:relative;width:100%;height:220px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">Ads Cost by Month</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Meta</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#CA8A04;"></span>Google</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:190px;">
+          <canvas role="img" aria-label="Ads Cost by Month" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+        </div>
+      </div></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Avg per Day</div>
-        <div id="chart_avgday"></div>
+        <div id="chart_avgday">
+      <div style="position:relative;width:100%;height:220px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">Avg Daily Spend by Channel</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Meta Avg/Day</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#CA8A04;"></span>Google Avg/Day</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#7132f5;"></span>Total Avg/Day</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:190px;">
+          <canvas role="img" aria-label="Avg Daily Spend by Channel" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+        </div>
+      </div></div>
       </div>
 
       <!-- Sales & ROAS panel -->
@@ -3530,17 +3552,74 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- v6.52: Funnel panel — 单一表 + view filter (By Outlet Count / By Ads Count) -->
-      <div id="adsPanel_funnel" style="display:none;">
+      <div id="adsPanel_funnel" style="display: none;">
         <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
           <b style="color:var(--purple-deep);">By Outlet Count</b> = group by appointment month (matches monthly revenue). &nbsp; <b style="color:var(--purple-deep);">By Ads Count</b> = group by lead month (true ad attribution, cross-month tracking).
         </div>
-        <div id="funnelComboTableWrap"></div>
+        <div id="funnelComboTableWrap"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:44px;">Month</th>
+      <th class="num">Total Lead</th><th class="num">Booked</th>
+      <th class="num">Show Up</th>
+      <th class="num">Ads Cost</th><th class="num">Ads Sales</th><th class="num">ROAS</th>
+    </tr></thead>
+    <tbody><tr>
+      <td>Jan</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>Feb</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>Mar</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>Apr</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>May</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">—</td>
+    </tr></tbody>
+    <tfoot><tr class="total-row">
+      <td>TOTAL</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">RM 0.00</td>
+      <td class="num">—</td>
+    </tr></tfoot>
+  </table></div></div>
 
         <!-- 漏斗图 -->
-        <div id="chart_funnel" style="margin-top:32px;"></div>
+        <div id="chart_funnel" style="margin-top:32px;"><div style="text-align:center;padding:40px 20px;color:var(--gray);font-size:13px;">No data</div></div>
 
         <!-- 旧 wrap 保留 (隐藏) — 老代码 renderFunnelTab 仍写入这些 wrap, null 会让 JS 死. -->
-        <div id="funnelLeadsWrap" style="display:none;"></div>
+        <div id="funnelLeadsWrap" style="display:none;"><div class="empty">No data for 2026</div></div>
         <div id="funnelVisitsWrap" style="display:none;"></div>
         <div id="funnelRatesWrap" style="display:none;"></div>
       </div>
@@ -3548,13 +3627,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <!-- v6.43: Lead Performance panel 删除, cohortTableWrap 已合并进 Funnel panel -->
 
       <!-- CPL/CPA/CPS panel -->
-      <div id="adsPanel_cpl" style="display:none;">
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Cost per Lead (CPL)</div>
-        <div id="cplTableWrap"></div>
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">Cost per Appointment (CPA)</div>
-        <div id="cpaTableWrap"></div>
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">Cost per Sale (CPS)</div>
-        <div id="cpsTableWrap"></div>
+      <!-- v6.59: 3 表合并成 1 个 (CPL → CPA → CPS), 跟随顶部 channel filter 自然简化 -->
+      <div id="adsPanel_cpl" style="display: none;">
+        <div id="cplComboWrap"></div>
+        <!-- 旧 wrap 隐藏保留 (老代码 renderFunnelTab 仍写入, 防 null 错) -->
+        <div id="cplTableWrap" style="display:none;"></div>
+        <div id="cpaTableWrap" style="display:none;"></div>
+        <div id="cpsTableWrap" style="display:none;"></div>
         <div id="chart_cpl" style="margin-top:16px;"></div>
         <div id="chart_cpl_total" style="margin-top:16px;"></div>
       </div>
@@ -3574,20 +3653,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <!-- v5.44: outlet select 已移到顶部 filter 行 (跟 Year/Channel 并排,只在此 tab 显示) -->
       <!-- v5.48: 加双色柱状图 (人数 + 收入双轴) -->
       <!-- v5.49: 加 2 张趋势折线图 (Lower 0-500 蓝色系 / Higher 500+ 紫色系) -->
-      <div id="adsPanel_spend" style="display:none;">
+      <div id="adsPanel_spend" style="display: block;">
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">● Customer Count by Spending Power</div>
-        <div class="table-wrap"><table class="data" id="spendCountTable"></table></div>
+        <div class="table-wrap"><table class="data" id="spendCountTable"><tbody><tr><td style="text-align:center;padding:30px;color:var(--gray);">无成交客户数据</td></tr></tbody></table></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">● Total Ads Sales by Spending Power</div>
-        <div class="table-wrap"><table class="data" id="spendRevenueTable"></table></div>
+        <div class="table-wrap"><table class="data" id="spendRevenueTable"><tbody><tr><td style="text-align:center;padding:30px;color:var(--gray);">无成交收入数据</td></tr></tbody></table></div>
 
         <div style="display:flex;align-items:center;justify-content:space-between;margin:32px 0 8px;flex-wrap:wrap;gap:8px;">
           <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;flex:1 1 auto;">● Ads Sales &amp; Head Count by Spending Power</div>
           <span id="popWrap_popSel_spendChartMonth" data-pop-wrap-for="spendChartMonth" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_spendChartMonth" class="pop-trigger" onclick="openPopover(event, 'popSel_spendChartMonth')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>Full year</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="spendChartMonth" data-pop="1" class="cf-select" style="padding: 4px 10px; font-size: 11px; margin-left: auto; display: none;" onchange="renderSpendingPower()" data-pop-placeholder="Full year" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_spendChartMonth">
-            <option value="all">Full year</option>
-          </select>
+  </button></span><select id="spendChartMonth" data-pop="1" class="cf-select" style="padding: 4px 10px; font-size: 11px; margin-left: auto; display: none;" onchange="renderSpendingPower()" data-pop-placeholder="Full year" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_spendChartMonth"><option value="all">Full year</option></select>
         </div>
         <!-- v5.60: 总数卡片 (Total Head Count + Total Ads Sales) -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
@@ -3600,7 +3677,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
             <div id="spendTotalAdsSales" style="font-size:22px;font-weight:500;color:var(--purple-deep);margin-top:2px;">RM 0.00</div>
           </div>
         </div>
-        <div id="chart_spend"></div>
+        <div id="chart_spend"><div style="text-align:center;padding:40px 20px;color:var(--gray);font-size:13px;">无数据</div></div>
       </div>
     </div>
   </section>
@@ -4722,7 +4799,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.34'; // v6.58 — CPL/CPA/CPS 支持 view filter (By Outlet/By Ads), CPL 不变, CPA/CPS 跟随切换
+const DATA_VERSION = '4.36'; // v6.60 — 修 ReferenceError: renderLeadCohortTab 残留调用 (函数 v6.51 已合并到 Funnel)
 
 // ---------- State ----------
 let state = {
@@ -6017,6 +6094,7 @@ function renderFunnelTab() {
     document.getElementById('cplTableWrap').innerHTML = '';
     document.getElementById('cpaTableWrap').innerHTML = '';
     document.getElementById('cpsTableWrap').innerHTML = '';
+    const cw = document.getElementById('cplComboWrap'); if (cw) cw.innerHTML = '';
     return;
   }
 
@@ -6281,6 +6359,7 @@ function renderFunnelTab() {
     document.getElementById('cplTableWrap').innerHTML = noData;
     document.getElementById('cpaTableWrap').innerHTML = noData;
     document.getElementById('cpsTableWrap').innerHTML = noData;
+    const cw = document.getElementById('cplComboWrap'); if (cw) cw.innerHTML = noData;
   } else if (tab === 'all') {
     const fullData = mArr.map(m => calcMonthMetrics(m));
     const tCost = fullData.reduce((s,m) => s+m.totalAdsCost, 0);
@@ -6355,6 +6434,16 @@ function renderFunnelTab() {
         { label:'Google CPS', values:fullData.map((m,i) => showsByPlatformByMonth[i].google>0 ? m.costByPlatform.google/showsByPlatformByMonth[i].google   : null), formatter:fmtAvg, totalValue: tGoogleShows>0 ? tGoogleCost/tGoogleShows : null },
         { label:'Total CPS',  values:fullData.map((m,i) => showsByMonth[i]>0 ? m.totalAdsCost/showsByMonth[i] : null), formatter:fmtAvg, bold:true, totalValue: tShows>0 ? tCost/tShows : null },
       ], mArr, fmtMS);
+
+    // v6.59: 合并表 (CPL → CPA → CPS), 跟随顶部 channel filter, 不再 Meta/Google 分行
+    const _cplCombo = document.getElementById('cplComboWrap');
+    if (_cplCombo) {
+      _cplCombo.innerHTML = buildResponsiveTable('Cost per Lead / Appt / Sale', cplH4, [
+        { label: 'CPL', values: fullData.map(m => m.totalLeads>0 ? m.totalAdsCost/m.totalLeads : null), formatter: fmtAvg, totalValue: tLeads>0 ? tCost/tLeads : null },
+        { label: 'CPA', values: fullData.map((m,i) => apptsByMonth[i]>0 ? m.totalAdsCost/apptsByMonth[i] : null), formatter: fmtAvg, totalValue: tAppts>0 ? tCost/tAppts : null },
+        { label: 'CPS', values: fullData.map((m,i) => showsByMonth[i]>0 ? m.totalAdsCost/showsByMonth[i] : null), formatter: fmtAvg, totalValue: tShows>0 ? tCost/tShows : null },
+      ], mArr, fmtMS);
+    }
   } else {
     const sCost = monthData.reduce((s,d) => s+d.cost, 0);
     const sLeads = monthData.reduce((s,d) => s+d.totalLeads, 0);
@@ -6394,6 +6483,16 @@ function renderFunnelTab() {
       [{ label:'CPA', values:monthData.map((d,i) => apptsArr[i]>0&&d.cost>0 ? d.cost/apptsArr[i] : null), formatter:fmtAvg, totalValue: sApptsAdj>0&&sCost>0 ? sCost/sApptsAdj : null }], mArr, fmtMS);
     document.getElementById('cpsTableWrap').innerHTML = buildResponsiveTable('CPS · Cost per Show-up', cplH4,
       [{ label:'CPS', values:monthData.map((d,i) => showsArr[i]>0&&d.cost>0 ? d.cost/showsArr[i] : null), formatter:fmtAvg, totalValue: sShowsAdj>0&&sCost>0 ? sCost/sShowsAdj : null }], mArr, fmtMS);
+
+    // v6.59: 合并表 (CPL → CPA → CPS), 单平台模式
+    const _cplCombo2 = document.getElementById('cplComboWrap');
+    if (_cplCombo2) {
+      _cplCombo2.innerHTML = buildResponsiveTable('Cost per Lead / Appt / Sale', cplH4, [
+        { label: 'CPL', values: monthData.map(d => d.totalLeads>0&&d.cost>0 ? d.cost/d.totalLeads : null), formatter: fmtAvg, totalValue: sLeads>0&&sCost>0 ? sCost/sLeads : null },
+        { label: 'CPA', values: monthData.map((d,i) => apptsArr[i]>0&&d.cost>0 ? d.cost/apptsArr[i] : null), formatter: fmtAvg, totalValue: sApptsAdj>0&&sCost>0 ? sCost/sApptsAdj : null },
+        { label: 'CPS', values: monthData.map((d,i) => showsArr[i]>0&&d.cost>0 ? d.cost/showsArr[i] : null), formatter: fmtAvg, totalValue: sShowsAdj>0&&sCost>0 ? sCost/sShowsAdj : null },
+      ], mArr, fmtMS);
+    }
   }
 
   // Render charts for all panels (deferred so DOM widths are available)
@@ -10192,13 +10291,9 @@ function renderAdsSpendSection(key) {
     renderFunnelTab();
   }
 
-  // v6.43: Funnel tab 同时渲染 2 个表
-  //   - 表 1 (funnelTableWrap): By Outlet Actual Sales (apptDate 月统计)
-  //   - 表 2 (cohortTableWrap): By Ads Actual Sales (leadDate 月归因)
-  //   两个表共享顶部 platform/outlet filter, 用户在同一 tab 下看两个视角.
+  // v6.43: Funnel tab 渲染合并表 (v6.51 起 cohort 合并进 Funnel, 不再独立)
   if (key === 'funnel') {
     renderFunnelComboTable();
-    renderLeadCohortTab();
   }
 
   if (key === 'fees' || key === '_fees_internal') {
