@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.64</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.65</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.64</div>
+      <div class="nav-brand-version">v6.65</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3645,7 +3645,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3655,22 +3655,59 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
         <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th>Month</th>
+      <th class="num">Total (RM)</th>
+      <th class="num">New (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2026</td>
+    <td class="num">—</td>
+    <td class="num">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -3681,11 +3718,56 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
         <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-01" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-02" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-03" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-04" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-05" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-06" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-07" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2026</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -3699,7 +3781,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
         <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -4724,7 +4806,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.40'; // v6.64 — Funnel 表: ROAS 移到 Ads Cost 前, 加 Total Revenue 列, Ads Sales 加 % (Ads Sales / Total Revenue)
+const DATA_VERSION = '4.41'; // v6.65 — codex audit P1+P2: Batch Add outlet 读 select / UTC 日期统一 todayStr() / Funnel By Ads Count 隐藏 Sales%
 
 // ---------- State ----------
 let state = {
@@ -7480,7 +7562,8 @@ function renderDatePicker() {
   const daysInMonth = lastDay.getDate();
   const startWeekday = firstDay.getDay();
   const today = new Date();
-  const todayStr = today.toISOString().split('T')[0];
+  // v6.65: 用本地日期格式化, 避免 toISOString() UTC 偏移 (MY 凌晨 00-08 会错一天)
+  const todayStrLocal = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
 
   // Prev month tail
   const prevLastDay = new Date(year, month, 0).getDate();
@@ -7492,7 +7575,7 @@ function renderDatePicker() {
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
     const cls = [];
-    if (dateStr === todayStr) cls.push('today');
+    if (dateStr === todayStrLocal) cls.push('today');
     if (dateStr === dpState.selected) cls.push('selected');
     daysHtml += `<div class="dp-day ${cls.join(' ')}" onclick="selectDate('${dateStr}')">${d}</div>`;
   }
@@ -7563,7 +7646,8 @@ function selectDate(dateStr) {
 function selectDateShortcut(offset) {
   const d = new Date();
   d.setDate(d.getDate() + offset);
-  const dateStr = d.toISOString().split('T')[0];
+  // v6.65: 用本地日期格式化, 避免 toISOString() UTC 偏移 (MY 凌晨 00-08 会错一天)
+  const dateStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   dpState.selected = dateStr;
   applyDate(dateStr);
   closeModal();
@@ -10531,7 +10615,11 @@ function renderFunnelComboTable() {
       if (useOutletFilter && r.locationId !== outletId) return;
       totalRev += (Number(r.total) || 0);
     });
-    const salesPct = totalRev > 0 ? adsSales / totalRev : null;
+    // v6.65 codex P2 #4: By Ads Count 视图下 salesPct 是错的口径
+    //   adsSales 是 leadDate cohort (这批 lead 后来产生的销售, 可能跨月)
+    //   totalRev 是 calendar month 总营业额
+    //   两个月份口径不一致, 相除会误导. 只有 view='outlet' 时才显示百分比.
+    const salesPct = (view === 'outlet' && totalRev > 0) ? adsSales / totalRev : null;
 
     tTotal += total; tBooked += booked; tShow += showUp; tSales += adsSales;
     if (adsCost != null) tCost += adsCost;
@@ -10556,7 +10644,8 @@ function renderFunnelComboTable() {
   const totalShowPct = tBooked > 0 ? tShow / tBooked : null;
   const totalRoas = (tab === 'ofu' || tCost === 0) ? null : tSales / tCost;
   const totalCostShow = tab === 'ofu' ? null : tCost;
-  const totalSalesPct = tRev > 0 ? tSales / tRev : null;
+  // v6.65 codex P2 #4: TOTAL 行同步 — By Ads Count 视图下 salesPct 口径错, 不显示
+  const totalSalesPct = (view === 'outlet' && tRev > 0) ? tSales / tRev : null;
 
   wrap.innerHTML = `
   ${useOutletFilter ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ Ads Cost / ROAS hidden when outlet filter is on (ads cost not split by outlet)</div>' : ''}
@@ -17437,7 +17526,8 @@ async function pendingConfirm(pendingId) {
 
   const now = new Date();
   const leadId = 'L-' + now.getTime().toString(36) + '-' + Math.random().toString(36).substr(2, 5);
-  const todayStr = now.toISOString().split('T')[0];
+  // v6.65: 用本地日期格式化, 避免 toISOString() UTC 偏移 (MY 凌晨 00-08 会错一天写成前一天)
+  const todayStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
 
   const phone = (typeof normalizePhone === 'function')
     ? normalizePhone(p.phone)
@@ -17755,7 +17845,12 @@ async function pendingBatchAddAll() {
     const t = String(p.type || 'lead').toLowerCase();
     if (t !== activeTab) return false;          // scope to current tab only
     if (!pendingMatchChannel(p.tag)) return false;
-    if ((t === 'appt' || t === 'lead+appt') && !p.locationId) return false;
+    // v6.65 codex P1 #2: 检查 outlet 时也看用户卡片改的 select 值, 不只是 GHL 推的 p.locationId.
+    //   之前: GHL 没推 outlet → 用户在卡片改了 → 仍被这里误杀, batch 跳过.
+    if (t === 'appt' || t === 'lead+appt') {
+      const userPickedLoc = document.getElementById('loc-' + p.id)?.value || '';
+      if (!userPickedLoc && !p.locationId) return false;
+    }
     return true;
   });
   if (toProcess.length === 0) {
@@ -17789,7 +17884,7 @@ async function pendingBatchAddAll() {
   //   - duplicateNeedsAsk: must run serially (modal must show one at a time)
   //   - duplicateAutoFollowUp: can run in parallel
   //   - simpleInsert: can run in parallel (fastest group, the common case)
-  const todayStr = new Date().toISOString().split('T')[0];
+  // v6.65: 删除未使用的 todayStr (dead code, 写但没读)
   const simpleInsertTasks = [];
   const followupTasks = [];
   const duplicateAskQueue = [];  // has to be serial due to modal
@@ -17883,13 +17978,18 @@ async function pendingBatchAddAll() {
 async function _pendingBatchSaveOne(p, ch, phone, remark) {
   const now = new Date();
   const leadId = 'L-' + now.getTime().toString(36) + '-' + Math.random().toString(36).substr(2, 5);
-  const todayStr = now.toISOString().split('T')[0];
+  // v6.65: 用本地日期格式化, 避免 toISOString() UTC 偏移 (MY 凌晨 00-08 会错一天写成前一天)
+  const todayStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
 
   // v4.66: If pending has appt info (type=appt or lead+appt), apply it
   const t = String(p.type || 'lead').toLowerCase();
   const isAppt = (t === 'appt' || t === 'lead+appt');
   const apptDateStr = isAppt ? extractDateOnly(p.apptDate) : '';
-  const locationIdVal = isAppt ? (p.locationId || '') : '';
+  // v6.65 codex P1 #2: Batch Add 也读用户在 inbox 卡片改的 outlet (跟单条 confirm 一致).
+  //   之前: simple insert / force_new 路径只读 p.locationId, 用户改了 select 被忽略.
+  //   现在: 优先用 select 值, 没改才回退 GHL 推的 p.locationId.
+  const userPickedLoc = isAppt ? (document.getElementById('loc-' + p.id)?.value || '') : '';
+  const locationIdVal = isAppt ? (userPickedLoc || p.locationId || '') : '';
   const statusVal = isAppt ? 'booked' : 'lead';
 
   // v4.90: Auto-generate remark if caller passed empty/undefined
