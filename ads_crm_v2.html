@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.44</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.45</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.44</div>
+      <div class="nav-brand-version">v6.45</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3376,7 +3376,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
+        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -3385,7 +3385,72 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="summaryContent"></div>
+    <div id="summaryContent">
+    <div class="dash-row-2">
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Revenue →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">May 2026</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
+        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
+        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Meta — · G —</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
+        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">— shows</div>
+      </div>
+    </div>
+    <div class="dash-row-3">
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — leads</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — appt</div>
+      </div>
+      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
+        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — shows</div>
+      </div>
+    </div>
+    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
+      <div class="dash-section-label">Funnel — May 2026 →</div>
+      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
+        <div style="flex:4;background:var(--purple-bg);border-radius: 8px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">—</div>
+          <div style="font-size:11px;color:var(--purple);">Leads</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#0C447C;">—</div>
+          <div style="font-size:11px;color:#185FA5;">Appt</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#085041;">—</div>
+          <div style="font-size:11px;color:#0F6E56;">Show</div>
+        </div>
+        <div style="width:1px;background:var(--border);"></div>
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+          <div style="font-size:18px;font-weight:500;color:#633806;">RM 0</div>
+          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
+        </div>
+      </div>
+    </div>
+    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
+      <div class="dash-section-label">Revenue trend — 2026 →</div>
+      <div id="chart_dash_rev" style="margin-top:8px;">
+      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
+        
+        <div style="position:relative;width:100%;height:260px;">
+          <canvas role="img" aria-label="chart" width="1486" height="325" style="display: block; box-sizing: border-box; height: 260px; width: 1188px;"></canvas>
+        </div>
+      </div></div>
+    </div>
+  </div>
   </section>
 
   <!-- STORE PAGE -->
@@ -3393,17 +3458,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header">
       <!-- v5.33: removed page title (Appt Report) — toolbar only -->
       <div class="compact-filter">
-        <div class="toggle-group">
+        <div class="toggle-group" style="display: none;">
           <button class="toggle active" data-mode="month" onclick="setStoreMode('month')">Month</button>
           <button class="toggle" data-mode="year" onclick="setStoreMode('year')">Year</button>
           <button class="toggle" data-mode="custom" onclick="setStoreMode('custom')">Custom</button>
         </div>
         <select id="storeYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
-        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="display:none;" onclick="openYearPicker('storeYear', this)">
+        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="" onclick="openYearPicker('storeYear', this)">
           <span id="storeYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')">
+        <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')" style="display: none;">
           <span id="storeMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -3443,7 +3508,30 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer unified-header-spacer-tall"></div>
 
-    <div id="storeContent"></div>
+    <div id="storeContent"><div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">By Platform</div><div class="section-title"><h3>All Outlets — All Platforms 2026</h3></div>
+            <div class="table-wrap"><table class="data data-t">
+              <thead><tr><th>Metric</th><th class="num">TOTAL</th></tr></thead>
+              <tbody>
+                <tr><td>Lead</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td>Appt</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td>Show</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td>No Show</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td style="font-weight:600;">Sales</td><td class="num" style="font-weight:700;">—</td></tr>
+                <tr><td>AVG/Show</td><td class="num">—</td></tr>
+              </tbody>
+            </table></div>
+            <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;">
+      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">All Platforms — Appt &amp; Show Up</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#94a3b8;"></span>Lead</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#7132f5;"></span>Appt</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#10B981;"></span>Show Up</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:230px;">
+          <canvas role="img" aria-label="All Platforms — Appt &amp; Show Up" width="1526" height="287" style="display: block; box-sizing: border-box; height: 230px; width: 1220px;"></canvas>
+        </div>
+      </div></div></div>
   </section>
 
   <!-- ADS SPEND PAGE -->
@@ -3468,8 +3556,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <span id="popWrap_popSel_adsSubSelect" data-pop-wrap-for="adsSubSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_adsSubSelect" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_adsSubSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>All</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
-        </select>
+  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect"></select>
         <!-- v5.44: Outlet filter (只在 Spending Power tab 显示) -->
         <span id="popWrap_popSel_spendOutletSelect" data-pop-wrap-for="spendOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_spendOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_spendOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
@@ -3478,12 +3565,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <option value="all">All outlets</option>
         </select>
         <!-- v5.63: Outlet filter (只在 Funnel tab 显示, v6.43: 也用于 Funnel 内 cohort 表) -->
-        <span id="popWrap_popSel_funnelOutletSelect" data-pop-wrap-for="funnelOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelOutletSelect')" aria-haspopup="listbox">
+        <span id="popWrap_popSel_funnelOutletSelect" data-pop-wrap-for="funnelOutletSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_funnelOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect">
-          <option value="all">All outlets</option>
-        </select>
+  </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
       <!-- v3.61: Pill tabs inside header -->
       <div class="pill-tabs-inheader">
@@ -3500,15 +3585,42 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div id="adsspend_content">
       <!-- Ads Cost panel -->
-      <div id="adsPanel_cost" style="display:block;">
+      <div id="adsPanel_cost" style="display: none;">
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Ads Cost by Month</div>
         <div class="table-wrap">
-          <table class="data" id="adsSpendReport"></table>
+          <table class="data" id="adsSpendReport"><thead><tr><th>Metric</th><th class="num">TOTAL</th></tr></thead><tbody>
+          <tr><td>Meta</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>Google</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td style="font-weight:700;">Total</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>AVG/day</td><td class="num">—</td></tr>
+          </tbody></table>
         </div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Monthly Trend</div>
-        <div id="chart_cost"></div>
+        <div id="chart_cost">
+      <div style="position:relative;width:100%;height:220px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">Ads Cost by Month</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Meta</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#CA8A04;"></span>Google</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:190px;">
+          <canvas role="img" aria-label="Ads Cost by Month" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+        </div>
+      </div></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Avg per Day</div>
-        <div id="chart_avgday"></div>
+        <div id="chart_avgday">
+      <div style="position:relative;width:100%;height:220px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">Avg Daily Spend by Channel</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Meta Avg/Day</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#CA8A04;"></span>Google Avg/Day</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#7132f5;"></span>Total Avg/Day</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:190px;">
+          <canvas role="img" aria-label="Avg Daily Spend by Channel" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+        </div>
+      </div></div>
       </div>
 
       <!-- Sales & ROAS panel -->
@@ -3522,27 +3634,27 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- v6.43: Funnel panel — 合并 2 个视角表格 (apptDate + leadDate) -->
-      <div id="adsPanel_funnel" style="display:none;">
+      <div id="adsPanel_funnel" style="display: block;">
         <!-- 表 1: By Outlet Actual Count (apptDate 月统计, 跟实体营业额对账) -->
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;">By Outlet Actual Count</div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
           Group by appointment month — what actually happened each month (Ads Sales matches your monthly revenue).
         </div>
-        <div id="funnelTableWrap"></div>
+        <div id="funnelTableWrap"><div style="overflow-x:auto;border:1px solid var(--purple-border);border-radius:8px;background:white;"><table class="t" style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:var(--purple-bg);"><th style="padding:10px;text-align:left;color:var(--purple-deep);font-weight:600;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);min-width:90px;">Month</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Total Lead</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Booked</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Booked %</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Show Up</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Show %</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Ads Cost</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Ads Sales</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">ROAS</th></tr></thead><tbody><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-01</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-02</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-03</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-04</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-05</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="background:var(--purple-bg);font-weight:700;"><td style="padding:11px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);color:var(--purple-deep);">TOTAL</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">0</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">0</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">—</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">0</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">—</td><td style="padding:11px 10px;text-align:center;">RM 0</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">RM 0</td><td style="padding:11px 10px;text-align:center;">—</td></tr></tbody></table></div></div>
 
         <!-- 表 2: By Ads Actual Count (leadDate 月归因, 跨月跟踪) -->
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 4px;">By Ads Actual Count</div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
           Group by lead month — track each month's leads through their full journey, all conversions credited back to the lead month (true ad attribution).
         </div>
-        <div id="cohortTableWrap"></div>
+        <div id="cohortTableWrap"><div style="overflow-x:auto;border:1px solid var(--purple-border);border-radius:8px;background:white;"><table class="t" style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:var(--purple-bg);"><th style="padding:10px;text-align:left;color:var(--purple-deep);font-weight:600;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);min-width:90px;">Lead Month</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Total Lead</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Booked</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Booked %</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Show Up</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Show %</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Ads Cost</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Ads Sales</th><th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">True ROAS</th></tr></thead><tbody><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-01</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-02</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-03</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-04</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-05</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">0</td><td style="padding:9px 10px;text-align:center;color:#64748b;">—</td><td style="padding:9px 10px;text-align:center;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:center;font-weight:500;">—</td></tr><tr style="background:var(--purple-bg);font-weight:700;"><td style="padding:11px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);color:var(--purple-deep);">TOTAL</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">0</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">0</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">—</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">0</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">—</td><td style="padding:11px 10px;text-align:center;">RM 0</td><td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">RM 0</td><td style="padding:11px 10px;text-align:center;">—</td></tr></tbody></table></div></div>
 
         <!-- 漏斗图 -->
         <div id="chart_funnel" style="margin-top:32px;"></div>
 
         <!-- v6.42: 旧 wrap 保留 (隐藏) — 老代码 renderFunnelTab 仍写入这些 wrap, null 会让 JS 死.
              保留 div 但 display:none, 数据不显示但代码不崩. CPL/ROAS tab 不受影响. -->
-        <div id="funnelLeadsWrap" style="display:none;"></div>
+        <div id="funnelLeadsWrap" style="display:none;"><div class="empty">No data for 2026</div></div>
         <div id="funnelVisitsWrap" style="display:none;"></div>
         <div id="funnelRatesWrap" style="display:none;"></div>
       </div>
@@ -3625,146 +3737,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="revenueReportWrap"><div class="card" style="margin-bottom:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-      <div>
-        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
-        <div style="font-size:12px;color:var(--gray);">0 months · 3 outlets</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
-        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">—</div>
-        <div style="font-size:12px;color:var(--green-dark);">● New: — · 0.0%</div>
-        <div style="font-size:12px;color:var(--gray);">● Old: — · 0.0%</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <div onclick="setRevOutlet('st-sunway')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">Sunway ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div><div onclick="setRevOutlet('st-cheras')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">Cheras ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div><div onclick="setRevOutlet('st-eco')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">ECO ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div>
-    </div>
-  </div><div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data data-t">
-        <thead><tr><th>Revenue</th><th class="num">TOTAL</th></tr></thead>
-        <tbody>
-          <tr>
-            <td style="">New</td>
-            
-            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
-          </tr>
-          <tr>
-            <td style="">Existing</td>
-            
-            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;">Total Sales</td>
-            
-            <td class="num" style="font-weight:700;">—</td>
-          </tr>
-        </tbody>
-      </table></div>
-
-      <div class="table-wrap" style="margin-top:14px;"><table class="data data-t">
-        <thead><tr><th>New Source</th><th class="num">TOTAL</th></tr></thead>
-        <tbody>
-          <tr>
-            <td style="">Ads Sales</td>
-            
-            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
-          </tr>
-          <tr>
-            <td style="">Walk-in</td>
-            
-            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;">Total New</td>
-            
-            <td class="num" style="font-weight:700;">—</td>
-          </tr>
-        </tbody>
-      </table></div>
-    </div><div id="chart_rev_all" style="margin-top:14px;">
-      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:13px;font-weight:600;color:#374151;">All Outlets — Revenue Breakdown</span>
-          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#10B981;"></span>New Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#94a3b8;"></span>Old Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Ads New Sales</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#000000;"></span>Total Sales</span>
-          </div>
-        </div>
-        <div style="position:relative;width:100%;height:230px;">
-          <canvas role="img" aria-label="All Outlets — Revenue Breakdown" width="1526" height="287" style="display: block; box-sizing: border-box; height: 230px; width: 1220px;"></canvas>
-        </div>
-      </div></div><div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>Outlet Comparison 2026</h3></div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:var(--purple);">●</span> TOTAL REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = outlet share of monthly total</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#22C55E;">●</span> NEW CUSTOMER REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#FB923C;">●</span> WALK-IN REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#D97706;">●</span> EXISTING CUSTOMER REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#3B82F6;">●</span> ADS SALES (PAID LEADS)</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-    </div></div>
+    <div id="revenueReportWrap"></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -4863,7 +4836,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.20'; // v6.44 — Funnel: 表名改 Count, 数字居中, 颜色正常, 隐藏 Cost/ROAS tab, Funnel 设默认
+const DATA_VERSION = '4.21'; // v6.45 — 修 bug: Funnel tab 默认进入时 outlet filter 不显示
 
 // ---------- State ----------
 let state = {
@@ -10056,6 +10029,20 @@ function setAdsTab(tab, subChannel) {
 }
 
 function renderAdsSpend() {
+  // v6.45: 进入 Ads Spend 时同步显示 outlet select (跟随当前 _adsTab)
+  //   修 bug: 默认 tab=funnel 时 outlet select 仍是 HTML 默认 display:none, 不显示.
+  const _curTab = _adsTab || 'funnel';
+  const _spendOutletSel = document.getElementById('spendOutletSelect');
+  if (_spendOutletSel) {
+    if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_spendOutletSel, _curTab !== 'spend');
+    else _spendOutletSel.style.display = _curTab === 'spend' ? '' : 'none';
+  }
+  const _funnelOutletSel = document.getElementById('funnelOutletSelect');
+  if (_funnelOutletSel) {
+    if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_funnelOutletSel, _curTab !== 'funnel');
+    else _funnelOutletSel.style.display = _curTab === 'funnel' ? '' : 'none';
+  }
+
   // v6.36 修 bug: 进 Ads Spend 时用 state 反向同步 select 和 popover.
   //   之前 popover 显示 "All channels" 但 state.adsTab='google', 数据按 google 算.
   //   修法: 用 state.adsTab 重置 platSel.value, 再触发 popover 刷新.
