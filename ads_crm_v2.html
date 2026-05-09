@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.57</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.58</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.57</div>
+      <div class="nav-brand-version">v6.58</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3488,7 +3488,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <span id="popWrap_popSel_funnelViewSelect" data-pop-wrap-for="funnelViewSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelViewSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelViewSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>By Outlet Count</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="funnelViewSelect" data-pop="1" data-pop-icon="chart" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="By Outlet Count" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelViewSelect">
+  </button></span><select id="funnelViewSelect" data-pop="1" data-pop-icon="chart" class="cf-select" style="display:none;" onchange="renderAdsSpendSection(_adsTab || 'funnel')" data-pop-placeholder="By Outlet Count" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelViewSelect">
           <option value="outlet">By Outlet Count</option>
           <option value="ads">By Ads Count</option>
         </select>
@@ -4722,7 +4722,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.33'; // v6.57 — 补回被 v6.51 误删的 SPEND_BUCKETS / getSpendBucketIndex / _populateSpendOutletSelect (Spending Power 全空白真凶)
+const DATA_VERSION = '4.34'; // v6.58 — CPL/CPA/CPS 支持 view filter (By Outlet/By Ads), CPL 不变, CPA/CPS 跟随切换
 
 // ---------- State ----------
 let state = {
@@ -6289,12 +6289,54 @@ function renderFunnelTab() {
     const tLeads = fullData.reduce((s,m) => s+m.totalLeads, 0);
     const tMetaLeads = fullData.reduce((s,m) => s+m.leadsByPlatformByLead.meta, 0);
     const tGoogleLeads = fullData.reduce((s,m) => s+m.leadsByPlatformByLead.google, 0);
-    const tAppts = fullData.reduce((s,m) => s+m.appts, 0);
-    const tMetaAppts = fullData.reduce((s,m) => s+(m.apptsByPlatform?.meta||0), 0);
-    const tGoogleAppts = fullData.reduce((s,m) => s+(m.apptsByPlatform?.google||0), 0);
-    const tShows = fullData.reduce((s,m) => s+m.showUps, 0);
-    const tMetaShows = fullData.reduce((s,m) => s+(m.showsByPlatform?.meta||0), 0);
-    const tGoogleShows = fullData.reduce((s,m) => s+(m.showsByPlatform?.google||0), 0);
+
+    // v6.58: CPA/CPS 跟随 view filter (By Outlet = apptDate 月统计 / By Ads = leadDate 月归因)
+    //   By Outlet (默认): 直接用 calcMonthMetrics 的 appts/showUps (apptDate 月)
+    //   By Ads: 4 月 lead 的最终预约/show, 跨月跟到底
+    const cplView = (document.getElementById('funnelViewSelect') || {}).value || 'outlet';
+    let apptsByMonth, showsByMonth, apptsByPlatformByMonth, showsByPlatformByMonth;
+    if (cplView === 'ads') {
+      // 按 leadDate 月聚合 lead 最终命运
+      apptsByMonth = mArr.map(m => state.leads.filter(l =>
+        l.leadDate && l.leadDate.startsWith(m) &&
+        (l.status === 'booked' || l.status === 'done' || l.status === 'noshow') &&
+        matchOutlet(l)
+      ).length);
+      showsByMonth = mArr.map(m => state.leads.filter(l =>
+        l.leadDate && l.leadDate.startsWith(m) && l.status === 'done' && matchOutlet(l)
+      ).length);
+      apptsByPlatformByMonth = mArr.map(m => {
+        const o = { meta: 0, google: 0, organic: 0, followup: 0 };
+        state.leads.forEach(l => {
+          if (!l.leadDate || !l.leadDate.startsWith(m)) return;
+          if (!matchOutlet(l)) return;
+          if (l.status !== 'booked' && l.status !== 'done' && l.status !== 'noshow') return;
+          if (o[l.platform] !== undefined) o[l.platform]++;
+        });
+        return o;
+      });
+      showsByPlatformByMonth = mArr.map(m => {
+        const o = { meta: 0, google: 0, organic: 0, followup: 0 };
+        state.leads.forEach(l => {
+          if (!l.leadDate || !l.leadDate.startsWith(m)) return;
+          if (!matchOutlet(l)) return;
+          if (l.status !== 'done') return;
+          if (o[l.platform] !== undefined) o[l.platform]++;
+        });
+        return o;
+      });
+    } else {
+      apptsByMonth = fullData.map(m => m.appts);
+      showsByMonth = fullData.map(m => m.showUps);
+      apptsByPlatformByMonth = fullData.map(m => m.apptsByPlatform);
+      showsByPlatformByMonth = fullData.map(m => m.showsByPlatform || { meta: 0, google: 0 });
+    }
+    const tAppts = apptsByMonth.reduce((s,v) => s+v, 0);
+    const tMetaAppts = apptsByPlatformByMonth.reduce((s,o) => s + (o.meta||0), 0);
+    const tGoogleAppts = apptsByPlatformByMonth.reduce((s,o) => s + (o.google||0), 0);
+    const tShows = showsByMonth.reduce((s,v) => s+v, 0);
+    const tMetaShows = showsByPlatformByMonth.reduce((s,o) => s + (o.meta||0), 0);
+    const tGoogleShows = showsByPlatformByMonth.reduce((s,o) => s + (o.google||0), 0);
     document.getElementById('cplTableWrap').innerHTML = buildResponsiveTable('CPL · Cost per Lead', cplH4,
       [
         { label:'Meta CPL',   values:fullData.map(m => m.leadsByPlatformByLead.meta>0   ? m.costByPlatform.meta/m.leadsByPlatformByLead.meta     : null), formatter:fmtAvg, totalValue: tMetaLeads>0 ? tMetaCost/tMetaLeads : null },
@@ -6303,27 +6345,55 @@ function renderFunnelTab() {
       ], mArr, fmtMS);
     document.getElementById('cpaTableWrap').innerHTML = buildResponsiveTable('CPA · Cost per Appt', cplH4,
       [
-        { label:'Meta CPA',   values:fullData.map(m => m.apptsByPlatform.meta>0   ? m.costByPlatform.meta/m.apptsByPlatform.meta     : null), formatter:fmtAvg, totalValue: tMetaAppts>0 ? tMetaCost/tMetaAppts : null },
-        { label:'Google CPA', values:fullData.map(m => m.apptsByPlatform.google>0 ? m.costByPlatform.google/m.apptsByPlatform.google   : null), formatter:fmtAvg, totalValue: tGoogleAppts>0 ? tGoogleCost/tGoogleAppts : null },
-        { label:'Total CPA',  values:fullData.map(m => m.appts>0 ? m.totalAdsCost/m.appts : null), formatter:fmtAvg, bold:true, totalValue: tAppts>0 ? tCost/tAppts : null },
+        { label:'Meta CPA',   values:fullData.map((m,i) => apptsByPlatformByMonth[i].meta>0   ? m.costByPlatform.meta/apptsByPlatformByMonth[i].meta     : null), formatter:fmtAvg, totalValue: tMetaAppts>0 ? tMetaCost/tMetaAppts : null },
+        { label:'Google CPA', values:fullData.map((m,i) => apptsByPlatformByMonth[i].google>0 ? m.costByPlatform.google/apptsByPlatformByMonth[i].google   : null), formatter:fmtAvg, totalValue: tGoogleAppts>0 ? tGoogleCost/tGoogleAppts : null },
+        { label:'Total CPA',  values:fullData.map((m,i) => apptsByMonth[i]>0 ? m.totalAdsCost/apptsByMonth[i] : null), formatter:fmtAvg, bold:true, totalValue: tAppts>0 ? tCost/tAppts : null },
       ], mArr, fmtMS);
     document.getElementById('cpsTableWrap').innerHTML = buildResponsiveTable('CPS · Cost per Show-up', cplH4,
       [
-        { label:'Meta CPS',   values:fullData.map(m => m.showsByPlatform&&m.showsByPlatform.meta>0   ? m.costByPlatform.meta/m.showsByPlatform.meta     : null), formatter:fmtAvg, totalValue: tMetaShows>0 ? tMetaCost/tMetaShows : null },
-        { label:'Google CPS', values:fullData.map(m => m.showsByPlatform&&m.showsByPlatform.google>0 ? m.costByPlatform.google/m.showsByPlatform.google   : null), formatter:fmtAvg, totalValue: tGoogleShows>0 ? tGoogleCost/tGoogleShows : null },
-        { label:'Total CPS',  values:fullData.map(m => m.showUps>0 ? m.totalAdsCost/m.showUps : null), formatter:fmtAvg, bold:true, totalValue: tShows>0 ? tCost/tShows : null },
+        { label:'Meta CPS',   values:fullData.map((m,i) => showsByPlatformByMonth[i].meta>0   ? m.costByPlatform.meta/showsByPlatformByMonth[i].meta     : null), formatter:fmtAvg, totalValue: tMetaShows>0 ? tMetaCost/tMetaShows : null },
+        { label:'Google CPS', values:fullData.map((m,i) => showsByPlatformByMonth[i].google>0 ? m.costByPlatform.google/showsByPlatformByMonth[i].google   : null), formatter:fmtAvg, totalValue: tGoogleShows>0 ? tGoogleCost/tGoogleShows : null },
+        { label:'Total CPS',  values:fullData.map((m,i) => showsByMonth[i]>0 ? m.totalAdsCost/showsByMonth[i] : null), formatter:fmtAvg, bold:true, totalValue: tShows>0 ? tCost/tShows : null },
       ], mArr, fmtMS);
   } else {
     const sCost = monthData.reduce((s,d) => s+d.cost, 0);
     const sLeads = monthData.reduce((s,d) => s+d.totalLeads, 0);
     const sAppts = monthData.reduce((s,d) => s+d.appts, 0);
     const sShows = monthData.reduce((s,d) => s+d.showUps, 0);
+
+    // v6.58: CPA/CPS 跟随 view filter (单平台模式)
+    const cplViewSingle = (document.getElementById('funnelViewSelect') || {}).value || 'outlet';
+    let apptsArr, showsArr, sApptsAdj, sShowsAdj;
+    if (cplViewSingle === 'ads') {
+      // 按 leadDate 月归因, 套上 platform + outlet filter
+      const platMatch = (l) => {
+        if (!platFilter) return true;
+        if (subCh) return l.channelId === subCh;
+        return platFilter.includes(l.platform);
+      };
+      apptsArr = mArr.map(m => state.leads.filter(l =>
+        l.leadDate && l.leadDate.startsWith(m) &&
+        (l.status === 'booked' || l.status === 'done' || l.status === 'noshow') &&
+        platMatch(l) && matchOutlet(l)
+      ).length);
+      showsArr = mArr.map(m => state.leads.filter(l =>
+        l.leadDate && l.leadDate.startsWith(m) && l.status === 'done' && platMatch(l) && matchOutlet(l)
+      ).length);
+      sApptsAdj = apptsArr.reduce((s,v) => s+v, 0);
+      sShowsAdj = showsArr.reduce((s,v) => s+v, 0);
+    } else {
+      apptsArr = monthData.map(d => d.appts);
+      showsArr = monthData.map(d => d.showUps);
+      sApptsAdj = sAppts;
+      sShowsAdj = sShows;
+    }
+
     document.getElementById('cplTableWrap').innerHTML = buildResponsiveTable('CPL · Cost per Lead', cplH4,
       [{ label:'CPL', values:monthData.map(d => d.totalLeads>0&&d.cost>0 ? d.cost/d.totalLeads : null), formatter:fmtAvg, totalValue: sLeads>0&&sCost>0 ? sCost/sLeads : null }], mArr, fmtMS);
     document.getElementById('cpaTableWrap').innerHTML = buildResponsiveTable('CPA · Cost per Appt', cplH4,
-      [{ label:'CPA', values:monthData.map(d => d.appts>0&&d.cost>0 ? d.cost/d.appts : null), formatter:fmtAvg, totalValue: sAppts>0&&sCost>0 ? sCost/sAppts : null }], mArr, fmtMS);
+      [{ label:'CPA', values:monthData.map((d,i) => apptsArr[i]>0&&d.cost>0 ? d.cost/apptsArr[i] : null), formatter:fmtAvg, totalValue: sApptsAdj>0&&sCost>0 ? sCost/sApptsAdj : null }], mArr, fmtMS);
     document.getElementById('cpsTableWrap').innerHTML = buildResponsiveTable('CPS · Cost per Show-up', cplH4,
-      [{ label:'CPS', values:monthData.map(d => d.showUps>0&&d.cost>0 ? d.cost/d.showUps : null), formatter:fmtAvg, totalValue: sShows>0&&sCost>0 ? sCost/sShows : null }], mArr, fmtMS);
+      [{ label:'CPS', values:monthData.map((d,i) => showsArr[i]>0&&d.cost>0 ? d.cost/showsArr[i] : null), formatter:fmtAvg, totalValue: sShowsAdj>0&&sCost>0 ? sCost/sShowsAdj : null }], mArr, fmtMS);
   }
 
   // Render charts for all panels (deferred so DOM widths are available)
@@ -9889,13 +9959,15 @@ function switchAdsTab(key) {
       funnelOutletSel.style.display = (key === 'funnel') ? '' : 'none';
     }
   }
-  // v6.52: Funnel view select (By Outlet Count / By Ads Count) 同样只在 Funnel tab 显示
+  // v6.52: Funnel view select (By Outlet Count / By Ads Count)
+  // v6.58: 也在 CPL tab 显示 (CPA/CPS 跟随 view 切换分子)
   const funnelViewSel = document.getElementById('funnelViewSelect');
   if (funnelViewSel) {
+    const showView = (key === 'funnel' || key === 'cpl');
     if (typeof setPopoverSelectHidden === 'function') {
-      setPopoverSelectHidden(funnelViewSel, key !== 'funnel');
+      setPopoverSelectHidden(funnelViewSel, !showView);
     } else {
-      funnelViewSel.style.display = (key === 'funnel') ? '' : 'none';
+      funnelViewSel.style.display = showView ? '' : 'none';
     }
   }
   // v6.43: cohortOutletSelect 删除, 改用 funnelOutletSelect 共享 (合并到 Funnel tab 后)
@@ -9939,8 +10011,10 @@ function renderAdsSpend() {
   }
   const _funnelViewSel = document.getElementById('funnelViewSelect');
   if (_funnelViewSel) {
-    if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_funnelViewSel, _curTab !== 'funnel');
-    else _funnelViewSel.style.display = _curTab === 'funnel' ? '' : 'none';
+    // v6.58: funnel + cpl 都显示
+    const showView = (_curTab === 'funnel' || _curTab === 'cpl');
+    if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_funnelViewSel, !showView);
+    else _funnelViewSel.style.display = showView ? '' : 'none';
   }
 
   // v6.36 修 bug: 进 Ads Spend 时用 state 反向同步 select 和 popover.
