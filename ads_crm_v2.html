@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.54</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.56</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.54</div>
+      <div class="nav-brand-version">v6.56</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4722,7 +4722,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.30'; // v6.54 — 修漏斗图被老 renderFunnelChart 覆盖 bug (用 setTimeout 60ms 等老的跑完再覆盖)
+const DATA_VERSION = '4.32'; // v6.56 — Funnel 表 Ads Cost/Ads Sales 加 2 位小数
 
 // ---------- State ----------
 let state = {
@@ -10118,10 +10118,211 @@ function renderAdsSpendSection(key) {
     renderFunnelTab();
   }
 
-  // v6.52: Funnel 单表 + view select 切换 (By Outlet Count = apptDate, By Ads Count = leadDate)
+  // v6.43: Funnel tab 同时渲染 2 个表
+  //   - 表 1 (funnelTableWrap): By Outlet Actual Sales (apptDate 月统计)
+  //   - 表 2 (cohortTableWrap): By Ads Actual Sales (leadDate 月归因)
+  //   两个表共享顶部 platform/outlet filter, 用户在同一 tab 下看两个视角.
   if (key === 'funnel') {
     renderFunnelComboTable();
+    renderLeadCohortTab();
   }
+
+  if (key === 'fees' || key === '_fees_internal') {
+    const feesTable = document.getElementById('feesTable');
+    if (!feesTable) return;
+    if (tab === 'ofu') { feesTable.innerHTML = '<div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">No fees for Organic+FU</div>'; return; }
+
+    // Collect all fee names and months with data
+    const filteredFees = state.thirdPartyFees.filter(f => {
+      if (!sw(f.month, year)) return false;
+      if (tab === 'meta' && f.platform !== 'meta') return false;
+      if (tab === 'google' && f.platform !== 'google') return false;
+      return true;
+    });
+
+    if (filteredFees.length === 0) {
+      feesTable.innerHTML = '<div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">No fees recorded</div>';
+      return;
+    }
+
+    // Get unique fee names and active months
+    const feeNames = [...new Set(filteredFees.map(f => f.name))].sort();
+    const activeMonths = [...new Set(filteredFees.map(f => f.month))].sort();
+
+    // Build lookup: month+name -> fee record
+    const lookup = {};
+    filteredFees.forEach(f => { lookup[f.month + '|' + f.name] = f; });
+
+    // Table: months as cols (desktop) or rows (mobile)
+    const isMobile = window.innerWidth < 767;
+    let html;
+
+    if (!isMobile) {
+      // Desktop: fee names as rows, months as cols
+      const mHdr = activeMonths.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('');
+      const totalHdr = `<th class="num">TOTAL</th>`;
+      html = `<div class="table-wrap"><table class="data"><thead><tr><th>Fee Name</th>${mHdr}${totalHdr}</tr></thead><tbody>`;
+      feeNames.forEach(name => {
+        const rowTotal = activeMonths.reduce((s,m) => s + ((lookup[m+'|'+name]||{}).amount||0), 0);
+        html += `<tr><td style="font-weight:500;">${name}</td>`;
+        activeMonths.forEach(m => {
+          const f = lookup[m+'|'+name];
+          html += f ? `<td class="num" style="cursor:pointer;" title="Edit" onclick="editFee('${f.id}')">${fmt.money(f.amount)}</td>`
+                    : `<td class="num" style="color:var(--gray);">—</td>`;
+        });
+        html += `<td class="num" style="font-weight:700;">${fmt.money(rowTotal)}</td></tr>`;
+      });
+      // Total row
+      html += `<tr class="total-row"><td>TOTAL</td>`;
+      activeMonths.forEach(m => {
+        const mTotal = filteredFees.filter(f=>f.month===m).reduce((s,f)=>s+(f.amount||0),0);
+        html += `<td class="num">${fmt.money(mTotal)}</td>`;
+      });
+      const grandTotal = filteredFees.reduce((s,f)=>s+(f.amount||0),0);
+      html += `<td class="num">${fmt.money(grandTotal)}</td></tr></tbody></table></div>`;
+    } else {
+      // Mobile: months as rows, fee names as cols
+      const nameHdr = feeNames.map(n => `<th class="num" style="font-size:11px;">${n}</th>`).join('');
+      html = `<div class="table-wrap"><table class="data"><thead><tr><th style="width:36px;min-width:36px;">Month</th>${nameHdr}<th class="num">Total</th></tr></thead><tbody>`;
+      activeMonths.forEach(m => {
+        const mTotal = filteredFees.filter(f=>f.month===m).reduce((s,f)=>s+(f.amount||0),0);
+        html += `<tr><td style="font-weight:500;white-space:nowrap;">${fmt.monthShort(m)}</td>`;
+        feeNames.forEach(name => {
+          const f = lookup[m+'|'+name];
+          html += f ? `<td class="num">${fmt.money(f.amount)}</td>` : `<td class="num" style="color:var(--gray);">—</td>`;
+        });
+        html += `<td class="num" style="font-weight:700;">${fmt.money(mTotal)}</td></tr>`;
+      });
+      const grandTotal = filteredFees.reduce((s,f)=>s+(f.amount||0),0);
+      html += `<tr class="total-row"><td>TOTAL</td>${feeNames.map(name=>{const t=filteredFees.filter(f=>f.name===name).reduce((s,f)=>s+(f.amount||0),0);return`<td class="num">${fmt.money(t)}</td>`;}).join('')}<td class="num">${fmt.money(grandTotal)}</td></tr></tbody></table></div>`;
+    }
+    feesTable.innerHTML = html;
+  }
+
+  if (key === 'tmkt') {
+    // Also render fees table below the summary
+    renderAdsSpendSection('_fees_internal');
+    const tmktTable = document.getElementById('tmktTable');
+    if (!tmktTable) return;
+    const mArr = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
+    const isMobile = window.innerWidth < 767;
+    const activeM = mArr.filter(m =>
+      state.adsSpend.some(a => a.month === m) || state.thirdPartyFees.some(f => f.month === m)
+    ); // v5.69: 桌面也隐藏空月
+
+    // v5.62: 按 Channel pill 过滤 ads cost + 3rd party (revenue 用总额不变)
+    // tab='all' 不过滤; meta/google/ofu 各自挑对应 platform; subCh 进一步限定具体 channel
+    const matchAdsCost = (a) => {
+      const ch = getChannel(a.channelId);
+      if (!ch) return tab === 'all';
+      if (tab === 'all') return true;
+      if (tab === 'meta'   && ch.platform !== 'meta')   return false;
+      if (tab === 'google' && ch.platform !== 'google') return false;
+      if (tab === 'ofu'    && ch.platform !== 'organic' && ch.platform !== 'followup') return false;
+      if (subCh && a.channelId !== subCh) return false;
+      return true;
+    };
+    const matchFee = (f) => {
+      if (tab === 'all') return true;
+      if (tab === 'meta'   && f.platform !== 'meta')   return false;
+      if (tab === 'google' && f.platform !== 'google') return false;
+      if (tab === 'ofu'    && f.platform !== 'organic' && f.platform !== 'followup') return false;
+      return true;
+    };
+
+    // Per-month: compute ads cost, 3rd party fees, total mkt cost, total revenue, %
+    const rows = activeM.map(m => {
+      let adsCost = 0;
+      state.adsSpend.filter(a => a.month === m && matchAdsCost(a)).forEach(a => { adsCost += (a.amount || 0); });
+      let fees = 0;
+      state.thirdPartyFees.filter(f => f.month === m && matchFee(f)).forEach(f => { fees += (f.amount || 0); });
+      const totalMkt = adsCost + fees;
+      let revenue = 0;
+      state.revenue.filter(r => r.month === m).forEach(r => { revenue += (r.total || 0); });
+      const pct = revenue > 0 ? totalMkt / revenue : null;
+      return { m, adsCost, fees, totalMkt, revenue, pct };
+    });
+
+    // Chart: only Cost % line, always show all 12 months
+    setTimeout(() => {
+      const chartEl = document.getElementById('chart_tmkt');
+      if (!chartEl) return;
+      // Always use full 12 months for the chart (even if table filters to active months)
+      const chartRows = mArr.map(m => {
+        let adsCost = 0;
+        state.adsSpend.filter(a => a.month === m && matchAdsCost(a)).forEach(a => { adsCost += (a.amount || 0); });
+        let fees = 0;
+        state.thirdPartyFees.filter(f => f.month === m && matchFee(f)).forEach(f => { fees += (f.amount || 0); });
+        const totalMkt = adsCost + fees;
+        let revenue = 0;
+        state.revenue.filter(r => r.month === m).forEach(r => { revenue += (r.total || 0); });
+        const pct = revenue > 0 ? totalMkt / revenue : null;
+        return { m, pct };
+      });
+      const tmktCfg = {
+        title: 'Cost % of Revenue',
+        labels: mArr.map(m => fmt.monthShort(m)),
+        series: [
+          { label: 'Cost %', color: AdsChart.C.purple || 'var(--purple)', type: 'line', data: chartRows.map(r => r.pct !== null ? r.pct * 100 : null) }
+        ],
+        yFmt: v => v.toFixed(1) + '%',
+        fillStyle: 'gradient'
+      };
+      if (USE_CHARTJS) ChartJS.render('chart_tmkt', tmktCfg);
+      else AdsChart.render('chart_tmkt', tmktCfg);
+    }, 30);
+
+    // Table
+    const gAdsCost = rows.reduce((s,r)=>s+r.adsCost,0);
+    const gFees = rows.reduce((s,r)=>s+r.fees,0);
+    const gTotal = rows.reduce((s,r)=>s+r.totalMkt,0);
+    const gRev = rows.reduce((s,r)=>s+r.revenue,0);
+    const gPct = gRev > 0 ? gTotal / gRev : null;
+
+    let html;
+    if (!isMobile) {
+      const mHdr = activeM.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('');
+      html = `<div class="table-wrap"><table class="data"><thead><tr><th>Metric</th>${mHdr}<th class="num">TOTAL</th></tr></thead><tbody>`;
+      html += `<tr><td>Ads Cost</td>${rows.map(r=>`<td class="num">${r.adsCost>0?fmt.money(r.adsCost):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(gAdsCost)}</td></tr>`;
+      html += `<tr><td>3rd Party Fees</td>${rows.map(r=>`<td class="num">${r.fees>0?fmt.money(r.fees):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(gFees)}</td></tr>`;
+      html += `<tr class="total-row"><td>Total Mkt Cost</td>${rows.map(r=>`<td class="num">${r.totalMkt>0?fmt.money(r.totalMkt):'—'}</td>`).join('')}<td class="num">${fmt.money(gTotal)}</td></tr>`;
+      html += `<tr><td>Revenue</td>${rows.map(r=>`<td class="num">${r.revenue>0?fmt.money(r.revenue):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(gRev)}</td></tr>`;
+      html += `<tr><td style="font-weight:700;color:var(--purple-deep);">Cost % of Rev</td>${rows.map(r=>`<td class="num" style="font-weight:700;color:${r.pct!==null&&r.pct>0.3?'var(--ads-color,var(--adscost-color))':'var(--purple-deep)'}">${r.pct!==null?fmt.pct(r.pct):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${gPct!==null?fmt.pct(gPct):'—'}</td></tr>`;
+      html += `</tbody></table></div>`;
+    } else {
+      html = `<div class="table-wrap"><table class="data"><thead><tr><th style="width:40px;min-width:40px;">Month</th><th class="num">Ads Cost</th><th class="num">3rd Party</th><th class="num">Total Mkt</th><th class="num">Revenue</th><th class="num">Cost%</th></tr></thead><tbody>`;
+      rows.forEach(r => {
+        html += `<tr><td style="font-weight:500;white-space:nowrap;">${fmt.monthShort(r.m)}</td>`;
+        html += `<td class="num">${r.adsCost>0?fmt.money(r.adsCost):'—'}</td>`;
+        html += `<td class="num">${r.fees>0?fmt.money(r.fees):'—'}</td>`;
+        html += `<td class="num" style="font-weight:700;">${r.totalMkt>0?fmt.money(r.totalMkt):'—'}</td>`;
+        html += `<td class="num">${r.revenue>0?fmt.money(r.revenue):'—'}</td>`;
+        html += `<td class="num" style="font-weight:700;color:${r.pct!==null&&r.pct>0.3?'var(--ads-color,var(--adscost-color))':'var(--purple-deep)'}">${r.pct!==null?fmt.pct(r.pct):'—'}</td>`;
+        html += `</tr>`;
+      });
+      html += `<tr class="total-row"><td>TOTAL</td><td class="num">${fmt.money(gAdsCost)}</td><td class="num">${fmt.money(gFees)}</td><td class="num">${fmt.money(gTotal)}</td><td class="num">${fmt.money(gRev)}</td><td class="num">${gPct!==null?fmt.pct(gPct):'—'}</td></tr>`;
+      html += `</tbody></table></div>`;
+    }
+    tmktTable.innerHTML = html;
+  }
+
+  // v5.41: Spending Power tab — 客户消费力分布
+  if (key === 'spend') {
+    renderSpendingPower();
+  }
+
+  // Fix subheader colspan for sticky first col
+  setTimeout(() => {
+    document.querySelectorAll('#adsspend_content tr.subheader td[colspan]').forEach(td => {
+      const cols = parseInt(td.getAttribute('colspan')) || 1;
+      td.removeAttribute('colspan');
+      for (let i = 1; i < cols; i++) {
+        const empty = document.createElement('td');
+        empty.className = 'subheader-pad';
+        td.parentElement.appendChild(empty);
+      }
+    });
+  }, 10);
 }
 
 // v6.52: Funnel 单表 + view select 切换 (By Outlet Count = apptDate, By Ads Count = leadDate)
@@ -10179,7 +10380,7 @@ function renderFunnelComboTable() {
 
   const fmtPct = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
   const fmtNum = v => v == null ? '—' : Number(v).toLocaleString('en-MY');
-  const fmtMoney = v => v == null ? '—' : 'RM ' + Number(v).toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const fmtMoney = v => v == null ? '—' : 'RM ' + Number(v).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const fmtRoas = v => v == null ? '—' : v.toFixed(2) + 'x';
 
   let tTotal = 0, tBooked = 0, tShow = 0, tSales = 0, tCost = 0;
