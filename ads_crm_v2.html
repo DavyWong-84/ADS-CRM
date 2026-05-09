@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.56</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.57</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.56</div>
+      <div class="nav-brand-version">v6.57</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4722,7 +4722,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.32'; // v6.56 — Funnel 表 Ads Cost/Ads Sales 加 2 位小数
+const DATA_VERSION = '4.33'; // v6.57 — 补回被 v6.51 误删的 SPEND_BUCKETS / getSpendBucketIndex / _populateSpendOutletSelect (Spending Power 全空白真凶)
 
 // ---------- State ----------
 let state = {
@@ -10459,6 +10459,42 @@ function renderFunnelComboTable() {
 
 // v6.40: Lead Cohort 主渲染 — 按 lead 月份归因, 12 个月趋势表格 (跟随顶部 year filter)
 // v6.43: 改用 funnelOutletSelect (跟 Funnel 共享, 因为合进 Funnel tab 了)
+
+// v6.57: 补回被 v6.51 误删的 SPEND_BUCKETS / getSpendBucketIndex / _populateSpendOutletSelect
+//   误删后 Spending Power 调用时报 ReferenceError, 后续渲染代码不跑, 表格全空白
+const SPEND_BUCKETS = [
+  { label: '0-100',    min: 0,    max: 100  },
+  { label: '100-200',  min: 100,  max: 200  },
+  { label: '200-500',  min: 200,  max: 500  },
+  { label: '500-1k',   min: 500,  max: 1000 },
+  { label: '1k-2k',    min: 1000, max: 2000 },
+  { label: '2k+',      min: 2000, max: Infinity }
+];
+
+function getSpendBucketIndex(amount) {
+  // v5.43: spend=0 (done 但没填金额) 也归入 0-100 档,跟 Appt Show Up 总数一致
+  const a = Number(amount) || 0;
+  if (a < 0) return -1;
+  for (let i = 0; i < SPEND_BUCKETS.length; i++) {
+    if (a >= SPEND_BUCKETS[i].min && a < SPEND_BUCKETS[i].max) return i;
+  }
+  return -1;
+}
+
+// 填充 Outlet select (active 的 outlet)
+function _populateSpendOutletSelect() {
+  const sel = document.getElementById('spendOutletSelect');
+  if (!sel) return;
+  const current = sel.value || 'all';
+  const opts = ['<option value="all">All outlets</option>'];
+  state.locations.filter(lo => lo.active !== false).forEach(lo => {
+    opts.push(`<option value="${esc(lo.id)}">${esc(lo.name)}</option>`);
+  });
+  sel.innerHTML = opts.join('');
+  sel.value = current;
+  // v5.46: 选项填好后重新升级 popover (跟其他 cf-select 行为一致)
+  if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects();
+}
 
 function renderSpendingPower() {
   _populateSpendOutletSelect();
