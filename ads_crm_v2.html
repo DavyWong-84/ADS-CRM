@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.42</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.44</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.42</div>
+      <div class="nav-brand-version">v6.44</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3477,28 +3477,21 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </button></span><select id="spendOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderSpendingPower()" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_spendOutletSelect">
           <option value="all">All outlets</option>
         </select>
-        <!-- v5.63: Outlet filter (只在 Funnel tab 显示) -->
+        <!-- v5.63: Outlet filter (只在 Funnel tab 显示, v6.43: 也用于 Funnel 内 cohort 表) -->
         <span id="popWrap_popSel_funnelOutletSelect" data-pop-wrap-for="funnelOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect">
           <option value="all">All outlets</option>
         </select>
-        <!-- v6.39: Outlet filter (只在 Lead Cohort tab 显示) -->
-        <span id="popWrap_popSel_cohortOutletSelect" data-pop-wrap-for="cohortOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_cohortOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_cohortOutletSelect')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
-    <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="cohortOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('cohort')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_cohortOutletSelect">
-          <option value="all">All outlets</option>
-        </select>
       </div>
       <!-- v3.61: Pill tabs inside header -->
       <div class="pill-tabs-inheader">
-        <button type="button" id="adsPill_cost" onclick="switchAdsTab('cost')" class="pill-tab active">Ads Cost</button>
-        <button type="button" id="adsPill_roas" onclick="switchAdsTab('roas')" class="pill-tab">Sales &amp; ROAS</button>
+        <!-- v6.44: Funnel 放第一, Cost/Sales&ROAS 隐藏 (Davy 不再用) -->
+        <button type="button" id="adsPill_funnel" onclick="switchAdsTab('funnel')" class="pill-tab active">Funnel</button>
+        <button type="button" id="adsPill_cost" onclick="switchAdsTab('cost')" class="pill-tab" style="display:none;">Ads Cost</button>
+        <button type="button" id="adsPill_roas" onclick="switchAdsTab('roas')" class="pill-tab" style="display:none;">Sales &amp; ROAS</button>
         <button type="button" id="adsPill_spend" onclick="switchAdsTab('spend')" class="pill-tab">Spending Power</button>
-        <button type="button" id="adsPill_funnel" onclick="switchAdsTab('funnel')" class="pill-tab">Funnel</button>
-        <button type="button" id="adsPill_cohort" onclick="switchAdsTab('cohort')" class="pill-tab">Lead Performance</button>
         <button type="button" id="adsPill_cpl" onclick="switchAdsTab('cpl')" class="pill-tab">CPL / CPA / CPS</button>
         <button type="button" id="adsPill_tmkt" onclick="switchAdsTab('tmkt')" class="pill-tab">Marketing Cost</button>
       </div>
@@ -3528,15 +3521,25 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="chart_roas" style="margin-top:16px;"></div>
       </div>
 
-      <!-- v6.42: Funnel panel 改造 — 跟 Lead Performance 同款表格, 但按 apptDate 月统计 (跟实体营业额匹配) -->
+      <!-- v6.43: Funnel panel — 合并 2 个视角表格 (apptDate + leadDate) -->
       <div id="adsPanel_funnel" style="display:none;">
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;">Funnel — by Appointment Month</div>
+        <!-- 表 1: By Outlet Actual Count (apptDate 月统计, 跟实体营业额对账) -->
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;">By Outlet Actual Count</div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
-          Group by appointment month — what actually happened each month (Ads Sales matches your monthly revenue).<br>
-          Different from Lead Performance tab (grouped by lead month for true ad attribution).
+          Group by appointment month — what actually happened each month (Ads Sales matches your monthly revenue).
         </div>
         <div id="funnelTableWrap"></div>
-        <div id="chart_funnel" style="margin-top:20px;"></div>
+
+        <!-- 表 2: By Ads Actual Count (leadDate 月归因, 跨月跟踪) -->
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 4px;">By Ads Actual Count</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
+          Group by lead month — track each month's leads through their full journey, all conversions credited back to the lead month (true ad attribution).
+        </div>
+        <div id="cohortTableWrap"></div>
+
+        <!-- 漏斗图 -->
+        <div id="chart_funnel" style="margin-top:32px;"></div>
+
         <!-- v6.42: 旧 wrap 保留 (隐藏) — 老代码 renderFunnelTab 仍写入这些 wrap, null 会让 JS 死.
              保留 div 但 display:none, 数据不显示但代码不崩. CPL/ROAS tab 不受影响. -->
         <div id="funnelLeadsWrap" style="display:none;"></div>
@@ -3544,15 +3547,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="funnelRatesWrap" style="display:none;"></div>
       </div>
 
-      <!-- v6.39: Lead Performance panel - 按 lead 月份分组追踪命运 -->
-      <div id="adsPanel_cohort" style="display:none;">
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;">Lead Performance</div>
-        <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
-          Track each month's leads through their full journey — no matter when they booked or showed up, all conversions are credited back to the Lead month.<br>
-          Useful for evaluating true ad performance with cross-month attribution. Different from Funnel tab (grouped by appointment month).
-        </div>
-        <div id="cohortTableWrap"></div>
-      </div>
+      <!-- v6.43: Lead Performance panel 删除, cohortTableWrap 已合并进 Funnel panel -->
 
       <!-- CPL/CPA/CPS panel -->
       <div id="adsPanel_cpl" style="display:none;">
@@ -3630,7 +3625,146 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="revenueReportWrap"></div>
+    <div id="revenueReportWrap"><div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
+        <div style="font-size:12px;color:var(--gray);">0 months · 3 outlets</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
+        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">—</div>
+        <div style="font-size:12px;color:var(--green-dark);">● New: — · 0.0%</div>
+        <div style="font-size:12px;color:var(--gray);">● Old: — · 0.0%</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div onclick="setRevOutlet('st-sunway')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Sunway ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-cheras')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Cheras ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-eco')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">ECO ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div>
+    </div>
+  </div><div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
+      <div class="table-wrap"><table class="data data-t">
+        <thead><tr><th>Revenue</th><th class="num">TOTAL</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="">New</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
+          </tr>
+          <tr>
+            <td style="">Existing</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">Total Sales</td>
+            
+            <td class="num" style="font-weight:700;">—</td>
+          </tr>
+        </tbody>
+      </table></div>
+
+      <div class="table-wrap" style="margin-top:14px;"><table class="data data-t">
+        <thead><tr><th>New Source</th><th class="num">TOTAL</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="">Ads Sales</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
+          </tr>
+          <tr>
+            <td style="">Walk-in</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">Total New</td>
+            
+            <td class="num" style="font-weight:700;">—</td>
+          </tr>
+        </tbody>
+      </table></div>
+    </div><div id="chart_rev_all" style="margin-top:14px;">
+      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">All Outlets — Revenue Breakdown</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#10B981;"></span>New Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#94a3b8;"></span>Old Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Ads New Sales</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#000000;"></span>Total Sales</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:230px;">
+          <canvas role="img" aria-label="All Outlets — Revenue Breakdown" width="1526" height="287" style="display: block; box-sizing: border-box; height: 230px; width: 1220px;"></canvas>
+        </div>
+      </div></div><div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>Outlet Comparison 2026</h3></div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:var(--purple);">●</span> TOTAL REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = outlet share of monthly total</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#22C55E;">●</span> NEW CUSTOMER REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#FB923C;">●</span> WALK-IN REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#D97706;">●</span> EXISTING CUSTOMER REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#3B82F6;">●</span> ADS SALES (PAID LEADS)</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+    </div></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -4729,7 +4863,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.18'; // v6.42 — Funnel tab 改造: 跟 Lead Performance 同款表格 + 漏斗图保留, 旧 3 表格删
+const DATA_VERSION = '4.20'; // v6.44 — Funnel: 表名改 Count, 数字居中, 颜色正常, 隐藏 Cost/ROAS tab, Funnel 设默认
 
 // ---------- State ----------
 let state = {
@@ -9860,11 +9994,11 @@ function renderStore() {
 
 // ---------- Ads Spend ----------
 // ---------- Ads Spend pill tabs ----------
-let _adsTab = 'cost';
+let _adsTab = 'funnel';  // v6.44: 默认 funnel tab (cost/roas 隐藏了)
 
 function switchAdsTab(key) {
   _adsTab = key;
-  ['cost', 'roas', 'funnel', 'cohort', 'cpl', 'tmkt', 'spend'].forEach(k => {
+  ['cost', 'roas', 'funnel', 'cpl', 'tmkt', 'spend'].forEach(k => {
     const panel = document.getElementById('adsPanel_' + k);
     const pill = document.getElementById('adsPill_' + k);
     const active = k === key;
@@ -9896,15 +10030,7 @@ function switchAdsTab(key) {
       funnelOutletSel.style.display = (key === 'funnel') ? '' : 'none';
     }
   }
-  // v6.39: Cohort outlet select 同样处理 (只在 Lead Cohort tab 显示)
-  const cohortOutletSel = document.getElementById('cohortOutletSelect');
-  if (cohortOutletSel) {
-    if (typeof setPopoverSelectHidden === 'function') {
-      setPopoverSelectHidden(cohortOutletSel, key !== 'cohort');
-    } else {
-      cohortOutletSel.style.display = (key === 'cohort') ? '' : 'none';
-    }
-  }
+  // v6.43: cohortOutletSelect 删除, 改用 funnelOutletSelect 共享 (合并到 Funnel tab 后)
   // Re-render only the active section for performance
   renderAdsSpendSection(key);
 }
@@ -9974,8 +10100,8 @@ function renderAdsSpend() {
     console.log('[Ads Spend filter check]', dbg);
   }
   // Sync pill visual state
-  const currentAdsTab = _adsTab || 'cost';
-  ['cost', 'roas', 'funnel', 'cohort', 'cpl', 'tmkt', 'spend'].forEach(k => {
+  const currentAdsTab = _adsTab || 'funnel';
+  ['cost', 'roas', 'funnel', 'cpl', 'tmkt', 'spend'].forEach(k => {
     const pill = document.getElementById('adsPill_' + k);
     const panel = document.getElementById('adsPanel_' + k);
     if (pill) {
@@ -10091,11 +10217,11 @@ function renderAdsSpend() {
   }
 
   // Render the currently active section
-  renderAdsSpendSection(_adsTab || 'cost');
+  renderAdsSpendSection(_adsTab || 'funnel');
 }
 
 function renderAdsSpendSection(key) {
-  // key = 'cost' | 'roas' | 'funnel' | 'cohort' | 'cpl' | 'fees' | 'tmkt'
+  // key = 'cost' | 'roas' | 'funnel' | 'cpl' | 'fees' | 'tmkt'
   // Each section renders into its panel div
   const year = document.getElementById('adsYear').value || String(new Date().getFullYear());
   const tab = state.adsTab || 'all';
@@ -10105,14 +10231,12 @@ function renderAdsSpendSection(key) {
     renderFunnelTab();
   }
 
-  // v6.42: Funnel tab 改用新表格 (按 apptDate 月统计, 跟 Lead Performance 同款格式)
-  //   renderFunnelTab 仍跑 (因为 cpl/roas 共享逻辑), 但 funnel 表格部分被新函数覆盖.
+  // v6.43: Funnel tab 同时渲染 2 个表
+  //   - 表 1 (funnelTableWrap): By Outlet Actual Sales (apptDate 月统计)
+  //   - 表 2 (cohortTableWrap): By Ads Actual Sales (leadDate 月归因)
+  //   两个表共享顶部 platform/outlet filter, 用户在同一 tab 下看两个视角.
   if (key === 'funnel') {
     renderFunnelByApptMonth();
-  }
-
-  // v6.39: Lead Cohort tab
-  if (key === 'cohort') {
     renderLeadCohortTab();
   }
 
@@ -10459,14 +10583,14 @@ function renderFunnelByApptMonth() {
   let html = '<table class="t" style="width:100%;border-collapse:collapse;font-size:13px;">';
   html += '<thead><tr style="background:var(--purple-bg);">';
   html += '<th style="padding:10px;text-align:left;color:var(--purple-deep);font-weight:600;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);min-width:90px;">Month</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Total Lead</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Booked</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Booked %</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Show Up</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Show %</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Ads Cost</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Ads Sales</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">ROAS</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Total Lead</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Booked</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Booked %</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Show Up</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Show %</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Ads Cost</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Ads Sales</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">ROAS</th>';
   html += '</tr></thead><tbody>';
 
   rows.forEach(r => {
@@ -10475,14 +10599,14 @@ function renderFunnelByApptMonth() {
     const showPct = r.booked > 0 ? r.showUp / r.booked : null;
     html += '<tr style="border-bottom:1px solid #eee;">';
     html += `<td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">${r.month}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;">${fmtNum(r.total)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;">${fmtNum(r.booked)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;color:#64748b;">${fmtPct(bookedPct)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;">${fmtNum(r.showUp)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;color:${showPct != null && showPct < 0.5 ? '#dc2626' : '#64748b'};">${fmtPct(showPct)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;color:var(--adscost-color);">${fmtMoney(r.adsCost)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;font-weight:500;">${fmtMoney(r.adsSales)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;font-weight:500;color:var(--roas-color);">${fmtRoas(r.adsSales, r.adsCost)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;">${fmtNum(r.total)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;">${fmtNum(r.booked)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;color:#64748b;">${fmtPct(bookedPct)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;">${fmtNum(r.showUp)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;color:${showPct != null && showPct < 0.5 ? '#dc2626' : '#64748b'};">${fmtPct(showPct)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;">${fmtMoney(r.adsCost)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;font-weight:500;">${fmtMoney(r.adsSales)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;font-weight:500;">${fmtRoas(r.adsSales, r.adsCost)}</td>`;
     html += '</tr>';
   });
 
@@ -10490,45 +10614,32 @@ function renderFunnelByApptMonth() {
   const totalShowPct = totalRow.booked > 0 ? totalRow.showUp / totalRow.booked : null;
   html += '<tr style="background:var(--purple-bg);font-weight:700;">';
   html += '<td style="padding:11px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);color:var(--purple-deep);">TOTAL</td>';
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtNum(totalRow.total)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtNum(totalRow.booked)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtPct(totalBookedPct)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtNum(totalRow.showUp)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtPct(totalShowPct)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--adscost-color);">${fmtMoney(totalRow.adsCost)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtMoney(totalRow.adsSales)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--roas-color);">${fmtRoas(totalRow.adsSales, totalRow.adsCost)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtNum(totalRow.total)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtNum(totalRow.booked)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtPct(totalBookedPct)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtNum(totalRow.showUp)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtPct(totalShowPct)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;">${fmtMoney(totalRow.adsCost)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtMoney(totalRow.adsSales)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;">${fmtRoas(totalRow.adsSales, totalRow.adsCost)}</td>`;
   html += '</tr>';
 
   html += '</tbody></table>';
   wrap.innerHTML = `<div style="overflow-x:auto;border:1px solid var(--purple-border);border-radius:8px;background:white;">${html}</div>`;
 }
 
-// v6.39: Lead Cohort outlet select populate (跟 spend/funnel 同款)
-function _populateCohortOutletSelect() {
-  const sel = document.getElementById('cohortOutletSelect');
-  if (!sel) return;
-  const current = sel.value || 'all';
-  const opts = ['<option value="all">All outlets</option>'];
-  state.locations.filter(lo => lo.active !== false).forEach(lo => {
-    opts.push(`<option value="${esc(lo.id)}">${esc(lo.name)}</option>`);
-  });
-  sel.innerHTML = opts.join('');
-  sel.value = current;
-  if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects();
-}
+// v6.43: _populateCohortOutletSelect 删除 — cohort 表用 funnelOutletSelect 共享, populate 由 renderFunnelTab 处理.
 
 // v6.40: Lead Cohort 主渲染 — 按 lead 月份归因, 12 个月趋势表格 (跟随顶部 year filter)
+// v6.43: 改用 funnelOutletSelect (跟 Funnel 共享, 因为合进 Funnel tab 了)
 function renderLeadCohortTab() {
-  _populateCohortOutletSelect();
-
   const wrap = document.getElementById('cohortTableWrap');
   if (!wrap) return;
 
   const year = document.getElementById('adsYear').value || String(new Date().getFullYear());
   const tab = state.adsTab || 'all';        // all / meta / google / ofu
   const subCh = state.adsSubChannel || null;
-  const outletId = (document.getElementById('cohortOutletSelect') || {}).value || 'all';
+  const outletId = (document.getElementById('funnelOutletSelect') || {}).value || 'all';
   const useOutletFilter = outletId !== 'all';
 
   // v6.40: 按 year filter 显示该年 12 个月. 当前年: 1 月到当月. 历史/未来年: 1-12 月全显示.
@@ -10621,14 +10732,14 @@ function renderLeadCohortTab() {
   let html = '<table class="t" style="width:100%;border-collapse:collapse;font-size:13px;">';
   html += '<thead><tr style="background:var(--purple-bg);">';
   html += '<th style="padding:10px;text-align:left;color:var(--purple-deep);font-weight:600;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);min-width:90px;">Lead Month</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Total Lead</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Booked</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Booked %</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Show Up</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Show %</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Ads Cost</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Ads Sales</th>';
-  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">True ROAS</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Total Lead</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Booked</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Booked %</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Show Up</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Show %</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Ads Cost</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">Ads Sales</th>';
+  html += '<th style="padding:10px;text-align:center;color:var(--purple-deep);font-weight:600;">True ROAS</th>';
   html += '</tr></thead><tbody>';
 
   rows.forEach(r => {
@@ -10636,14 +10747,14 @@ function renderLeadCohortTab() {
     const showPct = r.booked > 0 ? r.showUp / r.booked : null;
     html += '<tr style="border-bottom:1px solid #eee;">';
     html += `<td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">${r.month}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;">${fmtNum(r.total)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;">${fmtNum(r.booked)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;color:${bookedPct != null && bookedPct < 0.05 ? '#dc2626' : '#64748b'};">${fmtPct(bookedPct)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;">${fmtNum(r.showUp)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;color:${showPct != null && showPct < 0.5 ? '#dc2626' : '#64748b'};">${fmtPct(showPct)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;color:var(--adscost-color);">${fmtMoney(r.adsCost)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;font-weight:500;">${fmtMoney(r.adsSales)}</td>`;
-    html += `<td style="padding:9px 10px;text-align:right;font-weight:500;color:var(--roas-color);">${fmtRoas(r.adsSales, r.adsCost)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;">${fmtNum(r.total)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;">${fmtNum(r.booked)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;color:${bookedPct != null && bookedPct < 0.05 ? '#dc2626' : '#64748b'};">${fmtPct(bookedPct)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;">${fmtNum(r.showUp)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;color:${showPct != null && showPct < 0.5 ? '#dc2626' : '#64748b'};">${fmtPct(showPct)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;">${fmtMoney(r.adsCost)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;font-weight:500;">${fmtMoney(r.adsSales)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:center;font-weight:500;">${fmtRoas(r.adsSales, r.adsCost)}</td>`;
     html += '</tr>';
   });
 
@@ -10652,14 +10763,14 @@ function renderLeadCohortTab() {
   const totalShowPct = totalRow.booked > 0 ? totalRow.showUp / totalRow.booked : null;
   html += '<tr style="background:var(--purple-bg);font-weight:700;">';
   html += '<td style="padding:11px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);color:var(--purple-deep);">TOTAL</td>';
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtNum(totalRow.total)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtNum(totalRow.booked)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtPct(totalBookedPct)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtNum(totalRow.showUp)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtPct(totalShowPct)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--adscost-color);">${fmtMoney(totalRow.adsCost)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtMoney(totalRow.adsSales)}</td>`;
-  html += `<td style="padding:11px 10px;text-align:right;color:var(--roas-color);">${fmtRoas(totalRow.adsSales, totalRow.adsCost)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtNum(totalRow.total)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtNum(totalRow.booked)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtPct(totalBookedPct)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtNum(totalRow.showUp)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtPct(totalShowPct)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;">${fmtMoney(totalRow.adsCost)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;color:var(--purple-deep);">${fmtMoney(totalRow.adsSales)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:center;">${fmtRoas(totalRow.adsSales, totalRow.adsCost)}</td>`;
   html += '</tr>';
 
   html += '</tbody></table>';
