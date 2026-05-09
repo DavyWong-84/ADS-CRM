@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.62</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.64</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.62</div>
+      <div class="nav-brand-version">v6.64</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4724,7 +4724,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.38'; // v6.62 — codex P1+P2 修: outlet ≠ all 时 ROAS/CPL/CPA/CPS 显示 "—" + 黄底提示, CPL tab 也显示 outlet filter, 删 setTimeout hack
+const DATA_VERSION = '4.40'; // v6.64 — Funnel 表: ROAS 移到 Ads Cost 前, 加 Total Revenue 列, Ads Sales 加 % (Ads Sales / Total Revenue)
 
 // ---------- State ----------
 let state = {
@@ -10500,7 +10500,7 @@ function renderFunnelComboTable() {
   const fmtMoney = v => v == null ? '—' : 'RM ' + Number(v).toLocaleString('en-MY', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const fmtRoas = v => v == null ? '—' : v.toFixed(2) + 'x';
 
-  let tTotal = 0, tBooked = 0, tShow = 0, tSales = 0, tCost = 0;
+  let tTotal = 0, tBooked = 0, tShow = 0, tSales = 0, tCost = 0, tRev = 0;
   let rows = '';
   months.forEach(m => {
     // Total Lead 始终按 leadDate (新进 lead 数, 不变)
@@ -10525,8 +10525,17 @@ function renderFunnelComboTable() {
     const showPct = booked > 0 ? showUp / booked : null;
     const roas = (adsCost == null || adsCost === 0) ? null : adsSales / adsCost;
 
+    // v6.64: Total Revenue (manually entered outlet 总收入), 按 outlet filter 过滤
+    let totalRev = 0;
+    state.revenue.filter(r => r.month === m).forEach(r => {
+      if (useOutletFilter && r.locationId !== outletId) return;
+      totalRev += (Number(r.total) || 0);
+    });
+    const salesPct = totalRev > 0 ? adsSales / totalRev : null;
+
     tTotal += total; tBooked += booked; tShow += showUp; tSales += adsSales;
     if (adsCost != null) tCost += adsCost;
+    tRev += totalRev;
 
     // v6.62: outlet ≠ all 时, ROAS 数学有问题 (cost 不分 outlet, sales 分了), 显示 "—" 防误导
     const roasShown = useOutletFilter ? null : roas;
@@ -10536,9 +10545,10 @@ function renderFunnelComboTable() {
       <td class="num">${fmtNum(total)}</td>
       <td class="num">${fmtNum(booked)}${bookedPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(bookedPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(showUp)}${showPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(showPct)})</span>` : ''}</td>
-      <td class="num">${useOutletFilter ? '—' : fmtMoney(adsCost)}</td>
-      <td class="num">${fmtMoney(adsSales)}</td>
       <td class="num">${fmtRoas(roasShown)}</td>
+      <td class="num">${useOutletFilter ? '—' : fmtMoney(adsCost)}</td>
+      <td class="num">${fmtMoney(adsSales)}${salesPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(salesPct)})</span>` : ''}</td>
+      <td class="num">${totalRev > 0 ? fmtMoney(totalRev) : '—'}</td>
     </tr>`;
   });
 
@@ -10546,6 +10556,7 @@ function renderFunnelComboTable() {
   const totalShowPct = tBooked > 0 ? tShow / tBooked : null;
   const totalRoas = (tab === 'ofu' || tCost === 0) ? null : tSales / tCost;
   const totalCostShow = tab === 'ofu' ? null : tCost;
+  const totalSalesPct = tRev > 0 ? tSales / tRev : null;
 
   wrap.innerHTML = `
   ${useOutletFilter ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ Ads Cost / ROAS hidden when outlet filter is on (ads cost not split by outlet)</div>' : ''}
@@ -10554,7 +10565,10 @@ function renderFunnelComboTable() {
       <th style="width:44px;">Month</th>
       <th class="num">Total Lead</th><th class="num">Booked</th>
       <th class="num">Show Up</th>
-      <th class="num">Ads Cost</th><th class="num">Ads Sales</th><th class="num">ROAS</th>
+      <th class="num">ROAS</th>
+      <th class="num">Ads Cost</th>
+      <th class="num">Ads Sales</th>
+      <th class="num">Total Revenue</th>
     </tr></thead>
     <tbody>${rows}</tbody>
     <tfoot><tr class="total-row">
@@ -10562,9 +10576,10 @@ function renderFunnelComboTable() {
       <td class="num">${fmtNum(tTotal)}</td>
       <td class="num">${fmtNum(tBooked)}${totalBookedPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalBookedPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(tShow)}${totalShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalShowPct)})</span>` : ''}</td>
-      <td class="num">${useOutletFilter ? '—' : fmtMoney(totalCostShow)}</td>
-      <td class="num">${fmtMoney(tSales)}</td>
       <td class="num">${useOutletFilter ? '—' : fmtRoas(totalRoas)}</td>
+      <td class="num">${useOutletFilter ? '—' : fmtMoney(totalCostShow)}</td>
+      <td class="num">${fmtMoney(tSales)}${totalSalesPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalSalesPct)})</span>` : ''}</td>
+      <td class="num">${tRev > 0 ? fmtMoney(tRev) : '—'}</td>
     </tr></tfoot>
   </table></div>`;
 
@@ -13328,6 +13343,157 @@ async function gsTest() {
   } catch (e) { gsLog('❌ Connection failed: ' + e.message, true); }
 }
 
+// v6.63: 抽出 gsPull / gsPullSilent 重复的 normalize 逻辑.
+//   功能: 把 Sheet 拉回来的原始数据 (字符串/Date 对象/各种格式) 标准化成 state 用的格式.
+//   纯数据转换, 不做 UI/log/toast (那些留在调用方).
+//   返回: { leads, ads, rev, fees, suspiciousLead }
+//   suspiciousLead != null 表示发现异常列, 调用方应阻止 pull (各自处理 alert/log).
+function _normalizeSheetPullData(d) {
+  const sheetLeads = (d.Leads || []);
+  const sheetAds = (d.AdsSpend || []);
+  const sheetRev = (d.Revenue || []);
+  const sheetFees = (d.ThirdPartyFees || []);
+
+  // Safety: detect unexpected columns (manual + silent pull 同样保护)
+  const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags','updatedAt']);
+  const suspiciousLead = sheetLeads.find(l => {
+    const keys = Object.keys(l);
+    return keys.some(k => !EXPECTED_LEAD_KEYS.has(k)) || keys.length !== new Set(keys).size;
+  });
+
+  // Number conversion (handles strings with commas)
+  const toNum = v => {
+    if (v == null || v === '') return 0;
+    if (typeof v === 'number') return v;
+    const n = parseFloat(String(v).replace(/,/g, ''));
+    return isNaN(n) ? 0 : n;
+  };
+
+  // Month string YYYY-MM (handles ISO with UTC→MY +8 timezone shift)
+  const toMonthStr = v => {
+    if (!v) return '';
+    if (typeof v === 'string') {
+      if (/^\d{4}-\d{2}(-\d{2})?$/.test(v)) return v.substring(0, 7);
+      const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):/);
+      if (m) {
+        let y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]), h = parseInt(m[4]);
+        if (h >= 16) { // MY is next day
+          d += 1;
+          const dim = new Date(y, mo, 0).getDate();
+          if (d > dim) { d = 1; mo += 1; if (mo > 12) { mo = 1; y += 1; } }
+        }
+        return `${y}-${String(mo).padStart(2,'0')}`;
+      }
+      return v;
+    }
+    if (v instanceof Date || (typeof v === 'object' && v.getFullYear)) {
+      return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}`;
+    }
+    return String(v);
+  };
+
+  // Date string YYYY-MM-DD (same UTC→MY shift logic)
+  const toDateStr = v => {
+    if (!v) return '';
+    if (typeof v === 'string') {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v.substring(0, 10);
+      const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):/);
+      if (m) {
+        let y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]), h = parseInt(m[4]);
+        if (h >= 16) {
+          d += 1;
+          const dim = new Date(y, mo, 0).getDate();
+          if (d > dim) { d = 1; mo += 1; if (mo > 12) { mo = 1; y += 1; } }
+        }
+        return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      }
+      return v;
+    }
+    if (v instanceof Date || (typeof v === 'object' && v.getFullYear)) {
+      return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
+    }
+    return String(v);
+  };
+
+  // Lookup map for deriving location name (Sheet doesn't store locationName)
+  const locMap = {};
+  (state.locations || []).forEach(loc => { locMap[loc.id] = loc.name; });
+
+  // Preserve local-only flags (star markers) across sync
+  const flagsMap = {};
+  (state.leads || []).forEach(l => { if (l.flags && l.id) flagsMap[l.id] = l.flags; });
+
+  // Parse flags: prefer Sheet (cross-device); fallback to local
+  // Handles: JSON string / Sheets-display "{key=value}" / plain object
+  const parseFlags = (sheetFlags, localFlags) => {
+    if (sheetFlags && typeof sheetFlags === 'object') return sheetFlags;
+    if (sheetFlags && typeof sheetFlags === 'string') {
+      try { return JSON.parse(sheetFlags); } catch (e) {}
+      const match = sheetFlags.match(/\w+=\w+/g);
+      if (match) {
+        const obj = {};
+        match.forEach(pair => {
+          const [k, v] = pair.split('=');
+          obj[k.trim()] = v.trim() === 'true';
+        });
+        return obj;
+      }
+    }
+    return localFlags || {};
+  };
+
+  // v3.73: Preserve local updatedAt across pulls
+  const updatedMap = {};
+  (state.leads || []).forEach(l => { if (l.id && l.updatedAt) updatedMap[l.id] = l.updatedAt; });
+
+  const leads = sheetLeads.map(l => ({
+    id: l.id || '',
+    contact: String(l.contact || ''),
+    channelId: l.channelId || '',
+    channelName: l.channelName || '',
+    platform: l.platform || '',
+    leadDate: toDateStr(l.leadDate),
+    name: l.name || '',
+    apptDate: toDateStr(l.apptDate),
+    locationId: l.locationId || '',
+    location: locMap[l.locationId] || l.locationName || l.location || '',
+    showUp: l.showUp || '',
+    race: l.race || '',
+    spend: toNum(l.spend),
+    status: l.status || '',
+    remark: l.remark || '',
+    flags: parseFlags(l.flags, flagsMap[l.id]),
+    updatedAt: l.updatedAt || updatedMap[l.id] || ''
+  }));
+
+  const ads = sheetAds.map(a => ({
+    id: a.id || '',
+    month: toMonthStr(a.month),
+    channelId: a.channelId || '',
+    channelName: a.channelName || '',
+    platform: a.platform || '',
+    amount: toNum(a.amount)
+  }));
+
+  const rev = sheetRev.map(r => ({
+    id: r.id || '',
+    month: toMonthStr(r.month),
+    locationId: r.locationId || '',
+    total: toNum(r.total),
+    newCustomer: toNum(r.newCustomer)
+  }));
+
+  const fees = sheetFees.map(f => ({
+    id: f.id || '',
+    month: toMonthStr(f.month),
+    name: f.name || '',
+    platform: f.platform || '',
+    amount: toNum(f.amount)
+  }));
+
+  return { leads, ads, rev, fees, suspiciousLead };
+}
+
 async function gsPushAll() {
   const url = getGsUrl();
   if (!url) { gsLog('Please enter Apps Script URL', true); return; }
@@ -13493,127 +13659,14 @@ async function gsPullSilent() {
     const r = await fetch(gsGetUrl(url, 'pull'));
     const d = await r.json();
     if (!d.success) { console.warn('[Auto-pull] failed:', d.error); return; }
-    const sheetLeads = d.data.Leads || [];
-    const sheetAds = d.data.AdsSpend || [];
-    const sheetRev = d.data.Revenue || [];
-    const sheetFees = d.data.ThirdPartyFees || [];
 
-    // Safety: per-table protection — if a specific table returns empty but local has data,
-    // skip that table to prevent accidental data loss (checked at state assignment below)
+    // v6.63: 用统一 helper 处理 normalize (与 gsPull 共享, 避免代码漂移)
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, suspiciousLead } = _normalizeSheetPullData(d.data);
 
-    // Safety: reject unexpected lead columns (same check as manual Pull)
-    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags','updatedAt']);
-    const suspiciousLead = sheetLeads.find(l => {
-      const keys = Object.keys(l);
-      return keys.some(k => !EXPECTED_LEAD_KEYS.has(k)) || keys.length !== new Set(keys).size;
-    });
     if (suspiciousLead) {
       console.warn('[Auto-pull] BLOCKED: suspicious lead columns:', Object.keys(suspiciousLead));
       return;
     }
-
-    const toNum = v => {
-      if (v == null || v === '') return 0;
-      if (typeof v === 'number') return v;
-      const n = parseFloat(String(v).replace(/,/g, ''));
-      return isNaN(n) ? 0 : n;
-    };
-    const toMonthStr = v => {
-      if (!v) return '';
-      if (typeof v === 'string') {
-        if (/^\d{4}-\d{2}(-\d{2})?$/.test(v)) return v.substring(0, 7);
-        const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):/);
-        if (m) {
-          let y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]), h = parseInt(m[4]);
-          if (h >= 16) {
-            d += 1;
-            const dim = new Date(y, mo, 0).getDate();
-            if (d > dim) { d = 1; mo += 1; if (mo > 12) { mo = 1; y += 1; } }
-          }
-          return `${y}-${String(mo).padStart(2,'0')}`;
-        }
-        return v;
-      }
-      if (v instanceof Date || (typeof v === 'object' && v.getFullYear)) {
-        return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}`;
-      }
-      return String(v);
-    };
-    const toDateStr = v => {
-      if (!v) return '';
-      if (typeof v === 'string') {
-        if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v.substring(0, 10);
-        const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):/);
-        if (m) {
-          let y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]), h = parseInt(m[4]);
-          if (h >= 16) {
-            d += 1;
-            const dim = new Date(y, mo, 0).getDate();
-            if (d > dim) { d = 1; mo += 1; if (mo > 12) { mo = 1; y += 1; } }
-          }
-          return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        }
-        return v;
-      }
-      if (v instanceof Date || (typeof v === 'object' && v.getFullYear)) {
-        return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
-      }
-      return String(v);
-    };
-
-    // Lookup map for deriving location name from locationId (Sheet doesn't store locationName)
-    const locMap = {};
-    (state.locations || []).forEach(loc => { locMap[loc.id] = loc.name; });
-    // Preserve local-only flags (star markers) across sync
-    const flagsMap = {};
-    (state.leads || []).forEach(l => { if (l.flags && l.id) flagsMap[l.id] = l.flags; });
-    // Parse flags: prefer Sheet value (synced across devices); fallback to local
-    // Handles multiple formats: JSON string, Sheets-display format {key=value}, or plain object
-    const parseFlags = (sheetFlags, localFlags) => {
-      if (sheetFlags && typeof sheetFlags === 'object') return sheetFlags;
-      if (sheetFlags && typeof sheetFlags === 'string') {
-        // Try standard JSON first
-        try { return JSON.parse(sheetFlags); } catch (e) {}
-        // Fallback: parse Google Sheets display format like "{yellow=true, red=false}"
-        const match = sheetFlags.match(/\w+=\w+/g);
-        if (match) {
-          const obj = {};
-          match.forEach(pair => {
-            const [k, v] = pair.split('=');
-            obj[k.trim()] = v.trim() === 'true';
-          });
-          return obj;
-        }
-      }
-      return localFlags || {};
-    };
-    // v3.73: Preserve local updatedAt across pulls — prevents Updated-sort from
-    // resetting when Sheet hasn't yet learned about the updatedAt column.
-    const updatedMap = {};
-    (state.leads || []).forEach(l => { if (l.id && l.updatedAt) updatedMap[l.id] = l.updatedAt; });
-    const normalizedLeads = sheetLeads.map(l => ({
-      id: l.id || '', contact: String(l.contact || ''), channelId: l.channelId || '',
-      channelName: l.channelName || '', platform: l.platform || '',
-      leadDate: toDateStr(l.leadDate), name: l.name || '', apptDate: toDateStr(l.apptDate),
-      locationId: l.locationId || '', location: locMap[l.locationId] || l.locationName || l.location || '',
-      showUp: l.showUp || '', race: l.race || '', spend: toNum(l.spend),
-      status: l.status || '', remark: l.remark || '',
-      flags: parseFlags(l.flags, flagsMap[l.id]),
-      // Prefer Sheet's updatedAt (cross-device); fall back to local; else empty
-      updatedAt: l.updatedAt || updatedMap[l.id] || ''
-    }));
-    const normalizedAds = sheetAds.map(a => ({
-      id: a.id || '', month: toMonthStr(a.month),
-      channelId: a.channelId || '', amount: toNum(a.amount)
-    }));
-    const normalizedRev = sheetRev.map(r => ({
-      id: r.id || '', month: toMonthStr(r.month),
-      locationId: r.locationId || '', total: toNum(r.total), newCustomer: toNum(r.newCustomer)
-    }));
-    const normalizedFees = sheetFees.map(f => ({
-      id: f.id || '', month: toMonthStr(f.month),
-      name: f.name || '', platform: f.platform || '', amount: toNum(f.amount)
-    }));
 
     // Auto-backup before overwrite
     try {
@@ -13714,20 +13767,11 @@ async function gsPull() {
     const r = await fetch(gsGetUrl(url, 'pull'));
     const d = await r.json();
     if (!d.success) { gsLog('❌ Pull failed: ' + (d.error || 'Unknown'), true); return; }
-    const sheetLeads = d.data.Leads || [];
-    const sheetAds = d.data.AdsSpend || [];
-    const sheetRev = d.data.Revenue || [];
-    const sheetFees = d.data.ThirdPartyFees || [];
 
-    // --- Safety check 1: reject if Sheet data looks corrupted ---
-    // Detect duplicate/unexpected columns by checking if any lead has unusual keys
-    // Allow both current fields and legacy 'remark' (for backward compatibility with older Sheet data)
-    const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags','updatedAt']);
-    const suspiciousLead = sheetLeads.find(l => {
-      const keys = Object.keys(l);
-      // Any unknown key, or any duplicate-looking key pattern
-      return keys.some(k => !EXPECTED_LEAD_KEYS.has(k)) || keys.length !== new Set(keys).size;
-    });
+    // v6.63: 用统一 helper 处理 normalize (与 gsPullSilent 共享, 避免代码漂移)
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, suspiciousLead } = _normalizeSheetPullData(d.data);
+
+    // Safety check: reject if Sheet has unexpected columns (manual Pull 弹 alert, gsPullSilent 静默)
     if (suspiciousLead) {
       gsLog('⚠️ SAFETY: Sheet has unexpected columns. Pull BLOCKED to protect data.', true);
       console.warn('Suspicious lead keys:', Object.keys(suspiciousLead));
@@ -13735,134 +13779,6 @@ async function gsPull() {
       return;
     }
 
-    // --- Normalize data from Sheet (numbers may come as strings, dates as Date objects) ---
-    const toNum = v => {
-      if (v == null || v === '') return 0;
-      if (typeof v === 'number') return v;
-      const n = parseFloat(String(v).replace(/,/g, ''));
-      return isNaN(n) ? 0 : n;
-    };
-    const toMonthStr = v => {
-      if (!v) return '';
-      if (typeof v === 'string') {
-        // Pure YYYY-MM or YYYY-MM-DD format (no T) → just slice
-        if (/^\d{4}-\d{2}(-\d{2})?$/.test(v)) return v.substring(0, 7);
-        // ISO date string like "2025-12-31T16:00:00.000Z" — DO NOT use new Date (timezone shift)
-        // Use UTC parts + add 8 hours (MY timezone) as best-effort
-        const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):/);
-        if (m) {
-          // Treat as UTC then shift to MY (+8). If hour >= 16 UTC, it's next day MY
-          let y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]), h = parseInt(m[4]);
-          if (h >= 16) { // MY is next day
-            d += 1;
-            const dim = new Date(y, mo, 0).getDate();
-            if (d > dim) { d = 1; mo += 1; if (mo > 12) { mo = 1; y += 1; } }
-          }
-          return `${y}-${String(mo).padStart(2,'0')}`;
-        }
-        return v;
-      }
-      if (v instanceof Date || (typeof v === 'object' && v.getFullYear)) {
-        return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}`;
-      }
-      return String(v);
-    };
-    const toDateStr = v => {
-      if (!v) return '';
-      if (typeof v === 'string') {
-        // Pure YYYY-MM-DD (no T) → slice
-        if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v.substring(0, 10);
-        // ISO with timezone — parse manually
-        const m = v.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):/);
-        if (m) {
-          let y = parseInt(m[1]), mo = parseInt(m[2]), d = parseInt(m[3]), h = parseInt(m[4]);
-          if (h >= 16) {
-            d += 1;
-            const dim = new Date(y, mo, 0).getDate();
-            if (d > dim) { d = 1; mo += 1; if (mo > 12) { mo = 1; y += 1; } }
-          }
-          return `${y}-${String(mo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        }
-        return v;
-      }
-      if (v instanceof Date || (typeof v === 'object' && v.getFullYear)) {
-        return `${v.getFullYear()}-${String(v.getMonth()+1).padStart(2,'0')}-${String(v.getDate()).padStart(2,'0')}`;
-      }
-      return String(v);
-    };
-
-    // Normalize Revenue: total & newCustomer must be numbers; month must be YYYY-MM
-    const normalizedRev = sheetRev.map(r => ({
-      id: r.id || '',
-      month: toMonthStr(r.month),
-      locationId: r.locationId || '',
-      total: toNum(r.total),
-      newCustomer: toNum(r.newCustomer)
-    }));
-    // Normalize AdsSpend: amount must be number; month must be YYYY-MM
-    const normalizedAds = sheetAds.map(a => ({
-      id: a.id || '',
-      month: toMonthStr(a.month),
-      channelId: a.channelId || '',
-      channelName: a.channelName || '',
-      platform: a.platform || '',
-      amount: toNum(a.amount)
-    }));
-    // Normalize Fees: amount must be number; month must be YYYY-MM
-    const normalizedFees = sheetFees.map(f => ({
-      id: f.id || '',
-      month: toMonthStr(f.month),
-      name: f.name || '',
-      platform: f.platform || '',
-      amount: toNum(f.amount)
-    }));
-    // Lookup map for deriving location name from locationId (Sheet doesn't store locationName)
-    const locMapManual = {};
-    (state.locations || []).forEach(loc => { locMapManual[loc.id] = loc.name; });
-    // Preserve local-only flags (star markers) across sync
-    const flagsMapManual = {};
-    (state.leads || []).forEach(l => { if (l.flags && l.id) flagsMapManual[l.id] = l.flags; });
-    // Parse flags: prefer Sheet value; fallback to local
-    // Handles multiple formats: JSON string, Sheets-display format {key=value}, or plain object
-    const parseFlagsManual = (sheetFlags, localFlags) => {
-      if (sheetFlags && typeof sheetFlags === 'object') return sheetFlags;
-      if (sheetFlags && typeof sheetFlags === 'string') {
-        try { return JSON.parse(sheetFlags); } catch (e) {}
-        const match = sheetFlags.match(/\w+=\w+/g);
-        if (match) {
-          const obj = {};
-          match.forEach(pair => {
-            const [k, v] = pair.split('=');
-            obj[k.trim()] = v.trim() === 'true';
-          });
-          return obj;
-        }
-      }
-      return localFlags || {};
-    };
-    // v3.73: Preserve local updatedAt across manual pulls
-    const updatedMapManual = {};
-    (state.leads || []).forEach(l => { if (l.id && l.updatedAt) updatedMapManual[l.id] = l.updatedAt; });
-    // Normalize Leads: spend must be number; dates must be YYYY-MM-DD
-    const normalizedLeads = sheetLeads.map(l => ({
-      id: l.id || '',
-      contact: String(l.contact || ''),
-      channelId: l.channelId || '',
-      channelName: l.channelName || '',
-      platform: l.platform || '',
-      leadDate: toDateStr(l.leadDate),
-      name: l.name || '',
-      apptDate: toDateStr(l.apptDate),
-      locationId: l.locationId || '',
-      location: locMapManual[l.locationId] || l.locationName || l.location || '',
-      showUp: l.showUp || '',
-      race: l.race || '',
-      spend: toNum(l.spend),
-      status: l.status || '',
-      remark: l.remark || '',
-      flags: parseFlagsManual(l.flags, flagsMapManual[l.id]),
-      updatedAt: l.updatedAt || updatedMapManual[l.id] || ''
-    }));
     // --- Safety check 2: auto-backup current CRM state before overwrite ---
     try {
       const backup = {
