@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.48</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.49</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.48</div>
+      <div class="nav-brand-version">v6.49</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3468,8 +3468,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <span id="popWrap_popSel_adsSubSelect" data-pop-wrap-for="adsSubSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_adsSubSelect" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_adsSubSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>All</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
-        </select>
+  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect"></select>
         <!-- v5.44: Outlet filter (只在 Spending Power tab 显示) -->
         <span id="popWrap_popSel_spendOutletSelect" data-pop-wrap-for="spendOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_spendOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_spendOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
@@ -3478,12 +3477,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <option value="all">All outlets</option>
         </select>
         <!-- v5.63: Outlet filter (只在 Funnel tab 显示, v6.43: 也用于 Funnel 内 cohort 表) -->
-        <span id="popWrap_popSel_funnelOutletSelect" data-pop-wrap-for="funnelOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelOutletSelect')" aria-haspopup="listbox">
+        <span id="popWrap_popSel_funnelOutletSelect" data-pop-wrap-for="funnelOutletSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_funnelOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect">
-          <option value="all">All outlets</option>
-        </select>
+  </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
       <!-- v3.61: Pill tabs inside header -->
       <div class="pill-tabs-inheader">
@@ -3500,15 +3497,42 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div id="adsspend_content">
       <!-- Ads Cost panel -->
-      <div id="adsPanel_cost" style="display:block;">
+      <div id="adsPanel_cost" style="display: none;">
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Ads Cost by Month</div>
         <div class="table-wrap">
-          <table class="data" id="adsSpendReport"></table>
+          <table class="data" id="adsSpendReport"><thead><tr><th>Metric</th><th class="num">TOTAL</th></tr></thead><tbody>
+          <tr><td>Meta</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>Google</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td style="font-weight:700;">Total</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>AVG/day</td><td class="num">—</td></tr>
+          </tbody></table>
         </div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Monthly Trend</div>
-        <div id="chart_cost"></div>
+        <div id="chart_cost">
+      <div style="position:relative;width:100%;height:220px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">Ads Cost by Month</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Meta</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#CA8A04;"></span>Google</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:190px;">
+          <canvas role="img" aria-label="Ads Cost by Month" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+        </div>
+      </div></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Avg per Day</div>
-        <div id="chart_avgday"></div>
+        <div id="chart_avgday">
+      <div style="position:relative;width:100%;height:220px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">Avg Daily Spend by Channel</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Meta Avg/Day</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#CA8A04;"></span>Google Avg/Day</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#7132f5;"></span>Total Avg/Day</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:190px;">
+          <canvas role="img" aria-label="Avg Daily Spend by Channel" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+        </div>
+      </div></div>
       </div>
 
       <!-- Sales & ROAS panel -->
@@ -3522,27 +3546,165 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
 
       <!-- v6.43: Funnel panel — 合并 2 个视角表格 (apptDate + leadDate) -->
-      <div id="adsPanel_funnel" style="display:none;">
+      <div id="adsPanel_funnel" style="display: block;">
         <!-- 表 1: By Outlet Actual Count (apptDate 月统计, 跟实体营业额对账) -->
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;">By Outlet Actual Count</div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
           Group by appointment month — what actually happened each month (Ads Sales matches your monthly revenue).
         </div>
-        <div id="funnelTableWrap"></div>
+        <div id="funnelTableWrap"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:44px;">Month</th>
+      <th class="num">Total Lead</th><th class="num">Booked</th><th class="num">Booked %</th>
+      <th class="num">Show Up</th><th class="num">Show %</th>
+      <th class="num">Ads Cost</th><th class="num">Ads Sales</th><th class="num">ROAS</th>
+    </tr></thead>
+    <tbody><tr>
+      <td>Jan</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>Feb</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>Mar</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>Apr</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>May</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr></tbody>
+    <tfoot><tr class="total-row">
+      <td>TOTAL</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr></tfoot>
+  </table></div></div>
 
         <!-- 表 2: By Ads Actual Count (leadDate 月归因, 跨月跟踪) -->
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:32px 0 4px;">By Ads Actual Count</div>
         <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
           Group by lead month — track each month's leads through their full journey, all conversions credited back to the lead month (true ad attribution).
         </div>
-        <div id="cohortTableWrap"></div>
+        <div id="cohortTableWrap"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:44px;">Month</th>
+      <th class="num">Total Lead</th><th class="num">Booked</th><th class="num">Booked %</th>
+      <th class="num">Show Up</th><th class="num">Show %</th>
+      <th class="num">Ads Cost</th><th class="num">Ads Sales</th><th class="num">True ROAS</th>
+    </tr></thead>
+    <tbody><tr>
+      <td>Jan</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>Feb</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>Mar</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>Apr</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr><tr>
+      <td>May</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr></tbody>
+    <tfoot><tr class="total-row">
+      <td>TOTAL</td>
+      <td class="num">0</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">0</td>
+      <td class="num">—</td>
+      <td class="num">RM 0</td>
+      <td class="num">RM 0</td>
+      <td class="num">—</td>
+    </tr></tfoot>
+  </table></div></div>
 
         <!-- 漏斗图 -->
         <div id="chart_funnel" style="margin-top:32px;"></div>
 
         <!-- v6.42: 旧 wrap 保留 (隐藏) — 老代码 renderFunnelTab 仍写入这些 wrap, null 会让 JS 死.
              保留 div 但 display:none, 数据不显示但代码不崩. CPL/ROAS tab 不受影响. -->
-        <div id="funnelLeadsWrap" style="display:none;"></div>
+        <div id="funnelLeadsWrap" style="display:none;"><div class="empty">No data for 2026</div></div>
         <div id="funnelVisitsWrap" style="display:none;"></div>
         <div id="funnelRatesWrap" style="display:none;"></div>
       </div>
@@ -4724,7 +4886,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.24'; // v6.48 — 重构: Funnel/Cohort 改用 buildResponsiveTable (跟其他 tab 一样, 彻底解决 sticky bug)
+const DATA_VERSION = '4.25'; // v6.49 — Funnel/Cohort 改用 <table class="data"> 月份在左格式 (跟 Store Overview 同款)
 
 // ---------- State ----------
 let state = {
@@ -10353,8 +10515,8 @@ function _populateSpendOutletSelect() {
   if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects();
 }
 
-// v6.42: Funnel by Appointment Month — 跟 Lead Performance 同款表格, 但按 apptDate 月统计.
-//   v6.48: 改用 buildResponsiveTable (跟其他 tab 一样, 自动 sticky / 桌面横排 / 手机竖排)
+// v6.49: Funnel by Appointment Month — 用 <table class="data"> 月份在左格式 (跟 Store Overview 同款)
+//   sticky 第一列 / 居中数字 / TOTAL 紫色, 全部 CSS 自动处理.
 function renderFunnelByApptMonth() {
   const wrap = document.getElementById('funnelTableWrap');
   if (!wrap) return;
@@ -10365,9 +10527,7 @@ function renderFunnelByApptMonth() {
   const outletId = (document.getElementById('funnelOutletSelect') || {}).value || 'all';
   const useOutletFilter = outletId !== 'all';
 
-  // 该年 12 个月. 当月年: 只到当月. 其他: 1-12 月全显示.
   const today = todayStr();
-  const curMonth = today.substring(0, 7);
   const curY = today.substring(0, 4);
   const months = [];
   const maxMonth = (year === curY) ? parseInt(today.substring(5, 7), 10) : 12;
@@ -10386,10 +10546,7 @@ function renderFunnelByApptMonth() {
     if (tab === 'ofu') return l.platform === 'organic' || l.platform === 'followup';
     return true;
   };
-  const matchesOutlet = (l) => {
-    if (!useOutletFilter) return true;
-    return l.locationId === outletId;
-  };
+  const matchesOutlet = (l) => !useOutletFilter || l.locationId === outletId;
 
   const calcCostForMonth = (yyyymm) => {
     if (tab === 'ofu') return null;
@@ -10408,50 +10565,64 @@ function renderFunnelByApptMonth() {
     }).reduce((s, a) => s + (Number(a.amount) || 0), 0);
   };
 
-  // 算每月数据
-  const totalLeads = months.map(m => state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && matchesPlatform(l) && matchesOutlet(l)).length);
-  const booked = months.map(m => state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && matchesPlatform(l) && matchesOutlet(l)).length);
-  const showUp = months.map(m => state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.status === 'done' && matchesPlatform(l) && matchesOutlet(l)).length);
-  const adsSales = months.map(m => state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.status === 'done' && matchesPlatform(l) && matchesOutlet(l)).reduce((s, l) => s + (Number(l.spend) || 0), 0));
-  const adsCost = months.map(m => calcCostForMonth(m));
-  const bookedPct = months.map((_, i) => totalLeads[i] > 0 ? booked[i] / totalLeads[i] : null);
-  const showPct = months.map((_, i) => booked[i] > 0 ? showUp[i] / booked[i] : null);
-  const roas = months.map((_, i) => {
-    const c = adsCost[i];
-    if (c == null || c === 0) return null;
-    return adsSales[i] / c;
-  });
-
-  // TOTAL 行的特殊计算 (% 和 ROAS 是 ratio, 不是 sum)
-  const totalLeadsSum = totalLeads.reduce((s, v) => s + v, 0);
-  const bookedSum = booked.reduce((s, v) => s + v, 0);
-  const showUpSum = showUp.reduce((s, v) => s + v, 0);
-  const adsSalesSum = adsSales.reduce((s, v) => s + v, 0);
-  const adsCostSum = tab === 'ofu' ? null : adsCost.reduce((s, v) => s + (v || 0), 0);
-
   const fmtPct = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
   const fmtNum = v => v == null ? '—' : Number(v).toLocaleString('en-MY');
   const fmtMoney = v => v == null ? '—' : 'RM ' + Number(v).toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const fmtRoas = v => v == null ? '—' : v.toFixed(2) + 'x';
 
-  const metrics = [
-    { label: 'Total Lead', values: totalLeads, formatter: fmtNum, bold: true },
-    { label: 'Booked', values: booked, formatter: fmtNum },
-    { label: 'Booked %', values: bookedPct, formatter: fmtPct,
-      totalValue: totalLeadsSum > 0 ? bookedSum / totalLeadsSum : null },
-    { label: 'Show Up', values: showUp, formatter: fmtNum },
-    { label: 'Show %', values: showPct, formatter: fmtPct,
-      totalValue: bookedSum > 0 ? showUpSum / bookedSum : null },
-    { label: 'Ads Cost', values: adsCost, formatter: fmtMoney,
-      totalValue: adsCostSum },
-    { label: 'Ads Sales', values: adsSales, formatter: fmtMoney },
-    { label: 'ROAS', values: roas, formatter: fmtRoas,
-      totalValue: adsCostSum && adsCostSum > 0 ? adsSalesSum / adsCostSum : null },
-  ];
+  let tTotal = 0, tBooked = 0, tShow = 0, tSales = 0, tCost = 0;
+  let rows = '';
+  months.forEach(m => {
+    const total = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && matchesPlatform(l) && matchesOutlet(l)).length;
+    const booked = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && matchesPlatform(l) && matchesOutlet(l)).length;
+    const showUp = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.status === 'done' && matchesPlatform(l) && matchesOutlet(l)).length;
+    const adsSales = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.status === 'done' && matchesPlatform(l) && matchesOutlet(l)).reduce((s, l) => s + (Number(l.spend) || 0), 0);
+    const adsCost = calcCostForMonth(m);
+    const bookedPct = total > 0 ? booked / total : null;
+    const showPct = booked > 0 ? showUp / booked : null;
+    const roas = (adsCost == null || adsCost === 0) ? null : adsSales / adsCost;
 
-  const h4Style = 'font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:14px 0 6px;';
-  const fmtMS = m => fmt.monthShort(m);
-  wrap.innerHTML = buildResponsiveTable('', h4Style, metrics, months, fmtMS);
+    tTotal += total; tBooked += booked; tShow += showUp; tSales += adsSales;
+    if (adsCost != null) tCost += adsCost;
+
+    rows += `<tr>
+      <td>${fmt.monthShort(m)}</td>
+      <td class="num">${fmtNum(total)}</td>
+      <td class="num">${fmtNum(booked)}</td>
+      <td class="num">${fmtPct(bookedPct)}</td>
+      <td class="num">${fmtNum(showUp)}</td>
+      <td class="num">${fmtPct(showPct)}</td>
+      <td class="num">${fmtMoney(adsCost)}</td>
+      <td class="num">${fmtMoney(adsSales)}</td>
+      <td class="num">${fmtRoas(roas)}</td>
+    </tr>`;
+  });
+
+  const totalBookedPct = tTotal > 0 ? tBooked / tTotal : null;
+  const totalShowPct = tBooked > 0 ? tShow / tBooked : null;
+  const totalRoas = (tab === 'ofu' || tCost === 0) ? null : tSales / tCost;
+  const totalCostShow = tab === 'ofu' ? null : tCost;
+
+  wrap.innerHTML = `<div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:44px;">Month</th>
+      <th class="num">Total Lead</th><th class="num">Booked</th><th class="num">Booked %</th>
+      <th class="num">Show Up</th><th class="num">Show %</th>
+      <th class="num">Ads Cost</th><th class="num">Ads Sales</th><th class="num">ROAS</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr class="total-row">
+      <td>TOTAL</td>
+      <td class="num">${fmtNum(tTotal)}</td>
+      <td class="num">${fmtNum(tBooked)}</td>
+      <td class="num">${fmtPct(totalBookedPct)}</td>
+      <td class="num">${fmtNum(tShow)}</td>
+      <td class="num">${fmtPct(totalShowPct)}</td>
+      <td class="num">${fmtMoney(totalCostShow)}</td>
+      <td class="num">${fmtMoney(tSales)}</td>
+      <td class="num">${fmtRoas(totalRoas)}</td>
+    </tr></tfoot>
+  </table></div>`;
 }
 
 // v6.43: _populateCohortOutletSelect 删除 — cohort 表用 funnelOutletSelect 共享, populate 由 renderFunnelTab 处理.
@@ -10468,7 +10639,6 @@ function renderLeadCohortTab() {
   const outletId = (document.getElementById('funnelOutletSelect') || {}).value || 'all';
   const useOutletFilter = outletId !== 'all';
 
-  // 该年 12 个月. 当年: 1 月到当月. 历史/未来: 1-12 月全显示.
   const today = todayStr();
   const curY = today.substring(0, 4);
   const months = [];
@@ -10488,10 +10658,7 @@ function renderLeadCohortTab() {
     if (tab === 'ofu') return l.platform === 'organic' || l.platform === 'followup';
     return true;
   };
-  const matchesOutlet = (l) => {
-    if (!useOutletFilter) return true;
-    return l.locationId === outletId;
-  };
+  const matchesOutlet = (l) => !useOutletFilter || l.locationId === outletId;
 
   const calcCostForMonth = (yyyymm) => {
     if (tab === 'ofu') return null;
@@ -10510,49 +10677,65 @@ function renderLeadCohortTab() {
     }).reduce((s, a) => s + (Number(a.amount) || 0), 0);
   };
 
-  // 每月数据 — 按 leadDate 月份归因 (含跨月跟踪)
-  const totalLeads = months.map(m => state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && matchesPlatform(l) && matchesOutlet(l)).length);
-  const booked = months.map(m => state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && (l.status === 'booked' || l.status === 'done' || l.status === 'noshow') && matchesPlatform(l) && matchesOutlet(l)).length);
-  const showUp = months.map(m => state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && l.status === 'done' && matchesPlatform(l) && matchesOutlet(l)).length);
-  const adsSales = months.map(m => state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && l.status === 'done' && matchesPlatform(l) && matchesOutlet(l)).reduce((s, l) => s + (Number(l.spend) || 0), 0));
-  const adsCost = months.map(m => calcCostForMonth(m));
-  const bookedPct = months.map((_, i) => totalLeads[i] > 0 ? booked[i] / totalLeads[i] : null);
-  const showPct = months.map((_, i) => booked[i] > 0 ? showUp[i] / booked[i] : null);
-  const roas = months.map((_, i) => {
-    const c = adsCost[i];
-    if (c == null || c === 0) return null;
-    return adsSales[i] / c;
-  });
-
-  const totalLeadsSum = totalLeads.reduce((s, v) => s + v, 0);
-  const bookedSum = booked.reduce((s, v) => s + v, 0);
-  const showUpSum = showUp.reduce((s, v) => s + v, 0);
-  const adsSalesSum = adsSales.reduce((s, v) => s + v, 0);
-  const adsCostSum = tab === 'ofu' ? null : adsCost.reduce((s, v) => s + (v || 0), 0);
-
   const fmtPct = v => v == null ? '—' : (v * 100).toFixed(1) + '%';
   const fmtNum = v => v == null ? '—' : Number(v).toLocaleString('en-MY');
   const fmtMoney = v => v == null ? '—' : 'RM ' + Number(v).toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const fmtRoas = v => v == null ? '—' : v.toFixed(2) + 'x';
 
-  const metrics = [
-    { label: 'Total Lead', values: totalLeads, formatter: fmtNum, bold: true },
-    { label: 'Booked', values: booked, formatter: fmtNum },
-    { label: 'Booked %', values: bookedPct, formatter: fmtPct,
-      totalValue: totalLeadsSum > 0 ? bookedSum / totalLeadsSum : null },
-    { label: 'Show Up', values: showUp, formatter: fmtNum },
-    { label: 'Show %', values: showPct, formatter: fmtPct,
-      totalValue: bookedSum > 0 ? showUpSum / bookedSum : null },
-    { label: 'Ads Cost', values: adsCost, formatter: fmtMoney,
-      totalValue: adsCostSum },
-    { label: 'Ads Sales', values: adsSales, formatter: fmtMoney },
-    { label: 'True ROAS', values: roas, formatter: fmtRoas,
-      totalValue: adsCostSum && adsCostSum > 0 ? adsSalesSum / adsCostSum : null },
-  ];
+  let tTotal = 0, tBooked = 0, tShow = 0, tSales = 0, tCost = 0;
+  let rows = '';
+  months.forEach(m => {
+    const cohort = state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m) && matchesPlatform(l) && matchesOutlet(l));
+    const total = cohort.length;
+    const booked = cohort.filter(l => l.status === 'booked' || l.status === 'done' || l.status === 'noshow').length;
+    const showUp = cohort.filter(l => l.status === 'done').length;
+    const adsSales = cohort.filter(l => l.status === 'done').reduce((s, l) => s + (Number(l.spend) || 0), 0);
+    const adsCost = calcCostForMonth(m);
+    const bookedPct = total > 0 ? booked / total : null;
+    const showPct = booked > 0 ? showUp / booked : null;
+    const roas = (adsCost == null || adsCost === 0) ? null : adsSales / adsCost;
 
-  const h4Style = 'font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:14px 0 6px;';
-  const fmtMS = m => fmt.monthShort(m);
-  wrap.innerHTML = buildResponsiveTable('', h4Style, metrics, months, fmtMS);
+    tTotal += total; tBooked += booked; tShow += showUp; tSales += adsSales;
+    if (adsCost != null) tCost += adsCost;
+
+    rows += `<tr>
+      <td>${fmt.monthShort(m)}</td>
+      <td class="num">${fmtNum(total)}</td>
+      <td class="num">${fmtNum(booked)}</td>
+      <td class="num">${fmtPct(bookedPct)}</td>
+      <td class="num">${fmtNum(showUp)}</td>
+      <td class="num">${fmtPct(showPct)}</td>
+      <td class="num">${fmtMoney(adsCost)}</td>
+      <td class="num">${fmtMoney(adsSales)}</td>
+      <td class="num">${fmtRoas(roas)}</td>
+    </tr>`;
+  });
+
+  const totalBookedPct = tTotal > 0 ? tBooked / tTotal : null;
+  const totalShowPct = tBooked > 0 ? tShow / tBooked : null;
+  const totalRoas = (tab === 'ofu' || tCost === 0) ? null : tSales / tCost;
+  const totalCostShow = tab === 'ofu' ? null : tCost;
+
+  wrap.innerHTML = `<div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:44px;">Month</th>
+      <th class="num">Total Lead</th><th class="num">Booked</th><th class="num">Booked %</th>
+      <th class="num">Show Up</th><th class="num">Show %</th>
+      <th class="num">Ads Cost</th><th class="num">Ads Sales</th><th class="num">True ROAS</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr class="total-row">
+      <td>TOTAL</td>
+      <td class="num">${fmtNum(tTotal)}</td>
+      <td class="num">${fmtNum(tBooked)}</td>
+      <td class="num">${fmtPct(totalBookedPct)}</td>
+      <td class="num">${fmtNum(tShow)}</td>
+      <td class="num">${fmtPct(totalShowPct)}</td>
+      <td class="num">${fmtMoney(totalCostShow)}</td>
+      <td class="num">${fmtMoney(tSales)}</td>
+      <td class="num">${fmtRoas(totalRoas)}</td>
+    </tr></tfoot>
+  </table></div>`;
 }
 
 function renderSpendingPower() {
