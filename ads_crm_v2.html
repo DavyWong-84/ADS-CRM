@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.38</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.40</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.38</div>
+      <div class="nav-brand-version">v6.40</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3468,8 +3468,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <span id="popWrap_popSel_adsSubSelect" data-pop-wrap-for="adsSubSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_adsSubSelect" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_adsSubSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>All</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
-        </select>
+  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect"></select>
         <!-- v5.44: Outlet filter (只在 Spending Power tab 显示) -->
         <span id="popWrap_popSel_spendOutletSelect" data-pop-wrap-for="spendOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_spendOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_spendOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
@@ -3484,13 +3483,19 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect">
           <option value="all">All outlets</option>
         </select>
+        <!-- v6.39: Outlet filter (只在 Lead Cohort tab 显示) -->
+        <span id="popWrap_popSel_cohortOutletSelect" data-pop-wrap-for="cohortOutletSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_cohortOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_cohortOutletSelect')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
+    <span class="pop-trigger-chevron">▾</span>
+  </button></span><select id="cohortOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection('cohort')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_cohortOutletSelect"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
       <!-- v3.61: Pill tabs inside header -->
       <div class="pill-tabs-inheader">
-        <button type="button" id="adsPill_cost" onclick="switchAdsTab('cost')" class="pill-tab active">Ads Cost</button>
+        <button type="button" id="adsPill_cost" onclick="switchAdsTab('cost')" class="pill-tab">Ads Cost</button>
         <button type="button" id="adsPill_roas" onclick="switchAdsTab('roas')" class="pill-tab">Sales &amp; ROAS</button>
         <button type="button" id="adsPill_spend" onclick="switchAdsTab('spend')" class="pill-tab">Spending Power</button>
         <button type="button" id="adsPill_funnel" onclick="switchAdsTab('funnel')" class="pill-tab">Funnel</button>
+        <button type="button" id="adsPill_cohort" onclick="switchAdsTab('cohort')" class="pill-tab active">Lead Performance</button>
         <button type="button" id="adsPill_cpl" onclick="switchAdsTab('cpl')" class="pill-tab">CPL / CPA / CPS</button>
         <button type="button" id="adsPill_tmkt" onclick="switchAdsTab('tmkt')" class="pill-tab">Marketing Cost</button>
       </div>
@@ -3499,15 +3504,42 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
     <div id="adsspend_content">
       <!-- Ads Cost panel -->
-      <div id="adsPanel_cost" style="display:block;">
+      <div id="adsPanel_cost" style="display: none;">
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Ads Cost by Month</div>
         <div class="table-wrap">
-          <table class="data" id="adsSpendReport"></table>
+          <table class="data" id="adsSpendReport"><thead><tr><th>Metric</th><th class="num">TOTAL</th></tr></thead><tbody>
+          <tr><td>Meta</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>Google</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td style="font-weight:700;">Total</td><td class="num" style="font-weight:700;">—</td></tr>
+          <tr><td>AVG/day</td><td class="num">—</td></tr>
+          </tbody></table>
         </div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Monthly Trend</div>
-        <div id="chart_cost"></div>
+        <div id="chart_cost">
+      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">Ads Cost by Month</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Meta</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#CA8A04;"></span>Google</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:230px;">
+          <canvas role="img" aria-label="Ads Cost by Month" width="1526" height="287" style="display: block; box-sizing: border-box; height: 230px; width: 1220px;"></canvas>
+        </div>
+      </div></div>
         <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:20px 0 8px;">Avg per Day</div>
-        <div id="chart_avgday"></div>
+        <div id="chart_avgday">
+      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">Avg Daily Spend by Channel</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Meta Avg/Day</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#CA8A04;"></span>Google Avg/Day</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#7132f5;"></span>Total Avg/Day</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:230px;">
+          <canvas role="img" aria-label="Avg Daily Spend by Channel" width="1526" height="287" style="display: block; box-sizing: border-box; height: 230px; width: 1220px;"></canvas>
+        </div>
+      </div></div>
       </div>
 
       <!-- Sales & ROAS panel -->
@@ -3527,6 +3559,16 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <div id="funnelVisitsWrap" style="margin-top:24px;"></div>
         <div id="funnelRatesWrap" style="margin-top:24px;"></div>
         <div id="chart_funnel" style="margin-top:16px;"></div>
+      </div>
+
+      <!-- v6.39: Lead Performance panel - 按 lead 月份分组追踪命运 -->
+      <div id="adsPanel_cohort" style="display: block;">
+        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:4px;">Lead Performance</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
+          Track each month's leads through their full journey — no matter when they booked or showed up, all conversions are credited back to the Lead month.<br>
+          Useful for evaluating true ad performance with cross-month attribution. Different from Funnel tab (grouped by appointment month).
+        </div>
+        <div id="cohortTableWrap"><div style="overflow-x:auto;border:1px solid var(--purple-border);border-radius:8px;background:white;"><table class="t" style="width:100%;border-collapse:collapse;font-size:13px;"><thead><tr style="background:var(--purple-bg);"><th style="padding:10px;text-align:left;color:var(--purple-deep);font-weight:600;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);min-width:90px;">Lead Month</th><th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Total Lead</th><th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Booked</th><th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Booked %</th><th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Show Up</th><th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Show %</th><th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Ads Sales</th><th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">True ROAS</th></tr></thead><tbody><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-01</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:right;font-weight:500;color:var(--roas-color);">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-02</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:right;font-weight:500;color:var(--roas-color);">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-03</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:right;font-weight:500;color:var(--roas-color);">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-04</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:right;font-weight:500;color:var(--roas-color);">—</td></tr><tr style="border-bottom:1px solid #eee;"><td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">2026-05 <span style="font-size:10px;color:var(--orange);font-weight:500;">(in progress)</span></td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;">0</td><td style="padding:9px 10px;text-align:right;color:#64748b;">—</td><td style="padding:9px 10px;text-align:right;font-weight:500;">RM 0</td><td style="padding:9px 10px;text-align:right;font-weight:500;color:var(--roas-color);">—</td></tr><tr style="background:var(--purple-bg);font-weight:700;"><td style="padding:11px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);color:var(--purple-deep);">TOTAL</td><td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">0</td><td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">0</td><td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">—</td><td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">0</td><td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">—</td><td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">RM 0</td><td style="padding:11px 10px;text-align:right;color:var(--roas-color);">—</td></tr></tbody></table></div></div>
       </div>
 
       <!-- CPL/CPA/CPS panel -->
@@ -4704,7 +4746,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.14'; // v6.38 — 修 v6.37 的 SyntaxError (today 重复声明)
+const DATA_VERSION = '4.16'; // v6.40 — Lead Cohort 改名 Lead Performance + year filter 跟随顶部 + 中文改英文
 
 // ---------- State ----------
 let state = {
@@ -9839,7 +9881,7 @@ let _adsTab = 'cost';
 
 function switchAdsTab(key) {
   _adsTab = key;
-  ['cost', 'roas', 'funnel', 'cpl', 'tmkt', 'spend'].forEach(k => {
+  ['cost', 'roas', 'funnel', 'cohort', 'cpl', 'tmkt', 'spend'].forEach(k => {
     const panel = document.getElementById('adsPanel_' + k);
     const pill = document.getElementById('adsPill_' + k);
     const active = k === key;
@@ -9869,6 +9911,15 @@ function switchAdsTab(key) {
       setPopoverSelectHidden(funnelOutletSel, key !== 'funnel');
     } else {
       funnelOutletSel.style.display = (key === 'funnel') ? '' : 'none';
+    }
+  }
+  // v6.39: Cohort outlet select 同样处理 (只在 Lead Cohort tab 显示)
+  const cohortOutletSel = document.getElementById('cohortOutletSelect');
+  if (cohortOutletSel) {
+    if (typeof setPopoverSelectHidden === 'function') {
+      setPopoverSelectHidden(cohortOutletSel, key !== 'cohort');
+    } else {
+      cohortOutletSel.style.display = (key === 'cohort') ? '' : 'none';
     }
   }
   // Re-render only the active section for performance
@@ -9941,7 +9992,7 @@ function renderAdsSpend() {
   }
   // Sync pill visual state
   const currentAdsTab = _adsTab || 'cost';
-  ['cost', 'roas', 'funnel', 'cpl', 'tmkt', 'spend'].forEach(k => {
+  ['cost', 'roas', 'funnel', 'cohort', 'cpl', 'tmkt', 'spend'].forEach(k => {
     const pill = document.getElementById('adsPill_' + k);
     const panel = document.getElementById('adsPanel_' + k);
     if (pill) {
@@ -10061,7 +10112,7 @@ function renderAdsSpend() {
 }
 
 function renderAdsSpendSection(key) {
-  // key = 'cost' | 'roas' | 'funnel' | 'cpl' | 'fees' | 'tmkt'
+  // key = 'cost' | 'roas' | 'funnel' | 'cohort' | 'cpl' | 'fees' | 'tmkt'
   // Each section renders into its panel div
   const year = document.getElementById('adsYear').value || String(new Date().getFullYear());
   const tab = state.adsTab || 'all';
@@ -10069,6 +10120,11 @@ function renderAdsSpendSection(key) {
 
   if (key === 'roas' || key === 'funnel' || key === 'cpl') {
     renderFunnelTab();
+  }
+
+  // v6.39: Lead Cohort tab
+  if (key === 'cohort') {
+    renderLeadCohortTab();
   }
 
   if (key === 'fees' || key === '_fees_internal') {
@@ -10307,6 +10363,168 @@ function _populateSpendOutletSelect() {
   sel.value = current;
   // v5.46: 选项填好后重新升级 popover (跟其他 cf-select 行为一致)
   if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects();
+}
+
+// v6.39: Lead Cohort outlet select populate (跟 spend/funnel 同款)
+function _populateCohortOutletSelect() {
+  const sel = document.getElementById('cohortOutletSelect');
+  if (!sel) return;
+  const current = sel.value || 'all';
+  const opts = ['<option value="all">All outlets</option>'];
+  state.locations.filter(lo => lo.active !== false).forEach(lo => {
+    opts.push(`<option value="${esc(lo.id)}">${esc(lo.name)}</option>`);
+  });
+  sel.innerHTML = opts.join('');
+  sel.value = current;
+  if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects();
+}
+
+// v6.40: Lead Cohort 主渲染 — 按 lead 月份归因, 12 个月趋势表格 (跟随顶部 year filter)
+function renderLeadCohortTab() {
+  _populateCohortOutletSelect();
+
+  const wrap = document.getElementById('cohortTableWrap');
+  if (!wrap) return;
+
+  const year = document.getElementById('adsYear').value || String(new Date().getFullYear());
+  const tab = state.adsTab || 'all';        // all / meta / google / ofu
+  const subCh = state.adsSubChannel || null;
+  const outletId = (document.getElementById('cohortOutletSelect') || {}).value || 'all';
+  const useOutletFilter = outletId !== 'all';
+
+  // v6.40: 按 year filter 显示该年 12 个月. 当前年: 1 月到当月. 历史/未来年: 1-12 月全显示.
+  const today = todayStr();
+  const curMonth = today.substring(0, 7);
+  const curY = today.substring(0, 4);
+  const months = [];
+  const maxMonth = (year === curY) ? parseInt(today.substring(5, 7), 10) : 12;
+  for (let m = 1; m <= maxMonth; m++) {
+    months.push(year + '-' + String(m).padStart(2, '0'));
+  }
+
+  // platform/subChannel 过滤 lead 的函数
+  const matchesPlatform = (l) => {
+    if (tab === 'all') return true;
+    if (tab === 'meta') {
+      if (l.platform !== 'meta') return false;
+      if (subCh && l.channelId !== subCh) return false;
+      return true;
+    }
+    if (tab === 'google') return l.platform === 'google';
+    if (tab === 'ofu') return l.platform === 'organic' || l.platform === 'followup';
+    return true;
+  };
+  const matchesOutlet = (l) => {
+    if (!useOutletFilter) return true;
+    return l.locationId === outletId;
+  };
+
+  // 算 ads cost (月+platform 维度)
+  // tab=meta: Meta 全 channels (Simply 5 / Simply 3 / Chia FB) 加起来; 如果 subCh 设了, 只算那个
+  // tab=google: 所有 Google channels (state.channels.platform=google) 的 cost
+  // tab=ofu: 没广告费 → null
+  // tab=all: meta + google 总和 (organic/followup 没费用)
+  const calcCostForMonth = (yyyymm) => {
+    if (tab === 'ofu') return null;
+    return (state.adsSpend || []).filter(a => {
+      if (a.month !== yyyymm) return false;
+      const ch = state.channels.find(c => c.id === a.channelId);
+      if (!ch) return false;
+      if (tab === 'all') return ch.platform === 'meta' || ch.platform === 'google';
+      if (tab === 'meta') {
+        if (ch.platform !== 'meta') return false;
+        if (subCh && a.channelId !== subCh) return false;
+        return true;
+      }
+      if (tab === 'google') return ch.platform === 'google';
+      return false;
+    }).reduce((s, a) => s + (Number(a.amount) || 0), 0);
+  };
+
+  // 每月一行数据
+  const rows = months.map(m => {
+    // 这个月份 lead (按 leadDate)
+    const cohort = state.leads.filter(l => {
+      if (!l.leadDate || !l.leadDate.startsWith(m)) return false;
+      if (!matchesPlatform(l)) return false;
+      if (!matchesOutlet(l)) return false;
+      return true;
+    });
+    const total = cohort.length;
+    const booked = cohort.filter(l => l.status === 'booked' || l.status === 'done' || l.status === 'noshow').length;
+    const showUp = cohort.filter(l => l.status === 'done').length;
+    const adsSales = cohort.filter(l => l.status === 'done').reduce((s, l) => s + (Number(l.spend) || 0), 0);
+    const adsCost = calcCostForMonth(m);
+    const isCurrent = m === curMonth;
+
+    return { month: m, total, booked, showUp, adsSales, adsCost, isCurrent };
+  });
+
+  // TOTAL row
+  const totalRow = {
+    total: rows.reduce((s, r) => s + r.total, 0),
+    booked: rows.reduce((s, r) => s + r.booked, 0),
+    showUp: rows.reduce((s, r) => s + r.showUp, 0),
+    adsSales: rows.reduce((s, r) => s + r.adsSales, 0),
+    adsCost: tab === 'ofu' ? null : rows.reduce((s, r) => s + (r.adsCost || 0), 0)
+  };
+
+  // 渲染 HTML 表格
+  const fmtPct = (v) => v == null ? '—' : (v * 100).toFixed(1) + '%';
+  const fmtNum = (v) => v == null ? '—' : Number(v).toLocaleString('en-MY');
+  const fmtMoney = (v) => v == null ? '—' : 'RM ' + Number(v).toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const fmtRoas = (sales, cost) => {
+    if (cost == null) return '—';  // ofu / no cost
+    if (cost === 0) return sales > 0 ? '∞' : '—';
+    return (sales / cost).toFixed(2) + 'x';
+  };
+
+  let html = '<table class="t" style="width:100%;border-collapse:collapse;font-size:13px;">';
+  html += '<thead><tr style="background:var(--purple-bg);">';
+  html += '<th style="padding:10px;text-align:left;color:var(--purple-deep);font-weight:600;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);min-width:90px;">Lead Month</th>';
+  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Total Lead</th>';
+  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Booked</th>';
+  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Booked %</th>';
+  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Show Up</th>';
+  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Show %</th>';
+  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">Ads Sales</th>';
+  html += '<th style="padding:10px;text-align:right;color:var(--purple-deep);font-weight:600;">True ROAS</th>';
+  html += '</tr></thead><tbody>';
+
+  rows.forEach(r => {
+    const bookedPct = r.total > 0 ? r.booked / r.total : null;
+    const showPct = r.booked > 0 ? r.showUp / r.booked : null;
+    const tag = r.isCurrent ? ' <span style="font-size:10px;color:var(--orange);font-weight:500;">(in progress)</span>' : '';
+    html += '<tr style="border-bottom:1px solid #eee;">';
+    html += `<td style="padding:9px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:white;font-weight:500;">${r.month}${tag}</td>`;
+    html += `<td style="padding:9px 10px;text-align:right;">${fmtNum(r.total)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:right;">${fmtNum(r.booked)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:right;color:${bookedPct != null && bookedPct < 0.05 ? '#dc2626' : '#64748b'};">${fmtPct(bookedPct)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:right;">${fmtNum(r.showUp)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:right;color:${showPct != null && showPct < 0.5 ? '#dc2626' : '#64748b'};">${fmtPct(showPct)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:right;font-weight:500;">${fmtMoney(r.adsSales)}</td>`;
+    html += `<td style="padding:9px 10px;text-align:right;font-weight:500;color:var(--roas-color);">${fmtRoas(r.adsSales, r.adsCost)}</td>`;
+    html += '</tr>';
+  });
+
+  // TOTAL
+  const totalBookedPct = totalRow.total > 0 ? totalRow.booked / totalRow.total : null;
+  const totalShowPct = totalRow.booked > 0 ? totalRow.showUp / totalRow.booked : null;
+  html += '<tr style="background:var(--purple-bg);font-weight:700;">';
+  html += '<td style="padding:11px 10px;border-right:2px solid var(--purple);position:sticky;left:0;background:var(--purple-bg);color:var(--purple-deep);">TOTAL</td>';
+  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtNum(totalRow.total)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtNum(totalRow.booked)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtPct(totalBookedPct)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtNum(totalRow.showUp)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtPct(totalShowPct)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:right;color:var(--purple-deep);">${fmtMoney(totalRow.adsSales)}</td>`;
+  html += `<td style="padding:11px 10px;text-align:right;color:var(--roas-color);">${fmtRoas(totalRow.adsSales, totalRow.adsCost)}</td>`;
+  html += '</tr>';
+
+  html += '</tbody></table>';
+
+  // 包一层 scroll wrapper (移动端)
+  wrap.innerHTML = `<div style="overflow-x:auto;border:1px solid var(--purple-border);border-radius:8px;background:white;">${html}</div>`;
 }
 
 function renderSpendingPower() {
