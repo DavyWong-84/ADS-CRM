@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.67</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.68</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.67</div>
+      <div class="nav-brand-version">v6.68</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4724,7 +4724,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.43'; // v6.67 — Appt By Platform + By Race 桌面表: 月份在左, Metric/Race 在顶 (跟手机端口径一致)
+const DATA_VERSION = '4.44'; // v6.68 — 维护: 加 localMonth/localDate helper 替换 13 处 UTC 残留 / 删 escapeHTML 重复定义
 
 // ---------- State ----------
 let state = {
@@ -4743,14 +4743,14 @@ let state = {
   listChannelId: '',
   listSort: 'updated',
   listMode: 'month',
-  listMonth: new Date().toISOString().substring(0, 7),
+  listMonth: localMonth(),
   listYear: String(new Date().getFullYear()),
   summaryMode: 'single',
   summaryYear: String(new Date().getFullYear()),
-  summaryMonth: new Date().toISOString().substring(0, 7),
+  summaryMonth: localMonth(),
   storeMode: 'month',
   storeYear: String(new Date().getFullYear()),
-  storeMonth: new Date().toISOString().substring(0, 7),
+  storeMonth: localMonth(),
   storeSelected: 'all',
   storeChannelFilter: 'all', // v5.66: Appt Report 的 channel filter
   adsYear: String(new Date().getFullYear()),
@@ -4898,6 +4898,19 @@ function todayStr() {
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return y + '-' + m + '-' + day;
+}
+
+// v6.68: helper 替换 13 处 .toISOString().substring(0,7) / .substring(0,10) / .split('T')[0]
+//   原因: toISOString() 返 UTC, MY 凌晨 00-08 会比本地早 1 天 → 月份/日期错位
+//   localMonth(date?): 'YYYY-MM' (默认今天)
+//   localDate(date?):  'YYYY-MM-DD' (默认今天)
+function localMonth(date) {
+  const d = date || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+}
+function localDate(date) {
+  const d = date || new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 
 // v4.90: Build [Auto] remark line for new Lead from Pending
@@ -7693,7 +7706,7 @@ function resolveQuickPeriod(key) {
   if (key === 'today') return (d) => d === today;
   if (key === 'yesterday') {
     const y = new Date(); y.setDate(y.getDate() - 1);
-    const yStr = y.toISOString().substring(0, 10);
+    const yStr = localDate(y);
     return (d) => d === yStr;
   }
   if (key === 'month') {
@@ -10024,7 +10037,7 @@ function renderStore() {
 
     // Default: collapse all months except current
     if (tab === 'weekly') {
-      const curMonth = new Date().toISOString().substring(0, 7);
+      const curMonth = localMonth();
       const yr = document.getElementById('storeYear').value || String(new Date().getFullYear());
       const allM = Array.from({length:12}, (_, i) => `${yr}-${String(i+1).padStart(2,'0')}`);
       allM.forEach(m => { if (m !== curMonth) toggleWeekMonth(m); });
@@ -14263,7 +14276,7 @@ function computeAlerts() {
 
   // v5.90: Bug G+H fix — Race/Spend 缺失合并成单条 alert (per lead), 只查最近 30 天
   // 老 lead 数据 incomplete 是常态, 没必要每天提醒
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 86400000).toISOString().substring(0, 10);
+  const thirtyDaysAgo = localDate(new Date(Date.now() - 30 * 86400000));
   state.leads.forEach(l => {
     if (l.status !== 'done' && l.status !== 'noshow') return;
     // 用 apptDate 为准 (没就 leadDate)
@@ -14296,7 +14309,7 @@ function computeAlerts() {
   //   现在: 上月同 N 天 ads sales vs 本月迄今 ads sales, 直接 1:1.
   //   优点: 真公平, 不需要估算, 早期就能用.
   //   注意: 比的是 Ads Sales (done leads spend), 不是 Revenue. 但更敏感, 早期发现广告问题.
-  const curMonthStr = new Date().toISOString().substring(0, 7);
+  const curMonthStr = localMonth();
   // 只在当月才做同期对比 (历史月份 thisMonth !== curMonthStr 时不报)
   if (thisMonth === curMonthStr && curDay >= 5) {
     // 月初 < 5 天数据噪音太大, 不报警
@@ -14361,7 +14374,7 @@ function computeAlerts() {
     if (prev && cur && prev.amount > 0 && cur.amount > 0) {
       // v5.89: 同 Revenue alert — 当月还在进行就按已过去天数比例调整 prev
       const today = new Date();
-      const curMonthStr = today.toISOString().substring(0, 7);
+      const curMonthStr = localMonth(today);
       let adjustedPrev = prev.amount;
       let isPartialMonth = false;
       if (thisMonth === curMonthStr) {
@@ -14663,7 +14676,7 @@ function saveAINotes(notes) {
 function createAINote({ source, question, answer, tags, aiWrongAnswer }) {
   const note = {
     id: 'n_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
-    date: new Date().toISOString().substring(0, 10),
+    date: localDate(),
     source: source || 'manual',
     question: question || '',
     answer: answer || '',
@@ -15465,14 +15478,8 @@ const AI_AVATAR_SVG = `<div style="width:100%;height:100%;border-radius:50%;back
 
 const AI_AVATAR_SVG_LARGE = `<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, var(--purple), #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>`;
 
-// v3.69: escapeHTML is now defined globally in the first script block.
-// This duplicate is kept for safety — function declarations allow re-definition.
-function escapeHTML(s) {
-  if (s == null) return '';
-  return String(s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
+// v6.68: 删除 escapeHTML 重复定义 (原本在 line ~15315, 跟 line 4561 完全一样).
+// JS function 声明虽然允许重复但容易混乱, 既然 line 4561 已早注册全局, 这里不需要.
 
 function _aiInputKey(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
@@ -15705,7 +15712,7 @@ function tryQuickAnswer(q) {
   const thisMonth = today.substring(0, 7);
   const yesterday = (() => {
     const d = new Date(); d.setDate(d.getDate() - 1);
-    return d.toISOString().substring(0, 10);
+    return localDate(d);
   })();
   const lastMonth = (() => {
     const [y, m] = thisMonth.split('-').map(Number);
@@ -16051,7 +16058,7 @@ function buildAIContext(question) {
   })();
   const yesterday = (() => {
     const d = new Date(); d.setDate(d.getDate() - 1);
-    return d.toISOString().substring(0, 10);
+    return localDate(d);
   })();
 
   // Dictionary (always include — helps AI understand IDs)
@@ -16088,7 +16095,7 @@ function buildAIContext(question) {
   for (let i = 89; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const dStr = d.toISOString().substring(0, 10);
+    const dStr = localDate(d);
     const s = buildDaySummary(dStr);
     if (s.new_leads > 0 || s.appointments > 0) {
       daily90.push({ date: dStr, ...s });
@@ -16321,7 +16328,7 @@ function buildLeadsCount() {
   const thisWeekStart = (() => {
     const d = new Date();
     d.setDate(d.getDate() - d.getDay());
-    return d.toISOString().substring(0, 10);
+    return localDate(d);
   })();
   return {
     today: state.leads.filter(l => l.leadDate === today).length,
