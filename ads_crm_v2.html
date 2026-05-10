@@ -10469,28 +10469,73 @@ function renderAdsSpendSection(key) {
     const gPct = gRev > 0 ? gTotal / gRev : null;
 
     let html;
+    // v6.67: 月份在左, Davy 列结构: Ads Cost | 3rd Party Fees | ┃ Total Mkt Cost | ┃ Revenue
+    //   所有 % 分母 = Revenue, Cost % of Rev 列移除 (Total Mkt Cost 已带 %)
+    const dividerStyle = 'border-left:2px solid var(--purple-deep);';
+    const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
+    const cellWithPct = (v, base) => {
+      if (!v || v === 0) return '—';
+      return `${fmt.money(v)}<br><span style="font-size:11px;color:var(--gray);">${pctOf(v, base)}</span>`;
+    };
     if (!isMobile) {
-      const mHdr = activeM.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('');
-      html = `<div class="table-wrap"><table class="data"><thead><tr><th>Metric</th>${mHdr}<th class="num">TOTAL</th></tr></thead><tbody>`;
-      html += `<tr><td>Ads Cost</td>${rows.map(r=>`<td class="num">${r.adsCost>0?fmt.money(r.adsCost):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(gAdsCost)}</td></tr>`;
-      html += `<tr><td>3rd Party Fees</td>${rows.map(r=>`<td class="num">${r.fees>0?fmt.money(r.fees):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(gFees)}</td></tr>`;
-      html += `<tr class="total-row"><td>Total Mkt Cost</td>${rows.map(r=>`<td class="num">${r.totalMkt>0?fmt.money(r.totalMkt):'—'}</td>`).join('')}<td class="num">${fmt.money(gTotal)}</td></tr>`;
-      html += `<tr><td>Revenue</td>${rows.map(r=>`<td class="num">${r.revenue>0?fmt.money(r.revenue):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(gRev)}</td></tr>`;
-      html += `<tr><td style="font-weight:700;color:var(--purple-deep);">Cost % of Rev</td>${rows.map(r=>`<td class="num" style="font-weight:700;color:${r.pct!==null&&r.pct>0.3?'var(--ads-color,var(--adscost-color))':'var(--purple-deep)'}">${r.pct!==null?fmt.pct(r.pct):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${gPct!==null?fmt.pct(gPct):'—'}</td></tr>`;
-      html += `</tbody></table></div>`;
+      const monthRows = rows.map(r => `<tr>
+        <td style="font-weight:600;">${fmt.monthShort(r.m)}</td>
+        <td class="num">${cellWithPct(r.adsCost, r.revenue)}</td>
+        <td class="num">${cellWithPct(r.fees, r.revenue)}</td>
+        <td class="num" style="font-weight:600;${dividerStyle}">${cellWithPct(r.totalMkt, r.revenue)}</td>
+        <td class="num" style="font-weight:600;${dividerStyle}">${r.revenue>0?fmt.money(r.revenue):'—'}</td>
+      </tr>`).join('');
+      const totalRow = `<tr class="total-row">
+        <td style="font-weight:700;">TOTAL</td>
+        <td class="num" style="font-weight:700;">${cellWithPct(gAdsCost, gRev)}</td>
+        <td class="num" style="font-weight:700;">${cellWithPct(gFees, gRev)}</td>
+        <td class="num" style="font-weight:700;${dividerStyle}">${cellWithPct(gTotal, gRev)}</td>
+        <td class="num" style="font-weight:700;${dividerStyle}">${gRev>0?fmt.money(gRev):'—'}</td>
+      </tr>`;
+      html = `<div class="table-wrap"><table class="data">
+        <thead><tr>
+          <th>Month</th>
+          <th class="num">Ads Cost</th>
+          <th class="num">3rd Party Fees</th>
+          <th class="num" style="${dividerStyle}">Total Mkt Cost</th>
+          <th class="num" style="${dividerStyle}">Revenue</th>
+        </tr></thead>
+        <tbody>${monthRows}${totalRow}</tbody>
+      </table></div>`;
     } else {
-      html = `<div class="table-wrap"><table class="data"><thead><tr><th style="width:40px;min-width:40px;">Month</th><th class="num">Ads Cost</th><th class="num">3rd Party</th><th class="num">Total Mkt</th><th class="num">Revenue</th><th class="num">Cost%</th></tr></thead><tbody>`;
+      // Mobile: same column structure
+      const cellMobile = (v, base) => {
+        if (!v || v === 0) return '—';
+        return `<div>${fmt.money(v)}</div><div style="font-size:11px;color:var(--gray);">${pctOf(v, base)}</div>`;
+      };
+      let mRows = '';
       rows.forEach(r => {
-        html += `<tr><td style="font-weight:500;white-space:nowrap;">${fmt.monthShort(r.m)}</td>`;
-        html += `<td class="num">${r.adsCost>0?fmt.money(r.adsCost):'—'}</td>`;
-        html += `<td class="num">${r.fees>0?fmt.money(r.fees):'—'}</td>`;
-        html += `<td class="num" style="font-weight:700;">${r.totalMkt>0?fmt.money(r.totalMkt):'—'}</td>`;
-        html += `<td class="num">${r.revenue>0?fmt.money(r.revenue):'—'}</td>`;
-        html += `<td class="num" style="font-weight:700;color:${r.pct!==null&&r.pct>0.3?'var(--ads-color,var(--adscost-color))':'var(--purple-deep)'}">${r.pct!==null?fmt.pct(r.pct):'—'}</td>`;
-        html += `</tr>`;
+        mRows += `<tr>
+          <td style="font-weight:500;white-space:nowrap;width:40px;min-width:40px;">${fmt.monthShort(r.m)}</td>
+          <td class="num" style="vertical-align:top;">${cellMobile(r.adsCost, r.revenue)}</td>
+          <td class="num" style="vertical-align:top;">${cellMobile(r.fees, r.revenue)}</td>
+          <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellMobile(r.totalMkt, r.revenue)}</td>
+          <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${r.revenue>0?fmt.money(r.revenue):'—'}</td>
+        </tr>`;
       });
-      html += `<tr class="total-row"><td>TOTAL</td><td class="num">${fmt.money(gAdsCost)}</td><td class="num">${fmt.money(gFees)}</td><td class="num">${fmt.money(gTotal)}</td><td class="num">${fmt.money(gRev)}</td><td class="num">${gPct!==null?fmt.pct(gPct):'—'}</td></tr>`;
-      html += `</tbody></table></div>`;
+      html = `<div class="table-wrap"><table class="data">
+        <thead><tr>
+          <th style="width:40px;min-width:40px;">Month</th>
+          <th class="num">Ads Cost</th>
+          <th class="num">3rd Party</th>
+          <th class="num" style="${dividerStyle}">Total Mkt</th>
+          <th class="num" style="${dividerStyle}">Revenue</th>
+        </tr></thead>
+        <tbody>${mRows}
+        <tr class="total-row">
+          <td>TOTAL</td>
+          <td class="num">${cellMobile(gAdsCost, gRev)}</td>
+          <td class="num">${cellMobile(gFees, gRev)}</td>
+          <td class="num" style="font-weight:700;${dividerStyle}">${cellMobile(gTotal, gRev)}</td>
+          <td class="num" style="font-weight:700;${dividerStyle}">${gRev>0?fmt.money(gRev):'—'}</td>
+        </tr>
+        </tbody>
+      </table></div>`;
     }
     tmktTable.innerHTML = html;
   }
@@ -11632,116 +11677,85 @@ function renderRevenueOutlet(mArr, locId) {
   const adsNewYr = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(year) && l.locationId === locId && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
 
   if (!isMobile) {
-    const pb = (val, pct) => `${val}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
-    const mHdr = oMData.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
-    // Year totals
+    // v6.67: Desktop — 合并 Revenue + New Source 两张表 → 单表月份在左
+    //   列顺序: Month | Ads Sales | Walk-in | ┃ Total New | Total Existing | ┃ Total Revenue
+    //   所有 % 分母统一为 Total Revenue (该月 outlet 营业额)
     const walkInYr = yearNew - adsNewYr;
-    const adsYrPct = yearNew > 0 ? '('+(adsNewYr/yearNew*100).toFixed(1)+'%)' : '—';
-    const walkInYrPct = yearNew > 0 ? '('+(walkInYr/yearNew*100).toFixed(1)+'%)' : '—';
-    // ─── Table 1: Customer Revenue (New / Existing / Total) ───
-    html += `<div class="table-wrap"><table class="data data-t">
-      <thead><tr><th>Revenue</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
-      <tbody>
-        <tr>
-          <td style="">New</td>
-          ${oMData.map(d=>`<td class="num" style="">${d.t>0?pb(fmt.money(d.n),'('+(d.n/d.t*100).toFixed(1)+'%)'):'—'}</td>`).join('')}
-          <td class="num" style="font-weight:700;">${fmt.money(yearNew)}<br><span style="font-size:11px;color:var(--gray);">(${newPct}%)</span></td>
-        </tr>
-        <tr>
-          <td style="">Existing</td>
-          ${oMData.map(d=>`<td class="num" style="">${d.t>0?pb(fmt.money(d.o),'('+(d.o/d.t*100).toFixed(1)+'%)'):'—'}</td>`).join('')}
-          <td class="num" style="font-weight:700;">${fmt.money(yearOld)}<br><span style="font-size:11px;color:var(--gray);">(${oldPct}%)</span></td>
-        </tr>
-        <tr>
-          <td style="font-weight:700;">Total Sales</td>
-          ${oMData.map(d=>`<td class="num" style="font-weight:700;">${d.t>0?fmt.money(d.t):'—'}</td>`).join('')}
-          <td class="num" style="font-weight:700;">${fmt.money(yearTotal)}</td>
-        </tr>
-      </tbody>
-    </table></div>`;
-    // ─── Table 2: New Customer Source (Ads / Walk-in / Total New) ───
-    html += `<div class="table-wrap" style="margin-top:14px;"><table class="data data-t">
-      <thead><tr><th>New Source</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
-      <tbody>
-        <tr>
-          <td style="">Ads Sales</td>
-          ${oMData.map(d=>{
-            const pct = d.n>0 ? '('+(d.adsNew/d.n*100).toFixed(1)+'%)' : '—';
-            return `<td class="num" style="">${d.adsNew>0?pb(fmt.money(d.adsNew),pct):'—'}</td>`;
-          }).join('')}
-          <td class="num" style="font-weight:700;">${fmt.money(adsNewYr)}<br><span style="font-size:11px;color:var(--gray);">${adsYrPct}</span></td>
-        </tr>
-        <tr>
-          <td style="">Walk-in</td>
-          ${oMData.map(d=>{
-            const wi = d.n - d.adsNew;
-            const pct = d.n>0 ? '('+(wi/d.n*100).toFixed(1)+'%)' : '—';
-            return `<td class="num" style="">${d.n>0?pb(fmt.money(wi),pct):'—'}</td>`;
-          }).join('')}
-          <td class="num" style="font-weight:700;">${fmt.money(walkInYr)}<br><span style="font-size:11px;color:var(--gray);">${walkInYrPct}</span></td>
-        </tr>
-        <tr>
-          <td style="font-weight:700;">Total New</td>
-          ${oMData.map(d=>`<td class="num" style="font-weight:700;">${d.n>0?fmt.money(d.n):'—'}</td>`).join('')}
-          <td class="num" style="font-weight:700;">${fmt.money(yearNew)}</td>
-        </tr>
-      </tbody>
+    const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
+    const cell = (v, pct) => v>0 ? `${fmt.money(v)}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
+    const cellNoPct = (v) => v>0 ? fmt.money(v) : '—';
+    const dividerStyle = 'border-left:2px solid var(--purple-deep);';
+
+    const monthRows = oMData.map(d => {
+      const wi = d.n - d.adsNew;
+      return `<tr>
+        <td style="font-weight:600;">${fmt.monthShort(d.m)}</td>
+        <td class="num">${cell(d.adsNew, pctOf(d.adsNew, d.t))}</td>
+        <td class="num">${cell(wi, pctOf(wi, d.t))}</td>
+        <td class="num" style="font-weight:600;${dividerStyle}">${cell(d.n, pctOf(d.n, d.t))}</td>
+        <td class="num" style="font-weight:600;">${cell(d.o, pctOf(d.o, d.t))}</td>
+        <td class="num" style="font-weight:600;${dividerStyle}">${cellNoPct(d.t)}</td>
+      </tr>`;
+    }).join('');
+    const totalRow = `<tr class="total-row">
+      <td style="font-weight:700;">TOTAL</td>
+      <td class="num" style="font-weight:700;">${cell(adsNewYr, pctOf(adsNewYr, yearTotal))}</td>
+      <td class="num" style="font-weight:700;">${cell(walkInYr, pctOf(walkInYr, yearTotal))}</td>
+      <td class="num" style="font-weight:700;${dividerStyle}">${cell(yearNew, pctOf(yearNew, yearTotal))}</td>
+      <td class="num" style="font-weight:700;">${cell(yearOld, pctOf(yearOld, yearTotal))}</td>
+      <td class="num" style="font-weight:700;${dividerStyle}">${cellNoPct(yearTotal)}</td>
+    </tr>`;
+    html += `<div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th>Month</th>
+        <th class="num">Ads Sales</th>
+        <th class="num">Walk-in</th>
+        <th class="num" style="${dividerStyle}">Total New</th>
+        <th class="num">Total Existing</th>
+        <th class="num" style="${dividerStyle}">Total Revenue</th>
+      </tr></thead>
+      <tbody>${monthRows}${totalRow}</tbody>
     </table></div>`;
   } else {
-    // ─── Mobile Table 1: Customer Revenue (Month / New / Existing / Total) ───
-    html += `<div class="table-wrap"><table class="data data-t" style="vertical-align:top;">
-      <thead><tr>
-        <th style="width:80px;min-width:80px;white-space:nowrap;">Revenue</th>
-        <th class="num" style="">New</th>
-        <th class="num" style="">Existing</th>
-        <th class="num">Total</th>
-      </tr></thead><tbody>`;
-    oMData.forEach(d => {
-      const nPct = d.t > 0 ? '('+(d.n/d.t*100).toFixed(1)+'%)' : '—';
-      const oPct = d.t > 0 ? '('+(d.o/d.t*100).toFixed(1)+'%)' : '—';
-      html += `<tr style="${d.isEmpty?'color:var(--silver);':''}vertical-align:top;">
-        <td style="font-weight:${d.isEmpty?'400':'600'};width:80px;min-width:80px;white-space:nowrap;vertical-align:middle;">${fmt.monthShort(d.m)}</td>
-        <td class="num" style="vertical-align:top;">${d.isEmpty ? '—' : `<div>${fmt.money(d.n)}</div><div style="font-size:11px;color:var(--gray);">${nPct}</div>`}</td>
-        <td class="num" style="vertical-align:top;">${d.isEmpty ? '—' : `<div>${fmt.money(d.o)}</div><div style="font-size:11px;color:var(--gray);">${oPct}</div>`}</td>
-        <td class="num" style="vertical-align:middle;font-weight:700;">${d.isEmpty ? '—' : fmt.money(d.t)}</td>
-      </tr>`;
-    });
-    html += `<tr class="total-row" style="vertical-align:middle;">
-      <td style="width:80px;min-width:80px;">TOTAL</td>
-      <td class="num" style="vertical-align:middle;">${fmt.money(yearNew)}</td>
-      <td class="num" style="vertical-align:middle;">${fmt.money(yearOld)}</td>
-      <td class="num" style="vertical-align:middle;font-weight:700;">${fmt.money(yearTotal)}</td>
-    </tr></tbody></table></div>`;
-
-    // ─── Mobile Table 2: New Customer Source (Month / Ads / Walk-in / Total New) ───
+    // v6.67: Mobile — same merged table layout
     const walkInYr = yearNew - adsNewYr;
-    html += `<div class="table-wrap" style="margin-top:14px;"><table class="data data-t" style="vertical-align:top;">
-      <thead><tr>
-        <th style="width:80px;min-width:80px;white-space:nowrap;">New Source</th>
-        <th class="num" style="">Ads Sales</th>
-        <th class="num" style="">Walk-in</th>
-        <th class="num" style="">Total New</th>
-      </tr></thead><tbody>`;
+    const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
+    const cellHTML = (v, pct) => v>0 ? `<div>${fmt.money(v)}</div><div style="font-size:11px;color:var(--gray);">${pct}</div>` : '—';
+    const cellPlain = (v) => v>0 ? fmt.money(v) : '—';
+    const dividerStyle = 'border-left:2px solid var(--purple-deep);';
+
+    let mRows = '';
     oMData.forEach(d => {
       const wi = d.n - d.adsNew;
-      const adsPct = d.n > 0 ? '('+(d.adsNew/d.n*100).toFixed(1)+'%)' : '—';
-      const wiPct = d.n > 0 ? '('+(wi/d.n*100).toFixed(1)+'%)' : '—';
-      const empty = d.n === 0;
-      html += `<tr style="${empty?'color:var(--silver);':''}vertical-align:top;">
-        <td style="font-weight:${empty?'400':'600'};width:80px;min-width:80px;white-space:nowrap;vertical-align:middle;">${fmt.monthShort(d.m)}</td>
-        <td class="num" style="vertical-align:top;">${d.adsNew > 0 ? `<div>${fmt.money(d.adsNew)}</div><div style="font-size:11px;color:var(--gray);">${adsPct}</div>` : '—'}</td>
-        <td class="num" style="vertical-align:top;">${empty ? '—' : `<div>${fmt.money(wi)}</div><div style="font-size:11px;color:var(--gray);">${wiPct}</div>`}</td>
-        <td class="num" style="vertical-align:middle;font-weight:700;">${empty ? '—' : fmt.money(d.n)}</td>
+      const empty = d.isEmpty;
+      mRows += `<tr style="${empty?'color:var(--silver);':''}">
+        <td style="font-weight:${empty?'400':'600'};width:60px;min-width:60px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
+        <td class="num" style="vertical-align:top;">${cellHTML(d.adsNew, pctOf(d.adsNew, d.t))}</td>
+        <td class="num" style="vertical-align:top;">${cellHTML(wi, pctOf(wi, d.t))}</td>
+        <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellHTML(d.n, pctOf(d.n, d.t))}</td>
+        <td class="num" style="vertical-align:top;font-weight:600;">${cellHTML(d.o, pctOf(d.o, d.t))}</td>
+        <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellPlain(d.t)}</td>
       </tr>`;
     });
-    const yrAdsPct = yearNew > 0 ? '('+(adsNewYr/yearNew*100).toFixed(1)+'%)' : '';
-    const yrWiPct = yearNew > 0 ? '('+(walkInYr/yearNew*100).toFixed(1)+'%)' : '';
-    html += `<tr class="total-row" style="vertical-align:middle;">
-      <td style="width:80px;min-width:80px;">TOTAL</td>
-      <td class="num" style="vertical-align:middle;">${fmt.money(adsNewYr)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${yrAdsPct}</span></td>
-      <td class="num" style="vertical-align:middle;">${fmt.money(walkInYr)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${yrWiPct}</span></td>
-      <td class="num" style="vertical-align:middle;font-weight:700;">${fmt.money(yearNew)}</td>
-    </tr></tbody></table></div>`;
+    html += `<div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:60px;min-width:60px;">Month</th>
+        <th class="num">Ads Sales</th>
+        <th class="num">Walk-in</th>
+        <th class="num" style="${dividerStyle}">Total New</th>
+        <th class="num">Total Existing</th>
+        <th class="num" style="${dividerStyle}">Total Revenue</th>
+      </tr></thead>
+      <tbody>${mRows}</tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL</td>
+        <td class="num">${fmt.money(adsNewYr)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(adsNewYr, yearTotal)}</span></td>
+        <td class="num">${fmt.money(walkInYr)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(walkInYr, yearTotal)}</span></td>
+        <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(yearNew)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(yearNew, yearTotal)}</span></td>
+        <td class="num" style="font-weight:700;">${fmt.money(yearOld)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(yearOld, yearTotal)}</span></td>
+        <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(yearTotal)}</td>
+      </tr></tfoot>
+    </table></div>`;
   }
 
   html += `<div id="chart_rev_outlet" style="margin-top:16px;"></div>
@@ -11861,123 +11875,88 @@ function renderRevenueSummary(mArr) {
   const allAdsPct = allYearTotal > 0 ? (allYearAds/allYearTotal*100).toFixed(1) : '—';
 
   if (!isMobile) {
-    // Desktop: 2 tables (Customer Revenue / New Customer Source)
-    const pb = (val, pct) => `${val}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>`;
-    const mHdr = allMData.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
+    // v6.67: Desktop — 合并 Revenue + New Source 两张表 → 单表月份在左
+    //   列顺序: Month | Ads Sales | Walk-in | ┃ Total New | Total Existing | ┃ Total Revenue
+    //   所有 % 分母统一为 Total Revenue (4 列加起来 = 100%)
     const allWalkInYr = allYearNew - allYearAds;
-    const adsYrPctOfNew = allYearNew > 0 ? '('+(allYearAds/allYearNew*100).toFixed(1)+'%)' : '—';
-    const wiYrPctOfNew = allYearNew > 0 ? '('+(allWalkInYr/allYearNew*100).toFixed(1)+'%)' : '—';
+    const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
+    const cell = (v, pct) => v>0 ? `${fmt.money(v)}<br><span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
+    const cellNoPct = (v) => v>0 ? fmt.money(v) : '—';
+    const dividerStyle = 'border-left:2px solid var(--purple-deep);';
+
+    const monthRows = allMData.map(d => {
+      const wi = d.mNew - d.mAds;
+      return `<tr>
+        <td style="font-weight:600;">${fmt.monthShort(d.m)}</td>
+        <td class="num">${cell(d.mAds, pctOf(d.mAds, d.mTotal))}</td>
+        <td class="num">${cell(wi, pctOf(wi, d.mTotal))}</td>
+        <td class="num" style="font-weight:600;${dividerStyle}">${cell(d.mNew, pctOf(d.mNew, d.mTotal))}</td>
+        <td class="num" style="font-weight:600;">${cell(d.mOld, pctOf(d.mOld, d.mTotal))}</td>
+        <td class="num" style="font-weight:600;${dividerStyle}">${cellNoPct(d.mTotal)}</td>
+      </tr>`;
+    }).join('');
+    const totalRow = `<tr class="total-row">
+      <td style="font-weight:700;">TOTAL</td>
+      <td class="num" style="font-weight:700;">${cell(allYearAds, pctOf(allYearAds, allYearTotal))}</td>
+      <td class="num" style="font-weight:700;">${cell(allWalkInYr, pctOf(allWalkInYr, allYearTotal))}</td>
+      <td class="num" style="font-weight:700;${dividerStyle}">${cell(allYearNew, pctOf(allYearNew, allYearTotal))}</td>
+      <td class="num" style="font-weight:700;">${cell(allYearOld, pctOf(allYearOld, allYearTotal))}</td>
+      <td class="num" style="font-weight:700;${dividerStyle}">${cellNoPct(allYearTotal)}</td>
+    </tr>`;
     html += `<div class="card" style="margin-top:14px;">
       <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data data-t">
-        <thead><tr><th>Revenue</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
-        <tbody>
-          <tr>
-            <td style="">New</td>
-            ${allMData.map(d=>`<td class="num" style="">${d.mTotal>0?pb(fmt.money(d.mNew),'('+(d.mNew/d.mTotal*100).toFixed(1)+'%)'):'—'}</td>`).join('')}
-            <td class="num" style="font-weight:700;">${fmt.money(allYearNew)}<br><span style="font-size:11px;color:var(--gray);">(${allNewPct}%)</span></td>
-          </tr>
-          <tr>
-            <td style="">Existing</td>
-            ${allMData.map(d=>`<td class="num" style="">${d.mTotal>0?pb(fmt.money(d.mOld),'('+(d.mOld/d.mTotal*100).toFixed(1)+'%)'):'—'}</td>`).join('')}
-            <td class="num" style="font-weight:700;">${fmt.money(allYearOld)}<br><span style="font-size:11px;color:var(--gray);">(${allOldPct}%)</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;">Total Sales</td>
-            ${allMData.map(d=>`<td class="num" style="font-weight:700;">${d.mTotal>0?fmt.money(d.mTotal):'—'}</td>`).join('')}
-            <td class="num" style="font-weight:700;">${fmt.money(allYearTotal)}</td>
-          </tr>
-        </tbody>
-      </table></div>
-
-      <div class="table-wrap" style="margin-top:14px;"><table class="data data-t">
-        <thead><tr><th>New Source</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
-        <tbody>
-          <tr>
-            <td style="">Ads Sales</td>
-            ${allMData.map(d=>{
-              const pct = d.mNew>0 ? '('+(d.mAds/d.mNew*100).toFixed(1)+'%)' : '—';
-              return `<td class="num" style="">${d.mAds>0?pb(fmt.money(d.mAds),pct):'—'}</td>`;
-            }).join('')}
-            <td class="num" style="font-weight:700;">${fmt.money(allYearAds)}<br><span style="font-size:11px;color:var(--gray);">${adsYrPctOfNew}</span></td>
-          </tr>
-          <tr>
-            <td style="">Walk-in</td>
-            ${allMData.map(d=>{
-              const wi = d.mNew - d.mAds;
-              const pct = d.mNew>0 ? '('+(wi/d.mNew*100).toFixed(1)+'%)' : '—';
-              return `<td class="num" style="">${d.mNew>0?pb(fmt.money(wi),pct):'—'}</td>`;
-            }).join('')}
-            <td class="num" style="font-weight:700;">${fmt.money(allWalkInYr)}<br><span style="font-size:11px;color:var(--gray);">${wiYrPctOfNew}</span></td>
-          </tr>
-          <tr>
-            <td style="font-weight:700;">Total New</td>
-            ${allMData.map(d=>`<td class="num" style="font-weight:700;">${d.mNew>0?fmt.money(d.mNew):'—'}</td>`).join('')}
-            <td class="num" style="font-weight:700;">${fmt.money(allYearNew)}</td>
-          </tr>
-        </tbody>
+      <div class="table-wrap"><table class="data">
+        <thead><tr>
+          <th>Month</th>
+          <th class="num">Ads Sales</th>
+          <th class="num">Walk-in</th>
+          <th class="num" style="${dividerStyle}">Total New</th>
+          <th class="num">Total Existing</th>
+          <th class="num" style="${dividerStyle}">Total Revenue</th>
+        </tr></thead>
+        <tbody>${monthRows}${totalRow}</tbody>
       </table></div>
     </div>`;
   } else {
-    // Mobile: 2 tables (Customer Revenue / New Customer Source), months as rows
-    let tableRows1 = '';
-    let tableRows2 = '';
-    allMData.forEach(d => {
-      const nPct = d.mTotal > 0 ? '('+(d.mNew/d.mTotal*100).toFixed(1)+'%)' : '—';
-      const oPct = d.mTotal > 0 ? '('+(d.mOld/d.mTotal*100).toFixed(1)+'%)' : '—';
-      const empty = d.mTotal === 0;
-      tableRows1 += `<tr style="${empty?'color:var(--silver);':''}">
-        <td style="font-weight:${empty?'400':'600'};width:80px;min-width:80px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
-        <td class="num" style="vertical-align:top;">${empty ? '—' : `<div>${fmt.money(d.mNew)}</div><div style="font-size:11px;color:var(--gray);">${nPct}</div>`}</td>
-        <td class="num" style="vertical-align:top;">${empty ? '—' : `<div>${fmt.money(d.mOld)}</div><div style="font-size:11px;color:var(--gray);">${oPct}</div>`}</td>
-        <td class="num" style="font-weight:700;">${empty ? '—' : fmt.money(d.mTotal)}</td>
-      </tr>`;
+    // v6.67: Mobile — same merged table layout (months as rows, 5 metric columns)
+    const allWalkInYr = allYearNew - allYearAds;
+    const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
+    const cellHTML = (v, pct) => v>0 ? `<div>${fmt.money(v)}</div><div style="font-size:11px;color:var(--gray);">${pct}</div>` : '—';
+    const cellPlain = (v) => v>0 ? fmt.money(v) : '—';
+    const dividerStyle = 'border-left:2px solid var(--purple-deep);';
 
+    let mRows = '';
+    allMData.forEach(d => {
       const wi = d.mNew - d.mAds;
-      const adsPct2 = d.mNew > 0 ? '('+(d.mAds/d.mNew*100).toFixed(1)+'%)' : '—';
-      const wiPct = d.mNew > 0 ? '('+(wi/d.mNew*100).toFixed(1)+'%)' : '—';
-      const emptyN = d.mNew === 0;
-      tableRows2 += `<tr style="${emptyN?'color:var(--silver);':''}">
-        <td style="font-weight:${emptyN?'400':'600'};width:80px;min-width:80px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
-        <td class="num" style="vertical-align:top;">${d.mAds > 0 ? `<div>${fmt.money(d.mAds)}</div><div style="font-size:11px;color:var(--gray);">${adsPct2}</div>` : '—'}</td>
-        <td class="num" style="vertical-align:top;">${emptyN ? '—' : `<div>${fmt.money(wi)}</div><div style="font-size:11px;color:var(--gray);">${wiPct}</div>`}</td>
-        <td class="num" style="font-weight:700;">${emptyN ? '—' : fmt.money(d.mNew)}</td>
+      const empty = d.mTotal === 0;
+      mRows += `<tr style="${empty?'color:var(--silver);':''}">
+        <td style="font-weight:${empty?'400':'600'};width:60px;min-width:60px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
+        <td class="num" style="vertical-align:top;">${cellHTML(d.mAds, pctOf(d.mAds, d.mTotal))}</td>
+        <td class="num" style="vertical-align:top;">${cellHTML(wi, pctOf(wi, d.mTotal))}</td>
+        <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellHTML(d.mNew, pctOf(d.mNew, d.mTotal))}</td>
+        <td class="num" style="vertical-align:top;font-weight:600;">${cellHTML(d.mOld, pctOf(d.mOld, d.mTotal))}</td>
+        <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellPlain(d.mTotal)}</td>
       </tr>`;
     });
-    const allWalkInYr = allYearNew - allYearAds;
-    const adsYrPctOfNew = allYearNew > 0 ? '('+(allYearAds/allYearNew*100).toFixed(1)+'%)' : '';
-    const wiYrPctOfNew = allYearNew > 0 ? '('+(allWalkInYr/allYearNew*100).toFixed(1)+'%)' : '';
     html += `<div class="card" style="margin-top:14px;">
       <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data data-t">
+      <div class="table-wrap"><table class="data">
         <thead><tr>
-          <th style="width:80px;min-width:80px;">Revenue</th>
-          <th class="num" style="">New</th>
-          <th class="num" style="">Existing</th>
-          <th class="num">Total</th>
+          <th style="width:60px;min-width:60px;">Month</th>
+          <th class="num">Ads Sales</th>
+          <th class="num">Walk-in</th>
+          <th class="num" style="${dividerStyle}">Total New</th>
+          <th class="num">Total Existing</th>
+          <th class="num" style="${dividerStyle}">Total Revenue</th>
         </tr></thead>
-        <tbody>${tableRows1}</tbody>
-        <tfoot><tr class="total-row" style="vertical-align:middle;">
+        <tbody>${mRows}</tbody>
+        <tfoot><tr class="total-row">
           <td>TOTAL</td>
-          <td class="num" style="">${fmt.money(allYearNew)}</td>
-          <td class="num" style="">${fmt.money(allYearOld)}</td>
-          <td class="num" style="font-weight:700;">${fmt.money(allYearTotal)}</td>
-        </tr></tfoot>
-      </table></div>
-
-      <div class="table-wrap" style="margin-top:14px;"><table class="data data-t">
-        <thead><tr>
-          <th style="width:80px;min-width:80px;">New Source</th>
-          <th class="num" style="">Ads Sales</th>
-          <th class="num" style="">Walk-in</th>
-          <th class="num" style="">Total New</th>
-        </tr></thead>
-        <tbody>${tableRows2}</tbody>
-        <tfoot><tr class="total-row" style="vertical-align:middle;">
-          <td>TOTAL</td>
-          <td class="num" style="">${fmt.money(allYearAds)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${adsYrPctOfNew}</span></td>
-          <td class="num" style="">${fmt.money(allWalkInYr)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${wiYrPctOfNew}</span></td>
-          <td class="num" style="font-weight:700;">${fmt.money(allYearNew)}</td>
+          <td class="num">${fmt.money(allYearAds)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearAds, allYearTotal)}</span></td>
+          <td class="num">${fmt.money(allWalkInYr)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allWalkInYr, allYearTotal)}</span></td>
+          <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(allYearNew)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearNew, allYearTotal)}</span></td>
+          <td class="num" style="font-weight:700;">${fmt.money(allYearOld)}<br><span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearOld, allYearTotal)}</span></td>
+          <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(allYearTotal)}</td>
         </tr></tfoot>
       </table></div>
     </div>`;
