@@ -4980,12 +4980,16 @@ function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
   // 比对 oldLead 和 newLead 的关键字段, 把变化的事件 append 到 remark
   // eventLabel = 'merge' | 'edit' | undefined (= edit)
   // v5.88: 加入 spend / showUp / race / name diff
-  const events = [];
+  // v6.72: 同一次保存改多个字段时, 合并成 1 行 (用 ", " 分隔), 不再每个字段一行.
+  //   解析端 _parseRemarkLine line 4399 已支持 multi-change 格式.
+  //   Merge 事件 + 特殊格式 (set / cleared) 仍用独立行.
+  const changes = [];   // 多 field 变化用逗号合并: "Status: A → B, Spend: C → D"
+  const standalone = [];  // 独立事件 (merge / set / cleared) 仍单独一行
   const ts = _activityNowStr();
 
   // 1. Status 变化 (除非是 merge — merge 已用专用消息)
   if (oldLead.status !== newLead.status && eventLabel !== 'merge') {
-    events.push(`[Auto] ${ts} Status: ${oldLead.status || '?'} → ${newLead.status || '?'}`);
+    changes.push(`Status: ${oldLead.status || '?'} → ${newLead.status || '?'}`);
   }
 
   // 2. Appt date 变化
@@ -4995,11 +4999,11 @@ function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
     if (eventLabel === 'merge') {
       // Merge 用复合消息 (下面 case 'merge' 处理), skip
     } else if (!oldAppt && newAppt) {
-      events.push(`[Auto] ${ts} Appt set: → ${_formatApptForLog(newAppt)}`);
+      standalone.push(`[Auto] ${ts} Appt set: → ${_formatApptForLog(newAppt)}`);
     } else if (oldAppt && !newAppt) {
-      events.push(`[Auto] ${ts} Appt cleared`);
+      standalone.push(`[Auto] ${ts} Appt cleared`);
     } else {
-      events.push(`[Auto] ${ts} Appt: ${_formatApptForLog(oldAppt)} → ${_formatApptForLog(newAppt)}`);
+      changes.push(`Appt: ${_formatApptForLog(oldAppt)} → ${_formatApptForLog(newAppt)}`);
     }
   }
 
@@ -5007,34 +5011,34 @@ function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
   const oldLoc = oldLead.location || '';
   const newLoc = newLead.location || '';
   if (oldLoc !== newLoc && eventLabel !== 'merge') {
-    if (!oldLoc && newLoc) events.push(`[Auto] ${ts} Location: — → ${newLoc}`);
-    else if (oldLoc && !newLoc) events.push(`[Auto] ${ts} Location cleared`);
-    else events.push(`[Auto] ${ts} Location: ${oldLoc} → ${newLoc}`);
+    if (!oldLoc && newLoc) changes.push(`Location: — → ${newLoc}`);
+    else if (oldLoc && !newLoc) standalone.push(`[Auto] ${ts} Location cleared`);
+    else changes.push(`Location: ${oldLoc} → ${newLoc}`);
   }
 
   // 4. Channel 变化
   const oldCh = oldLead.channelName || oldLead.channel || '';
   const newCh = newLead.channelName || newLead.channel || '';
   if (oldCh !== newCh && eventLabel !== 'merge') {
-    events.push(`[Auto] ${ts} Channel: ${oldCh || '?'} → ${newCh || '?'}`);
+    changes.push(`Channel: ${oldCh || '?'} → ${newCh || '?'}`);
   }
 
   // 5. Name 变化 (v5.88)
   const oldName = (oldLead.name || '').trim();
   const newName = (newLead.name || '').trim();
   if (oldName !== newName && eventLabel !== 'merge') {
-    if (!oldName && newName) events.push(`[Auto] ${ts} Name set: → ${newName}`);
-    else if (oldName && !newName) events.push(`[Auto] ${ts} Name cleared`);
-    else events.push(`[Auto] ${ts} Name: ${oldName} → ${newName}`);
+    if (!oldName && newName) standalone.push(`[Auto] ${ts} Name set: → ${newName}`);
+    else if (oldName && !newName) standalone.push(`[Auto] ${ts} Name cleared`);
+    else changes.push(`Name: ${oldName} → ${newName}`);
   }
 
   // 6. Show up 变化 (v5.88)
   const oldShowUp = oldLead.showUp || '';
   const newShowUp = newLead.showUp || '';
   if (oldShowUp !== newShowUp && eventLabel !== 'merge') {
-    if (!oldShowUp && newShowUp) events.push(`[Auto] ${ts} Show up: → ${newShowUp}`);
-    else if (oldShowUp && !newShowUp) events.push(`[Auto] ${ts} Show up cleared`);
-    else events.push(`[Auto] ${ts} Show up: ${oldShowUp} → ${newShowUp}`);
+    if (!oldShowUp && newShowUp) changes.push(`Show up: — → ${newShowUp}`);
+    else if (oldShowUp && !newShowUp) standalone.push(`[Auto] ${ts} Show up cleared`);
+    else changes.push(`Show up: ${oldShowUp} → ${newShowUp}`);
   }
 
   // 7. Spend 变化 (v5.88) — 这是用户问的"多少钱"显示
@@ -5043,18 +5047,18 @@ function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
   const newSpend = (newLead.spend === null || newLead.spend === undefined) ? null : Number(newLead.spend);
   if (oldSpend !== newSpend && eventLabel !== 'merge') {
     const fmtMoney = (v) => (v === null || v === undefined) ? '—' : 'RM ' + v.toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
-    if (oldSpend === null && newSpend !== null) events.push(`[Auto] ${ts} Spend set: → ${fmtMoney(newSpend)}`);
-    else if (oldSpend !== null && newSpend === null) events.push(`[Auto] ${ts} Spend cleared`);
-    else events.push(`[Auto] ${ts} Spend: ${fmtMoney(oldSpend)} → ${fmtMoney(newSpend)}`);
+    if (oldSpend === null && newSpend !== null) changes.push(`Spend: — → ${fmtMoney(newSpend)}`);
+    else if (oldSpend !== null && newSpend === null) standalone.push(`[Auto] ${ts} Spend cleared`);
+    else changes.push(`Spend: ${fmtMoney(oldSpend)} → ${fmtMoney(newSpend)}`);
   }
 
   // 8. Race 变化 (v5.88)
   const oldRace = oldLead.race || '';
   const newRace = newLead.race || '';
   if (oldRace !== newRace && eventLabel !== 'merge') {
-    if (!oldRace && newRace) events.push(`[Auto] ${ts} Race set: → ${newRace}`);
-    else if (oldRace && !newRace) events.push(`[Auto] ${ts} Race cleared`);
-    else events.push(`[Auto] ${ts} Race: ${oldRace} → ${newRace}`);
+    if (!oldRace && newRace) changes.push(`Race: — → ${newRace}`);
+    else if (oldRace && !newRace) standalone.push(`[Auto] ${ts} Race cleared`);
+    else changes.push(`Race: ${oldRace} → ${newRace}`);
   }
 
   // 9. Merge 专用复合消息
@@ -5063,12 +5067,21 @@ function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
     if (newAppt) parts.push(_formatApptForLog(newAppt));
     if (newLoc) parts.push('@ ' + newLoc);
     if (newCh && oldCh !== newCh) parts.push('· ' + newCh);
-    events.push(`[Auto] ${ts} Appt merged${parts.length ? ' · ' + parts.join(' ') : ''}`);
+    standalone.push(`[Auto] ${ts} Appt merged${parts.length ? ' · ' + parts.join(' ') : ''}`);
   }
 
-  if (events.length === 0) return oldRemark || '';
+  // v6.72: 合并所有 change 字段到 1 行
+  const lines = [];
+  if (changes.length > 0) {
+    lines.push(`[Auto] ${ts} ${changes.join(', ')}`);
+  }
+  if (standalone.length > 0) {
+    lines.push(...standalone);
+  }
+
+  if (lines.length === 0) return oldRemark || '';
   const oldR = (oldRemark || '').trim();
-  return (oldR ? oldR + '\n' : '') + events.join('\n');
+  return (oldR ? oldR + '\n' : '') + lines.join('\n');
 }
 
 // v4.83: Extract YYYY-MM-DD from any date format (string, Date.toString, ISO, etc)
@@ -17299,10 +17312,24 @@ function _startPendingFreshnessTimer() {
 
 function pendingMatchChannel(tag) {
   // v4.56: auto-match GHL tag against user's channels by name (case-insensitive, trimmed)
+  // v6.72: 加 follow up blacklist — 跟后端 _extractChannelFromTags 一致.
+  //   GHL tag 含 "follow up" / "followup" / "follow-up" → 直接当不存在 (因为这是销售状态,
+  //   不是 acquisition channel). 例: tag = "facebook simply 5, follow up day 1"
+  //   → 跳过 follow up tag, 用 facebook simply 5 匹配到 Simply 5.
+  //   单独 tag "follow up day 2" → 返回 null, dropdown 留空让用户手动选.
   if (!tag) return null;
+
+  // v6.72: blacklist — 整个 tag 字符串含这些字眼就完全跳过此 tag (不参与匹配)
+  const tagLower = String(tag).trim().toLowerCase();
+  const FOLLOWUP_BLACKLIST = ['follow up', 'followup', 'follow-up'];
+  // 拆分多 tag, 每个独立检查 — 留下不含 follow up 的部分继续匹配
+  const tagParts = tagLower.split(/[,;]/).map(t => t.trim()).filter(Boolean);
+  const cleanParts = tagParts.filter(t => !FOLLOWUP_BLACKLIST.some(bl => t.indexOf(bl) >= 0));
+  if (cleanParts.length === 0) return null; // 整个 tag 全是 follow up → 不匹配
+  const tagNorm = cleanParts.join(', '); // 重组成 cleaned tag
+
   const channels = (typeof state !== 'undefined' && state.channels) ? state.channels : [];
   const activeCh = channels.filter(c => c.active !== false);
-  const tagNorm = String(tag).trim().toLowerCase();
 
   // 1. Exact name match
   let hit = activeCh.find(c => String(c.name).trim().toLowerCase() === tagNorm);
@@ -17316,12 +17343,14 @@ function pendingMatchChannel(tag) {
   if (hit) return hit;
 
   // 3. Keyword heuristic (facebook/organic/google/tiktok etc)
+  // v6.72: 移除 follow/followup/retarget 关键字 — 这些不是 acquisition channel.
+  //   原因: GHL 推 "facebook, follow up day 1" 时 facebook 应被识别为 Meta,
+  //   不应 fallback 到 Follow Up channel.
   const kw = [
     { match: ['facebook','instagram','meta','fb','ig'], platform: 'meta' },
     { match: ['google'], platform: 'google' },
     { match: ['tiktok','tt'], platform: 'tiktok' },
-    { match: ['organic','whatsapp','walk'], platform: 'organic' },
-    { match: ['follow','followup','retarget'], platform: 'followup' }
+    { match: ['organic','whatsapp','walk'], platform: 'organic' }
   ];
   for (const k of kw) {
     if (k.match.some(m => tagNorm.indexOf(m) >= 0)) {
