@@ -8122,10 +8122,17 @@ function renderList() {
     periodMatch = resolveListFilter();
   }
   if (periodMatch) {
-    // v6.72: filter 字段固定 leadDate. 之前跟 sortMode 联动 (codex P1) 导致 Updated 模式
-    //   所有 lead 的 updatedAt 都是最近 (因 Push All 副作用), 5 月 filter 显示 2200 全部.
-    //   现在 filter 永远按 leadDate 算 — Sort 只管排序, 不影响数量.
-    filteredLeads = filteredLeads.filter(l => periodMatch(l.leadDate || ''));
+    // v6.72: filter 字段逻辑 — Davy 重新定义 (codex P1 的修法不符合实际使用):
+    //   Lead 模式 = 按 leadDate (看本月新进 lead)
+    //   Appt 模式 = 按 apptDate (看本月预约, 包括上月进的 lead 但本月预约的)
+    //   Updated 模式 = 按 leadDate (跟 Lead 一样), 只是排序时把最近改过的放最上面
+    //     原因: 老 leads 的 updatedAt 因 Push All 都被刷成"今天", 用 updatedAt 过滤会显示 2200 全部.
+    const sortMode = state.listSort || 'updated';
+    const getDate = (l) => {
+      if (sortMode === 'appt') return l.apptDate || '';
+      return l.leadDate || ''; // 'lead' 和 'updated' 都按 leadDate 过滤
+    };
+    filteredLeads = filteredLeads.filter(l => periodMatch(getDate(l)));
   }
   if (state.listChannelId) {
     filteredLeads = filteredLeads.filter(l => l.channelId === state.listChannelId);
