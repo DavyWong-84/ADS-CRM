@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.72</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.73</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.72</div>
+      <div class="nav-brand-version">v6.73</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4724,7 +4724,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.49'; // v6.72
+const DATA_VERSION = '4.50'; // v6.73
 
 // ---------- State ----------
 let state = {
@@ -7827,7 +7827,7 @@ function openPopover(event, popId) {
   menu.id = 'pop-menu-' + popId;
   menu.innerHTML = cfg.items.map(it => {
     const sel = it.value === cfg.selected ? ' selected' : '';
-    const content = cfg.itemFormatter ? cfg.itemFormatter(it) : `<span>${it.label}</span>`;
+    const content = cfg.itemFormatter ? cfg.itemFormatter(it) : `<span>${esc(it.label)}</span>`;
     return `<div class="pop-item${sel}" data-value="${it.value}">${content}</div>`;
   }).join('');
 
@@ -7961,19 +7961,19 @@ function refreshSelectPopover(selectEl, options) {
     selected: selectEl.value,
     fieldStyle: isField,
     triggerFormatter: (it) => {
-      if (!it || !it.value) return `<span>${placeholder}</span>`;
+      if (!it || !it.value) return `<span>${esc(placeholder)}</span>`;
       if (opts.itemIcon) {
         const ic = opts.itemIcon(it);
-        return `${ic}<span>${it.label}</span>`;
+        return `${ic}<span>${esc(it.label)}</span>`;
       }
-      return `<span>${it.label}</span>`;
+      return `<span>${esc(it.label)}</span>`;
     },
     itemFormatter: (it) => {
       if (opts.itemIcon) {
         const ic = opts.itemIcon(it);
-        return `<span class="pop-item-icon">${ic}</span><span>${it.label}</span>`;
+        return `<span class="pop-item-icon">${ic}</span><span>${esc(it.label)}</span>`;
       }
-      return `<span>${it.label}</span>`;
+      return `<span>${esc(it.label)}</span>`;
     },
     onChange: (v) => {
       selectEl.value = v;
@@ -8111,12 +8111,12 @@ function renderList() {
       triggerFormatter: (it) => {
         if (!it.value) return `<span>All channels</span>`;
         const logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, it.color) : '';
-        return `${logo}<span>${it.label}</span>`;
+        return `${logo}<span>${esc(it.label)}</span>`;
       },
       itemFormatter: (it) => {
         if (!it.value) return `<span class="pop-item-icon" style="width:14px;height:14px;border-radius:50%;background:var(--purple);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:600;">A</span><span>All channels</span>`;
         const logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, it.color) : '';
-        return `<span class="pop-item-icon">${logo}</span><span>${it.label}</span>`;
+        return `<span class="pop-item-icon">${logo}</span><span>${esc(it.label)}</span>`;
       },
       onChange: (v) => { setListChannelFilter(v); }
     });
@@ -11446,7 +11446,7 @@ function renderFeeEntry() {
   const platformBadge = `<span class="badge badge-${platform === 'meta' ? 'booked' : platform === 'google' ? 'pending' : 'lead'}" style="margin-left:8px;">${platform}</span>`;
 
   tableEl.innerHTML = `
-    <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Name: <strong style="color:var(--purple-deep);">${name}</strong>${platformBadge}</div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Name: <strong style="color:var(--purple-deep);">${esc(name)}</strong>${platformBadge}</div>
     <div class="table-wrap"><table class="data">
       <thead><tr>
         <th>Month</th>
@@ -12380,6 +12380,21 @@ function onRvCellBlur(e) {
 
   // skip save if unchanged
   if (before && before[field] === num) return;
+
+  // v6.73 (codex P3): 清空两字段时删 record (而非存 0).
+  //   原因: 之前清空存 0 → 报表月份显示 RM 0 (不是空白), 误导用户以为该月真有 0 营业额.
+  //   现在两字段都 0 → 删整条 record → 报表显示空白.
+  //   单字段为 0 (如 total=1000, newCustomer=0) 仍保留 record (合理场景).
+  if ((rec.total || 0) === 0 && (rec.newCustomer || 0) === 0) {
+    const idx = state.revenue.findIndex(r => r.id === rec.id);
+    if (idx >= 0) state.revenue.splice(idx, 1);
+    saveState();
+    if (typeof gsDelete === 'function') gsDelete('Revenue', rec.id);
+    // Update Old column to empty
+    const oldCell = document.querySelector(`[data-old-for="${month}"]`);
+    if (oldCell) oldCell.textContent = '';
+    return;
+  }
 
   saveState();
   gsUpsert('Revenue', rec);
@@ -16714,8 +16729,9 @@ function renderGlobalSearchResults(query) {
   }
 
   // Group results by type
-  const typeOrder = ['lead', 'page'];
-  const typeLabels = { lead: 'Leads', page: 'Pages & Sections' };
+  // v6.73 (codex P2): 加 'channel' (之前漏了, 搜 channel 名时结果隐藏不显示)
+  const typeOrder = ['lead', 'channel', 'page'];
+  const typeLabels = { lead: 'Leads', channel: 'Channels', page: 'Pages & Sections' };
   let html = '';
   let rIdx = 0;
   typeOrder.forEach(t => {
