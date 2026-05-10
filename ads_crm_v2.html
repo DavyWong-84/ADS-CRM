@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.68</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.69</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.68</div>
+      <div class="nav-brand-version">v6.69</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4724,7 +4724,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.44'; // v6.68 — 维护: 加 localMonth/localDate helper 替换 13 处 UTC 残留 / 删 escapeHTML 重复定义
+const DATA_VERSION = '4.45'; // v6.69 — Channels/Locations 同步 Sheet (codex P1 #1 根治, 防换设备丢配置). 配套 Apps Script v2.26.
 
 // ---------- State ----------
 let state = {
@@ -11119,9 +11119,10 @@ function submitQuickOutlet(targetSelectId) {
   if (state.locations.some(l => l.name.toLowerCase() === name.toLowerCase() && l.active !== false)) {
     toast('Outlet already exists'); return;
   }
-  const newLoc = { id: uid('st'), name, addedMonth: todayStr().substring(0,7), active: true };
+  const newLoc = { id: uid('st'), name, addedMonth: localMonth(), active: true };
   state.locations.push(newLoc);
   saveState();
+  if (typeof _syncLocation === 'function') _syncLocation(newLoc);
   refreshSelects();
   if (typeof renderSettings === 'function') renderSettings();
   closeModal();
@@ -11191,9 +11192,10 @@ function submitQuickChannel(targetSelectId) {
   if (state.channels.some(c => c.name.toLowerCase() === name.toLowerCase() && c.active !== false)) {
     toast('Channel already exists'); return;
   }
-  const newCh = { id: uid('ch'), name, platform, addedMonth: todayStr().substring(0,7), active: true };
+  const newCh = { id: uid('ch'), name, platform, addedMonth: localMonth(), active: true };
   state.channels.push(newCh);
   saveState();
+  if (typeof _syncChannel === 'function') _syncChannel(newCh);
   refreshSelects();
   if (typeof renderSettings === 'function') renderSettings();
   closeModal();
@@ -12903,10 +12905,13 @@ document.getElementById('channelForm').addEventListener('submit', e => {
   e.preventDefault();
   const name = document.getElementById('ch_name').value.trim();
   const platform = document.getElementById('ch_platform').value;
-  const added = document.getElementById('ch_added').value || todayStr().substring(0,7);
+  const added = document.getElementById('ch_added').value || localMonth();
   if (!name) { toast('Fill name'); return; }
-  state.channels.push({ id: uid('ch'), name, platform, addedMonth: added, active: true });
-  saveState(); refreshSelects(); renderSettings();
+  const newCh = { id: uid('ch'), name, platform, addedMonth: added, active: true };
+  state.channels.push(newCh);
+  saveState();
+  if (typeof _syncChannel === 'function') _syncChannel(newCh);
+  refreshSelects(); renderSettings();
   document.getElementById('channelForm').reset();
   toast('Channel added');
 });
@@ -12914,10 +12919,13 @@ document.getElementById('channelForm').addEventListener('submit', e => {
 document.getElementById('locationForm').addEventListener('submit', e => {
   e.preventDefault();
   const name = document.getElementById('loc_name').value.trim();
-  const added = document.getElementById('loc_added').value || todayStr().substring(0,7);
+  const added = document.getElementById('loc_added').value || localMonth();
   if (!name) return;
-  state.locations.push({ id: uid('st'), name, addedMonth: added, active: true });
-  saveState(); refreshSelects(); renderSettings();
+  const newLoc = { id: uid('st'), name, addedMonth: added, active: true };
+  state.locations.push(newLoc);
+  saveState();
+  if (typeof _syncLocation === 'function') _syncLocation(newLoc);
+  refreshSelects(); renderSettings();
   document.getElementById('locationForm').reset();
   toast('Store added');
 });
@@ -12974,6 +12982,9 @@ function _pickColor(kind, id, color) {
   if (color === 'reset') delete item.color;
   else item.color = color;
   saveState();
+  // v6.69: 同步到 Sheet (channel 有 color 字段, location 没有 — _syncLocation 会忽略)
+  if (kind === 'channel' && typeof _syncChannel === 'function') _syncChannel(item);
+  else if (kind === 'location' && typeof _syncLocation === 'function') _syncLocation(item);
   // v5.79: 关闭 modal — 桌面用 closeModal, 手机用 closeSubModal
   if (window.innerWidth < 768) closeSubModal();
   else closeModal();
@@ -13002,6 +13013,7 @@ function setChannelActive(id, active) {
   if (c.active === active || (c.active !== false) === active) return;
   c.active = active;
   saveState(); renderSettings(); refreshSelects();
+  if (typeof _syncChannel === 'function') _syncChannel(c);
   toast(`${c.name} ${active ? 'activated' : 'deactivated'}`);
 }
 
@@ -13011,7 +13023,36 @@ function setLocationActive(id, active) {
   if (loc.active === active || (loc.active !== false) === active) return;
   loc.active = active;
   saveState(); renderSettings(); refreshSelects();
+  if (typeof _syncLocation === 'function') _syncLocation(loc);
   toast(`${loc.name} ${active ? 'activated' : 'deactivated'}`);
+}
+
+// v6.69: Channels/Locations 同步 helper.
+//   每次 push/delete/active/color 改动后调用, fire-and-forget (用 gsUpsert 自带 queue).
+//   后端 v2.26 SCHEMAS 加了 Channels/Locations + getSheet 自动建 tab.
+//   旧后端 (v2.25) 收到 sheet:'Channels' 会 throw 'Unknown sheet' → gsUpsert 进 queue
+//   → 等 v2.26 上线后 flush 重试. 不会丢数据.
+function _syncChannel(c) {
+  if (!c || !c.id) return;
+  if (typeof gsUpsert !== 'function') return;
+  gsUpsert('Channels', {
+    id: c.id,
+    name: c.name || '',
+    platform: c.platform || '',
+    active: c.active === false ? false : true,
+    color: c.color || '',
+    addedMonth: c.addedMonth || ''
+  });
+}
+function _syncLocation(l) {
+  if (!l || !l.id) return;
+  if (typeof gsUpsert !== 'function') return;
+  gsUpsert('Locations', {
+    id: l.id,
+    name: l.name || '',
+    active: l.active === false ? false : true,
+    addedMonth: l.addedMonth || ''
+  });
 }
 
 // ---------- GitHub Sync (Push Only) ----------
@@ -13435,6 +13476,11 @@ function _normalizeSheetPullData(d) {
   const sheetAds = (d.AdsSpend || []);
   const sheetRev = (d.Revenue || []);
   const sheetFees = (d.ThirdPartyFees || []);
+  // v6.69: Channels + Locations 同步 (codex P1 #1).
+  //   首次安装/未升级后端 v2.26 → Sheet 没这两个 tab → 后端会 auto-create 空 tab → 这里收到空数组
+  //   兼容旧后端 (v2.25 及更早) → 字段不存在 → 用 undefined → fallback 到 PRELOADED 兜底
+  const sheetChannels = (d.Channels !== undefined) ? d.Channels : null;
+  const sheetLocations = (d.Locations !== undefined) ? d.Locations : null;
 
   // Safety: detect unexpected columns (manual + silent pull 同样保护)
   const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags','updatedAt']);
@@ -13573,7 +13619,31 @@ function _normalizeSheetPullData(d) {
     amount: toNum(f.amount)
   }));
 
-  return { leads, ads, rev, fees, suspiciousLead };
+  // v6.69: Channels + Locations parse — 兼容旧后端 (sheetChannels=null 表示后端不支持)
+  // toBool: Sheet boolean 单元格可能存为字符串 "TRUE"/"FALSE" 或 boolean true/false
+  const toBool = v => {
+    if (v === '' || v == null) return true;  // 空 cell 默认 true (active)
+    if (typeof v === 'boolean') return v;
+    const s = String(v).trim().toLowerCase();
+    return s !== 'false' && s !== '0' && s !== 'no';
+  };
+  // null = 后端旧版没返回 → fallback (后面用 PRELOADED 兜底); [] = 后端有但 Sheet 空
+  const channels = sheetChannels === null ? null : sheetChannels.filter(c => c && c.id).map(c => ({
+    id: c.id,
+    name: c.name || '',
+    platform: c.platform || '',
+    active: toBool(c.active),
+    color: c.color || '',
+    addedMonth: toMonthStr(c.addedMonth)
+  }));
+  const locations = sheetLocations === null ? null : sheetLocations.filter(l => l && l.id).map(l => ({
+    id: l.id,
+    name: l.name || '',
+    active: toBool(l.active),
+    addedMonth: toMonthStr(l.addedMonth)
+  }));
+
+  return { leads, ads, rev, fees, channels, locations, suspiciousLead };
 }
 
 async function gsPushAll() {
@@ -13627,19 +13697,38 @@ async function gsPushAll() {
         newCustomer: r.newCustomer || 0
       };
     });
+    // v6.69: Channels + Locations 同步 — 修 codex P1 #1, 防换设备丢配置.
+    //   配套 Apps Script v2.26 (SCHEMAS 加 Channels/Locations + getSheet auto-create tab).
+    //   Channels 已有 platform/active/color/addedMonth, Locations 只有 active/addedMonth (无 color).
+    const enrichedChannels = state.channels.map(c => ({
+      id: c.id,
+      name: c.name || '',
+      platform: c.platform || '',
+      active: c.active === false ? false : true,  // 默认 true, 除非显式 false
+      color: c.color || '',
+      addedMonth: c.addedMonth || ''
+    }));
+    const enrichedLocations = state.locations.map(l => ({
+      id: l.id,
+      name: l.name || '',
+      active: l.active === false ? false : true,
+      addedMonth: l.addedMonth || ''
+    }));
     const payload = {
       action: 'pushAll',
       data: {
         Leads: enrichedLeads,
         AdsSpend: enrichedAds,
         Revenue: enrichedRev,
-        ThirdPartyFees: state.thirdPartyFees
+        ThirdPartyFees: state.thirdPartyFees,
+        Channels: enrichedChannels,
+        Locations: enrichedLocations
       }
     };
     const r = await fetch(url, { method: 'POST', body: JSON.stringify(gsPostBody(payload)), headers: { 'Content-Type': 'text/plain' } });
     const d = await r.json();
     if (d.success) {
-      gsLog(`✅ Pushed! Leads: ${state.leads.length}, Ads: ${state.adsSpend.length}, Rev: ${state.revenue.length}, Fees: ${state.thirdPartyFees.length}`);
+      gsLog(`✅ Pushed! Leads: ${state.leads.length}, Ads: ${state.adsSpend.length}, Rev: ${state.revenue.length}, Fees: ${state.thirdPartyFees.length}, Channels: ${state.channels.length}, Locations: ${state.locations.length}`);
     } else {
       gsLog('❌ Push failed: ' + (d.error || 'Unknown'), true);
     }
@@ -13796,7 +13885,8 @@ async function gsPullSilent() {
     if (!d.success) { console.warn('[Auto-pull] failed:', d.error); return; }
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPull 共享, 避免代码漂移)
-    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, suspiciousLead } = _normalizeSheetPullData(d.data);
+    // v6.69: 同时拿 channels + locations
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, suspiciousLead } = _normalizeSheetPullData(d.data);
 
     if (suspiciousLead) {
       console.warn('[Auto-pull] BLOCKED: suspicious lead columns:', Object.keys(suspiciousLead));
@@ -13807,7 +13897,8 @@ async function gsPullSilent() {
     try {
       localStorage.setItem('ads_crm_pre_pull_backup', JSON.stringify({
         ts: Date.now(), leads: state.leads, adsSpend: state.adsSpend,
-        revenue: state.revenue, thirdPartyFees: state.thirdPartyFees
+        revenue: state.revenue, thirdPartyFees: state.thirdPartyFees,
+        channels: state.channels, locations: state.locations  // v6.69: 同步备份
       }));
     } catch (e) {}
 
@@ -13826,6 +13917,18 @@ async function gsPullSilent() {
     if (normalizedFees.length > 0 || state.thirdPartyFees.length === 0) {
       state.thirdPartyFees = normalizedFees;
     } else { skipped.push('fees'); }
+    // v6.69: Channels/Locations 应用 — 仅后端支持 (≠null) 且 Sheet 有数据时覆盖.
+    //   兼容旧后端 (null) → 保留本地, 不动. 防止旧后端 + 空 Sheet 一起把配置清掉.
+    if (normalizedChannels !== null && normalizedChannels.length > 0) {
+      state.channels = normalizedChannels;
+    } else if (normalizedChannels !== null && state.channels.length > 0) {
+      skipped.push('channels');
+    }
+    if (normalizedLocations !== null && normalizedLocations.length > 0) {
+      state.locations = normalizedLocations;
+    } else if (normalizedLocations !== null && state.locations.length > 0) {
+      skipped.push('locations');
+    }
     if (skipped.length > 0) {
       console.warn('[Auto-pull] Protected local tables from empty Sheet:', skipped.join(', '));
     }
@@ -13904,7 +14007,8 @@ async function gsPull() {
     if (!d.success) { gsLog('❌ Pull failed: ' + (d.error || 'Unknown'), true); return; }
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPullSilent 共享, 避免代码漂移)
-    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, suspiciousLead } = _normalizeSheetPullData(d.data);
+    // v6.69: 同时拿 channels + locations (codex P1 #1 同步)
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, suspiciousLead } = _normalizeSheetPullData(d.data);
 
     // Safety check: reject if Sheet has unexpected columns (manual Pull 弹 alert, gsPullSilent 静默)
     if (suspiciousLead) {
@@ -13921,20 +14025,28 @@ async function gsPull() {
         leads: state.leads,
         adsSpend: state.adsSpend,
         revenue: state.revenue,
-        thirdPartyFees: state.thirdPartyFees
+        thirdPartyFees: state.thirdPartyFees,
+        channels: state.channels,    // v6.69: 同步备份
+        locations: state.locations
       };
       localStorage.setItem('ads_crm_pre_pull_backup', JSON.stringify(backup));
       console.log('Pre-pull backup saved (can restore via restorePrePullBackup())');
     } catch (e) { console.warn('Backup failed:', e); }
 
-    const counts = `Leads: ${normalizedLeads.length}, Ads: ${normalizedAds.length}, Rev: ${normalizedRev.length}, Fees: ${normalizedFees.length}`;
-    if (!await showConfirm(`Pull data from Sheet will REPLACE all CRM data.\n\nSheet has: ${counts}\nCRM has: Leads: ${state.leads.length}, Ads: ${state.adsSpend.length}, Rev: ${state.revenue.length}, Fees: ${state.thirdPartyFees.length}\n\n✅ 已自动备份当前数据（万一出错可恢复）\n\nContinue?`, { title: 'Pull from Sheet', okText: 'Pull', danger: true })) {
+    // v6.69: channels/locations 计数仅在后端支持时显示
+    const chCount = normalizedChannels !== null ? normalizedChannels.length : '—';
+    const locCount = normalizedLocations !== null ? normalizedLocations.length : '—';
+    const counts = `Leads: ${normalizedLeads.length}, Ads: ${normalizedAds.length}, Rev: ${normalizedRev.length}, Fees: ${normalizedFees.length}, Channels: ${chCount}, Locations: ${locCount}`;
+    if (!await showConfirm(`Pull data from Sheet will REPLACE all CRM data.\n\nSheet has: ${counts}\nCRM has: Leads: ${state.leads.length}, Ads: ${state.adsSpend.length}, Rev: ${state.revenue.length}, Fees: ${state.thirdPartyFees.length}, Channels: ${state.channels.length}, Locations: ${state.locations.length}\n\n✅ 已自动备份当前数据（万一出错可恢复）\n\nContinue?`, { title: 'Pull from Sheet', okText: 'Pull', danger: true })) {
       gsLog('Pull cancelled'); return;
     }
     state.leads = normalizedLeads;
     state.adsSpend = normalizedAds;
     state.revenue = normalizedRev;
     state.thirdPartyFees = normalizedFees;
+    // v6.69: 仅在后端返回 channels/locations 时覆盖 (旧后端不返回 → 保留本地, 不丢配置)
+    if (normalizedChannels !== null && normalizedChannels.length > 0) state.channels = normalizedChannels;
+    if (normalizedLocations !== null && normalizedLocations.length > 0) state.locations = normalizedLocations;
     saveState();
     gsLog('✅ Pulled! ' + counts);
     setTimeout(() => location.reload(), 1500);
@@ -13948,11 +14060,16 @@ async function restorePrePullBackup() {
     if (!raw) { await showAlert('没有找到 pre-pull 备份', { title: 'Restore' }); return; }
     const b = JSON.parse(raw);
     const ageMin = Math.round((Date.now() - b.ts) / 60000);
-    if (!await showConfirm(`恢复 ${ageMin} 分钟前的 pre-pull 备份？\n\nLeads: ${b.leads?.length || 0}\nAds: ${b.adsSpend?.length || 0}\nRev: ${b.revenue?.length || 0}\nFees: ${b.thirdPartyFees?.length || 0}\n\n当前数据将被覆盖。`, { title: 'Restore Backup', okText: 'Restore', danger: true })) return;
+    // v6.69: 备份里如果有 channels/locations 也算上 (旧备份没有 → 跳过)
+    const chCount = b.channels ? b.channels.length : '—';
+    const locCount = b.locations ? b.locations.length : '—';
+    if (!await showConfirm(`恢复 ${ageMin} 分钟前的 pre-pull 备份？\n\nLeads: ${b.leads?.length || 0}\nAds: ${b.adsSpend?.length || 0}\nRev: ${b.revenue?.length || 0}\nFees: ${b.thirdPartyFees?.length || 0}\nChannels: ${chCount}\nLocations: ${locCount}\n\n当前数据将被覆盖。`, { title: 'Restore Backup', okText: 'Restore', danger: true })) return;
     state.leads = b.leads || [];
     state.adsSpend = b.adsSpend || [];
     state.revenue = b.revenue || [];
     state.thirdPartyFees = b.thirdPartyFees || [];
+    if (Array.isArray(b.channels) && b.channels.length > 0) state.channels = b.channels;
+    if (Array.isArray(b.locations) && b.locations.length > 0) state.locations = b.locations;
     saveState();
     await showAlert('✅ 已恢复，页面即将刷新', { title: 'Restored' });
     setTimeout(() => location.reload(), 500);
