@@ -4724,7 +4724,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.45'; // v6.69 — Channels/Locations 同步 Sheet (codex P1 #1 根治, 防换设备丢配置). 配套 Apps Script v2.26.
+const DATA_VERSION = '4.46'; // v6.69 — Channels/Locations 同步 + 修 Revenue Outlet Ads Sales 漏算 organic/followup (统一用 spend>0 过滤). 配套 Apps Script v2.26.
 
 // ---------- State ----------
 let state = {
@@ -11686,10 +11686,10 @@ function renderRevenueOutlet(mArr, locId) {
     const t = r?.total || 0;
     const n = r?.newCustomer || 0;
     const o = t - n;
-    const adsNew = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+    const adsNew = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='done') && (Number(l.spend) || 0) > 0).reduce((s,l)=>s+(l.spend||0),0);
     oMData.push({m, t, n, o, adsNew, isEmpty: !r || (t === 0 && n === 0)});
   });
-  const adsNewYr = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(year) && l.locationId === locId && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+  const adsNewYr = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(year) && l.locationId === locId && (l.status==='done') && (Number(l.spend) || 0) > 0).reduce((s,l)=>s+(l.spend||0),0);
 
   if (!isMobile) {
     // v6.67: Desktop — 合并 Revenue + New Source 两张表 → 单表月份在左
@@ -11787,7 +11787,7 @@ function renderRevenueOutlet(mArr, locId) {
     });
 
     const adsVals = mArr.map(m => {
-      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='done') && (Number(l.spend) || 0) > 0).reduce((s,l)=>s+(l.spend||0),0);
       return v > 0 ? v : null;
     });
     const newVals2 = mArr.map(m => {
@@ -11880,7 +11880,7 @@ function renderRevenueSummary(mArr) {
     const mTotal = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s + (r?.total||0); }, 0);
     const mNew = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s + (r?.newCustomer||0); }, 0);
     const mOld = mTotal - mNew;
-    const mAds = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+    const mAds = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && (Number(l.spend) || 0) > 0).reduce((s,l)=>s+(l.spend||0),0);
     allYearTotal += mTotal; allYearNew += mNew; allYearAds += mAds;
     allMData.push({m, mTotal, mNew, mOld, mAds});
   });
@@ -12164,7 +12164,7 @@ function renderRevenueSummary(mArr) {
     };
     const getAds = (m, locId) => {
       return state.leads
-        .filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && l.status === 'done' && ['meta','google'].includes(l.platform))
+        .filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && l.status === 'done' && (Number(l.spend) || 0) > 0)
         .reduce((s, l) => s + (l.spend || 0), 0);
     };
     // v5.27: Walk-in = New Customer Revenue − Ads Sales
@@ -12197,7 +12197,7 @@ function renderRevenueSummary(mArr) {
     });
 
     const adsData = mArr.map(m => {
-      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && ['meta','google'].includes(l.platform)).reduce((s,l)=>s+(l.spend||0),0);
+      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && (Number(l.spend) || 0) > 0).reduce((s,l)=>s+(l.spend||0),0);
       return v > 0 ? v : null;
     });
     const newData = mArr.map(m => {
