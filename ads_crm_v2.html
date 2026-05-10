@@ -9687,8 +9687,8 @@ function renderStore() {
               <td class="num">${showCell}</td>
               <td class="num">${noShowCell}</td>
               <td class="num">${avgCell}</td>
-              <td class="num" style="font-weight:600;">${adsSalesCell}</td>
-              <td class="num">${revCell}</td>
+              <td class="num">${adsSalesCell}</td>
+              <td class="num" style="font-weight:600;">${revCell}</td>
             </tr>`;
           }).join('');
           const totApptCell = (!locFilter && sTLd>0) ? pb(tc(sTA), fmt.pct(sTA/sTLd)) : tc(sTA);
@@ -9735,8 +9735,8 @@ function renderStore() {
               <td class="num">${tc(d.s)}</td>
               <td class="num">${tc(d.n)}${d.a>0&&d.n>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.n/d.a)})</span>`:''}</td>
               <td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>
-              <td class="num" style="font-weight:600;">${adsSalesCell}</td>
-              <td class="num">${d.rev>0?fmt.money(d.rev):'—'}</td>
+              <td class="num">${adsSalesCell}</td>
+              <td class="num" style="font-weight:600;">${d.rev>0?fmt.money(d.rev):'—'}</td>
             </tr>`;
           });
           const totAdsSalesCell = (sTSp>0 && sTRev>0)
