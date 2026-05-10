@@ -3625,7 +3625,146 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="revenueReportWrap"></div>
+    <div id="revenueReportWrap"><div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
+        <div style="font-size:12px;color:var(--gray);">0 months · 3 outlets</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
+        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">—</div>
+        <div style="font-size:12px;color:var(--green-dark);">● New: — · 0.0%</div>
+        <div style="font-size:12px;color:var(--gray);">● Old: — · 0.0%</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div onclick="setRevOutlet('st-sunway')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Sunway ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-cheras')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Cheras ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-eco')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">ECO ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div>
+    </div>
+  </div><div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
+      <div class="table-wrap"><table class="data data-t">
+        <thead><tr><th>Revenue</th><th class="num">TOTAL</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="">New</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
+          </tr>
+          <tr>
+            <td style="">Existing</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">(0.0%)</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">Total Sales</td>
+            
+            <td class="num" style="font-weight:700;">—</td>
+          </tr>
+        </tbody>
+      </table></div>
+
+      <div class="table-wrap" style="margin-top:14px;"><table class="data data-t">
+        <thead><tr><th>New Source</th><th class="num">TOTAL</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="">Ads Sales</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
+          </tr>
+          <tr>
+            <td style="">Walk-in</td>
+            
+            <td class="num" style="font-weight:700;">—<br><span style="font-size:11px;color:var(--gray);">—</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:700;">Total New</td>
+            
+            <td class="num" style="font-weight:700;">—</td>
+          </tr>
+        </tbody>
+      </table></div>
+    </div><div id="chart_rev_all" style="margin-top:14px;">
+      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">All Outlets — Revenue Breakdown</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#10B981;"></span>New Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#94a3b8;"></span>Old Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Ads New Sales</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#000000;"></span>Total Sales</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:230px;">
+          <canvas role="img" aria-label="All Outlets — Revenue Breakdown" width="1526" height="287" style="display: block; box-sizing: border-box; height: 230px; width: 1220px;"></canvas>
+        </div>
+      </div></div><div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>Outlet Comparison 2026</h3></div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:var(--purple);">●</span> TOTAL REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = outlet share of monthly total</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#22C55E;">●</span> NEW CUSTOMER REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#FB923C;">●</span> WALK-IN REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#D97706;">●</span> EXISTING CUSTOMER REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#3B82F6;">●</span> ADS SALES (PAID LEADS)</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Outlet</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody><tr><td style="font-weight:600;">Sunway</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">Cheras</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr><tr><td style="font-weight:600;">ECO</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+    </div></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -4806,7 +4945,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.43'; // v6.67 — Appt By Platform 桌面表: 月份在左, Metric 在顶 (跟手机端口径一致)
+const DATA_VERSION = '4.43'; // v6.67 — Appt By Platform + By Race 桌面表: 月份在左, Metric/Race 在顶 (跟手机端口径一致)
 
 // ---------- State ----------
 let state = {
@@ -9547,7 +9686,7 @@ function renderStore() {
           <thead><tr>
             <th style="width:44px;">Month</th>
             ${!locFilter ? '<th class="num">Lead</th>' : ''}
-            <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th>
+            <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG Spend</th>
           </tr></thead>
           <tbody>${rows || '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--gray);">No data</td></tr>'}</tbody>
           <tfoot><tr class="total-row">
@@ -9605,7 +9744,7 @@ function renderStore() {
         const ovSalesCfg = {
           title: 'AVG Spend per Show',
           labels: ovLabels,
-          series: [{ label:'AVG/Show', color: AdsChart.C.orange, type:'line', data: ovAvgData }],
+          series: [{ label:'AVG Spend', color: AdsChart.C.orange, type:'line', data: ovAvgData }],
           yFmt: v => v != null ? 'RM'+(v).toFixed(0) : '',
           fillStyle: 'gradient'
         };
@@ -9659,7 +9798,7 @@ function renderStore() {
                 <tr><td>Show</td>${activeP.map(d=>`<td class="num">${d.a>0&&d.s>0?pb(tc(d.s),fmt.pct(d.s/d.a)):tc(d.s)}</td>`).join('')}<td class="num" style="font-weight:700;">${tAppt>0?pb(tc(tShow),fmt.pct(tShow/tAppt)):tc(tShow)}</td></tr>
                 <tr><td>No Show</td>${activeP.map(d=>`<td class="num">${d.a>0&&d.ns>0?pb(tc(d.ns),fmt.pct(d.ns/d.a)):tc(d.ns)}</td>`).join('')}<td class="num" style="font-weight:700;">${tAppt>0&&tNoShow>0?pb(tc(tNoShow),fmt.pct(tNoShow/tAppt)):tc(tNoShow)}</td></tr>
                 <tr><td style="font-weight:600;">Sales</td>${activeP.map(d=>`<td class="num" style="font-weight:600;">${d.sp>0?fmt.money(d.sp):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(tSp)}</td></tr>
-                <tr><td>AVG/Show</td>${activeP.map(d=>`<td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>`).join('')}<td class="num">${tShow>0?fmt.money(tSp/tShow):'—'}</td></tr>
+                <tr><td>AVG Spend</td>${activeP.map(d=>`<td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>`).join('')}<td class="num">${tShow>0?fmt.money(tSp/tShow):'—'}</td></tr>
               </tbody>
             </table></div>
             <div style="font-size:11px;color:var(--gray);margin-top:6px;">* Appt % = Appt ÷ Lead &nbsp;·&nbsp; No Show % = No Show ÷ Appt</div>
@@ -9682,7 +9821,7 @@ function renderStore() {
               <thead><tr>
                 <th style="width:44px;">Month</th>
                 ${!locFilter ? '<th class="num">Lead</th>' : ''}
-                <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th>
+                <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG Spend</th>
               </tr></thead>
               <tbody>${rows||'<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>'}</tbody>
               <tfoot><tr class="total-row">
@@ -9724,18 +9863,23 @@ function renderStore() {
       {
         const sumTitle = locFilter ? `${locsToShow[0]?.name||''} — ${_chLabel} ${platYear}` : `All Outlets — ${_chLabel} ${platYear}`;
         const isMobile = window.innerWidth < 767;
-        let sumRows='', sTLd=0,sTA=0,sTS=0,sTN=0,sTSp=0;
+        let sumRows='', sTLd=0,sTA=0,sTS=0,sTN=0,sTSp=0,sTRev=0;
         const sumLeadData=[], sumApptData=[], sumShowData=[];
         const mData = [];
+        // v6.67: Total Revenue 只在 All Platforms 时显示 (Revenue 是按店录, 不分 channel)
+        const showRevCol = (_curCh === 'all');
         platMonths.forEach(m => {
           const mLeads = !locFilter ? state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m)) : [];
           const allAppt = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
           const shows = allAppt.filter(l => l.status==='done');
           const ns = allAppt.filter(l => l.status==='noshow');
           const ld=mLeads.length, a=allAppt.length, s=shows.length, n=ns.length, sp=shows.reduce((sum,l)=>sum+(l.spend||0),0);
+          // v6.67: Total Revenue (从 Revenue Outlet 拉, locFilter 时只算该店)
+          const rev = state.revenue.filter(r => r.month === m && (!locFilter || r.locationId===locFilter))
+            .reduce((sum, r) => sum + (r.total || 0), 0);
           sumLeadData.push(ld>0?ld:null); sumApptData.push(a>0?a:null); sumShowData.push(s>0?s:null);
-          sTLd+=ld; sTA+=a; sTS+=s; sTN+=n; sTSp+=sp;
-          mData.push({m,ld,a,s,n,sp});
+          sTLd+=ld; sTA+=a; sTS+=s; sTN+=n; sTSp+=sp; sTRev+=rev;
+          mData.push({m,ld,a,s,n,sp,rev});
         });
         const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
         const activeM = mData.filter(d => d.ld > 0 || d.a > 0); // v5.69: 桌面也隐藏空月
@@ -9747,16 +9891,18 @@ function renderStore() {
             const apptCell = (!locFilter && d.ld>0 && d.a>0) ? pb(tc(d.a), fmt.pct(d.a/d.ld)) : tc(d.a);
             const showCell = (d.a>0 && d.s>0) ? pb(tc(d.s), fmt.pct(d.s/d.a)) : tc(d.s);
             const noShowCell = (d.a>0 && d.n>0) ? pb(tc(d.n), fmt.pct(d.n/d.a)) : tc(d.n);
-            const salesCell = d.sp>0 ? fmt.money(d.sp) : '—';
             const avgCell = d.s>0 ? fmt.money(d.sp/d.s) : '—';
+            const salesCell = d.sp>0 ? fmt.money(d.sp) : '—';
+            const revCell = d.rev>0 ? fmt.money(d.rev) : '—';
             return `<tr>
               <td style="font-weight:600;">${fmt.monthShort(d.m)}</td>
               ${!locFilter ? `<td class="num">${tc(d.ld)}</td>` : ''}
               <td class="num">${apptCell}</td>
               <td class="num">${showCell}</td>
               <td class="num">${noShowCell}</td>
-              <td class="num" style="font-weight:600;">${salesCell}</td>
               <td class="num">${avgCell}</td>
+              <td class="num" style="font-weight:600;">${salesCell}</td>
+              ${showRevCol ? `<td class="num">${revCell}</td>` : ''}
             </tr>`;
           }).join('');
           const totApptCell = (!locFilter && sTLd>0) ? pb(tc(sTA), fmt.pct(sTA/sTLd)) : tc(sTA);
@@ -9769,8 +9915,9 @@ function renderStore() {
             <td class="num" style="font-weight:700;">${totApptCell}</td>
             <td class="num" style="font-weight:700;">${totShowCell}</td>
             <td class="num" style="font-weight:700;">${totNoShowCell}</td>
-            <td class="num" style="font-weight:700;">${fmt.money(sTSp)}</td>
             <td class="num" style="font-weight:700;">${totAvgCell}</td>
+            <td class="num" style="font-weight:700;">${fmt.money(sTSp)}</td>
+            ${showRevCol ? `<td class="num" style="font-weight:700;">${sTRev>0?fmt.money(sTRev):'—'}</td>` : ''}
           </tr>`;
           html += `<div class="section-title"><h3>${sumTitle}</h3></div>
             <div class="table-wrap"><table class="data">
@@ -9780,14 +9927,15 @@ function renderStore() {
                 <th class="num">Appt</th>
                 <th class="num">Show</th>
                 <th class="num">No Show</th>
+                <th class="num">AVG Spend</th>
                 <th class="num">Sales</th>
-                <th class="num">AVG/Show</th>
+                ${showRevCol ? '<th class="num">Total Revenue</th>' : ''}
               </tr></thead>
               <tbody>${monthRows}${totalRow}</tbody>
             </table></div>
             <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"></div>`;
         } else {
-          // Mobile: months as rows (original)
+          // Mobile: months as rows (original) — v6.67 同步桌面: AVG 挪 No Show 右边 + 加 Total Revenue (All Platforms 时)
           activeM.forEach(d => {
             sumRows += `<tr>
               <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
@@ -9795,26 +9943,29 @@ function renderStore() {
               <td class="num">${tc(d.a)}${!locFilter&&d.ld>0&&d.a>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.a/d.ld)})</span>`:''}</td>
               <td class="num">${tc(d.s)}</td>
               <td class="num">${tc(d.n)}${d.a>0&&d.n>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.n/d.a)})</span>`:''}</td>
-              <td class="num">${d.sp>0?fmt.money(d.sp):'—'}</td>
               <td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>
+              <td class="num">${d.sp>0?fmt.money(d.sp):'—'}</td>
+              ${showRevCol ? `<td class="num">${d.rev>0?fmt.money(d.rev):'—'}</td>` : ''}
             </tr>`;
           });
+          const colCount = (!locFilter ? 7 : 6) + (showRevCol ? 1 : 0);
           html += `<div class="section-title"><h3>${sumTitle}</h3></div>
             <div class="table-wrap"><table class="data">
               <thead><tr>
                 <th style="width:44px;">Month</th>
                 ${!locFilter?'<th class="num">Lead</th>':''}
-                <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">Sales</th><th class="num">AVG/Show</th>
+                <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">AVG Spend</th><th class="num">Sales</th>${showRevCol ? '<th class="num">Total Revenue</th>' : ''}
               </tr></thead>
-              <tbody>${sumRows||`<tr><td colspan="${!locFilter?7:6}" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>`}</tbody>
+              <tbody>${sumRows||`<tr><td colspan="${colCount}" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>`}</tbody>
               <tfoot><tr class="total-row">
                 <td>TOTAL</td>
                 ${!locFilter?`<td class="num">${tc(sTLd)}</td>`:''}
                 <td class="num">${tc(sTA)}${!locFilter&&sTLd>0?` <span style="font-size:11px;">(${fmt.pct(sTA/sTLd)})</span>`:''}</td>
                 <td class="num">${tc(sTS)}${sTA>0?` <span style="font-size:11px;">(${fmt.pct(sTS/sTA)})</span>`:''}</td>
                 <td class="num">${tc(sTN)}${sTA>0?` <span style="font-size:11px;">(${fmt.pct(sTN/sTA)})</span>`:''}</td>
-                <td class="num">${fmt.money(sTSp)}</td>
                 <td class="num">${sTS>0?fmt.money(sTSp/sTS):'—'}</td>
+                <td class="num">${fmt.money(sTSp)}</td>
+                ${showRevCol ? `<td class="num">${sTRev>0?fmt.money(sTRev):'—'}</td>` : ''}
               </tr></tfoot>
             </table></div>
             <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"></div>`;
@@ -9871,16 +10022,30 @@ function renderStore() {
         const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
         let tbl;
         if (!isMobile) {
-          const activeRD = mRaceData.filter(d => d.s > 0); // v5.70: 桌面也隐藏空月
-          const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
-          const mHdr = activeRD.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
+          // v6.67: Desktop transposed — months as rows, races as cols (matches mobile layout)
+          const activeRD = mRaceData.filter(d => d.s > 0);
+          const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')} <span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
+          const monthRows = activeRD.map(d => `<tr>
+            <td style="font-weight:600;">${fmt.monthShort(d.m)}</td>
+            ${races.map(r => `<td class="num">${d.byRace[r].length>0?pb(d.byRace[r].length,fmt.pct(d.byRace[r].length/d.s)):'—'}</td>`).join('')}
+            <td class="num" style="font-weight:600;">${tc(d.s)}</td>
+          </tr>`).join('');
+          const totalRow = `<tr class="total-row">
+            <td style="font-weight:700;">TOTAL</td>
+            ${races.map(r => `<td class="num" style="font-weight:700;">${totals.show>0&&totals[r]>0?pb(totals[r],fmt.pct(totals[r]/totals.show)):(totals[r]||'—')}</td>`).join('')}
+            <td class="num" style="font-weight:700;">${tc(totals.show)}</td>
+          </tr>`;
           tbl = `<div class="section-title"><h3>${title}</h3></div>
-            <div class="table-wrap"><table class="data data-t">
-              <thead><tr><th>Race</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
-              <tbody>
-                ${races.map(r => `<tr><td>${r}</td>${activeRD.map(d=>`<td class="num">${d.s>0&&d.byRace[r].length>0?pb(d.byRace[r].length,fmt.pct(d.byRace[r].length/d.s)):(d.byRace[r].length||'—')}</td>`).join('')}<td class="num" style="font-weight:700;">${totals.show>0&&totals[r]>0?pb(totals[r],fmt.pct(totals[r]/totals.show)):(totals[r]||'—')}</td></tr>`).join('')}
-                <tr class="total-row"><td style="font-weight:700;">Total</td>${activeRD.map(d=>`<td class="num" style="font-weight:700;">${tc(d.s)}</td>`).join('')}<td class="num" style="font-weight:700;">${tc(totals.show)}</td></tr>
-              </tbody>
+            <div class="table-wrap"><table class="data">
+              <thead><tr>
+                <th>Month</th>
+                <th class="num">Chinese</th>
+                <th class="num">Malay</th>
+                <th class="num">Indian</th>
+                <th class="num">Foreigner</th>
+                <th class="num">Total</th>
+              </tr></thead>
+              <tbody>${monthRows||'<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>'}${totalRow}</tbody>
             </table></div>
             <div id="${chartId}" style="margin-top:14px;margin-bottom:8px;"></div>`;
         } else {
