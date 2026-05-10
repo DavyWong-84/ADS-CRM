@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.69</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.71</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.69</div>
+      <div class="nav-brand-version">v6.71</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3995,7 +3995,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       <input type="month" id="ch_added">
       <div id="locationsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', 'st-sunway')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#6366F1;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <span style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#6366F1;display:inline-block;flex-shrink:0;" title="自动生成 (Locations 不支持自定义颜色)"></span>
         <div><strong>Sunway</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
       </div>
       <div>
@@ -4006,7 +4006,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', 'st-cheras')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#F97316;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <span style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#F97316;display:inline-block;flex-shrink:0;" title="自动生成 (Locations 不支持自定义颜色)"></span>
         <div><strong>Cheras</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
       </div>
       <div>
@@ -4017,7 +4017,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
       </div>
     </div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', 'st-eco')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#8B5CF6;cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <span style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:#8B5CF6;display:inline-block;flex-shrink:0;" title="自动生成 (Locations 不支持自定义颜色)"></span>
         <div><strong>ECO</strong> <span style="color:var(--gray);font-size:12px;">· from 2026-01</span></div>
       </div>
       <div>
@@ -4724,7 +4724,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.46'; // v6.69 — Channels/Locations 同步 + 修 Revenue Outlet Ads Sales 漏算 organic/followup (统一用 spend>0 过滤). 配套 Apps Script v2.26.
+const DATA_VERSION = '4.48'; // v6.71
 
 // ---------- State ----------
 let state = {
@@ -12438,7 +12438,7 @@ function renderSettings() {
     const color = l.color || (typeof hashColor === 'function' ? hashColor(l.name) : '#888');
     return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <button type="button" class="color-dot-btn" onclick="openColorPicker(event, 'location', '${esc(l.id)}')" title="改颜色" style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:${color};cursor:pointer;padding:0;flex-shrink:0;"></button>
+        <span style="width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--border);background:${color};display:inline-block;flex-shrink:0;" title="自动生成 (Locations 不支持自定义颜色)"></span>
         <div><strong>${esc(l.name)}</strong>${l.addedMonth ? ` <span style="color:var(--gray);font-size:12px;">· from ${esc(l.addedMonth)}</span>` : ''}</div>
       </div>
       <div>
@@ -12756,7 +12756,7 @@ function _renderModalStoresList() {
     const color = l.color || (typeof hashColor === 'function' ? hashColor(l.name) : '#888');
     return `<div class="cl-row ${isActive ? '' : 'inactive'}">
       <div class="cl-row-left">
-        <button type="button" class="cl-color-dot" onclick="openColorPicker(event, 'location', '${esc(l.id)}')" title="改颜色" style="background:${color};"></button>
+        <span class="cl-color-dot" style="background:${color};cursor:default;" title="自动生成 (Locations 不支持自定义颜色)"></span>
         <div class="cl-row-info">
           <div class="cl-row-name">${esc(l.name)}</div>
         </div>
@@ -13028,31 +13028,61 @@ function setLocationActive(id, active) {
 }
 
 // v6.69: Channels/Locations 同步 helper.
-//   每次 push/delete/active/color 改动后调用, fire-and-forget (用 gsUpsert 自带 queue).
-//   后端 v2.26 SCHEMAS 加了 Channels/Locations + getSheet 自动建 tab.
-//   旧后端 (v2.25) 收到 sheet:'Channels' 会 throw 'Unknown sheet' → gsUpsert 进 queue
-//   → 等 v2.26 上线后 flush 重试. 不会丢数据.
+//   v6.71 (codex P1 修): 不再单条 upsert, 改为全量 pushAll Channels/Locations.
+//   原因: 单条 upsert 会让 Sheet 出现"只有 1 条"的中间状态, gsPullSilent 看到 length>0
+//   就覆盖本地完整 5 条 channel, 导致换设备/局部同步后丢配置.
+//   现在每次任何 channel/location 改动都全量推送, Sheet 永远是完整快照.
+//   后端 pushAll 用 SCHEMAS 遍历, 给定 Channels 和 Locations 数据就只会刷这两个 tab.
 function _syncChannel(c) {
-  if (!c || !c.id) return;
-  if (typeof gsUpsert !== 'function') return;
-  gsUpsert('Channels', {
-    id: c.id,
-    name: c.name || '',
-    platform: c.platform || '',
-    active: c.active === false ? false : true,
-    color: c.color || '',
-    addedMonth: c.addedMonth || ''
-  });
+  if (typeof gsPushConfig === 'function') gsPushConfig();
 }
 function _syncLocation(l) {
-  if (!l || !l.id) return;
-  if (typeof gsUpsert !== 'function') return;
-  gsUpsert('Locations', {
-    id: l.id,
-    name: l.name || '',
-    active: l.active === false ? false : true,
-    addedMonth: l.addedMonth || ''
-  });
+  if (typeof gsPushConfig === 'function') gsPushConfig();
+}
+
+// v6.71: 全量推 channels + locations (单 endpoint, 用现有 pushAll action 但只传这两个表).
+//   后端 pushAll 用 Object.keys(SCHEMAS).forEach, 没传的表跳过("skipped (not array)").
+//   所以只传 Channels + Locations 两个 array, 其他 4 个表不会被影响.
+async function gsPushConfig() {
+  const url = (typeof getGsUrl === 'function') ? getGsUrl() : null;
+  if (!url) return;
+  try {
+    const enrichedChannels = state.channels.map(c => ({
+      id: c.id,
+      name: c.name || '',
+      platform: c.platform || '',
+      active: c.active === false ? false : true,
+      color: c.color || '',
+      addedMonth: c.addedMonth || ''
+    }));
+    const enrichedLocations = state.locations.map(l => ({
+      id: l.id,
+      name: l.name || '',
+      active: l.active === false ? false : true,
+      addedMonth: l.addedMonth || ''
+      // v6.71: 不带 color (codex P2 #3, location 不要 color)
+    }));
+    const payload = {
+      action: 'pushAll',
+      data: {
+        // 只传 Channels + Locations, 其他 4 个表不传 → 后端跳过, 不会动其他数据
+        Channels: enrichedChannels,
+        Locations: enrichedLocations
+      }
+    };
+    const r = await fetch(url, { method: 'POST', body: JSON.stringify(gsPostBody(payload)), headers: { 'Content-Type': 'text/plain' } });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    let parsed = null;
+    try { parsed = await r.json(); } catch (e) {}
+    if (parsed && parsed.success === false) {
+      throw new Error(parsed.error || 'upstream failure');
+    }
+  } catch (e) {
+    console.warn('GS config sync failed, queuing for retry:', e.message);
+    // 不进 pending queue (queue 是单条 upsert 设计的, 不适合 pushAll).
+    // gsPullSilent 自动跑前会先 flushPendingQueue, 但 config 失败只是延迟同步, 下次操作会重试.
+    if (typeof toast === 'function') toast('⚠️ Channel/Store 同步失败, 下次操作会重试');
+  }
 }
 
 // ---------- GitHub Sync (Push Only) ----------
@@ -13918,13 +13948,15 @@ async function gsPullSilent() {
       state.thirdPartyFees = normalizedFees;
     } else { skipped.push('fees'); }
     // v6.69: Channels/Locations 应用 — 仅后端支持 (≠null) 且 Sheet 有数据时覆盖.
-    //   兼容旧后端 (null) → 保留本地, 不动. 防止旧后端 + 空 Sheet 一起把配置清掉.
-    if (normalizedChannels !== null && normalizedChannels.length > 0) {
+    //   v6.71 (codex P1 修): 加 50% 阈值保护. 防止 Sheet 只剩 1 条 (局部同步异常)
+    //   覆盖本地完整 5 条配置. 真要从 5 条减到 < 50% 必须用 manual Push All.
+    //   兼容旧后端 (null) → 保留本地, 不动.
+    if (normalizedChannels !== null && normalizedChannels.length > 0 && normalizedChannels.length >= state.channels.length * 0.5) {
       state.channels = normalizedChannels;
     } else if (normalizedChannels !== null && state.channels.length > 0) {
       skipped.push('channels');
     }
-    if (normalizedLocations !== null && normalizedLocations.length > 0) {
+    if (normalizedLocations !== null && normalizedLocations.length > 0 && normalizedLocations.length >= state.locations.length * 0.5) {
       state.locations = normalizedLocations;
     } else if (normalizedLocations !== null && state.locations.length > 0) {
       skipped.push('locations');
@@ -14037,18 +14069,52 @@ async function gsPull() {
     const chCount = normalizedChannels !== null ? normalizedChannels.length : '—';
     const locCount = normalizedLocations !== null ? normalizedLocations.length : '—';
     const counts = `Leads: ${normalizedLeads.length}, Ads: ${normalizedAds.length}, Rev: ${normalizedRev.length}, Fees: ${normalizedFees.length}, Channels: ${chCount}, Locations: ${locCount}`;
-    if (!await showConfirm(`Pull data from Sheet will REPLACE all CRM data.\n\nSheet has: ${counts}\nCRM has: Leads: ${state.leads.length}, Ads: ${state.adsSpend.length}, Rev: ${state.revenue.length}, Fees: ${state.thirdPartyFees.length}, Channels: ${state.channels.length}, Locations: ${state.locations.length}\n\n✅ 已自动备份当前数据（万一出错可恢复）\n\nContinue?`, { title: 'Pull from Sheet', okText: 'Pull', danger: true })) {
+
+    // v6.71 (codex P2 #1 修): 空表保护 — 检测 Sheet 哪些表为空但本地有数据, 警告用户.
+    //   场景: Sheet URL 错 / 权限丢 / Apps Script 异常 → 返回空数据 → 用户点确认后清空本地.
+    //   Pre-pull backup 虽存在但用户不一定记得用 restorePrePullBackup().
+    const emptyWarnings = [];
+    if (normalizedLeads.length === 0 && state.leads.length > 0) emptyWarnings.push(`Leads (本地有 ${state.leads.length} 条)`);
+    if (normalizedAds.length === 0 && state.adsSpend.length > 0) emptyWarnings.push(`Ads Spend (本地有 ${state.adsSpend.length} 条)`);
+    if (normalizedRev.length === 0 && state.revenue.length > 0) emptyWarnings.push(`Revenue (本地有 ${state.revenue.length} 条)`);
+    if (normalizedFees.length === 0 && state.thirdPartyFees.length > 0) emptyWarnings.push(`Fees (本地有 ${state.thirdPartyFees.length} 条)`);
+    if (normalizedChannels !== null && normalizedChannels.length === 0 && state.channels.length > 0) emptyWarnings.push(`Channels (本地有 ${state.channels.length} 条)`);
+    if (normalizedLocations !== null && normalizedLocations.length === 0 && state.locations.length > 0) emptyWarnings.push(`Locations (本地有 ${state.locations.length} 条)`);
+
+    let confirmMsg;
+    if (emptyWarnings.length > 0) {
+      confirmMsg = `⚠️ 危险：Sheet 多个表是空的，但本地有数据！\n\n空表：\n  • ${emptyWarnings.join('\n  • ')}\n\n如果继续 Pull，这些表会被清空。\n\n建议：\n  1. 取消 Pull\n  2. 检查 Sheet URL / 权限 / Apps Script 是否正常\n  3. 如果 Sheet 真的应该是空的，再手动确认\n\n✅ 已自动备份 (出错可用 restorePrePullBackup() 恢复)\n\n确定要继续吗？`;
+    } else {
+      confirmMsg = `Pull data from Sheet will REPLACE all CRM data.\n\nSheet has: ${counts}\nCRM has: Leads: ${state.leads.length}, Ads: ${state.adsSpend.length}, Rev: ${state.revenue.length}, Fees: ${state.thirdPartyFees.length}, Channels: ${state.channels.length}, Locations: ${state.locations.length}\n\n✅ 已自动备份当前数据（万一出错可恢复）\n\nContinue?`;
+    }
+    if (!await showConfirm(confirmMsg, { title: emptyWarnings.length > 0 ? '⚠️ Pull 警告' : 'Pull from Sheet', okText: emptyWarnings.length > 0 ? '强制 Pull (覆盖本地)' : 'Pull', danger: true })) {
       gsLog('Pull cancelled'); return;
     }
-    state.leads = normalizedLeads;
-    state.adsSpend = normalizedAds;
-    state.revenue = normalizedRev;
-    state.thirdPartyFees = normalizedFees;
-    // v6.69: 仅在后端返回 channels/locations 时覆盖 (旧后端不返回 → 保留本地, 不丢配置)
-    if (normalizedChannels !== null && normalizedChannels.length > 0) state.channels = normalizedChannels;
-    if (normalizedLocations !== null && normalizedLocations.length > 0) state.locations = normalizedLocations;
+
+    // v6.71 (codex P1 修): per-table 保护 — Sheet 某表空但本地有, 跳过该表 (跟 gsPullSilent 一致)
+    const skipped = [];
+    if (normalizedLeads.length > 0 || state.leads.length === 0) state.leads = normalizedLeads;
+    else skipped.push('leads');
+    if (normalizedAds.length > 0 || state.adsSpend.length === 0) state.adsSpend = normalizedAds;
+    else skipped.push('ads');
+    if (normalizedRev.length > 0 || state.revenue.length === 0) state.revenue = normalizedRev;
+    else skipped.push('revenue');
+    if (normalizedFees.length > 0 || state.thirdPartyFees.length === 0) state.thirdPartyFees = normalizedFees;
+    else skipped.push('fees');
+    // Channels/Locations: 仅后端返回非 null 且 Sheet 有数据 ≥ 本地 50% 时才覆盖 (codex P1 防异常局部覆盖)
+    if (normalizedChannels !== null && normalizedChannels.length > 0 && normalizedChannels.length >= state.channels.length * 0.5) {
+      state.channels = normalizedChannels;
+    } else if (normalizedChannels !== null) {
+      skipped.push('channels');
+    }
+    if (normalizedLocations !== null && normalizedLocations.length > 0 && normalizedLocations.length >= state.locations.length * 0.5) {
+      state.locations = normalizedLocations;
+    } else if (normalizedLocations !== null) {
+      skipped.push('locations');
+    }
     saveState();
-    gsLog('✅ Pulled! ' + counts);
+    const skippedMsg = skipped.length > 0 ? ` (保护了: ${skipped.join(', ')})` : '';
+    gsLog('✅ Pulled!' + skippedMsg + ' ' + counts);
     setTimeout(() => location.reload(), 1500);
   } catch (e) { gsLog('❌ Pull failed: ' + e.message, true); }
 }
@@ -16352,8 +16418,10 @@ function buildMonthSummary(mStr) {
     }
     totalAdsCost += amt;
   });
-  // Ads sales — ALL appts with spend (matches CRM's calcMonthMetrics logic)
-  const appts = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(mStr) && l.name && l.apptDate);
+  // Ads sales — v6.71 (codex P2 #4 修): 严格 status='done' 过滤
+  //   原因: booked/noshow 客人没到店, 没收钱, 不应算 ads sales.
+  //   现在跟 Ads Spend Funnel + buildDaySummary 口径一致.
+  const appts = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(mStr) && l.name && l.status === 'done');
   const metaSales = appts.filter(l => l.platform === 'meta').reduce((s, l) => s + (l.spend || 0), 0);
   const googleSales = appts.filter(l => l.platform === 'google').reduce((s, l) => s + (l.spend || 0), 0);
   const organicSales = appts.filter(l => l.platform === 'organic').reduce((s, l) => s + (l.spend || 0), 0);
@@ -16382,7 +16450,8 @@ function buildMonthSummary(mStr) {
     ads_sales_by_store: (() => {
       const byStore = {};
       state.locations.filter(l => l.active !== false).forEach(loc => {
-        const storeAppts = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(mStr) && l.locationId === loc.id);
+        // v6.71 (codex P2 #4): 加 status='done' 跟主口径一致
+        const storeAppts = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(mStr) && l.locationId === loc.id && l.status === 'done');
         byStore[loc.name] = Math.round(storeAppts.reduce((s, l) => s + (l.spend || 0), 0));
       });
       return byStore;
