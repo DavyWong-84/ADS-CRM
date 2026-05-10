@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.66</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.67</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.66</div>
+      <div class="nav-brand-version">v6.67</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3260,10 +3260,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-05-09</span>
+                      <span id="f_leadDate_label">2026-05-10</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-05-09">
+                    <input type="hidden" id="f_leadDate" value="2026-05-10">
                   </div>
                 </div>
               </div>
@@ -3645,7 +3645,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3655,22 +3655,59 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 Old = Total − New (auto)</div>
         <span id="rv_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th>Month</th>
+      <th class="num">Total (RM)</th>
+      <th class="num">New (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-01" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-02" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-03" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-04" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-05" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-06" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="total" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+      <td class="num" style="padding:4px 8px;"><input type="number" step="0.01" inputmode="decimal" class="rv-cell" data-month="2026-07" data-field="newCustomer" value="" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2026</td>
+    <td class="num">—</td>
+    <td class="num">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -3681,11 +3718,56 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
         <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-01" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-02" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-03" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-04" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-05" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-06" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;">
+        <input type="number" class="as-cell" data-month="2026-07" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
+      </td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2026</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -3699,7 +3781,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
         <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -4724,7 +4806,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.42'; // v6.66 — codex audit P2: HTML escape 4 处 / Settings 加 Auth Mode 状态显示
+const DATA_VERSION = '4.43'; // v6.67 — Appt By Platform 桌面表: 月份在左, Metric 在顶 (跟手机端口径一致)
 
 // ---------- State ----------
 let state = {
@@ -9658,20 +9740,50 @@ function renderStore() {
         const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
         const activeM = mData.filter(d => d.ld > 0 || d.a > 0); // v5.69: 桌面也隐藏空月
         if (!isMobile) {
-          // Desktop: months as columns, metrics as rows
-          const pb = (v, pct) => `${v}<br><span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
-          const mHdr = activeM.map(d => `<th class="num">${fmt.monthShort(d.m)}</th>`).join('');
+          // v6.67: Desktop transposed — months as rows, metrics as cols (matches mobile layout)
+          const pb = (v, pct) => `${v} <span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
+          // build per-month row
+          const monthRows = activeM.map(d => {
+            const apptCell = (!locFilter && d.ld>0 && d.a>0) ? pb(tc(d.a), fmt.pct(d.a/d.ld)) : tc(d.a);
+            const showCell = (d.a>0 && d.s>0) ? pb(tc(d.s), fmt.pct(d.s/d.a)) : tc(d.s);
+            const noShowCell = (d.a>0 && d.n>0) ? pb(tc(d.n), fmt.pct(d.n/d.a)) : tc(d.n);
+            const salesCell = d.sp>0 ? fmt.money(d.sp) : '—';
+            const avgCell = d.s>0 ? fmt.money(d.sp/d.s) : '—';
+            return `<tr>
+              <td style="font-weight:600;">${fmt.monthShort(d.m)}</td>
+              ${!locFilter ? `<td class="num">${tc(d.ld)}</td>` : ''}
+              <td class="num">${apptCell}</td>
+              <td class="num">${showCell}</td>
+              <td class="num">${noShowCell}</td>
+              <td class="num" style="font-weight:600;">${salesCell}</td>
+              <td class="num">${avgCell}</td>
+            </tr>`;
+          }).join('');
+          const totApptCell = (!locFilter && sTLd>0) ? pb(tc(sTA), fmt.pct(sTA/sTLd)) : tc(sTA);
+          const totShowCell = sTA>0 ? pb(tc(sTS), fmt.pct(sTS/sTA)) : tc(sTS);
+          const totNoShowCell = (sTA>0 && sTN>0) ? pb(tc(sTN), fmt.pct(sTN/sTA)) : tc(sTN);
+          const totAvgCell = sTS>0 ? fmt.money(sTSp/sTS) : '—';
+          const totalRow = `<tr class="total-row">
+            <td style="font-weight:700;">TOTAL</td>
+            ${!locFilter ? `<td class="num" style="font-weight:700;">${tc(sTLd)}</td>` : ''}
+            <td class="num" style="font-weight:700;">${totApptCell}</td>
+            <td class="num" style="font-weight:700;">${totShowCell}</td>
+            <td class="num" style="font-weight:700;">${totNoShowCell}</td>
+            <td class="num" style="font-weight:700;">${fmt.money(sTSp)}</td>
+            <td class="num" style="font-weight:700;">${totAvgCell}</td>
+          </tr>`;
           html += `<div class="section-title"><h3>${sumTitle}</h3></div>
-            <div class="table-wrap"><table class="data data-t">
-              <thead><tr><th>Metric</th>${mHdr}<th class="num">TOTAL</th></tr></thead>
-              <tbody>
-                ${!locFilter ? `<tr><td>Lead</td>${activeM.map(d=>`<td class="num">${tc(d.ld)}</td>`).join('')}<td class="num" style="font-weight:700;">${tc(sTLd)}</td></tr>` : ''}
-                <tr><td>Appt</td>${activeM.map(d=>`<td class="num">${!locFilter&&d.ld>0&&d.a>0?pb(tc(d.a),fmt.pct(d.a/d.ld)):tc(d.a)}</td>`).join('')}<td class="num" style="font-weight:700;">${!locFilter&&sTLd>0?pb(tc(sTA),fmt.pct(sTA/sTLd)):tc(sTA)}</td></tr>
-                <tr><td>Show</td>${activeM.map(d=>`<td class="num">${sTA>0&&d.a>0?pb(tc(d.s),fmt.pct(d.s/d.a)):tc(d.s)}</td>`).join('')}<td class="num" style="font-weight:700;">${sTA>0?pb(tc(sTS),fmt.pct(sTS/sTA)):tc(sTS)}</td></tr>
-                <tr><td>No Show</td>${activeM.map(d=>`<td class="num">${d.a>0&&d.n>0?pb(tc(d.n),fmt.pct(d.n/d.a)):tc(d.n)}</td>`).join('')}<td class="num" style="font-weight:700;">${sTA>0&&sTN>0?pb(tc(sTN),fmt.pct(sTN/sTA)):tc(sTN)}</td></tr>
-                <tr><td style="font-weight:600;">Sales</td>${activeM.map(d=>`<td class="num" style="font-weight:600;">${d.sp>0?fmt.money(d.sp):'—'}</td>`).join('')}<td class="num" style="font-weight:700;">${fmt.money(sTSp)}</td></tr>
-                <tr><td>AVG/Show</td>${activeM.map(d=>`<td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>`).join('')}<td class="num">${sTS>0?fmt.money(sTSp/sTS):'—'}</td></tr>
-              </tbody>
+            <div class="table-wrap"><table class="data">
+              <thead><tr>
+                <th>Month</th>
+                ${!locFilter ? '<th class="num">Lead</th>' : ''}
+                <th class="num">Appt</th>
+                <th class="num">Show</th>
+                <th class="num">No Show</th>
+                <th class="num">Sales</th>
+                <th class="num">AVG/Show</th>
+              </tr></thead>
+              <tbody>${monthRows}${totalRow}</tbody>
             </table></div>
             <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"></div>`;
         } else {
