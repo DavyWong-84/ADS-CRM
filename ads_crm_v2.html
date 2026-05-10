@@ -9651,8 +9651,8 @@ function renderStore() {
         let sumRows='', sTLd=0,sTA=0,sTS=0,sTN=0,sTSp=0,sTRev=0;
         const sumLeadData=[], sumApptData=[], sumShowData=[];
         const mData = [];
-        // v6.67: Total Revenue 只在 All Platforms 时显示 (Revenue 是按店录, 不分 channel)
-        const showRevCol = (_curCh === 'all');
+        // v6.67: Total Revenue 始终显示 (店总营业额, 不跟 channel 变).
+        //   Ads Sales % = channel sales ÷ 店总营业额, 表示该 channel 占店总收入百分比.
         platMonths.forEach(m => {
           const mLeads = !locFilter ? state.leads.filter(l => l.leadDate && l.leadDate.startsWith(m)) : [];
           const allAppt = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
@@ -9677,7 +9677,8 @@ function renderStore() {
             const showCell = (d.a>0 && d.s>0) ? pb(tc(d.s), fmt.pct(d.s/d.a)) : tc(d.s);
             const noShowCell = (d.a>0 && d.n>0) ? pb(tc(d.n), fmt.pct(d.n/d.a)) : tc(d.n);
             const avgCell = d.s>0 ? fmt.money(d.sp/d.s) : '—';
-            const salesCell = d.sp>0 ? fmt.money(d.sp) : '—';
+            // v6.67: Ads Sales 加 % = sales ÷ total revenue (该月该 outlet/全部 store 的总营业额)
+            const adsSalesCell = (d.sp>0 && d.rev>0) ? pb(fmt.money(d.sp), fmt.pct(d.sp/d.rev)) : (d.sp>0 ? fmt.money(d.sp) : '—');
             const revCell = d.rev>0 ? fmt.money(d.rev) : '—';
             return `<tr>
               <td style="font-weight:600;">${fmt.monthShort(d.m)}</td>
@@ -9686,14 +9687,16 @@ function renderStore() {
               <td class="num">${showCell}</td>
               <td class="num">${noShowCell}</td>
               <td class="num">${avgCell}</td>
-              <td class="num" style="font-weight:600;">${salesCell}</td>
-              ${showRevCol ? `<td class="num">${revCell}</td>` : ''}
+              <td class="num" style="font-weight:600;">${adsSalesCell}</td>
+              <td class="num">${revCell}</td>
             </tr>`;
           }).join('');
           const totApptCell = (!locFilter && sTLd>0) ? pb(tc(sTA), fmt.pct(sTA/sTLd)) : tc(sTA);
           const totShowCell = sTA>0 ? pb(tc(sTS), fmt.pct(sTS/sTA)) : tc(sTS);
           const totNoShowCell = (sTA>0 && sTN>0) ? pb(tc(sTN), fmt.pct(sTN/sTA)) : tc(sTN);
           const totAvgCell = sTS>0 ? fmt.money(sTSp/sTS) : '—';
+          // v6.67: TOTAL 行 Ads Sales % = 全年 sales ÷ 全年 total revenue
+          const totAdsSalesCell = (sTSp>0 && sTRev>0) ? pb(fmt.money(sTSp), fmt.pct(sTSp/sTRev)) : (sTSp>0 ? fmt.money(sTSp) : '—');
           const totalRow = `<tr class="total-row">
             <td style="font-weight:700;">TOTAL</td>
             ${!locFilter ? `<td class="num" style="font-weight:700;">${tc(sTLd)}</td>` : ''}
@@ -9701,8 +9704,8 @@ function renderStore() {
             <td class="num" style="font-weight:700;">${totShowCell}</td>
             <td class="num" style="font-weight:700;">${totNoShowCell}</td>
             <td class="num" style="font-weight:700;">${totAvgCell}</td>
-            <td class="num" style="font-weight:700;">${fmt.money(sTSp)}</td>
-            ${showRevCol ? `<td class="num" style="font-weight:700;">${sTRev>0?fmt.money(sTRev):'—'}</td>` : ''}
+            <td class="num" style="font-weight:700;">${totAdsSalesCell}</td>
+            <td class="num" style="font-weight:700;">${sTRev>0?fmt.money(sTRev):'—'}</td>
           </tr>`;
           html += `<div class="section-title"><h3>${sumTitle}</h3></div>
             <div class="table-wrap"><table class="data">
@@ -9713,15 +9716,18 @@ function renderStore() {
                 <th class="num">Show</th>
                 <th class="num">No Show</th>
                 <th class="num">AVG Spend</th>
-                <th class="num">Sales</th>
-                ${showRevCol ? '<th class="num">Total Revenue</th>' : ''}
+                <th class="num">Ads Sales</th>
+                <th class="num">Total Revenue</th>
               </tr></thead>
               <tbody>${monthRows}${totalRow}</tbody>
             </table></div>
             <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"></div>`;
         } else {
-          // Mobile: months as rows (original) — v6.67 同步桌面: AVG 挪 No Show 右边 + 加 Total Revenue (All Platforms 时)
+          // Mobile: months as rows (original) — v6.67 同步桌面: AVG 挪 No Show 右边 / Sales→Ads Sales+% / Total Revenue 始终显示
           activeM.forEach(d => {
+            const adsSalesCell = (d.sp>0 && d.rev>0)
+              ? `${fmt.money(d.sp)} <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.sp/d.rev)})</span>`
+              : (d.sp>0 ? fmt.money(d.sp) : '—');
             sumRows += `<tr>
               <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
               ${!locFilter?`<td class="num">${tc(d.ld)}</td>`:''}
@@ -9729,19 +9735,21 @@ function renderStore() {
               <td class="num">${tc(d.s)}</td>
               <td class="num">${tc(d.n)}${d.a>0&&d.n>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.n/d.a)})</span>`:''}</td>
               <td class="num">${d.s>0?fmt.money(d.sp/d.s):'—'}</td>
-              <td class="num">${d.sp>0?fmt.money(d.sp):'—'}</td>
-              ${showRevCol ? `<td class="num">${d.rev>0?fmt.money(d.rev):'—'}</td>` : ''}
+              <td class="num" style="font-weight:600;">${adsSalesCell}</td>
+              <td class="num">${d.rev>0?fmt.money(d.rev):'—'}</td>
             </tr>`;
           });
-          const colCount = (!locFilter ? 7 : 6) + (showRevCol ? 1 : 0);
+          const totAdsSalesCell = (sTSp>0 && sTRev>0)
+            ? `${fmt.money(sTSp)} <span style="font-size:11px;">(${fmt.pct(sTSp/sTRev)})</span>`
+            : (sTSp>0 ? fmt.money(sTSp) : '—');
           html += `<div class="section-title"><h3>${sumTitle}</h3></div>
             <div class="table-wrap"><table class="data">
               <thead><tr>
                 <th style="width:44px;">Month</th>
                 ${!locFilter?'<th class="num">Lead</th>':''}
-                <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">AVG Spend</th><th class="num">Sales</th>${showRevCol ? '<th class="num">Total Revenue</th>' : ''}
+                <th class="num">Appt</th><th class="num">Show</th><th class="num">No Show</th><th class="num">AVG Spend</th><th class="num">Ads Sales</th><th class="num">Total Revenue</th>
               </tr></thead>
-              <tbody>${sumRows||`<tr><td colspan="${colCount}" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>`}</tbody>
+              <tbody>${sumRows||`<tr><td colspan="${!locFilter?8:7}" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>`}</tbody>
               <tfoot><tr class="total-row">
                 <td>TOTAL</td>
                 ${!locFilter?`<td class="num">${tc(sTLd)}</td>`:''}
@@ -9749,8 +9757,8 @@ function renderStore() {
                 <td class="num">${tc(sTS)}${sTA>0?` <span style="font-size:11px;">(${fmt.pct(sTS/sTA)})</span>`:''}</td>
                 <td class="num">${tc(sTN)}${sTA>0?` <span style="font-size:11px;">(${fmt.pct(sTN/sTA)})</span>`:''}</td>
                 <td class="num">${sTS>0?fmt.money(sTSp/sTS):'—'}</td>
-                <td class="num">${fmt.money(sTSp)}</td>
-                ${showRevCol ? `<td class="num">${sTRev>0?fmt.money(sTRev):'—'}</td>` : ''}
+                <td class="num">${totAdsSalesCell}</td>
+                <td class="num">${sTRev>0?fmt.money(sTRev):'—'}</td>
               </tr></tfoot>
             </table></div>
             <div id="chart_plat_all" style="margin-top:14px;margin-bottom:24px;"></div>`;
