@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.71</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.72</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.71</div>
+      <div class="nav-brand-version">v6.72</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4724,7 +4724,7 @@ const esc = escapeHTML;
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.48'; // v6.71
+const DATA_VERSION = '4.49'; // v6.72
 
 // ---------- State ----------
 let state = {
@@ -8122,14 +8122,10 @@ function renderList() {
     periodMatch = resolveListFilter();
   }
   if (periodMatch) {
-    // v5.87: filter 字段跟 listSort 联动 — Lead 模式按 leadDate, Appt 模式按 apptDate, Updated 模式按 updatedAt (fallback leadDate)
-    const sortMode = state.listSort || 'updated';
-    const getDate = (l) => {
-      if (sortMode === 'appt') return l.apptDate || '';
-      if (sortMode === 'updated') return (l.updatedAt || l.leadDate || '').substring(0, 10);
-      return l.leadDate || ''; // 'lead'
-    };
-    filteredLeads = filteredLeads.filter(l => periodMatch(getDate(l)));
+    // v6.72: filter 字段固定 leadDate. 之前跟 sortMode 联动 (codex P1) 导致 Updated 模式
+    //   所有 lead 的 updatedAt 都是最近 (因 Push All 副作用), 5 月 filter 显示 2200 全部.
+    //   现在 filter 永远按 leadDate 算 — Sort 只管排序, 不影响数量.
+    filteredLeads = filteredLeads.filter(l => periodMatch(l.leadDate || ''));
   }
   if (state.listChannelId) {
     filteredLeads = filteredLeads.filter(l => l.channelId === state.listChannelId);
