@@ -10633,6 +10633,10 @@ function renderFunnelComboTable() {
   const subCh = state.adsSubChannel || null;
   const outletId = (document.getElementById('funnelOutletSelect') || {}).value || 'all';
   const useOutletFilter = outletId !== 'all';
+  // v6.77: 选了 outlet / channel / sub-channel 任何过滤时, Lead 列显示 "—"
+  //   原因: lead 是 GHL 入口数, 不应被 outlet/channel 维度过滤后展示 (口径误导).
+  //   只有 Appt/Show Up/No Show 才有 outlet/channel 归属, 可以分维度看.
+  const hasAnyFilter = useOutletFilter || (tab !== 'all') || !!subCh;
   const view = (document.getElementById('funnelViewSelect') || {}).value || 'outlet';
   // view='outlet': 按 apptDate 月统计 (跟营业额对账)
   // view='ads': 按 leadDate 月归因 (跨月跟踪, 真实广告效果)
@@ -10732,8 +10736,8 @@ function renderFunnelComboTable() {
 
     rows += `<tr>
       <td>${fmt.monthShort(m)}</td>
-      <td class="num">${fmtNum(total)}</td>
-      <td class="num">${fmtNum(booked)}${bookedPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(bookedPct)})</span>` : ''}</td>
+      <td class="num">${hasAnyFilter ? '—' : fmtNum(total)}</td>
+      <td class="num">${fmtNum(booked)}${bookedPct != null && !hasAnyFilter ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(bookedPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(showUp)}${showPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(showPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(noShow)}${noShowPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(noShowPct)})</span>` : ''}</td>
       <td class="num">${fmtRoas(roasShown)}</td>
@@ -10768,8 +10772,8 @@ function renderFunnelComboTable() {
     <tbody>${rows}</tbody>
     <tfoot><tr class="total-row">
       <td>TOTAL</td>
-      <td class="num">${fmtNum(tTotal)}</td>
-      <td class="num">${fmtNum(tBooked)}${totalBookedPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalBookedPct)})</span>` : ''}</td>
+      <td class="num">${hasAnyFilter ? '—' : fmtNum(tTotal)}</td>
+      <td class="num">${fmtNum(tBooked)}${totalBookedPct != null && !hasAnyFilter ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalBookedPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(tShow)}${totalShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalShowPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(tNoShow)}${totalNoShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalNoShowPct)})</span>` : ''}</td>
       <td class="num">${useOutletFilter ? '—' : fmtRoas(totalRoas)}</td>
