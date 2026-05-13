@@ -3051,7 +3051,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.76</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.77</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3107,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.76</div>
+      <div class="nav-brand-version">v6.77</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3208,7 +3208,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           </div>
           <!-- Filter row 2: Status tabs -->
           <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
-            <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Booked<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Done<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No show<span class="count">0</span></button></div>
+            <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Appt<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Show Up<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No Show<span class="count">0</span></button></div>
           </div>
         </div>
         <!-- v4.23: Filters moved here from unified-header -->
@@ -4722,9 +4722,25 @@ function escapeHTML(s) {
 // Shorthand alias for readability in templates
 const esc = escapeHTML;
 
+// v6.77: Status UI label helper. 数据字段 (l.status) 仍是 'lead'/'booked'/'done'/'noshow'.
+//   只翻译显示给用户看的文字, 统一业务词汇:
+//     booked → "Appt" (跟顶栏 Appt 页同名, 旧 UI 显示 "Booked"/"BOOKED" 已弃用)
+//     done   → "Show Up" (业务说法, 旧 UI 显示 "Done"/"DONE" 已弃用)
+//     noshow → "No Show" (跟 Funnel 表头一致)
+//     lead   → "Lead" (不变)
+//   所有显示 status 的位置应调用 statusLabel(), 不要直接拼 status 值或用 charAt(0).toUpperCase().
+//   CSS class 名 (badge-booked, badge-done) 保留不动 — 它们是 selector, 不是用户看的文字.
+function statusLabel(status) {
+  if (status === 'lead') return 'Lead';
+  if (status === 'booked') return 'Appt';
+  if (status === 'done') return 'Show Up';
+  if (status === 'noshow') return 'No Show';
+  return status || '';
+}
+
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.53'; // v6.76
+const DATA_VERSION = '4.54'; // v6.77
 
 // ---------- State ----------
 let state = {
@@ -7062,11 +7078,15 @@ function renderDetailPanel(l) {
   if (!dp) return;
   const ch = getChannel(l.channelId);
   const loc = l.locationId ? getLocation(l.locationId) : null;
+  // v6.77: 进度步骤 — 3 个里程碑, 跟业务流程一致
+  //   Lead = 名单 (有 contact)
+  //   Appt = 已预约 (booked/done/noshow 都算)
+  //   Show Up = 实际到店消费 (status='done')
+  //   noshow 在 Appt 那步完成, Show Up 不亮 (跟 'Show Up' 词义一致)
   const steps = [
     { label: 'Lead', done: !!l.contact },
-    { label: 'Booked', done: !!(l.name && l.apptDate) },
-    { label: 'Show up', done: l.status === 'done' || l.status === 'noshow' },
-    { label: 'Done', done: l.status === 'done' }
+    { label: 'Appt', done: !!(l.name && l.apptDate) },
+    { label: 'Show Up', done: l.status === 'done' }
   ];
   const check = '<svg width="12" height="12" viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   const stepDots = steps.map((s, i) => {
@@ -7384,7 +7404,7 @@ function handleDuplicate(existing, incoming) {
       <div style="font-weight:600;margin-bottom:4px;">${esc(existing.name) || '(no name)'}</div>
       <div style="font-size:13px;color:var(--gray);">
         ${esc(existing.channel)} · Lead ${fmt.date(existing.leadDate)}${existing.apptDate ? ' · Appt ' + fmt.date(existing.apptDate) : ''}<br>
-        Status: <span class="badge badge-${esc(existing.status)}">${esc(existing.status)}</span>
+        Status: <span class="badge badge-${esc(existing.status)}">${esc(statusLabel(existing.status))}</span>
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
@@ -8162,8 +8182,8 @@ function renderList() {
   filteredLeads.forEach(l => { if (counts[l.status] !== undefined) counts[l.status]++; });
   const filters = [
     { id: 'all', label: 'All' }, { id: 'lead', label: 'Lead' },
-    { id: 'booked', label: 'Booked' },
-    { id: 'done', label: 'Done' }, { id: 'noshow', label: 'No show' }
+    { id: 'booked', label: 'Appt' },
+    { id: 'done', label: 'Show Up' }, { id: 'noshow', label: 'No Show' }
   ];
   document.getElementById('listFilters').innerHTML = filters.map(f =>
     `<button class="filter-tab ${state.listFilter === f.id ? 'active' : ''}" onclick="setListFilter('${f.id}')">${f.label}<span class="count">${counts[f.id]}</span></button>`
@@ -8237,7 +8257,7 @@ function renderList() {
       const isOverdue = l.status === 'booked' && l.apptDate && l.apptDate < today;
       const cls = isToday ? 'today-appt' : (isOverdue ? 'overdue' : '');
       const selected = l.id === currentEditingId ? ' selected' : '';
-      const statusLabel = l.status === 'noshow' ? 'No show' : (l.status.charAt(0).toUpperCase() + l.status.slice(1));
+      const statusLabelText = statusLabel(l.status);
       // v5.72: 删除 3 个星星 flag 功能 (Davy 反馈已不再使用)
       // Lead = same layout as booked, but more compact (no appt date, no amount)
       if (l.status === 'lead') {
@@ -8288,7 +8308,7 @@ function renderList() {
           <div class="lc-name">${esc(l.name || l.contact || '(no data)')}${remarkIconHTML(l)}</div>
           <div style="display:flex;align-items:center;gap:4px;">
             ${rescheduleChipHTML(l)}
-            <span class="badge badge-${l.status}">${statusLabel}</span>
+            <span class="badge badge-${l.status}">${statusLabelText}</span>
           </div>
         </div>
         <div class="lc-body">
@@ -10737,7 +10757,7 @@ function renderFunnelComboTable() {
   <div class="table-wrap"><table class="data">
     <thead><tr>
       <th style="width:44px;">Month</th>
-      <th class="num">Total Lead</th><th class="num">Booked</th>
+      <th class="num">Lead</th><th class="num">Appt</th>
       <th class="num">Show Up</th>
       <th class="num">No Show</th>
       <th class="num">ROAS</th>
@@ -14530,7 +14550,7 @@ function computeAlerts() {
     if (missing.length === 0) return;
 
     const name = l.name || l.contact || '(no name)';
-    const stLabel = l.status === 'noshow' ? 'No Show' : 'Done';
+    const stLabel = statusLabel(l.status);
     const fields = missing.join(' + ');
     alerts.push({
       severity: 'low',
@@ -15976,7 +15996,7 @@ function tryQuickAnswer(q) {
     const booked = leads.filter(l => l.status === 'booked').length;
     const done = leads.filter(l => l.status === 'done').length;
     return `📌 ${dateLabel} (${targetDate}) 共 ${leads.length} 条 Lead\n\n` +
-           `Booked: ${booked} · Done: ${done} · Lead: ${leads.length - booked - done}` +
+           `Appt: ${booked} · Show Up: ${done} · Lead: ${leads.length - booked - done}` +
            sourceTag(['Leads ' + targetDate]);
   }
 
@@ -16146,8 +16166,8 @@ function buildMonthlyReport(mStr) {
   }
   lines.push(`📊 漏斗 (Lead → Appt → Show):`);
   lines.push(`   Lead 总: ${cur.leads_by_status.lead + cur.leads_by_status.booked + cur.leads_by_status.done + cur.leads_by_status.noshow}`);
-  lines.push(`   Booked: ${cur.leads_by_status.booked + cur.leads_by_status.done + cur.leads_by_status.noshow} (Appt rate ${apptRate.toFixed(1)}%)`);
-  lines.push(`   Done: ${cur.leads_by_status.done} (Show rate ${showRate.toFixed(1)}%)`);
+  lines.push(`   Appt: ${cur.leads_by_status.booked + cur.leads_by_status.done + cur.leads_by_status.noshow} (Appt rate ${apptRate.toFixed(1)}%)`);
+  lines.push(`   Show Up: ${cur.leads_by_status.done} (Show rate ${showRate.toFixed(1)}%)`);
   lines.push(`   No-show: ${cur.leads_by_status.noshow}`);
   lines.push('');
   if (issues.length > 0) {
@@ -16304,7 +16324,7 @@ function buildAIContext(question) {
   const dictionary = {
     channels: state.channels.map(c => ({ id: c.id, name: c.name, platform: c.platform, active: c.active !== false })),
     stores: state.locations.map(s => ({ id: s.id, name: s.name, active: s.active !== false })),
-    lead_status: { lead: '初诊 Lead / Initial Lead', booked: '已预约 / Booked', done: '已到诊 / Done', noshow: '未到诊 / No Show' },
+    lead_status: { lead: '初诊 Lead', booked: '已预约 Appt', done: '到店 Show Up', noshow: '未到诊 No Show' },
     field_glossary: {
       revenue_total: '总营业额 Total Revenue (RM)',
       revenue_new: '新客户营业额 New Customer Revenue (RM)',
@@ -16717,8 +16737,8 @@ function renderGlobalSearchResults(query) {
       String(l.remark || '').toLowerCase().includes(q)
     ).slice(0, 8);
     matches.forEach(l => {
-      const statusLabel = l.status === 'noshow' ? 'No show' : (l.status ? l.status.charAt(0).toUpperCase() + l.status.slice(1) : 'Lead');
-      const sub = `${l.contact || '(no contact)'} · ${statusLabel}${l.channelName ? ' · ' + l.channelName : ''}`;
+      const statusLabelText = statusLabel(l.status);
+      const sub = `${l.contact || '(no contact)'} · ${statusLabelText}${l.channelName ? ' · ' + l.channelName : ''}`;
       results.push({ type: 'lead', label: l.name || l.contact || '(no name)', sub, icon: '🧑', action: () => {
         closeGlobalSearch();
         nav('contact');
@@ -18518,7 +18538,7 @@ function _pendingBatchAskDuplicate(existing, pendingItem, ch) {
         <div style="font-weight:600;margin-bottom:4px;">${esc(nameStr)}</div>
         <div style="font-size:13px;color:var(--gray);">
           ${esc(channelLabel)} · Lead ${esc(leadDateStr)}<br>
-          Status: <span class="badge badge-${esc(statusStr)}">${esc(statusStr)}</span>
+          Status: <span class="badge badge-${esc(statusStr)}">${esc(statusLabel(statusStr))}</span>
         </div>
       </div>
       <div style="padding:10px 12px;background:rgba(133,91,251,0.06);border-radius:8px;margin-bottom:12px;font-size:13px;color:var(--purple-deep);">
