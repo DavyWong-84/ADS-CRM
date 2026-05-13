@@ -655,6 +655,168 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* v5.72: 删除 lead flag stars CSS (3个星星功能不再使用) */
 
+/* ============================================================
+   v6.78: Contact 双视图模式 CSS
+   - 切换按钮 .view-toggle
+   - Table 模式渲染 .tbl-view (在 #leadList 内部)
+   - body.contact-view-table → 桌面下隐藏 detail-panel, list 满宽
+   - 手机端 (<768px) 隐藏切换按钮, 强制 cards
+   ============================================================ */
+
+/* 切换按钮组 */
+.view-toggle {
+  display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  height: 36px;
+}
+.view-toggle button {
+  background: var(--white); border: none; padding: 0 14px; font-size: 13px;
+  cursor: pointer; color: var(--gray); border-right: 1px solid var(--border);
+  display: inline-flex; align-items: center;
+}
+.view-toggle button:last-child { border-right: none; }
+.view-toggle button.active {
+  background: var(--purple); color: white; font-weight: 500;
+}
+.view-toggle button:hover:not(.active) { background: #FAFAF8; }
+
+/* Table 渲染 (放在 #leadList 内部) */
+.tbl-view-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  /* v6.78 codex P2: 列多容易超宽, 允许横滚 */
+  overflow-x: auto;
+}
+.tbl-view {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+  /* v6.78 codex P2: 7 列最小宽度防裁切 */
+  min-width: 920px;
+}
+.tbl-view thead th {
+  background: #F5F2FF;
+  padding: 10px 12px;
+  font-weight: 500; text-align: left;
+  color: #4f1ed1;
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;
+  border-bottom: 2px solid var(--purple);
+  white-space: nowrap; user-select: none;
+}
+.tbl-view tbody td {
+  padding: 10px 12px; border-bottom: 1px solid #ECECE7;
+  vertical-align: middle;
+}
+.tbl-view tbody tr {
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.tbl-view tbody tr:hover { background: #FAFAF8; }
+.tbl-view tbody tr.selected { background: #F5F2FF; }
+
+/* 左侧状态色条 (放在 tr 上, 用 ::before) */
+.tbl-view tbody tr td:first-child {
+  position: relative; padding-left: 16px;
+}
+.tbl-view tbody tr td:first-child::before {
+  content: ''; position: absolute; left: 4px; top: 6px; bottom: 6px;
+  width: 4px; border-radius: 2px; background: transparent;
+}
+.tbl-view tbody tr.row-appt td:first-child::before { background: #7132f5; }
+.tbl-view tbody tr.row-show td:first-child::before { background: #1D9E75; }
+.tbl-view tbody tr.row-noshow td:first-child::before { background: #D85A30; }
+.tbl-view tbody tr.row-lead td:first-child::before { background: #B4B2A9; }
+
+/* Name 列: avatar + name */
+.tbl-view .cell-name {
+  display: flex; align-items: center; gap: 10px;
+}
+.tbl-view .lc-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 500; font-size: 12px; color: white; flex-shrink: 0;
+}
+.tbl-view .nm {
+  font-weight: 500; color: var(--text); display: inline-flex; align-items: center; gap: 4px;
+}
+.tbl-view .ph {
+  font-family: 'SF Mono', Menlo, monospace; font-size: 12px; color: var(--gray);
+}
+.tbl-view .dt { font-size: 12px; color: var(--gray); white-space: nowrap; }
+.tbl-view .dt strong { color: var(--text); font-weight: 500; }
+.tbl-view .dt .arrow { color: var(--silver); margin: 0 4px; }
+.tbl-view .muted { color: var(--silver); }
+
+/* 频道/Outlet chip 在表格里复用现有 lc-channel/lc-location 样式 */
+.tbl-view .lc-channel, .tbl-view .lc-location {
+  font-size: 11px; padding: 2px 8px 2px 6px;
+  background: var(--surface-2); border-radius: 8px; font-weight: 500;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+
+/* Countdown chip */
+.tbl-view .countdown {
+  font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500;
+  display: inline-block; white-space: nowrap;
+}
+.tbl-view .countdown.cd-today { background: #FAEEDA; color: #854F0B; }
+.tbl-view .countdown.cd-soon { background: #E6F1FB; color: #185FA5; }
+.tbl-view .countdown.cd-past { color: var(--silver); }
+.tbl-view .countdown.cd-done { background: #EAF3DE; color: #3B6D11; }
+
+/* ============================================================
+   body.contact-view-table — Table 模式 desktop 布局
+   v6.78 codex P1 修复:
+   - 现有 panel class 是 .contact-form-panel (不是 .contact-detail-panel)
+   - close 用现有 #contactBackBar (mobile modal 那个)
+   - 用 #contactFormBackdrop 做遮罩 (现有元素)
+   ============================================================ */
+@media (min-width: 768px) {
+  /* Table 模式 (未点 lead): 隐藏右侧 form panel, list 满宽 */
+  body.contact-view-table #page-contact:not(.contact-form-open) .contact-form-panel {
+    display: none !important;
+  }
+  body.contact-view-table #page-contact:not(.contact-form-open) .contact-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Table 模式 + 点开 lead = 弹 modal */
+  body.contact-view-table #page-contact.contact-form-open .contact-list-panel {
+    display: none;
+  }
+  body.contact-view-table #page-contact.contact-form-open .contact-layout {
+    grid-template-columns: 1fr;
+    display: block;
+  }
+  body.contact-view-table #page-contact.contact-form-open #contactFormBackdrop {
+    display: block !important;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 999;
+  }
+  body.contact-view-table #page-contact.contact-form-open .contact-form-panel {
+    display: block !important;
+    position: fixed !important;
+    top: 40px !important;
+    left: 50% !important;
+    transform: translateX(-50%);
+    width: min(720px, calc(100vw - 40px));
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    z-index: 1000;
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px 20px 20px !important;
+  }
+  /* v6.78 codex P2: Table modal 显示 close bar (现有 mobile 用的, 我们复用) */
+  body.contact-view-table #page-contact.contact-form-open #contactBackBar {
+    display: flex !important;
+  }
+}
+
+/* 手机端: 隐藏切换按钮 */
+@media (max-width: 767px) {
+  .view-toggle { display: none !important; }
+}
+
 /* Pagination */
 .pagination { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
 .pagination button { padding: 8px 12px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); }
@@ -3044,14 +3206,14 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 <meta name="theme-color" content="var(--purple)">
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQWRzIENSTSDigJQgVG9iaWIgTGVlIiwic2hvcnRfbmFtZSI6IkFkcyBDUk0iLCJkZXNjcmlwdGlvbiI6IkFkcyBkYXRhICYgbGVhZCBtYW5hZ2VtZW50Iiwic3RhcnRfdXJsIjoiYWRzX2NybV92Mi5odG1sIiwic2NvcGUiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiM3MTMyZjUiLCJ0aGVtZV9jb2xvciI6IiM3MTMyZjUiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhkcFpIUm9QU0l4T1RJaUlHaGxhV2RvZEQwaU1Ua3lJaUIyYVdWM1FtOTRQU0l3SURBZ01Ua3lJREU1TWlJK0NpQWdQSEpsWTNRZ2QybGtkR2c5SWpFNU1pSWdhR1ZwWjJoMFBTSXhPVElpSUhKNFBTSTBNaUlnY25rOUlqUXlJaUJtYVd4c1BTSWpOekV6TW1ZMUlpOCtDaUFnUEhCaGRHZ2daRDBpVFRZeExqUWdORGt1TUNCTU9UWXVNQ0F5Tmk0MUlFd3hNekF1TmlBME9TNHdJRXd4TURrdU9DQTBPUzR3SUV3eE1Ea3VPQ0EyT1M0M0lFdzRNaTR5SURZNUxqY2dURGd5TGpJZ05Ea3VNQ0JhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU9ESXVNaUlnZVQwaU5UY3VOaUlnZDJsa2RHZzlJakkzTGpZaUlHaGxhV2RvZEQwaU1pNDFPU0lnY25nOUlqRXVNRFFpSUdacGJHdzlJaU0zTVRNeVpqVWlMejRLSUNBOGNtVmpkQ0I0UFNJNE1pNHlJaUI1UFNJMk1pNDRJaUIzYVdSMGFEMGlNamN1TmlJZ2FHVnBaMmgwUFNJeUxqVTVJaUJ5ZUQwaU1TNHdOQ0lnWm1sc2JEMGlJemN4TXpKbU5TSWdiM0JoWTJsMGVUMGlNQzQxSWk4K0NpQWdQSFJsZUhRZ2VEMGlPVFl1TUNJZ2VUMGlNVEU0TGpBNElpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqTTJMamtpSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0l4TGpVMElqNUJSRk04TDNSbGVIUStDaUFnUEhSbGVIUWdlRDBpT1RZdU1DSWdlVDBpTVRZd0xqTXlJaUJtYjI1MExXWmhiV2xzZVQwaUxXRndjR3hsTFhONWMzUmxiU3dnUW14cGJtdE5ZV05UZVhOMFpXMUdiMjUwTENBblUyVm5iMlVnVlVrbkxDQlNiMkp2ZEc4c0lDZElaV3gyWlhScFkyRWdUbVYxWlNjc0lFRnlhV0ZzTENCellXNXpMWE5sY21sbUlpQm1iMjUwTFhkbGFXZG9kRDBpT0RBd0lpQm1iMjUwTFhOcGVtVTlJak0yTGpraUlHWnBiR3c5SWlObVptWm1abVlpSUhSbGVIUXRZVzVqYUc5eVBTSnRhV1JrYkdVaUlHeGxkSFJsY2kxemNHRmphVzVuUFNJeExqVTBJajVEVWswOEwzUmxlSFErQ2p3dmMzWm5QZz09Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSTFNVElpSUdobGFXZG9kRDBpTlRFeUlpQjJhV1YzUW05NFBTSXdJREFnTlRFeUlEVXhNaUkrQ2lBZ1BISmxZM1FnZDJsa2RHZzlJalV4TWlJZ2FHVnBaMmgwUFNJMU1USWlJSEo0UFNJeE1USWlJSEo1UFNJeE1USWlJR1pwYkd3OUlpTTNNVE15WmpVaUx6NEtJQ0E4Y0dGMGFDQmtQU0pOTVRZekxqZ2dNVE13TGpZZ1RESTFOaTR3SURjd0xqY2dURE0wT0M0eUlERXpNQzQySUV3eU9USXVPU0F4TXpBdU5pQk1Namt5TGprZ01UZzFMamtnVERJeE9TNHhJREU0TlM0NUlFd3lNVGt1TVNBeE16QXVOaUJhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU1qRTVMakVpSUhrOUlqRTFNeTQySWlCM2FXUjBhRDBpTnpNdU55SWdhR1ZwWjJoMFBTSTJMamt4SWlCeWVEMGlNaTQzTmlJZ1ptbHNiRDBpSXpjeE16Sm1OU0l2UGdvZ0lEeHlaV04wSUhnOUlqSXhPUzR4SWlCNVBTSXhOamN1TkNJZ2QybGtkR2c5SWpjekxqY2lJR2hsYVdkb2REMGlOaTQ1TVNJZ2NuZzlJakl1TnpZaUlHWnBiR3c5SWlNM01UTXlaalVpSUc5d1lXTnBkSGs5SWpBdU5TSXZQZ29nSUR4MFpYaDBJSGc5SWpJMU5pNHdJaUI1UFNJek1UUXVPRGdpSUdadmJuUXRabUZ0YVd4NVBTSXRZWEJ3YkdVdGMzbHpkR1Z0TENCQ2JHbHVhMDFoWTFONWMzUmxiVVp2Ym5Rc0lDZFRaV2R2WlNCVlNTY3NJRkp2WW05MGJ5d2dKMGhsYkhabGRHbGpZU0JPWlhWbEp5d2dRWEpwWVd3c0lITmhibk10YzJWeWFXWWlJR1p2Ym5RdGQyVnBaMmgwUFNJNE1EQWlJR1p2Ym5RdGMybDZaVDBpT1RndU15SWdabWxzYkQwaUkyWm1abVptWmlJZ2RHVjRkQzFoYm1Ob2IzSTlJbTFwWkdSc1pTSWdiR1YwZEdWeUxYTndZV05wYm1jOUlqUXVNVEFpUGtGRVV6d3ZkR1Y0ZEQ0S0lDQThkR1Y0ZENCNFBTSXlOVFl1TUNJZ2VUMGlOREkzTGpVeUlpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqazRMak1pSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0kwTGpFd0lqNURVazA4TDNSbGVIUStDand2YzNablBnPT0iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJhbnkifV19">
 </head>
-<body class="">
+<body class="contact-view-table">
 
 <header class="topbar">
   <div class="brand">
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.77</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.78</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3107,7 +3269,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.77</div>
+      <div class="nav-brand-version">v6.78</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3170,6 +3332,11 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
           <!-- v4.93: + New Lead button on left of search (desktop only) -->
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
             <button type="button" onclick="openNewLead()" class="btn btn-primary contact-newlead-btn-inline" style="padding:0 14px; height:36px; font-size:13px; border-radius:8px; white-space:nowrap; display:none;">+ New Lead</button>
+            <!-- v6.78: Cards / Table 视图切换 (只桌面显示, 手机端 CSS 隐藏) -->
+            <div class="view-toggle" id="viewToggle" role="tablist" aria-label="View mode">
+              <button type="button" id="vt-cards" onclick="setContactViewMode('cards')" role="tab" class="">Cards</button>
+              <button type="button" id="vt-table" onclick="setContactViewMode('table')" role="tab" class="active">Table</button>
+            </div>
             <div class="list-search contact-search-row" style="position:relative; flex:1;">
               <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
               <input type="text" id="searchInputDesktop" name="q_search_desktop" autocomplete="off" placeholder="Search name, contact, remark..." style="padding-left:30px;" oninput="onSearchInputChange(this.value)">
@@ -4740,7 +4907,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.54'; // v6.77
+const DATA_VERSION = '4.55'; // v6.78
 
 // ---------- State ----------
 let state = {
@@ -4758,6 +4925,12 @@ let state = {
   listPeriod: 'all',
   listChannelId: '',
   listSort: 'updated',
+  // v6.78: Contact 页桌面端视图模式. 'cards' = 双栏 (现状), 'table' = 全屏表格.
+  //   手机端 (<768px) 不看此值, 强制 cards. localStorage 持久化.
+  contactViewMode: (function(){
+    try { return localStorage.getItem('adscrm_contactViewMode') || 'cards'; }
+    catch(e) { return 'cards'; }
+  })(),
   listMode: 'month',
   listMonth: localMonth(),
   listYear: String(new Date().getFullYear()),
@@ -6885,6 +7058,10 @@ function saveLead(base) {
     updatedAt: new Date().toISOString()
   };
 
+  // v6.78 codex P2: 先记 wasEditing, 否则 resetLeadForm 里再读时已被清空, 误判为新建.
+  //   长期 bug: 编辑保存后 resetLeadForm 的 wasEditing 永远 false → 不关 modal/form.
+  //   在 mobile 没明显感觉 (现有 line 6920-6922 自己关), 但 Table modal 暴露此 bug.
+  const _wasEditing = !!currentEditingId;
   if (currentEditingId) {
     const idx = state.leads.findIndex(l => l.id === currentEditingId);
     if (idx >= 0) state.leads[idx] = lead;
@@ -6895,16 +7072,17 @@ function saveLead(base) {
 
   saveState();
   gsUpsert('Leads', gsLeadForSheet(lead));
-  resetLeadForm();
+  resetLeadForm(_wasEditing);
   toast('Saved ' + (lead.name || lead.contact));
   showLastSaved('lead_lastSaved');
-  // Mobile: auto-close the fullscreen form and return to list
-  if (window.innerWidth < 768) {
+  // Mobile + Desktop Table 模式: 编辑后自动关闭 (modal 都要关)
+  //   新建 lead 时不关 (用户可能想连续录入), 跟现有行为一致.
+  if (_wasEditing && (window.innerWidth < 768 || state.contactViewMode === 'table')) {
     setTimeout(() => closeContactForm(), 400);
   }
 }
 
-function resetLeadForm() {
+function resetLeadForm(wasEditingOverride) {
   document.getElementById('leadForm').reset();
   document.getElementById('f_leadDate').value = todayStr();
   // Reset date button labels
@@ -6915,7 +7093,9 @@ function resetLeadForm() {
   const adLabel = document.getElementById('f_apptDate_label');
   const adBtn = document.getElementById('f_apptDate_btn');
   if (adLabel && adBtn) { adLabel.textContent = ''; adBtn.classList.add('empty'); }
-  const wasEditing = !!currentEditingId;
+  // v6.78 codex P2: 接受 caller 传 wasEditing (saveLead 调用前已清 currentEditingId).
+  //   不传时回退到原逻辑 (其他 caller 自检).
+  const wasEditing = (typeof wasEditingOverride === 'boolean') ? wasEditingOverride : !!currentEditingId;
   currentEditingId = null;
   renderLeadStepper(null);
   const avs = document.getElementById('afterVisitSection');
@@ -6954,12 +7134,16 @@ function editLead(id) {
   if (delBtn) delBtn.style.display = 'inline-block';
 
   // Highlight selected card
-  document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.lead-item, .tbl-view tbody tr.selected').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.lead-item').forEach(el => { if (el.getAttribute('onclick')?.includes(id)) el.classList.add('selected'); });
+  // v6.78 codex P3: Table 模式也高亮当前 row
+  document.querySelectorAll('.tbl-view tbody tr').forEach(el => { if (el.getAttribute('onclick')?.includes(id)) el.classList.add('selected'); });
 
   // Mobile: open as modal
+  // v6.78: Desktop Table 模式也走 modal (cards 模式仍走双栏)
   const isMobile = window.innerWidth < 768;
-  if (isMobile) {
+  const useModal = isMobile || (!isMobile && state.contactViewMode === 'table');
+  if (useModal) {
     document.getElementById('page-contact').classList.add('contact-form-open');
   }
   // v3.47: Desktop — do NOT scroll the list back to top. User stays at their position.
@@ -7023,11 +7207,13 @@ function openNewLead() {
   if (delBtn) delBtn.style.display = 'none';
 
   // Deselect any list item
-  document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.lead-item, .tbl-view tbody tr.selected').forEach(el => el.classList.remove('selected'));
 
   // Mobile: open as modal (CSS handles visibility via .contact-form-open class)
+  // v6.78: Desktop Table 模式也走 modal
   const isMobile = window.innerWidth < 768;
-  if (isMobile) {
+  const useModal = isMobile || (!isMobile && state.contactViewMode === 'table');
+  if (useModal) {
     document.getElementById('page-contact').classList.add('contact-form-open');
   } else {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -7043,7 +7229,7 @@ function closeContactForm() {
     document.getElementById('contactFormEmpty').style.display = 'block';
   }
   currentEditingId = null;
-  document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.lead-item, .tbl-view tbody tr.selected').forEach(el => el.classList.remove('selected'));
 }
 
 function populateLeadForm(l) {
@@ -7222,7 +7408,7 @@ function saveDetailLead() {
   renderDetailPanel(lead);
   // Re-highlight
   setTimeout(() => {
-    document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+    document.querySelectorAll('.lead-item, .tbl-view tbody tr.selected').forEach(el => el.classList.remove('selected'));
     document.querySelectorAll('.lead-item').forEach(el => { if (el.getAttribute('onclick')?.includes(currentEditingId)) el.classList.add('selected'); });
   }, 50);
   // Mobile: auto-close the fullscreen form and return to list
@@ -7235,7 +7421,7 @@ function closeDetailPanel() {
   const dp = document.getElementById('listDetailPanel');
   if (dp) { dp.style.display = 'none'; dp.innerHTML = '<div class="list-detail-empty">Click a lead to edit</div>'; }
   currentEditingId = null;
-  document.querySelectorAll('.lead-item').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.lead-item, .tbl-view tbody tr.selected').forEach(el => el.classList.remove('selected'));
 }
 
 // v3.28: Delete Lead from detail panel
@@ -8080,6 +8266,110 @@ function chipLogoHTML(name, customColor) {
   return `<span class="chip-initial" style="background:${color};">${letter}</span>`;
 }
 
+// ============================================================
+// v6.78: Contact 双视图模式 (Cards / Table)
+// 仅桌面端 (≥768px) 生效. 手机端强制 cards 走原渲染.
+// ============================================================
+
+/** 切换 Cards / Table 视图. 持久化到 localStorage. */
+function setContactViewMode(mode) {
+  if (mode !== 'cards' && mode !== 'table') return;
+  state.contactViewMode = mode;
+  try { localStorage.setItem('adscrm_contactViewMode', mode); } catch(e) {}
+  // 切换 body class 让 CSS 控制布局
+  document.body.classList.toggle('contact-view-table', mode === 'table');
+  document.body.classList.toggle('contact-view-cards', mode === 'cards');
+  // 更新按钮 active 状态
+  const c = document.getElementById('vt-cards');
+  const t = document.getElementById('vt-table');
+  if (c) c.classList.toggle('active', mode === 'cards');
+  if (t) t.classList.toggle('active', mode === 'table');
+  // 重新渲染列表 (cards vs table)
+  if (typeof renderList === 'function') renderList();
+}
+
+/** 算预约倒数文字. 数据源 l.apptDate, 不动 lead. */
+function apptCountdownText(l) {
+  if (!l.apptDate) return { text: '—', cls: 'cd-past' };
+  const today0 = new Date(); today0.setHours(0,0,0,0);
+  const appt0 = new Date(l.apptDate + 'T00:00:00');
+  if (isNaN(appt0)) return { text: '—', cls: 'cd-past' };
+  const diff = Math.round((appt0 - today0) / 86400000);
+  if (l.status === 'done') return { text: 'Show Up', cls: 'cd-done' };
+  if (l.status === 'noshow') return { text: 'No Show', cls: 'cd-past' };
+  if (diff === 0) return { text: 'Today', cls: 'cd-today' };
+  if (diff === 1) return { text: 'Tomorrow', cls: 'cd-soon' };
+  if (diff > 1) return { text: `in ${diff} days`, cls: 'cd-soon' };
+  if (diff < 0) return { text: `${-diff}d ago`, cls: 'cd-past' };
+  return { text: '—', cls: 'cd-past' };
+}
+
+/** 首字母圆头像 — 颜色按 name hash 算, 跨刷新一致 */
+function avatarHTML(name) {
+  const colors = ['#7132f5', '#1D9E75', '#D85A30', '#D4537E', '#185FA5', '#BA7517'];
+  const letter = (name || '?').trim().charAt(0).toUpperCase() || '?';
+  let h = 0;
+  for (let i = 0; i < (name || '').length; i++) h = ((h << 5) - h + name.charCodeAt(i)) | 0;
+  const color = colors[Math.abs(h) % colors.length];
+  return `<span class="lc-avatar" style="background:${color};">${esc(letter)}</span>`;
+}
+
+/** 渲染 Table 模式 HTML (单栏全屏). slice = 已过滤+排序的 leads 切片. */
+function renderListAsTableHTML(slice) {
+  const today = todayStr();
+  const rows = slice.map(l => {
+    const selected = l.id === currentEditingId ? ' selected' : '';
+    const cd = apptCountdownText(l);
+    // status row class for left color bar
+    let rowCls = 'row-lead';
+    if (l.status === 'booked') rowCls = 'row-appt';
+    else if (l.status === 'done') rowCls = 'row-show';
+    else if (l.status === 'noshow') rowCls = 'row-noshow';
+    // status badge
+    const stLabel = statusLabel(l.status);
+    let stBadge = `<span class="badge badge-${l.status}">${esc(stLabel)}</span>`;
+    // channel chip
+    const ch = state.channels.find(c => c.id === l.channelId);
+    const channelChip = l.channelName
+      ? `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`
+      : '<span class="muted">—</span>';
+    // location chip — v6.78 codex P3: fallback 跟 cards 模式一致 (l.location 老字段)
+    const loc = state.locations.find(x => x.id === l.locationId);
+    const locName = (loc && loc.name) || l.location || l.locationName || '';
+    const locationChip = locName
+      ? `<span class="lc-location">${chipLogoHTML(locName, loc && loc.color)}${esc(locName)}</span>`
+      : '<span class="muted">—</span>';
+    // dates
+    const leadDt = l.leadDate ? fmt.monthDay(l.leadDate) : '—';
+    const apptDt = l.apptDate ? fmt.monthDay(l.apptDate) : '—';
+    const displayName = l.name || l.contact || '(no data)';
+    return `<tr class="${rowCls}${selected}" onclick="editLead('${esc(l.id)}')">
+      <td><div class="cell-name">${avatarHTML(displayName)}<span class="nm">${esc(displayName)}${remarkIconHTML(l)}</span></div></td>
+      <td class="ph">${esc(l.contact || '')}</td>
+      <td>${stBadge}</td>
+      <td>${channelChip}</td>
+      <td>${locationChip}</td>
+      <td class="dt">${esc(leadDt)} <span class="arrow">→</span> <strong>${esc(apptDt)}</strong></td>
+      <td><span class="countdown ${cd.cls}">${esc(cd.text)}</span></td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="tbl-view-wrap">
+    <table class="tbl-view">
+      <thead><tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Status</th>
+        <th>Channel</th>
+        <th>Outlet</th>
+        <th>Lead → Appt</th>
+        <th>Countdown</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
 function renderList() {
   updateSearchActiveBar();
   renderQuickChips();
@@ -8250,6 +8540,9 @@ function renderList() {
 
   if (slice.length === 0) {
     document.getElementById('leadList').innerHTML = '<div class="empty"><div>No leads found</div></div>';
+  } else if (!isMobile && state.contactViewMode === 'table') {
+    // v6.78: Desktop Table 模式 — 用新渲染函数
+    document.getElementById('leadList').innerHTML = renderListAsTableHTML(slice);
   } else {
     document.getElementById('leadList').innerHTML = slice.map(l => {
       const today = todayStr();
@@ -16860,6 +17153,17 @@ function init() {
       document.body.classList.add('sidebar-collapsed');
     }
   } catch(e) {}
+  // v6.78: 应用 Contact 视图模式 (cards / table) — 已从 localStorage 读出
+  const initialMode = state.contactViewMode || 'cards';
+  document.body.classList.toggle('contact-view-table', initialMode === 'table');
+  document.body.classList.toggle('contact-view-cards', initialMode === 'cards');
+  // 同步按钮 active 状态 (在 DOM ready 后)
+  setTimeout(() => {
+    const c = document.getElementById('vt-cards');
+    const t = document.getElementById('vt-table');
+    if (c) c.classList.toggle('active', initialMode === 'cards');
+    if (t) t.classList.toggle('active', initialMode === 'table');
+  }, 0);
   // v3.26 ONE-TIME MIGRATION: wipe old AI notes (all were auto-recommendations, now obsolete)
   try {
     const MIGRATION_KEY = 'ads_crm_v326_wiped_notes';
@@ -16911,6 +17215,17 @@ function init() {
   // v3.86: Also re-measure unified-header height on resize (orientation change)
   window.addEventListener('resize', () => { if (typeof syncHeaderHeight === 'function') syncHeaderHeight(); });
   setTimeout(() => { if (typeof syncHeaderHeight === 'function') syncHeaderHeight(); }, 200);
+  // v6.78 codex P2: 跨 768px 断点时重渲染 list (cards ↔ table)
+  //   防止用户在桌面 Table 模式后缩小窗口, CSS 切回 mobile 但 #leadList 仍是 table HTML.
+  //   只在跨断点时触发, 同一侧 resize 不触发 (省性能).
+  let _lastIsMobile = window.innerWidth < 768;
+  window.addEventListener('resize', () => {
+    const nowIsMobile = window.innerWidth < 768;
+    if (nowIsMobile !== _lastIsMobile) {
+      _lastIsMobile = nowIsMobile;
+      if (typeof renderList === 'function') renderList();
+    }
+  });
   // v3.69: Show pending queue badge on boot if there are unsynced ops
   if (typeof updatePendingBadge === 'function') updatePendingBadge();
   // v5.07: Removed 800ms artificial delay — pull immediately on page load
