@@ -700,9 +700,23 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   font-weight: 500; text-align: left;
   color: #4f1ed1;
   font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px;
-  border-bottom: 2px solid var(--purple);
+  /* v6.79: 表头下方分割线 — 原 2px 紫色太重, 改成普通细灰线 (Davy 反馈) */
+  border-bottom: 1px solid var(--border);
   white-space: nowrap; user-select: none;
 }
+/* v6.79: 表头点击排序 */
+.tbl-view thead th.sortable {
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.tbl-view thead th.sortable:hover { background: #EAE3FF; }
+.tbl-view thead th.sorted { background: #E4DBFF; }
+.tbl-view thead th .sort-ico {
+  display: inline-block; margin-left: 4px;
+  opacity: 0.35; font-size: 11px;
+  transition: opacity 0.1s;
+}
+.tbl-view thead th .sort-ico.active { opacity: 1; color: var(--purple); }
 .tbl-view tbody td {
   padding: 10px 12px; border-bottom: 1px solid #ECECE7;
   vertical-align: middle;
@@ -3232,7 +3246,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.79</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.80</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3288,7 +3302,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.79</div>
+      <div class="nav-brand-version">v6.80</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4926,7 +4940,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.56'; // v6.79
+const DATA_VERSION = '4.57'; // v6.80
 
 // ---------- State ----------
 let state = {
@@ -8308,6 +8322,67 @@ function setContactViewMode(mode) {
 }
 
 /** 算预约倒数文字. 数据源 l.apptDate, 不动 lead. */
+// ============================================================
+// v6.79: 表头点击排序 (临时覆盖, 不持久化)
+//   点 1 次升序 → 点 2 次降序 → 点 3 次重置 (回默认排序)
+//   不动顶部 Sort, 不影响 Cards 模式
+// ============================================================
+let _tableSortCol = null;    // 'name'|'contact'|'status'|'channel'|'outlet'|'leadDate'|'apptDate'|'spend'|null
+let _tableSortDir = null;    // 'asc'|'desc'|null
+
+function setTableSort(col) {
+  // 同一列: asc → desc → null (重置)
+  if (_tableSortCol === col) {
+    if (_tableSortDir === 'asc') _tableSortDir = 'desc';
+    else if (_tableSortDir === 'desc') { _tableSortCol = null; _tableSortDir = null; }
+    else _tableSortDir = 'asc';
+  } else {
+    // 切到新列, 从 asc 开始
+    _tableSortCol = col;
+    _tableSortDir = 'asc';
+  }
+  if (typeof renderList === 'function') renderList();
+}
+
+/** 表头点击排序的比较函数. 返回 sort comparator 或 null (用默认). */
+function _tableSortComparator() {
+  if (!_tableSortCol || !_tableSortDir) return null;
+  const dir = _tableSortDir === 'asc' ? 1 : -1;
+  const statusOrder = { lead: 0, booked: 1, done: 2, noshow: 3 };
+  return (a, b) => {
+    let va, vb;
+    switch (_tableSortCol) {
+      case 'name':
+        va = (a.name || a.contact || '').toLowerCase();
+        vb = (b.name || b.contact || '').toLowerCase();
+        return va.localeCompare(vb) * dir;
+      case 'contact':
+        va = String(a.contact || '');
+        vb = String(b.contact || '');
+        return va.localeCompare(vb) * dir;
+      case 'status':
+        va = statusOrder[a.status] ?? 99;
+        vb = statusOrder[b.status] ?? 99;
+        return (va - vb) * dir;
+      case 'channel':
+        return (a.channelName || '').localeCompare(b.channelName || '') * dir;
+      case 'outlet':
+        const lA = state.locations.find(x => x.id === a.locationId);
+        const lB = state.locations.find(x => x.id === b.locationId);
+        const nA = (lA && lA.name) || a.location || '';
+        const nB = (lB && lB.name) || b.location || '';
+        return nA.localeCompare(nB) * dir;
+      case 'leadDate':
+        return (a.leadDate || '').localeCompare(b.leadDate || '') * dir;
+      case 'apptDate':
+        return (a.apptDate || '').localeCompare(b.apptDate || '') * dir;
+      case 'spend':
+        return ((Number(a.spend) || 0) - (Number(b.spend) || 0)) * dir;
+      default: return 0;
+    }
+  };
+}
+
 function apptCountdownText(l) {
   // v6.79: Countdown 只在 booked (Appt) 状态显示, 其他状态 Status 列已经表达了, 避免重复.
   if (l.status !== 'booked') return { text: '—', cls: 'cd-past' };
@@ -8382,17 +8457,26 @@ function renderListAsTableHTML(slice) {
     </tr>`;
   }).join('');
 
+  // v6.79: 表头排序 icon helper
+  const sortIco = (col) => {
+    if (_tableSortCol !== col) return '<span class="sort-ico">↕</span>';
+    return _tableSortDir === 'asc'
+      ? '<span class="sort-ico active">↑</span>'
+      : '<span class="sort-ico active">↓</span>';
+  };
+  const sortCls = (col) => _tableSortCol === col ? ' sorted' : '';
+
   return `<div class="tbl-view-wrap">
     <table class="tbl-view">
       <thead><tr>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Status</th>
-        <th>Channel</th>
-        <th>Outlet</th>
-        <th>Lead → Appt</th>
-        <th>Countdown</th>
-        <th class="num">Spend</th>
+        <th class="sortable${sortCls('name')}" onclick="setTableSort('name')">Name ${sortIco('name')}</th>
+        <th class="sortable${sortCls('contact')}" onclick="setTableSort('contact')">Phone ${sortIco('contact')}</th>
+        <th class="sortable${sortCls('status')}" onclick="setTableSort('status')">Status ${sortIco('status')}</th>
+        <th class="sortable${sortCls('channel')}" onclick="setTableSort('channel')">Channel ${sortIco('channel')}</th>
+        <th class="sortable${sortCls('outlet')}" onclick="setTableSort('outlet')">Outlet ${sortIco('outlet')}</th>
+        <th class="sortable${sortCls('leadDate')}" onclick="setTableSort('leadDate')">Lead → Appt ${sortIco('leadDate')}</th>
+        <th class="sortable${sortCls('apptDate')}" onclick="setTableSort('apptDate')">Countdown ${sortIco('apptDate')}</th>
+        <th class="num sortable${sortCls('spend')}" onclick="setTableSort('spend')">Spend ${sortIco('spend')}</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
@@ -8522,6 +8606,12 @@ function renderList() {
     );
   }
   const today = todayStr();
+  // v6.79: 表头点击排序 (只 Table 模式) — 优先于所有默认排序逻辑
+  //   覆盖 overdue 置顶 + Show Up 默认降序 + sortMode 全部. 临时性, 不持久化.
+  const tableComparator = (!isMobile && state.contactViewMode === 'table') ? _tableSortComparator() : null;
+  if (tableComparator) {
+    list.sort(tableComparator);
+  } else {
   // v4.72 (user feedback): ONLY overdue booked get placed on top across all sort modes.
   // Today's booked / no special treatment — just follow the user's chosen sort.
   // v6.79: Show Up tab 强制 apptDate 降序 (Davy 要最新到店的在上).
@@ -8569,6 +8659,7 @@ function renderList() {
     // Tiebreaker: id descending
     return (b.id || '').localeCompare(a.id || '');
   });
+  }  // end else (default sort, when no table header override)
 
   // sub text removed (was showing record count)
 
