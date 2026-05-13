@@ -714,18 +714,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .tbl-view tbody tr:hover { background: #FAFAF8; }
 .tbl-view tbody tr.selected { background: #F5F2FF; }
 
-/* 左侧状态色条 (放在 tr 上, 用 ::before) */
+/* v6.79: 删除左侧状态色条 (Davy 反馈太丑). status 已在 Status 列显示, 不再需要色条. */
 .tbl-view tbody tr td:first-child {
-  position: relative; padding-left: 16px;
+  padding-left: 12px;
 }
-.tbl-view tbody tr td:first-child::before {
-  content: ''; position: absolute; left: 4px; top: 6px; bottom: 6px;
-  width: 4px; border-radius: 2px; background: transparent;
-}
-.tbl-view tbody tr.row-appt td:first-child::before { background: #7132f5; }
-.tbl-view tbody tr.row-show td:first-child::before { background: #1D9E75; }
-.tbl-view tbody tr.row-noshow td:first-child::before { background: #D85A30; }
-.tbl-view tbody tr.row-lead td:first-child::before { background: #B4B2A9; }
 
 /* Name 列: avatar + name */
 .tbl-view .cell-name {
@@ -3240,7 +3232,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.78</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.79</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3296,7 +3288,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.78</div>
+      <div class="nav-brand-version">v6.79</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4934,7 +4926,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.55'; // v6.78
+const DATA_VERSION = '4.56'; // v6.79
 
 // ---------- State ----------
 let state = {
@@ -8317,17 +8309,17 @@ function setContactViewMode(mode) {
 
 /** 算预约倒数文字. 数据源 l.apptDate, 不动 lead. */
 function apptCountdownText(l) {
+  // v6.79: Countdown 只在 booked (Appt) 状态显示, 其他状态 Status 列已经表达了, 避免重复.
+  if (l.status !== 'booked') return { text: '—', cls: 'cd-past' };
   if (!l.apptDate) return { text: '—', cls: 'cd-past' };
   const today0 = new Date(); today0.setHours(0,0,0,0);
   const appt0 = new Date(l.apptDate + 'T00:00:00');
   if (isNaN(appt0)) return { text: '—', cls: 'cd-past' };
   const diff = Math.round((appt0 - today0) / 86400000);
-  if (l.status === 'done') return { text: 'Show Up', cls: 'cd-done' };
-  if (l.status === 'noshow') return { text: 'No Show', cls: 'cd-past' };
   if (diff === 0) return { text: 'Today', cls: 'cd-today' };
   if (diff === 1) return { text: 'Tomorrow', cls: 'cd-soon' };
   if (diff > 1) return { text: `in ${diff} days`, cls: 'cd-soon' };
-  if (diff < 0) return { text: `${-diff}d ago`, cls: 'cd-past' };
+  if (diff < 0) return { text: `${-diff}d overdue`, cls: 'cd-past' };
   return { text: '—', cls: 'cd-past' };
 }
 
@@ -8370,9 +8362,13 @@ function renderListAsTableHTML(slice) {
     const leadDt = l.leadDate ? fmt.monthDay(l.leadDate) : '—';
     const apptDt = l.apptDate ? fmt.monthDay(l.apptDate) : '—';
     const displayName = l.name || l.contact || '(no data)';
-    // v6.78: Spend 列 — 只 Show Up (status=done) 显示金额; 其他显示 —
+    // v6.79: Spend 列 — 只 Show Up (status=done) 显示金额; 其他显示 —
     const spendCell = (l.status === 'done' && Number(l.spend) > 0)
       ? `<span class="spend-cell">${fmt.money(l.spend)}</span>`
+      : '<span class="muted">—</span>';
+    // v6.79: Countdown 只对 APPT (status=booked) 显示, 其他 status 跟 Status 列重叠
+    const countdownCell = (l.status === 'booked')
+      ? `<span class="countdown ${cd.cls}">${esc(cd.text)}</span>`
       : '<span class="muted">—</span>';
     return `<tr class="${rowCls}${selected}" onclick="editLead('${esc(l.id)}')">
       <td><div class="cell-name">${avatarHTML(displayName)}<span class="nm">${esc(displayName)}${remarkIconHTML(l)}</span></div></td>
@@ -8381,7 +8377,7 @@ function renderListAsTableHTML(slice) {
       <td>${channelChip}</td>
       <td>${locationChip}</td>
       <td class="dt">${esc(leadDt)} <span class="arrow">→</span> <strong>${esc(apptDt)}</strong></td>
-      <td><span class="countdown ${cd.cls}">${esc(cd.text)}</span></td>
+      <td>${countdownCell}</td>
       <td class="num">${spendCell}</td>
     </tr>`;
   }).join('');
@@ -8528,7 +8524,7 @@ function renderList() {
   const today = todayStr();
   // v4.72 (user feedback): ONLY overdue booked get placed on top across all sort modes.
   // Today's booked / no special treatment — just follow the user's chosen sort.
-  // v6.78: Show Up tab 强制 apptDate 降序 (Davy 要最新到店的在上).
+  // v6.79: Show Up tab 强制 apptDate 降序 (Davy 要最新到店的在上).
   //   不影响顶部 Sort popover 选项, 只在过滤=done 时改默认排序方向.
   let sortMode = state.listSort || 'updated';
   const forceShowUpDesc = state.listFilter === 'done';
@@ -8543,7 +8539,7 @@ function renderList() {
       if (cmp !== 0) return cmp;
     }
 
-    // v6.78: Show Up tab 用 apptDate 降序覆盖
+    // v6.79: Show Up tab 用 apptDate 降序覆盖
     if (forceShowUpDesc) {
       const cmp = (b.apptDate || '').localeCompare(a.apptDate || '');
       if (cmp !== 0) return cmp;
