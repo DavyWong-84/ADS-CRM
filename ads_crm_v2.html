@@ -845,6 +845,13 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   }
 }
 
+/* v6.80: Table modal 开启时, 通用 modal (日历/AI/搜索等) z-index 提升到高于 Table modal (1000).
+   原因: 通用 modal 默认 z-index:100, 比 Table modal 低, 会被压在后面看不到.
+   selector: body.contact-view-table 时所有打开的 modal 都拉高. */
+body.contact-view-table .modal-backdrop.open {
+  z-index: 2000 !important;
+}
+
 /* 手机端: 隐藏切换按钮 */
 @media (max-width: 767px) {
   .view-toggle { display: none !important; }
@@ -3246,7 +3253,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.80</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.81</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3302,7 +3309,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.80</div>
+      <div class="nav-brand-version">v6.81</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3460,10 +3467,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-05-13</span>
+                      <span id="f_leadDate_label">2026-05-14</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-05-13">
+                    <input type="hidden" id="f_leadDate" value="2026-05-14">
                   </div>
                 </div>
               </div>
@@ -4940,7 +4947,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.57'; // v6.80
+const DATA_VERSION = '4.58'; // v6.81
 
 // ---------- State ----------
 let state = {
