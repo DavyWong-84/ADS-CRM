@@ -663,7 +663,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
    - 手机端 (<768px) 隐藏切换按钮, 强制 cards
    ============================================================ */
 
-/* 切换按钮组 */
+/* 切换按钮组 — v6.85: 全局隐藏 (Davy 决定桌面只走 Table, 手机本来就走 Cards).
+   保留代码逻辑以便将来恢复, 只 CSS 隐藏 UI. */
+.view-toggle { display: none !important; }
+/* (旧样式保留以防恢复)
 .view-toggle {
   display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
   height: 36px;
@@ -678,6 +681,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   background: var(--purple); color: white; font-weight: 500;
 }
 .view-toggle button:hover:not(.active) { background: #FAFAF8; }
+*/
 
 /* Table 渲染 (放在 #leadList 内部) */
 .tbl-view-wrap {
@@ -3447,7 +3451,7 @@ body.contact-view-table .modal-backdrop.open {
             <!-- v6.78: Cards / Table 视图切换 (只桌面显示, 手机端 CSS 隐藏) -->
             <div class="view-toggle" id="viewToggle" role="tablist" aria-label="View mode">
               <button type="button" id="vt-cards" onclick="setContactViewMode('cards')" role="tab">Cards</button>
-              <button type="button" id="vt-table" onclick="setContactViewMode('table')" role="tab" class="active">Table</button>
+              <button type="button" id="vt-table" onclick="setContactViewMode('table')" role="tab">Table</button>
             </div>
             <div class="list-search contact-search-row" style="position:relative; flex:1;">
               <svg style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--gray);" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
@@ -3655,7 +3659,7 @@ body.contact-view-table .modal-backdrop.open {
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="" onclick="openMonthPicker('summaryMonth')">
+        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">May 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
@@ -3664,72 +3668,7 @@ body.contact-view-table .modal-backdrop.open {
     </div>
     <div class="unified-header-spacer"></div>
 
-    <div id="summaryContent">
-    <div class="dash-row-2">
-      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
-        <div class="dash-kpi-label">Revenue →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">May 2026</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('revenue')" style="cursor:pointer;">
-        <div class="dash-kpi-label">New customer sales →</div><div class="dash-kpi-value" style="color:var(--green-dark);">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
-      </div>
-    </div>
-    <div class="dash-row-3">
-      <div class="dash-kpi" onclick="dashNav('adsspend','cost')" style="cursor:pointer;">
-        <div class="dash-kpi-label">Ads cost →</div><div class="dash-kpi-value">RM 0</div><div class="dash-kpi-sub">—% of rev</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('adsspend','roas')" style="cursor:pointer;">
-        <div class="dash-kpi-label">ROAS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Meta — · G —</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('store','platform')" style="cursor:pointer;">
-        <div class="dash-kpi-label">Avg spend / show →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">— shows</div>
-      </div>
-    </div>
-    <div class="dash-row-3">
-      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
-        <div class="dash-kpi-label">CPL →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — leads</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
-        <div class="dash-kpi-label">CPA →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — appt</div>
-      </div>
-      <div class="dash-kpi" onclick="dashNav('adsspend','cpl')" style="cursor:pointer;">
-        <div class="dash-kpi-label">CPS →</div><div class="dash-kpi-value">—</div><div class="dash-kpi-sub">Cost / — shows</div>
-      </div>
-    </div>
-    <div class="dash-funnel" onclick="dashNav('adsspend','funnel')" style="cursor:pointer;">
-      <div class="dash-section-label">Funnel — May 2026 →</div>
-      <div style="display:flex;align-items:stretch;gap:0;min-height:56px;">
-        <div style="flex:4;background:var(--purple-bg);border-radius: 8px 0 0 6px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:18px;font-weight:500;color:var(--purple-deep);">—</div>
-          <div style="font-size:11px;color:var(--purple);">Leads</div>
-        </div>
-        <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:18px;font-weight:500;color:#0C447C;">—</div>
-          <div style="font-size:11px;color:#185FA5;">Appt</div>
-        </div>
-        <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:18px;font-weight:500;color:#085041;">—</div>
-          <div style="font-size:11px;color:#0F6E56;">Show</div>
-        </div>
-        <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
-          <div style="font-size:18px;font-weight:500;color:#633806;">RM 0</div>
-          <div style="font-size:11px;color:#854F0B;">Ads sales</div>
-        </div>
-      </div>
-    </div>
-    <div class="dash-chart" onclick="dashNav('revenue')" style="cursor:pointer;">
-      <div class="dash-section-label">Revenue trend — 2026 →</div>
-      <div id="chart_dash_rev" style="margin-top:8px;">
-      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
-        
-        <div style="position:relative;width:100%;height:260px;">
-          <canvas role="img" aria-label="chart" width="1486" height="325" style="display: block; box-sizing: border-box; height: 260px; width: 1188px;"></canvas>
-        </div>
-      </div></div>
-    </div>
-  </div>
+    <div id="summaryContent"></div>
   </section>
 
   <!-- STORE PAGE -->
@@ -17600,17 +17539,15 @@ function init() {
       document.body.classList.add('sidebar-collapsed');
     }
   } catch(e) {}
-  // v6.78: 应用 Contact 视图模式 (cards / table) — 已从 localStorage 读出
-  const initialMode = state.contactViewMode || 'cards';
+  // v6.85: 桌面强制 Table 模式 (Davy 决定), 手机保持 Cards.
+  //   原: localStorage 决定 mode (cards 或 table).
+  //   修后: 桌面无视 localStorage 直接走 table, 手机仍走 cards.
+  const isDesktopAtInit = window.innerWidth >= 768;
+  const initialMode = isDesktopAtInit ? 'table' : 'cards';
+  state.contactViewMode = initialMode;
+  try { localStorage.setItem('adscrm_contactViewMode', initialMode); } catch(e) {}
   document.body.classList.toggle('contact-view-table', initialMode === 'table');
   document.body.classList.toggle('contact-view-cards', initialMode === 'cards');
-  // 同步按钮 active 状态 (在 DOM ready 后)
-  setTimeout(() => {
-    const c = document.getElementById('vt-cards');
-    const t = document.getElementById('vt-table');
-    if (c) c.classList.toggle('active', initialMode === 'cards');
-    if (t) t.classList.toggle('active', initialMode === 'table');
-  }, 0);
   // v3.26 ONE-TIME MIGRATION: wipe old AI notes (all were auto-recommendations, now obsolete)
   try {
     const MIGRATION_KEY = 'ads_crm_v326_wiped_notes';
@@ -17664,12 +17601,18 @@ function init() {
   setTimeout(() => { if (typeof syncHeaderHeight === 'function') syncHeaderHeight(); }, 200);
   // v6.78 codex P2: 跨 768px 断点时重渲染 list (cards ↔ table)
   //   防止用户在桌面 Table 模式后缩小窗口, CSS 切回 mobile 但 #leadList 仍是 table HTML.
-  //   只在跨断点时触发, 同一侧 resize 不触发 (省性能).
+  //   v6.85: 同时切 mode (桌面 → table, 手机 → cards) + 更新 body class.
   let _lastIsMobile = window.innerWidth < 768;
   window.addEventListener('resize', () => {
     const nowIsMobile = window.innerWidth < 768;
     if (nowIsMobile !== _lastIsMobile) {
       _lastIsMobile = nowIsMobile;
+      // v6.85: 跨断点时切换 mode (桌面强制 table, 手机强制 cards)
+      const newMode = nowIsMobile ? 'cards' : 'table';
+      state.contactViewMode = newMode;
+      try { localStorage.setItem('adscrm_contactViewMode', newMode); } catch(e) {}
+      document.body.classList.toggle('contact-view-table', newMode === 'table');
+      document.body.classList.toggle('contact-view-cards', newMode === 'cards');
       if (typeof renderList === 'function') renderList();
     }
   });
