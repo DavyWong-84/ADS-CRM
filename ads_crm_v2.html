@@ -3253,7 +3253,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.81</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.82</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3309,7 +3309,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.81</div>
+      <div class="nav-brand-version">v6.82</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4947,7 +4947,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.58'; // v6.81
+const DATA_VERSION = '4.59'; // v6.82
 
 // ---------- State ----------
 let state = {
@@ -7045,6 +7045,19 @@ function saveLead(base) {
   const ch = getChannel(base.channelId);
   const loc = locationId ? getLocation(locationId) : null;
 
+  // v6.82: 防 Follow Up channel + duplicate merge 场景.
+  //   Davy 业务规则: 重复号码点 "View / Edit existing" 后, 不能改 channel 成 Follow Up.
+  //   原因: 老 lead 的 channel (如 Google) 数据会被覆盖, 历史月度归因变形.
+  //   触发条件: _fromDuplicateMerge flag 为 true (handleDuplicate 设的) + channel 选了 Follow Up.
+  if (window._fromDuplicateMerge && ch && (ch.platform === 'followup' || ch.id === 'ch-followup')) {
+    if (typeof toast === 'function') {
+      toast('⚠️ 老 lead 不能改成 Follow Up — 请取消, 改用 "Add as new record" 创建新 lead');
+    } else {
+      alert('⚠️ 老 lead 不能改成 Follow Up — 请取消, 改用 "Add as new record" 创建新 lead');
+    }
+    return;  // 阻止保存
+  }
+
   let status = 'lead';
   if (name && apptDate) status = 'booked';
   if (showUp === 'No Show up') status = 'noshow';
@@ -7115,6 +7128,8 @@ function saveLead(base) {
   resetLeadForm(_wasEditing);
   toast('Saved ' + (lead.name || lead.contact));
   showLastSaved('lead_lastSaved');
+  // v6.82: 保存成功, 清 duplicate merge flag (下次正常编辑不受影响)
+  delete window._fromDuplicateMerge;
   // Mobile + Desktop Table 模式: 编辑后自动关闭 (modal 都要关)
   //   新建 lead 时不关 (用户可能想连续录入), 跟现有行为一致.
   if (_wasEditing && (window.innerWidth < 768 || state.contactViewMode === 'table')) {
@@ -7269,6 +7284,8 @@ function closeContactForm() {
     document.getElementById('contactFormEmpty').style.display = 'block';
   }
   currentEditingId = null;
+  // v6.82: 关闭 form 时清 duplicate merge flag
+  delete window._fromDuplicateMerge;
   document.querySelectorAll('.lead-item, .tbl-view tbody tr.selected').forEach(el => el.classList.remove('selected'));
 }
 
@@ -7634,7 +7651,7 @@ function handleDuplicate(existing, incoming) {
       </div>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
-      <button class="btn btn-outline" onclick="closeModal();editLead('${esc(existing.id)}')">View / Edit existing</button>
+      <button class="btn btn-outline" onclick="closeModal();window._fromDuplicateMerge=true;editLead('${esc(existing.id)}')">View / Edit existing</button>
       <button class="btn btn-primary" onclick="closeModal();forceNewLead()">Add as new record</button>
       <button class="btn btn-gray" onclick="closeModal()">Cancel</button>
     </div>
@@ -19123,6 +19140,18 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
       const sel = document.getElementById('mergeChannelSelect');
       const chosenChannelId = sel ? sel.value : newChannelId;
       const chosenCh = activeChannels.find(c => c.id === chosenChannelId);
+
+      // v6.82: 防 Follow Up channel merge — 用户选 Follow Up + merge 会破坏老 channel 数据
+      //   Davy 业务规则: Follow Up 应该 "Add as new", 不该 merge.
+      //   原老 lead 的 channel (如 Google) 数据要保留, 新建一条 Follow Up lead 才对.
+      if (chosenCh && (chosenCh.platform === 'followup' || chosenCh.id === 'ch-followup')) {
+        if (typeof toast === 'function') {
+          toast('⚠️ Follow Up channel 不能 merge — 请改用 "Add as new record"');
+        } else {
+          alert('Follow Up channel 不能 merge — 请改用 "Add as new record"');
+        }
+        return;  // 不关 modal, 不 resolve, 让用户改选别的 channel 或取消
+      }
 
       // v5.74: Append "Appt merged" activity log to remark
       const _newLeadAfter = {
