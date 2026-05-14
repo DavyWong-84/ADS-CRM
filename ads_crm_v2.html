@@ -786,54 +786,79 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     grid-template-columns: 1fr !important;
   }
 
-  /* Table 模式 + 点开 lead = 弹 modal */
+  /* v6.85: Table 模式 + 点开 lead = Drawer 从右边滑出 (列表保持可见 60%, drawer 40%).
+     设计参考: GoHighLevel / HubSpot / Linear / Pipedrive.
+     替代 v6.78 的中间 modal — 列表保持上下文可见, 体验更专业. */
   body.contact-view-table #page-contact.contact-form-open .contact-list-panel {
-    display: none;
+    display: block !important;  /* 列表保持可见 (Drawer 模式) */
+    width: 60%;
+    max-width: 60%;
+    flex: 0 0 60%;
   }
   body.contact-view-table #page-contact.contact-form-open .contact-layout {
-    grid-template-columns: 1fr;
-    display: block;
+    grid-template-columns: 60% 40% !important;
+    display: grid !important;
   }
   body.contact-view-table #page-contact.contact-form-open #contactFormBackdrop {
-    display: block !important;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.45);
-    z-index: 999;
+    /* Drawer 不需要全屏遮罩 (列表保持可见可点) */
+    display: none !important;
   }
   body.contact-view-table #page-contact.contact-form-open .contact-form-panel {
     display: block !important;
     position: fixed !important;
-    top: 40px !important;
-    left: 50% !important;
-    transform: translateX(-50%);
-    width: min(720px, calc(100vw - 40px));
-    max-height: calc(100vh - 80px);
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: auto !important;
+    transform: none !important;
+    width: 40%;
+    max-width: 600px;
+    min-width: 400px;
+    height: 100vh;
+    max-height: 100vh;
     overflow-y: auto;
     z-index: 1000;
-    background: #fff;
-    border-radius: 12px;
-    padding: 16px 20px 20px !important;
+    background: var(--white);
+    border-left: 1px solid var(--border);
+    box-shadow: -8px 0 24px rgba(0,0,0,0.08);
+    border-radius: 0 !important;
+    padding: 0 !important;
+    animation: drawerSlideIn 0.2s ease-out;
   }
-  /* v6.78 codex P2: Table modal 显示 close bar (现有 mobile 用的, 我们复用) */
+  @keyframes drawerSlideIn {
+    from { transform: translateX(100%); opacity: 0.5; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  /* Drawer 标题栏 (复用 contactBackBar) — 顶部 sticky, X 在右上 */
   body.contact-view-table #page-contact.contact-form-open #contactBackBar {
     display: flex !important;
-    justify-content: flex-end !important;   /* X 推到右上角 */
+    justify-content: space-between !important;
+    align-items: center;
     position: sticky;
     top: 0;
-    padding: 8px 10px 0 10px;
+    padding: 12px 16px;
     background: var(--white);
     z-index: 91;
-    border-radius: 12px 12px 0 0;
+    border-radius: 0;
     margin: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  /* Drawer 标题 (Editing: Name) — 加在 backBar 前面 */
+  body.contact-view-table #page-contact.contact-form-open #contactBackBar::before {
+    content: 'Edit Lead';
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    flex: 1;
   }
   /* X 按钮: 加边框, 更明显 */
   body.contact-view-table #page-contact.contact-form-open #contactBackBar button {
     background: var(--white) !important;
     border: 1px solid var(--border) !important;
-    border-radius: 8px !important;
-    width: 36px !important;
-    height: 36px !important;
-    font-size: 18px !important;
+    border-radius: 6px !important;
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 16px !important;
     color: var(--text) !important;
     cursor: pointer;
     transition: background 0.1s, border-color 0.1s;
@@ -843,6 +868,12 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     border-color: var(--purple) !important;
     color: var(--purple) !important;
   }
+  /* Drawer 内表单内容: 加 padding (原 modal padding 在 panel 上, 现在在内部) */
+  body.contact-view-table #page-contact.contact-form-open #contactFormWrap,
+  body.contact-view-table #page-contact.contact-form-open #contactFormEmpty {
+    padding: 16px 20px 20px !important;
+  }
+  /* Drawer 模式下: 当前编辑的 row 在表格里紫色高亮 (代码已有 .selected) */
 }
 
 /* v6.80: Table modal 开启时, 通用 modal (日历/AI/搜索等) z-index 提升到高于 Table modal (1000).
@@ -3253,7 +3284,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.84</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.85</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3309,7 +3340,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.84</div>
+      <div class="nav-brand-version">v6.85</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4947,7 +4978,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.61'; // v6.84
+const DATA_VERSION = '4.62'; // v6.85
 
 // ---------- State ----------
 let state = {
@@ -7139,6 +7170,8 @@ function saveLead(base) {
   showLastSaved('lead_lastSaved');
   // v6.82: 保存成功, 清 duplicate merge flag (下次正常编辑不受影响)
   delete window._fromDuplicateMerge;
+  // v6.85: 保存成功后清快照 (重新打开 lead 时会再 capture)
+  _formSnapshot = null;
   // Mobile + Desktop Table 模式: 编辑后自动关闭 (modal 都要关)
   //   新建 lead 时不关 (用户可能想连续录入), 跟现有行为一致.
   if (_wasEditing && (window.innerWidth < 768 || state.contactViewMode === 'table')) {
@@ -7174,15 +7207,52 @@ function resetLeadForm(wasEditingOverride) {
   }
 }
 
+// v6.85: Drawer dirty check helpers
+//   保存 form 打开时的初始字段值, 切换 lead 时对比当前 form 是否变了.
+let _formSnapshot = null;
+const _DIRTY_FIELDS = ['f_name', 'f_contact', 'f_channel', 'f_leadDate', 'f_apptDate', 'f_location', 'f_showUp', 'f_race', 'f_spend', 'f_remark'];
+function _captureFormSnapshot() {
+  _formSnapshot = {};
+  _DIRTY_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    _formSnapshot[id] = el ? el.value : '';
+  });
+}
+function isFormDirty() {
+  if (!_formSnapshot) return false;
+  for (const id of _DIRTY_FIELDS) {
+    const el = document.getElementById(id);
+    if (el && (el.value || '') !== (_formSnapshot[id] || '')) return true;
+  }
+  return false;
+}
+
 function editLead(id) {
   // v3.33: If this lead's card is in swipe-revealed state, just close it (don't open detail)
   const wrapper = document.querySelector(`.swipe-wrapper[data-lead-id="${id}"] .swipe-card.revealed`);
   if (wrapper) { wrapper.classList.remove('revealed'); return; }
   const l = state.leads.find(x => x.id === id);
   if (!l) return;
-  
+
+  // v6.85: Drawer dirty check — 切换到不同 lead 时, 如果当前 form 有未保存改动, 弹提示.
+  //   只在 Drawer (desktop Table) 模式生效, 因为这模式下点 row 直接切 lead.
+  //   modal (cards 模式) 一次只能开一个, 不会有"切换中失数据"问题.
+  if (currentEditingId && currentEditingId !== id && !window._skipDirtyCheck) {
+    const isDesktopTable = window.innerWidth >= 768 && state.contactViewMode === 'table';
+    if (isDesktopTable && isFormDirty()) {
+      const choice = confirm(
+        '⚠️ 当前 lead 有未保存改动\n\n' +
+        '点 "OK" = 放弃改动, 切到新 lead\n' +
+        '点 "Cancel" = 留在当前 lead (回去保存)'
+      );
+      if (!choice) return;  // 用户选 Cancel, 不切换
+      // 用户选 OK = 放弃, 继续执行 editLead 切到新 lead
+    }
+  }
+
   currentEditingId = id;
   populateLeadForm(l);
+  _captureFormSnapshot();  // v6.85: 记录初始快照供 dirty check 用
   renderLeadStepper(l);
   const avs = document.getElementById('afterVisitSection');
   if (avs) avs.style.display = 'block';
@@ -7285,6 +7355,13 @@ function openNewLead() {
 }
 
 function closeContactForm() {
+  // v6.85: Drawer 模式下关闭也做 dirty check — 防止 X 关闭丢数据
+  const isDesktopTable = window.innerWidth >= 768 && state.contactViewMode === 'table';
+  if (isDesktopTable && currentEditingId && isFormDirty() && !window._skipDirtyCheck) {
+    if (!confirm('⚠️ 有未保存改动\n\n点 "OK" = 放弃改动并关闭\n点 "Cancel" = 留下来保存')) {
+      return;  // 用户选 Cancel, 不关闭
+    }
+  }
   document.getElementById('page-contact').classList.remove('contact-form-open');
   // On desktop, show empty state
   const isDesktop = window.innerWidth >= 768;
@@ -7295,6 +7372,8 @@ function closeContactForm() {
   currentEditingId = null;
   // v6.82: 关闭 form 时清 duplicate merge flag
   delete window._fromDuplicateMerge;
+  // v6.85: 关闭时清 snapshot
+  _formSnapshot = null;
   document.querySelectorAll('.lead-item, .tbl-view tbody tr.selected').forEach(el => el.classList.remove('selected'));
 }
 
@@ -7319,7 +7398,8 @@ function populateLeadForm(l) {
   document.getElementById('f_location').value = l.locationId || '';
   document.getElementById('f_showUp').value = l.showUp || '';
   document.getElementById('f_race').value = l.race || '';
-  document.getElementById('f_spend').value = l.spend || '';
+  // v6.85 codex P1: spend=0 是合法值 (Show Up 但没消费). 不能用 || 因为 0 || '' = ''.
+  document.getElementById('f_spend').value = (l.spend == null || l.spend === '') ? '' : l.spend;
   document.getElementById('f_remark').value = l.remark || '';
   // v3.58: Upgrade native selects in the form to popover UI
   if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects();
@@ -7403,7 +7483,7 @@ function renderDetailPanel(l) {
           <div><label>Show Up</label><select id="df_showUp" data-pop="1" data-pop-placeholder=""><option value=""></option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
           <div class="form-row" style="margin-top:12px;">
             <div><label>Race</label><select id="df_race" data-pop="1" data-pop-placeholder=""><option value=""></option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
-            <div><label>Spend (RM)</label><input type="number" id="df_spend" value="${l.spend || ''}" step="0.01" min="0"></div>
+            <div><label>Spend (RM)</label><input type="number" id="df_spend" value="${l.spend == null || l.spend === '' ? '' : l.spend}" step="0.01" min="0"></div>
           </div>
           <input type="hidden" id="df_remark" value="${esc(l.remark || '')}">
         </div>
@@ -8470,8 +8550,9 @@ function renderListAsTableHTML(slice) {
     const leadDt = l.leadDate ? fmt.monthDay(l.leadDate) : '—';
     const apptDt = l.apptDate ? fmt.monthDay(l.apptDate) : '—';
     const displayName = l.name || l.contact || '(no data)';
-    // v6.79: Spend 列 — 只 Show Up (status=done) 显示金额; 其他显示 —
-    const spendCell = (l.status === 'done' && Number(l.spend) > 0)
+    // v6.85 codex P1: Spend 列 — Show Up 显示金额 (允许 0). 其他 status 显示 —.
+    //   修前: Number(spend) > 0 → 0 显示成 — 跟 lead 一样, 用户分不清.
+    const spendCell = (l.status === 'done' && l.spend != null && l.spend !== '')
       ? `<span class="spend-cell">${fmt.money(l.spend)}</span>`
       : '<span class="muted">—</span>';
     // v6.79: Countdown 只对 APPT (status=booked) 显示, 其他 status 跟 Status 列重叠
@@ -14238,6 +14319,39 @@ function _normalizeSheetPullData(d) {
 async function gsPushAll() {
   const url = getGsUrl();
   if (!url) { gsLog('Please enter Apps Script URL', true); return; }
+
+  // v6.85 codex P1: Push All 远端数量保护.
+  //   防止新设备 localStorage 空 / 数据异常时, Push All 把 Sheet 1900 leads 清空.
+  //   方案: 先 pull remote leads count, 对比本地 count, 差距大 (>20% 缩减) 时多一道确认.
+  try {
+    gsLog('🔍 Checking remote data count before push...');
+    const checkUrl = url + '?action=pull';
+    const checkResp = await fetch(checkUrl, { method: 'GET' });
+    if (checkResp.ok) {
+      const checkData = await checkResp.json();
+      const remoteLeadCount = (checkData && checkData.leads && Array.isArray(checkData.leads)) ? checkData.leads.length : null;
+      const localLeadCount = state.leads.length;
+      if (remoteLeadCount != null && remoteLeadCount > 0) {
+        const shrinkPct = ((remoteLeadCount - localLeadCount) / remoteLeadCount) * 100;
+        if (shrinkPct > 20) {
+          // 本地比远端少 20% 以上 → 危险, 二次确认
+          const msg = `⚠️ DANGEROUS:\n\nRemote Sheet has ${remoteLeadCount} leads, but local CRM has only ${localLeadCount}.\n\nPushing now will REPLACE ${remoteLeadCount} leads with ${localLeadCount} (lose ${remoteLeadCount - localLeadCount} leads).\n\nThis usually means:\n• Local state is incomplete (new device / cleared cache)\n• Sheet was edited externally\n\nAre you SURE you want to overwrite remote data?`;
+          if (!await showConfirm(msg, { title: '⚠️ Data Loss Warning', okText: 'Yes, overwrite anyway', danger: true })) {
+            gsLog('Push All cancelled by user (data loss prevention)');
+            return;
+          }
+        } else if (shrinkPct > 5) {
+          // 本地比远端少 5-20% → 提醒
+          gsLog(`⚠️ Note: local has ${localLeadCount} leads, remote has ${remoteLeadCount} (-${Math.round(shrinkPct)}%)`);
+        }
+      }
+    } else {
+      gsLog('⚠️ Could not check remote count (continuing with caution)');
+    }
+  } catch (e) {
+    gsLog(`⚠️ Remote count check failed: ${e.message} (continuing with caution)`);
+  }
+
   if (!await showConfirm('Push ALL CRM data to Google Sheet? This will overwrite Sheet data.', { title: 'Push All', okText: 'Push', danger: true })) return;
   gsLog('⬆️ Enriching & pushing all data...');
   try {
