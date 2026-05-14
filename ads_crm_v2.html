@@ -786,25 +786,38 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     grid-template-columns: 1fr !important;
   }
 
-  /* v6.85: Table 模式 + 点开 lead = Drawer 从右边滑出 (列表 + drawer 360px).
-     设计参考: GoHighLevel / HubSpot / Linear / Pipedrive.
-     v6.85 hotfix: 之前用 fixed 定位 drawer, sidebar 展开时 drawer 浮在列表右边 ~360px 上面.
-       改成 grid 单元 + sticky, drawer 占 grid 一列, 列表自动避开 drawer 宽度. */
-  body.contact-view-table #page-contact.contact-form-open .contact-list-panel {
-    display: flex !important;
-    width: auto !important;
-    max-width: none !important;
-    border-right: none !important;
-    padding-right: 0 !important;
-    overflow: hidden;
-    min-width: 0;  /* 关键: 防 grid item 被表格 min-width 撑爆 */
-  }
+  /* v6.85 codex 修复: Drawer layout 根因 — 表格 min-width:1020px 顶破 grid item.
+     修法: list-panel min-width:0 + leadList 内部横滚, table 自己保持 1020px.
+     这样窄桌面也不会"死"table 右边. */
   body.contact-view-table #page-contact.contact-form-open .contact-layout {
-    grid-template-columns: 1fr 360px !important;  /* list 占满剩余, drawer 固定 360px */
     display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 360px !important;
     width: 100% !important;
     max-width: 100% !important;
+    overflow: hidden;
     gap: 0;
+  }
+  body.contact-view-table #page-contact.contact-form-open .contact-list-panel {
+    display: flex !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    overflow: hidden !important;
+    padding-right: 0 !important;
+    border-right: none !important;
+  }
+  /* 横滚发生在 #leadList 内部, 不让 table 顶破 list-panel */
+  body.contact-view-table #page-contact.contact-form-open #leadList {
+    min-width: 0 !important;
+    overflow: auto !important;
+  }
+  body.contact-view-table #page-contact.contact-form-open .tbl-view-wrap {
+    overflow: visible !important;
+    min-width: max(100%, 1020px);
+  }
+  body.contact-view-table #page-contact.contact-form-open .tbl-view {
+    width: 100%;
+    min-width: 1020px;
   }
   body.contact-view-table #page-contact.contact-form-open #contactFormBackdrop {
     display: none !important;
@@ -2174,10 +2187,14 @@ body.contact-view-table .modal-backdrop.open {
     min-width: 0;
   }
 }
-/* Mobile: form open = full screen */
-.contact-form-open .contact-list-panel { display: none !important; }
-.contact-form-open .contact-form-panel { display: block !important; }
-.contact-form-open #contactFab { display: none !important; }
+/* v6.85 codex: 包进 @media (max-width: 767px), 只在手机端隐藏 list/form/fab.
+   修前 (全局): 桌面切 Cards 但 contact-form-open class 残留 → 列表也被隐藏 → 只剩表单.
+   修后: 桌面就算 contact-form-open class 还在, 也不会误隐藏 list (Drawer 模式自己有规则). */
+@media (max-width: 767px) {
+  .contact-form-open .contact-list-panel { display: none !important; }
+  .contact-form-open .contact-form-panel { display: block !important; }
+  .contact-form-open #contactFab { display: none !important; }
+}
 
 /* Mobile: hide top action buttons (use mobileActionBar instead) */
 @media (max-width: 767px) {
@@ -8437,11 +8454,33 @@ function chipLogoHTML(name, customColor) {
 /** 切换 Cards / Table 视图. 持久化到 localStorage. */
 function setContactViewMode(mode) {
   if (mode !== 'cards' && mode !== 'table') return;
+
+  // v6.85 codex 修复: 桌面切 Cards 时清 contact-form-open class.
+  //   根因: contact-form-open 在桌面 Cards 模式没意义, 但残留会让 list 隐藏
+  //   (因为全局 CSS 有 .contact-form-open .contact-list-panel { display: none }).
+  //   修法已分两层: CSS 全局规则改成 mobile only + 这里 JS 显式清.
+  const pg = document.getElementById('page-contact');
+  const isDesktop = window.innerWidth >= 768;
+  const formWrap = document.getElementById('contactFormWrap');
+  const formOpen = formWrap && formWrap.style.display !== 'none';
+
   state.contactViewMode = mode;
   try { localStorage.setItem('adscrm_contactViewMode', mode); } catch(e) {}
+
   // 切换 body class 让 CSS 控制布局
   document.body.classList.toggle('contact-view-table', mode === 'table');
   document.body.classList.toggle('contact-view-cards', mode === 'cards');
+
+  if (isDesktop && pg) {
+    if (mode === 'cards') {
+      // 切 Cards: 清掉 form-open (cards 双栏 layout 自己有 form-panel 位置)
+      pg.classList.remove('contact-form-open');
+    } else if (mode === 'table' && formOpen) {
+      // 切 Table 且 form 当时是开着 (有 editing lead): 加 form-open 触发 Drawer
+      pg.classList.add('contact-form-open');
+    }
+  }
+
   // 更新按钮 active 状态
   const c = document.getElementById('vt-cards');
   const t = document.getElementById('vt-table');
