@@ -3253,7 +3253,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.82</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.84</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3309,7 +3309,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.82</div>
+      <div class="nav-brand-version">v6.84</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4947,7 +4947,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.59'; // v6.82
+const DATA_VERSION = '4.61'; // v6.84
 
 // ---------- State ----------
 let state = {
@@ -7017,9 +7017,18 @@ document.getElementById('leadForm').addEventListener('submit', e => {
   const leadDate = document.getElementById('f_leadDate').value;
   if (!contact || !channelId || !leadDate) { toast('Please fill contact, channel, lead date'); return; }
 
-  // Duplicate check
-  const existing = state.leads.find(l => l.contact === contact);
-  if (existing && !currentEditingId) {
+  // v6.84 codex P1: 编辑时也做 duplicate check (排除自己 id).
+  //   场景: 改电话号码时, 不小心改成已存在 lead 的号码 → 两条同号码 lead 数据脏.
+  //   现状 (修前): 只有新建时 (currentEditingId == null) 检查, 编辑跳过.
+  //   修后: 编辑时也检查, 但 .find() 加 l.id !== currentEditingId 排除自己.
+  const existing = state.leads.find(l => l.contact === contact && l.id !== currentEditingId);
+  if (existing) {
+    if (currentEditingId) {
+      // 编辑时撞号: 提示用户, 不弹 handleDuplicate modal (那是新建流程的)
+      toast('⚠️ 此号码已存在另一条 lead — 请改回原号码或删除另一条');
+      return;
+    }
+    // 新建撞号: 走原有 duplicate modal
     handleDuplicate(existing, { contact, channelId, leadDate });
     return;
   }
@@ -8881,6 +8890,9 @@ function looksLikePhone(str) {
 }
 
 // Single handler for both inputs
+// v6.83 codex P2: 搜索 debounce — 防 1900 leads 每按一键都全量 render.
+//   120ms 平衡: 用户感觉"立刻响应", 但快速打字时只跑 1-2 次 renderList.
+let _searchRenderTimer = null;
 function onSearchInputChange(value) {
   let finalValue = value;
   // v4.35: Auto-format phone-like input to stored format
@@ -8904,7 +8916,12 @@ function onSearchInputChange(value) {
   }
   state.listSearch = finalValue;
   state.listPage = 1;
-  renderList();
+  // v6.83: debounce renderList
+  if (_searchRenderTimer) clearTimeout(_searchRenderTimer);
+  _searchRenderTimer = setTimeout(() => {
+    _searchRenderTimer = null;
+    renderList();
+  }, 120);
 }
 
 // v4.07: Clear button toggle + clear handler
@@ -10610,7 +10627,7 @@ function setAdsTab(tab, subChannel) {
   const subSel = document.getElementById('adsSubSelect');
   if (tab === 'meta') {
     const metaChs = state.channels.filter(c => c.platform === 'meta');
-    subSel.innerHTML = '<option value="all">All Meta</option>' + metaChs.map(c => `<option value="${c.id}" ${state.adsSubChannel === c.id ? 'selected' : ''}>${c.name}</option>`).join('');
+    subSel.innerHTML = '<option value="all">All Meta</option>' + metaChs.map(c => `<option value="${esc(c.id)}" ${state.adsSubChannel === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
     // v3.59: show subSel + sync popover (items + visibility)
     if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(subSel, false);
     else subSel.style.display = '';
@@ -10663,7 +10680,7 @@ function renderAdsSpend() {
     if (_stateTab === 'meta') {
       // 重建 sub channel options + 设值
       const metaChs = state.channels.filter(c => c.platform === 'meta');
-      _subSel.innerHTML = '<option value="all">All Meta</option>' + metaChs.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      _subSel.innerHTML = '<option value="all">All Meta</option>' + metaChs.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
       _subSel.value = _stateSubCh || 'all';
       if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_subSel, false);
       if (typeof refreshSelectPopover === 'function') refreshSelectPopover(_subSel);
@@ -10759,7 +10776,7 @@ function renderAdsSpend() {
       const showChCols = !subCh && filterChs.length > 1;
       const activeM = mArr.filter(m => state.adsSpend.filter(a=>a.month===m).some(a=>filterChs.find(c=>c.id===a.channelId))); // v5.69: 桌面也隐藏空月
       // Always month-as-rows for single channel (both desktop/mobile)
-      let html = `<thead><tr><th>Month</th>${showChCols?filterChs.map(c=>`<th class="num">${c.name}</th>`).join(''):''}<th class="num">Total</th><th class="num">AVG/day</th></tr></thead><tbody>`;
+      let html = `<thead><tr><th>Month</th>${showChCols?filterChs.map(c=>`<th class="num">${esc(c.name)}</th>`).join(''):''}<th class="num">Total</th><th class="num">AVG/day</th></tr></thead><tbody>`;
       let grandTotal=0, totalDays=0;
       const grandByCh={}; filterChs.forEach(c=>grandByCh[c.id]=0);
       activeM.forEach(m => {
@@ -14047,6 +14064,20 @@ function _normalizeSheetPullData(d) {
     return keys.some(k => !EXPECTED_LEAD_KEYS.has(k)) || keys.length !== new Set(keys).size;
   });
 
+  // v6.83 codex P1: status 白名单 — 防 Sheet 异常值进 badge-${status} 等 selector 破坏 HTML.
+  //   只允许 lead/booked/done/noshow, 其他 fallback 到 'lead'.
+  const ALLOWED_STATUS = new Set(['lead', 'booked', 'done', 'noshow']);
+  const safeStatus = (s) => ALLOWED_STATUS.has(s) ? s : 'lead';
+
+  // v6.84 codex: id 白名单 — 只允许字母/数字/横线/下划线/点.
+  //   防 Sheet 异常 id (含 HTML/JS 字符) 进 onclick='editLead("${id}")' 等模板.
+  //   ID 是系统生成的 (lead-xxxx / l-timestamp), 不应该有特殊字符.
+  const safeId = (id) => {
+    if (!id) return '';
+    const s = String(id);
+    return /^[a-zA-Z0-9_\-.]+$/.test(s) ? s : '';
+  };
+
   // Number conversion (handles strings with commas)
   const toNum = v => {
     if (v == null || v === '') return 0;
@@ -14133,7 +14164,7 @@ function _normalizeSheetPullData(d) {
   (state.leads || []).forEach(l => { if (l.id && l.updatedAt) updatedMap[l.id] = l.updatedAt; });
 
   const leads = sheetLeads.map(l => ({
-    id: l.id || '',
+    id: safeId(l.id),
     contact: String(l.contact || ''),
     channelId: l.channelId || '',
     channelName: l.channelName || '',
@@ -14146,11 +14177,11 @@ function _normalizeSheetPullData(d) {
     showUp: l.showUp || '',
     race: l.race || '',
     spend: toNum(l.spend),
-    status: l.status || '',
+    status: safeStatus(l.status),
     remark: l.remark || '',
     flags: parseFlags(l.flags, flagsMap[l.id]),
     updatedAt: l.updatedAt || updatedMap[l.id] || ''
-  }));
+  })).filter(l => l.id);  // v6.84 codex: 异常 id 被 safeId 清空, filter 掉防 state 内出现空 id lead
 
   const ads = sheetAds.map(a => ({
     id: a.id || '',
@@ -15296,19 +15327,21 @@ function renderAlertsContent() {
   const labels = lang === 'zh'
     ? { high: '⚠ 紧急', med: '需关注', low: '次要' }
     : { high: '⚠ Critical', med: 'Needs attention', low: 'Minor' };
+  // v6.83 codex P1: title/desc 经过 esc() 防 XSS — 之前直接 innerHTML 拼会执行脚本.
+  //   alerts 数据可能来自 channel.name / location.name 等用户输入字段, 必须 escape.
   let html = '';
   order.forEach(sev => {
     const group = alerts.filter(a => a.severity === sev);
     if (group.length === 0) return;
-    html += `<div class="alerts-section-label">${labels[sev]} (${group.length})</div>`;
+    html += `<div class="alerts-section-label">${esc(labels[sev])} (${group.length})</div>`;
     group.forEach((a, idx) => {
       const origIdx = alerts.indexOf(a);
       html += `
-        <div class="alert-item sev-${a.severity}" onclick="_alertAct(${origIdx})">
-          <div class="alert-icon">${a.icon}</div>
+        <div class="alert-item sev-${esc(a.severity)}" onclick="_alertAct(${origIdx})">
+          <div class="alert-icon">${esc(a.icon)}</div>
           <div class="alert-body">
-            <div class="alert-title">${t(a.title)}</div>
-            <div class="alert-desc">${t(a.desc)}</div>
+            <div class="alert-title">${esc(t(a.title))}</div>
+            <div class="alert-desc">${esc(t(a.desc))}</div>
           </div>
         </div>
       `;
