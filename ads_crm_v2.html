@@ -786,18 +786,22 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     grid-template-columns: 1fr !important;
   }
 
-  /* v6.85: Table 模式 + 点开 lead = Drawer 从右边滑出 (列表保持可见 60%, drawer 40%).
+  /* v6.85: Table 模式 + 点开 lead = Drawer 从右边滑出 (列表保持可见 75%, drawer 25%).
      设计参考: GoHighLevel / HubSpot / Linear / Pipedrive.
      替代 v6.78 的中间 modal — 列表保持上下文可见, 体验更专业. */
   body.contact-view-table #page-contact.contact-form-open .contact-list-panel {
-    display: block !important;  /* 列表保持可见 (Drawer 模式) */
-    width: 60%;
-    max-width: 60%;
-    flex: 0 0 60%;
+    display: flex !important;  /* 列表保持可见 (Drawer 模式) */
+    width: 100% !important;     /* 占满 grid 单元 75% */
+    max-width: none !important;
+    /* 去掉 Cards 双栏的 border/padding (Drawer 不需要分隔) */
+    border-right: none !important;
+    padding-right: 0 !important;
   }
   body.contact-view-table #page-contact.contact-form-open .contact-layout {
-    grid-template-columns: 60% 40% !important;
+    grid-template-columns: 1fr !important;  /* list-panel 占满, drawer 是 fixed 不参与 grid */
     display: grid !important;
+    width: calc(100% - 25%) !important;  /* 留 25% 给 fixed drawer */
+    max-width: calc(100% - 25%) !important;
   }
   body.contact-view-table #page-contact.contact-form-open #contactFormBackdrop {
     /* Drawer 不需要全屏遮罩 (列表保持可见可点) */
@@ -811,9 +815,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     bottom: 0 !important;
     left: auto !important;
     transform: none !important;
-    width: 40%;
-    max-width: 600px;
-    min-width: 400px;
+    width: 25%;
+    max-width: 400px;
+    min-width: 320px;
     height: 100vh;
     max-height: 100vh;
     overflow-y: auto;
@@ -7403,6 +7407,17 @@ function populateLeadForm(l) {
   document.getElementById('f_remark').value = l.remark || '';
   // v3.58: Upgrade native selects in the form to popover UI
   if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects();
+  // v6.85: Drawer 模式下切换 lead 时, 强制重新刷新 channel/location popover label.
+  //   原因: upgradeAllPopSelects 第二次调用走 refreshSelectPopover, 但有时缓存 _popOpts
+  //   没刷新, trigger 显示 'Select...' 而不是 channel name. 显式 refresh 解决.
+  setTimeout(() => {
+    ['f_channel', 'f_location', 'f_showUp', 'f_race'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (sel && sel.dataset.popUpgraded === '1' && typeof refreshSelectPopover === 'function') {
+        refreshSelectPopover(sel);
+      }
+    });
+  }, 0);
 }
 
 function renderDetailPanel(l) {
