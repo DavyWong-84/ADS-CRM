@@ -786,45 +786,47 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
     grid-template-columns: 1fr !important;
   }
 
-  /* v6.85: Table 模式 + 点开 lead = Drawer 从右边滑出 (列表保持可见 75%, drawer 25%).
+  /* v6.85: Table 模式 + 点开 lead = Drawer 从右边滑出 (列表 + drawer 360px).
      设计参考: GoHighLevel / HubSpot / Linear / Pipedrive.
-     替代 v6.78 的中间 modal — 列表保持上下文可见, 体验更专业. */
+     v6.85 hotfix: 之前用 fixed 定位 drawer, sidebar 展开时 drawer 浮在列表右边 ~360px 上面.
+       改成 grid 单元 + sticky, drawer 占 grid 一列, 列表自动避开 drawer 宽度. */
   body.contact-view-table #page-contact.contact-form-open .contact-list-panel {
-    display: flex !important;  /* 列表保持可见 (Drawer 模式) */
-    width: 100% !important;     /* 占满 grid 单元 75% */
+    display: flex !important;
+    width: auto !important;
     max-width: none !important;
-    /* 去掉 Cards 双栏的 border/padding (Drawer 不需要分隔) */
     border-right: none !important;
     padding-right: 0 !important;
+    overflow: hidden;
+    min-width: 0;  /* 关键: 防 grid item 被表格 min-width 撑爆 */
   }
   body.contact-view-table #page-contact.contact-form-open .contact-layout {
-    grid-template-columns: 1fr !important;  /* list-panel 占满, drawer 是 fixed 不参与 grid */
+    grid-template-columns: 1fr 360px !important;  /* list 占满剩余, drawer 固定 360px */
     display: grid !important;
-    width: calc(100% - 25%) !important;  /* 留 25% 给 fixed drawer */
-    max-width: calc(100% - 25%) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 0;
   }
   body.contact-view-table #page-contact.contact-form-open #contactFormBackdrop {
-    /* Drawer 不需要全屏遮罩 (列表保持可见可点) */
     display: none !important;
   }
   body.contact-view-table #page-contact.contact-form-open .contact-form-panel {
     display: block !important;
-    position: fixed !important;
-    top: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
+    position: sticky !important;
+    top: 0;
+    right: auto !important;
     left: auto !important;
+    bottom: auto !important;
     transform: none !important;
-    width: 25%;
-    max-width: 400px;
-    min-width: 320px;
-    height: 100vh;
-    max-height: 100vh;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 50;
     background: var(--white);
     border-left: 1px solid var(--border);
-    box-shadow: -8px 0 24px rgba(0,0,0,0.08);
+    box-shadow: -8px 0 24px rgba(0,0,0,0.06);
     border-radius: 0 !important;
     padding: 0 !important;
     animation: drawerSlideIn 0.2s ease-out;
