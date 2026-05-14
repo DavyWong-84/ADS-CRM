@@ -14956,6 +14956,24 @@ function addToPendingQueue(op) {
   setPendingQueue(filtered);
 }
 
+// v6.85 codex P1 #2: 直接同步成功后清同 sheet+id 的旧 queue entry.
+//   场景: 之前 gsUpsert 失败入 queue, 后来同条记录同步成功, 但 queue 旧 entry 还在.
+//   下次 flushPendingQueue 会把旧版本写回 Sheet, 覆盖新数据.
+//   修法: gsUpsert/Delete 成功后, 主动清同 sheet+id 的 queue 项 (upsert 和 delete 都清).
+function _removeFromPendingQueue(sheetName, id) {
+  if (!id) return;
+  const q = getPendingQueue();
+  const filtered = q.filter(x => {
+    if (x.sheet !== sheetName) return true;
+    const xid = x.action === 'delete' ? x.id : (x.record && x.record.id);
+    return xid !== id;
+  });
+  if (filtered.length !== q.length) {
+    setPendingQueue(filtered);
+    if (typeof updatePendingBadge === 'function') updatePendingBadge();
+  }
+}
+
 function updatePendingBadge() {
   const q = getPendingQueue();
   const el = document.getElementById('pendingSyncBadge');
@@ -15019,6 +15037,10 @@ async function gsUpsert(sheetName, record) {
     if (parsed && parsed.success === false) {
       throw new Error(parsed.error || 'upstream failure');
     }
+    // v6.85 codex P1 #2: 成功后清同 sheet+id 的旧 queue entry, 防止之后 flush 写回旧版本.
+    if (record && record.id) {
+      _removeFromPendingQueue(sheetName, record.id);
+    }
   } catch (e) {
     console.warn('GS upsert failed, queuing:', sheetName, record && record.id, e.message);
     addToPendingQueue({ action: 'upsert', sheet: sheetName, record });
@@ -15037,6 +15059,10 @@ async function gsDelete(sheetName, id) {
     try { parsed = await r.json(); } catch (e) { /* 非 JSON 视为成功 */ }
     if (parsed && parsed.success === false) {
       throw new Error(parsed.error || 'upstream failure');
+    }
+    // v6.85 codex P1 #2: 成功后清同 sheet+id 的旧 queue entry (含 upsert)
+    if (id) {
+      _removeFromPendingQueue(sheetName, id);
     }
   } catch (e) {
     console.warn('GS delete failed, queuing:', sheetName, id, e.message);
@@ -18622,72 +18648,53 @@ async function pendingConfirm(pendingId) {
     }
   }
 
-  // v5.85: 乐观更新 — 立即加到 state + 立即 toast + 立即 render
-  // 用户感知是"秒加". 后台跑 confirmpending 请求, 失败才回滚.
+  // v6.85 codex P1 #3: 改纯 await — 等后端确认才更新本地 + toast.
+  //   之前: 乐观更新 (秒加) + fire-and-forget. 关页面会留假成功本地数据.
+  //   现在: await fetch → 成功才更新本地 → 用户感受慢 1-2 秒但绝对稳.
+  let fetchResult;
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(gsPostBody({ action: 'confirmpending', id: pendingId, leadRecord: leadRecord })),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    fetchResult = await r.json();
+  } catch (e) {
+    _pendingInFlight.delete(pendingId);
+    if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
+    return;
+  }
+
+  // pending_already_processed: 另一设备已处理 → 不要乐观加, 改成 pull 拿真 lead
+  if (fetchResult.success && fetchResult.result && fetchResult.result.action === 'pending_already_processed') {
+    pendingData = pendingData.filter(x => x.id !== pendingId);
+    if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理过, 即将刷新');
+    if (typeof gsPullSilent === 'function') {
+      setTimeout(() => gsPullSilent(), 500);
+    }
+    pendingRender();
+    if (typeof renderList === 'function') renderList();
+    _pendingInFlight.delete(pendingId);
+    return;
+  }
+
+  if (!fetchResult.success) {
+    if (typeof toast === 'function') toast('❌ Failed: ' + (fetchResult.error || 'unknown'));
+    _pendingInFlight.delete(pendingId);
+    return;
+  }
+
+  // 后端确认成功 → 现在才更新本地
   if (typeof state !== 'undefined' && state.leads) {
     state.leads.push(leadRecord);
     if (typeof saveState === 'function') saveState();
   }
-  // Remove from inbox immediately
   pendingData = pendingData.filter(x => x.id !== pendingId);
   if (typeof toast === 'function') toast('✅ Added to Leads: ' + leadRecord.channelName);
   pendingRender();
   if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
-  // Refresh main lead list if visible
   if (typeof renderList === 'function') renderList();
   _pendingInFlight.delete(pendingId);
-
-  // 后台 fire-and-forget 同步到 Apps Script. 失败才回滚 + 提示.
-  // v6.24 P3 修复: 收到 pending_already_processed 也要回滚乐观 lead — 之前漏了.
-  //   场景: 多设备同时 confirm 同一 pending → A 设备成功创建 lead, B 设备得到 pending_already_processed.
-  //   之前: B 设备保留乐观 lead (跟 A 设备 leadId 不同) → push all 时假 lead 写到 Sheet → 真重复.
-  //   现在: 检测到 pending_already_processed → 删除本地刚 push 的 lead + toast 提示 + 触发 pull 拿 A 的真 lead.
-  fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(gsPostBody({ action: 'confirmpending', id: pendingId, leadRecord: leadRecord })),
-    headers: { 'Content-Type': 'text/plain' }
-  }).then(r => r.json()).then(d => {
-    // pending_already_processed: 也算"成功"但需要回滚乐观 lead
-    if (d.success && d.result && d.result.action === 'pending_already_processed') {
-      // 删除本地刚乐观 push 的假 lead
-      if (typeof state !== 'undefined' && state.leads) {
-        const idx = state.leads.findIndex(l => l.id === leadId);
-        if (idx >= 0) state.leads.splice(idx, 1);
-        if (typeof saveState === 'function') saveState();
-      }
-      if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理过, 即将刷新');
-      // Sheet 上有 A 设备创建的真 lead — pull 拿回来
-      if (typeof gsPullSilent === 'function') {
-        setTimeout(() => gsPullSilent(), 500);
-      }
-      pendingRender();
-      if (typeof renderList === 'function') renderList();
-      return;
-    }
-    if (!d.success) {
-      // 回滚: 从 state 删除, 把 pending 放回去
-      if (typeof state !== 'undefined' && state.leads) {
-        const idx = state.leads.findIndex(l => l.id === leadId);
-        if (idx >= 0) state.leads.splice(idx, 1);
-        if (typeof saveState === 'function') saveState();
-      }
-      pendingData.push(p);
-      pendingRender();
-      if (typeof renderList === 'function') renderList();
-      if (typeof toast === 'function') toast('❌ Failed: ' + (d.error || 'unknown') + ' — reverted');
-    }
-  }).catch(e => {
-    // 网络错误: 也回滚
-    if (typeof state !== 'undefined' && state.leads) {
-      const idx = state.leads.findIndex(l => l.id === leadId);
-      if (idx >= 0) state.leads.splice(idx, 1);
-      if (typeof saveState === 'function') saveState();
-    }
-    pendingData.push(p);
-    pendingRender();
-    if (typeof renderList === 'function') renderList();
-    if (typeof toast === 'function') toast('❌ Network error — reverted: ' + e.message);
-  });
 }
 
 // v4.66: Handle 'update' type — modify existing lead, don't create new
@@ -18728,92 +18735,61 @@ async function pendingConfirmUpdate(p) {
     return;
   }
 
-  // v5.85: 乐观更新 — 立即更新 state + render, 后台跑同步
-  // 保存原始值用于失败回滚
-  let snapshot = null;
+  // v6.85 codex P1 #3: 改纯 await — 等后端确认才更新本地.
+  let fetchResult;
+  try {
+    const r = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(gsPostBody({
+        action: 'confirmpending',
+        id: pendingId,
+        leadRecord: leadUpdate,
+        mode: 'update'
+      })),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    fetchResult = await r.json();
+  } catch (e) {
+    _pendingInFlight.delete(pendingId);
+    if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
+    return;
+  }
+
+  // pending_already_processed: 另一设备已处理 → 改成 pull 拿真状态
+  if (fetchResult.success && fetchResult.result && fetchResult.result.action === 'pending_already_processed') {
+    pendingData = pendingData.filter(x => x.id !== pendingId);
+    if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理过, 即将刷新');
+    if (typeof gsPullSilent === 'function') setTimeout(() => gsPullSilent(), 500);
+    pendingRender();
+    if (typeof renderList === 'function') renderList();
+    _pendingInFlight.delete(pendingId);
+    return;
+  }
+
+  if (!fetchResult.success) {
+    if (typeof toast === 'function') toast('❌ Failed: ' + (fetchResult.error || 'unknown'));
+    _pendingInFlight.delete(pendingId);
+    return;
+  }
+
+  // 后端确认成功 → 现在才更新本地 lead
   if (typeof state !== 'undefined' && state.leads) {
     const existing = state.leads.find(l => l.id === p.existingLeadId);
     if (existing) {
-      snapshot = { status: existing.status, apptDate: existing.apptDate, locationId: existing.locationId, name: existing.name, updatedAt: existing.updatedAt };
       existing.status = 'booked';
       existing.apptDate = apptDateStr;
       existing.locationId = locationId;
       if (newName) existing.name = newName;
-      existing.updatedAt = new Date().toISOString();  // v5.87: 跑到 Updated 排序顶部
+      existing.updatedAt = new Date().toISOString();
       if (typeof saveState === 'function') saveState();
     }
   }
-  // Remove from inbox immediately
   pendingData = pendingData.filter(x => x.id !== pendingId);
   if (typeof toast === 'function') toast('✅ Updated lead: status=booked, appt=' + apptDateStr);
   pendingRender();
   if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
   if (typeof renderList === 'function') renderList();
   _pendingInFlight.delete(pendingId);
-
-  // 后台 fire-and-forget. 失败回滚.
-  fetch(url, {
-    method: 'POST',
-    body: JSON.stringify(gsPostBody({
-      action: 'confirmpending',
-      id: pendingId,
-      leadRecord: leadUpdate,
-      mode: 'update'
-    })),
-    headers: { 'Content-Type': 'text/plain' }
-  }).then(r => r.json()).then(d => {
-    // v6.24 P3: pending_already_processed 也要回滚 — 后端没真改 lead, 我们的乐观更新是错的
-    if (d.success && d.result && d.result.action === 'pending_already_processed') {
-      if (snapshot && typeof state !== 'undefined' && state.leads) {
-        const ex = state.leads.find(l => l.id === p.existingLeadId);
-        if (ex) {
-          ex.status = snapshot.status;
-          ex.apptDate = snapshot.apptDate;
-          ex.locationId = snapshot.locationId;
-          ex.name = snapshot.name;
-          if (typeof saveState === 'function') saveState();
-        }
-      }
-      if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理过, 即将刷新');
-      if (typeof gsPullSilent === 'function') setTimeout(() => gsPullSilent(), 500);
-      pendingRender();
-      if (typeof renderList === 'function') renderList();
-      return;
-    }
-    if (!d.success) {
-      // 回滚
-      if (snapshot && typeof state !== 'undefined' && state.leads) {
-        const ex = state.leads.find(l => l.id === p.existingLeadId);
-        if (ex) {
-          ex.status = snapshot.status;
-          ex.apptDate = snapshot.apptDate;
-          ex.locationId = snapshot.locationId;
-          ex.name = snapshot.name;
-          if (typeof saveState === 'function') saveState();
-        }
-      }
-      pendingData.push(p);
-      pendingRender();
-      if (typeof renderList === 'function') renderList();
-      if (typeof toast === 'function') toast('❌ Failed: ' + (d.error || 'unknown') + ' — reverted');
-    }
-  }).catch(e => {
-    // 网络错误也回滚
-    if (snapshot && typeof state !== 'undefined' && state.leads) {
-      const ex = state.leads.find(l => l.id === p.existingLeadId);
-      if (ex) {
-        ex.status = snapshot.status;
-        ex.apptDate = snapshot.apptDate;
-        ex.locationId = snapshot.locationId;
-        ex.name = snapshot.name;
-        if (typeof saveState === 'function') saveState();
-      }
-    }
-    pendingData.push(p);
-    pendingRender();
-    if (typeof renderList === 'function') renderList();
-    if (typeof toast === 'function') toast('❌ Network error — reverted: ' + e.message);
-  });
 }
 
 async function pendingDelete(pendingId) {
@@ -19423,20 +19399,48 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
         const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
         if (!url) { if (typeof toast === 'function') toast('❌ No Sheet URL configured'); _mergeResolve(false); return; }
 
-        // v5.85: 乐观更新 — 立即更新 state + render, 后台跑 fetch (失败回滚)
-        // 保存原始值用于失败回滚
-        let snapshot = null;
+        // v6.85 codex P1 #3: 改纯 await — 等后端确认才更新本地.
+        //   之前: 乐观更新 + fire-and-forget. 关页面会留假 merge.
+        let fetchResult;
+        try {
+          const r = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(gsPostBody({
+              action: 'confirmpending',
+              id: pendingItem.id,
+              leadRecord: leadUpdate,
+              mode: 'update'
+            })),
+            headers: { 'Content-Type': 'text/plain' }
+          });
+          fetchResult = await r.json();
+        } catch (e) {
+          if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
+          _mergeResolve(false);
+          return;
+        }
+
+        // pending_already_processed: 另一设备已处理 → 不要乐观加, 改成 pull 拿真状态
+        if (fetchResult.success && fetchResult.result && fetchResult.result.action === 'pending_already_processed') {
+          pendingData = pendingData.filter(x => x.id !== pendingItem.id);
+          if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理过, 即将刷新');
+          if (typeof gsPullSilent === 'function') setTimeout(() => gsPullSilent(), 500);
+          if (typeof pendingRender === 'function') pendingRender();
+          if (typeof renderList === 'function') renderList();
+          _mergeResolve(true);
+          return;
+        }
+
+        if (!(fetchResult.success || fetchResult.action === 'updated_existing_lead')) {
+          if (typeof toast === 'function') toast('❌ Merge failed: ' + (fetchResult.error || 'unknown'));
+          _mergeResolve(false);
+          return;
+        }
+
+        // 后端确认成功 → 现在才更新本地
         if (state.leads) {
           const found = state.leads.find(l => l.id === existingLead.id);
           if (found) {
-            snapshot = {
-              status: found.status, remark: found.remark,
-              channelId: found.channelId, channelName: found.channelName, platform: found.platform,
-              name: found.name, apptDate: found.apptDate,
-              locationId: found.locationId, location: found.location,
-              updatedAt: found.updatedAt
-            };
-            // 立即应用更新
             found.status = newStatus;
             found.remark = _mergedRemark;
             if (chosenCh) {
@@ -19450,63 +19454,17 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
               found.locationId = newLocId;
               if (newLocName && newLocName.name) found.location = newLocName.name;
             }
-            found.updatedAt = new Date().toISOString();  // v5.87: 跑到 Updated 排序顶部
+            found.updatedAt = new Date().toISOString();
             if (typeof saveState === 'function') saveState();
           }
         }
-        // Remove pending row from local data immediately
+        // Remove pending row from local data
         pendingData = pendingData.filter(x => x.id !== pendingItem.id);
         if (typeof pendingRender === 'function') pendingRender();
         if (typeof renderList === 'function') renderList();
         if (typeof renderSummary === 'function') renderSummary();
         if (typeof toast === 'function') toast('✅ Merged into ' + (existingLead.name || existingLead.contact));
         _mergeResolve(true);
-
-        // 后台 fire-and-forget. 失败才回滚.
-        fetch(url, {
-          method: 'POST',
-          body: JSON.stringify(gsPostBody({
-            action: 'confirmpending',
-            id: pendingItem.id,
-            leadRecord: leadUpdate,
-            mode: 'update'
-          })),
-          headers: { 'Content-Type': 'text/plain' }
-        }).then(r => r.json()).then(d => {
-          // v6.24 P3: pending_already_processed 也回滚 (merge modal)
-          if (d.success && d.result && d.result.action === 'pending_already_processed') {
-            if (snapshot && state.leads) {
-              const ex = state.leads.find(l => l.id === existingLead.id);
-              if (ex) { Object.assign(ex, snapshot); if (typeof saveState === 'function') saveState(); }
-            }
-            if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理过, 即将刷新');
-            if (typeof gsPullSilent === 'function') setTimeout(() => gsPullSilent(), 500);
-            if (typeof pendingRender === 'function') pendingRender();
-            if (typeof renderList === 'function') renderList();
-            _mergeResolve(true);
-            return;
-          }
-          if (!(d.success || d.action === 'updated_existing_lead')) {
-            // 回滚
-            if (snapshot && state.leads) {
-              const ex = state.leads.find(l => l.id === existingLead.id);
-              if (ex) { Object.assign(ex, snapshot); if (typeof saveState === 'function') saveState(); }
-            }
-            pendingData.push(pendingItem);
-            if (typeof pendingRender === 'function') pendingRender();
-            if (typeof renderList === 'function') renderList();
-            if (typeof toast === 'function') toast('❌ Merge failed: ' + (d.error || 'unknown') + ' — reverted');
-          }
-        }).catch(e => {
-          if (snapshot && state.leads) {
-            const ex = state.leads.find(l => l.id === existingLead.id);
-            if (ex) { Object.assign(ex, snapshot); if (typeof saveState === 'function') saveState(); }
-          }
-          pendingData.push(pendingItem);
-          if (typeof pendingRender === 'function') pendingRender();
-          if (typeof renderList === 'function') renderList();
-          if (typeof toast === 'function') toast('❌ Network error — reverted: ' + e.message);
-        });
       } catch (e) {
         if (typeof toast === 'function') toast('❌ Error: ' + e.message);
         _mergeResolve(false);
