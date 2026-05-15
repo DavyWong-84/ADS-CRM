@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.87</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.88</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.87</div>
+      <div class="nav-brand-version">v6.88</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5023,7 +5023,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.64'; // v6.87 — Pending Add 乐观更新, 单条 0.1s (v6.85 改 await 后慢 3-5s 的回滚)
+const DATA_VERSION = '4.65'; // v6.88 — Codex P1 修复: pending cache 同步 / already_processed 回滚 / updatedAt 写 Sheet / badge 时机 / 关 batchconfirmpending
 
 // ---------- State ----------
 let state = {
@@ -18010,6 +18010,21 @@ function _pendingDataEqual(a, b) {
   return true;
 }
 
+// v6.88 (Codex P1 #2): 防 pending 卡片"复活" — 每次本地改 pendingData 必须同步 cache.
+//   场景: 用户点 Add → 乐观删 pendingData → 切走再回 Inbox → pendingRefresh 先读 cache → 旧卡片显示出来 →
+//   _pendingInFlight 已释放 → 用户再点 → 并发 confirm.
+//   修复: 用这两个 helper 统一处理 pendingData 修改 + cache 同步 + restore 去重.
+function _removePendingLocal(id) {
+  pendingData = pendingData.filter(x => x.id !== id);
+  _savePendingToCache(pendingData);
+}
+function _restorePendingLocal(p) {
+  // Restore 时去重: 防 catch 回滚跟 gsPullSilent 同时把同一条放回
+  pendingData = pendingData.filter(x => x.id !== p.id);
+  pendingData.push(p);
+  _savePendingToCache(pendingData);
+}
+
 // v4.88: pendingRefresh has two modes:
 //   - 'manual' (user clicked Refresh button) — show loading state, full reload
 //   - 'silent' (auto-call when entering page) — render cache instantly, fetch in background
@@ -18664,10 +18679,10 @@ async function pendingConfirm(pendingId) {
     state.leads.push(leadRecord);
     if (typeof saveState === 'function') saveState();
   }
-  pendingData = pendingData.filter(x => x.id !== pendingId);
+  _removePendingLocal(pendingId);  // v6.88 Codex #2: 同步 cache
   if (typeof toast === 'function') toast('✅ Added to Leads: ' + leadRecord.channelName);
   pendingRender();
-  if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
+  // v6.88 Codex #7: badge 不在乐观阶段调 — 后端 pending 还没删, badge 会拉回旧数量造成抖动
   if (typeof renderList === 'function') renderList();
   _pendingInFlight.delete(pendingId);
 
@@ -18691,10 +18706,12 @@ async function pendingConfirm(pendingId) {
         if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理, 正在同步真实数据');
         if (typeof gsPullSilent === 'function') setTimeout(() => gsPullSilent(), 500);
         if (typeof renderList === 'function') renderList();
+        if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();  // v6.88 Codex #7
         return;
       }
       if (!d.success) throw new Error(d.error || 'upstream failure');
       // 成功 — 本地已经对了, 啥都不用做
+      if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();  // v6.88 Codex #7
     })
     .catch(e => {
       // 回滚: 删假 lead + 放回 pending + 报错
@@ -18702,7 +18719,7 @@ async function pendingConfirm(pendingId) {
         state.leads = state.leads.filter(l => l.id !== leadId);
         if (typeof saveState === 'function') saveState();
       }
-      pendingData.push(p);
+      _restorePendingLocal(p);  // v6.88 Codex #2: 同步 cache + 去重
       if (typeof toast === 'function') toast('❌ Sync failed: ' + e.message + ' — 已放回 Inbox 重试');
       pendingRender();
       if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
@@ -18733,11 +18750,15 @@ async function pendingConfirmUpdate(p) {
   // v5.02: If GHL sent a customer name, include it in the update so existing
   // Lead row gets named (preserving leadDate + channel which are NOT in this object)
   const newName = p.name && p.name.trim() ? String(p.name).trim() : '';
+  // v6.88 Codex #4: leadUpdate 加 updatedAt — 后端 update mode v2.30 会写进 Sheet,
+  // 防 dailyReport 误报"这条 lead 3 天没动"以及跨设备 pull 回来 updatedAt 倒退.
+  const nowIso = new Date().toISOString();
   const leadUpdate = {
     id: p.existingLeadId,
     status: 'booked',
     apptDate: apptDateStr,
-    locationId: locationId
+    locationId: locationId,
+    updatedAt: nowIso
   };
   if (newName) leadUpdate.name = newName;
 
@@ -18749,6 +18770,7 @@ async function pendingConfirmUpdate(p) {
   }
 
   // v6.87: 乐观更新 + 后台 await + 失败回滚 (同 pendingConfirm 模式)
+  // v6.88 Codex #2 #3 #7: cache 同步 / already_processed 回滚 / badge 时机
 
   // 先记录改动前的旧值, 失败时用来回滚
   const _origLeadSnapshot = (typeof state !== 'undefined' && state.leads)
@@ -18758,6 +18780,21 @@ async function pendingConfirmUpdate(p) {
       })()
     : null;
 
+  // Helper: 用 snapshot 还原 lead (复用给 catch + already_processed 两条路径)
+  const _rollbackLead = () => {
+    if (typeof state !== 'undefined' && state.leads && _origLeadSnapshot) {
+      const existing = state.leads.find(l => l.id === p.existingLeadId);
+      if (existing) {
+        existing.status = _origLeadSnapshot.status;
+        existing.apptDate = _origLeadSnapshot.apptDate;
+        existing.locationId = _origLeadSnapshot.locationId;
+        existing.name = _origLeadSnapshot.name;
+        existing.updatedAt = _origLeadSnapshot.updatedAt;
+        if (typeof saveState === 'function') saveState();
+      }
+    }
+  };
+
   // 1) 乐观更新: 立刻改本地 lead + 移除 inbox
   if (typeof state !== 'undefined' && state.leads) {
     const existing = state.leads.find(l => l.id === p.existingLeadId);
@@ -18766,14 +18803,14 @@ async function pendingConfirmUpdate(p) {
       existing.apptDate = apptDateStr;
       existing.locationId = locationId;
       if (newName) existing.name = newName;
-      existing.updatedAt = new Date().toISOString();
+      existing.updatedAt = nowIso;
       if (typeof saveState === 'function') saveState();
     }
   }
-  pendingData = pendingData.filter(x => x.id !== pendingId);
+  _removePendingLocal(pendingId);  // v6.88 Codex #2
   if (typeof toast === 'function') toast('✅ Updated lead: status=booked, appt=' + apptDateStr);
   pendingRender();
-  if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
+  // v6.88 Codex #7: badge 移到 .then
   if (typeof renderList === 'function') renderList();
   _pendingInFlight.delete(pendingId);
 
@@ -18794,28 +18831,22 @@ async function pendingConfirmUpdate(p) {
     })
     .then(d => {
       if (d.success && d.result && d.result.action === 'pending_already_processed') {
-        // 另一设备已处理: 我们的乐观 update 可能跟真实状态不一致 → pull 拿真状态
+        // v6.88 Codex #3: 先回滚 snapshot 再 pull (gsPullSilent 可能失败/被 queue 阻止)
+        _rollbackLead();
+        if (typeof renderList === 'function') renderList();
         if (typeof toast === 'function') toast('⚠️ 这条已被另一设备处理, 正在同步真实数据');
         if (typeof gsPullSilent === 'function') setTimeout(() => gsPullSilent(), 500);
+        if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
         return;
       }
       if (!d.success) throw new Error(d.error || 'upstream failure');
-      // 成功 — 啥都不用做
+      // 成功
+      if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
     })
     .catch(e => {
       // 回滚: 恢复 lead 旧值 + 放回 pending + 报错
-      if (typeof state !== 'undefined' && state.leads && _origLeadSnapshot) {
-        const existing = state.leads.find(l => l.id === p.existingLeadId);
-        if (existing) {
-          existing.status = _origLeadSnapshot.status;
-          existing.apptDate = _origLeadSnapshot.apptDate;
-          existing.locationId = _origLeadSnapshot.locationId;
-          existing.name = _origLeadSnapshot.name;
-          existing.updatedAt = _origLeadSnapshot.updatedAt;
-          if (typeof saveState === 'function') saveState();
-        }
-      }
-      pendingData.push(p);
+      _rollbackLead();
+      _restorePendingLocal(p);  // v6.88 Codex #2
       if (typeof toast === 'function') toast('❌ Sync failed: ' + e.message + ' — 已放回 Inbox 重试');
       pendingRender();
       if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
@@ -18836,7 +18867,7 @@ async function pendingDelete(pendingId) {
 
   // Optimistic UI
   const originalItem = pendingData.find(x => x.id === pendingId);
-  pendingData = pendingData.filter(x => x.id !== pendingId);
+  _removePendingLocal(pendingId);  // v6.88 Codex #2: 同步 cache
   pendingRender();
 
   try {
@@ -18850,13 +18881,13 @@ async function pendingDelete(pendingId) {
       if (typeof toast === 'function') toast('Deleted');
       if (typeof pendingBadgeUpdate === 'function') pendingBadgeUpdate();
     } else if (originalItem) {
-      pendingData.push(originalItem);
+      _restorePendingLocal(originalItem);  // v6.88 Codex #2
       pendingRender();
       if (typeof toast === 'function') toast('❌ Failed: ' + (d.error || 'unknown'));
     }
   } catch (e) {
     if (originalItem) {
-      pendingData.push(originalItem);
+      _restorePendingLocal(originalItem);  // v6.88 Codex #2
       pendingRender();
     }
     if (typeof toast === 'function') toast('❌ Network error: ' + e.message);
@@ -19058,91 +19089,29 @@ function _buildBatchLeadRecords(tasks) {
 //      - pending_already_processed → 回滚那一条 (state 移除 lead, pending 不放回)
 //      - error → 回滚那一条 (state 移除 lead, pending 放回重试)
 //   4. 整批失败 (网络断/lock 失败) → 全部回滚
+// v6.88 Codex P1 #1: 关掉 batchconfirmpending — 生产 Apps Script 没有这个 action.
+//   v6.75 加了 batch endpoint 但后端只在内部 v2.28 提案过, 没真的部署.
+//   现在: 全部 tasks 走 _pendingBatchSaveOne 并行 (Promise.all), 兼容现有 Apps Script.
+//   性能: 10 条 = 10 个并行 POST, 仍比串行 await 快 5-10×, Apps Script 30 并发限制内够用.
+//   数据安全: 每条独立成败 + 独立回滚 (_pendingBatchSaveOne 已经做好乐观更新+回滚).
 async function _pendingBatchSaveMany(tasks) {
   if (tasks.length === 0) return { added: 0, failed: 0, partialFails: [] };
 
-  // 单条 fallback (避免 batch 开销)
-  if (tasks.length === 1) {
-    const t = tasks[0];
-    const ok = await _pendingBatchSaveOne(t.p, t.ch, t.phone, t.remark || '');
-    return { added: ok ? 1 : 0, failed: ok ? 0 : 1, partialFails: [] };
-  }
-
-  const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
-  if (!url) return { added: 0, failed: tasks.length, partialFails: tasks.map(t => ({ p: t.p, error: 'no GS URL' })) };
-
-  const { records, items } = _buildBatchLeadRecords(tasks);
-
-  // 乐观更新: 全部 leads 立即加到 state, pending 全部移除
-  const optimisticIds = [];
-  for (const it of items) {
-    if (typeof state !== 'undefined' && state.leads) state.leads.push(it.leadRecord);
-    optimisticIds.push(it.leadRecord.id);
-    pendingData = pendingData.filter(x => x.id !== it.p.id);
-  }
+  const results = await Promise.all(
+    tasks.map(t => _pendingBatchSaveOne(t.p, t.ch, t.phone, t.remark || ''))
+  );
 
   let added = 0, failed = 0;
   const partialFails = [];
-
-  try {
-    const r = await fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(gsPostBody({ action: 'batchconfirmpending', items: records })),
-      headers: { 'Content-Type': 'text/plain' }
-    });
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    const d = await r.json();
-    if (!d.success) throw new Error(d.error || 'upstream failure');
-
-    const results = (d.result && d.result.results) ? d.result.results : [];
-    if (!Array.isArray(results) || results.length === 0) {
-      throw new Error('no results returned');
+  results.forEach((ok, i) => {
+    if (ok) added++;
+    else {
+      failed++;
+      partialFails.push({ p: tasks[i].p, error: 'sync failed' });
     }
+  });
 
-    // 按 result 处理每一条
-    for (const res of results) {
-      const it = items.find(x => x.p.id === res.id);
-      if (!it) continue;
-
-      if (res.error) {
-        // 回滚: state 移除 lead, pending 放回
-        if (typeof state !== 'undefined' && state.leads) {
-          const idx = state.leads.findIndex(l => l.id === it.leadRecord.id);
-          if (idx >= 0) state.leads.splice(idx, 1);
-        }
-        pendingData.push(it.p);
-        failed++;
-        partialFails.push({ p: it.p, error: res.error });
-      } else if (res.action === 'pending_already_processed') {
-        // 单条逻辑一致: state 移除假 lead, pending 不放回 (已被另一设备处理)
-        if (typeof state !== 'undefined' && state.leads) {
-          const idx = state.leads.findIndex(l => l.id === it.leadRecord.id);
-          if (idx >= 0) state.leads.splice(idx, 1);
-        }
-        added++;  // 算成功 (pending 确实处理了, 只是不是我们处理的)
-      } else {
-        // confirmed_and_moved_to_leads / updated_existing_lead → 真成功
-        added++;
-      }
-    }
-
-    if (typeof saveState === 'function') saveState();
-    return { added, failed, partialFails };
-
-  } catch (e) {
-    // 整批失败 → 全部回滚
-    console.warn('[batchSaveMany] entire batch failed:', e.message);
-    if (typeof state !== 'undefined' && state.leads) {
-      for (const id of optimisticIds) {
-        const idx = state.leads.findIndex(l => l.id === id);
-        if (idx >= 0) state.leads.splice(idx, 1);
-      }
-    }
-    for (const it of items) pendingData.push(it.p);
-    if (typeof saveState === 'function') saveState();
-    if (typeof toast === 'function') toast('⚠️ Batch 整体失败 (' + e.message + ')，所有项已放回 Inbox');
-    return { added: 0, failed: tasks.length, partialFails: tasks.map(t => ({ p: t.p, error: e.message })) };
-  }
+  return { added, failed, partialFails };
 }
 
 async function _pendingBatchSaveOne(p, ch, phone, remark) {
@@ -19182,10 +19151,11 @@ async function _pendingBatchSaveOne(p, ch, phone, remark) {
   // v6.18 P1-2 修复: 不再 fire-and-forget — await 等 server 确认才返回 true.
   //   之前的 bug: 后端失败 (鉴权错/上游错) 用户看到 "Added X" 但数据可能没写,
   //   pending 也消失了, 没法重试. 现在: 失败 → 回滚 state + 把 pending 放回 + toast 提示.
+  // v6.88 Codex #2: pendingData 同步 cache, restore 去重
   if (typeof state !== 'undefined' && state.leads) {
     state.leads.push(leadRecord);
   }
-  pendingData = pendingData.filter(x => x.id !== p.id);
+  _removePendingLocal(p.id);
 
   try {
     const r = await fetch(url, {
@@ -19224,7 +19194,7 @@ async function _pendingBatchSaveOne(p, ch, phone, remark) {
       if (idx >= 0) state.leads.splice(idx, 1);
       if (typeof saveState === 'function') saveState();
     }
-    pendingData.push(p);
+    _restorePendingLocal(p);  // v6.88 Codex #2
     console.warn('[batch] failed for', p.id, e.message);
     if (typeof toast === 'function') toast('⚠️ Batch: 1 项同步失败 (' + e.message + ')，已放回 Inbox 重试');
     return false;
@@ -19408,10 +19378,13 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
         : existingLead.remark || '';
 
       // Build leadRecord update — preserves leadDate, sets everything else
+      // v6.88 Codex #4: leadUpdate 加 updatedAt — 后端 update mode v2.30 会写进 Sheet
+      const nowIso = new Date().toISOString();
       const leadUpdate = {
         id: existingLead.id,
         status: newStatus,
-        remark: _mergedRemark
+        remark: _mergedRemark,
+        updatedAt: nowIso
       };
       if (chosenCh) {
         leadUpdate.channelId = chosenCh.id;
@@ -19433,7 +19406,7 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
         // v6.87: 乐观更新 + 后台 await + 失败回滚.
         //   v6.85 改纯 await 后等 3-5s. 现在: 立刻关 modal + 改本地 + resolve(true) 让 batch 流程继续 →
         //   后台 fetch → 失败时回滚 lead 旧值 + 把 pending 放回 + 红 toast.
-        //   ⚠️ 重点测: 网络断 → 失败 toast 弹 + lead 字段恢复原值 + pending 重新出现在 Inbox.
+        // v6.88 Codex #2 #3: cache 同步 / already_processed 也回滚
 
         // 1) Snapshot 改动前的旧值, 供失败回滚用
         const existingInState = state.leads ? state.leads.find(l => l.id === existingLead.id) : null;
@@ -19450,6 +19423,23 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
           updatedAt: existingInState.updatedAt
         } : null;
 
+        // Helper: 回滚 lead (catch + already_processed 都用)
+        const _rollbackMerge = () => {
+          if (existingInState && _origSnapshot) {
+            existingInState.status = _origSnapshot.status;
+            existingInState.remark = _origSnapshot.remark;
+            existingInState.channelId = _origSnapshot.channelId;
+            existingInState.channelName = _origSnapshot.channelName;
+            existingInState.platform = _origSnapshot.platform;
+            existingInState.name = _origSnapshot.name;
+            existingInState.apptDate = _origSnapshot.apptDate;
+            existingInState.locationId = _origSnapshot.locationId;
+            existingInState.location = _origSnapshot.location;
+            existingInState.updatedAt = _origSnapshot.updatedAt;
+            if (typeof saveState === 'function') saveState();
+          }
+        };
+
         // 2) 乐观更新: 立刻改本地 + 移除 pending + 关 modal
         if (existingInState) {
           existingInState.status = newStatus;
@@ -19465,11 +19455,11 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
             existingInState.locationId = newLocId;
             if (newLocName && newLocName.name) existingInState.location = newLocName.name;
           }
-          existingInState.updatedAt = new Date().toISOString();
+          existingInState.updatedAt = nowIso;
           if (typeof saveState === 'function') saveState();
         }
         // Remove pending row from local data
-        pendingData = pendingData.filter(x => x.id !== pendingItem.id);
+        _removePendingLocal(pendingItem.id);  // v6.88 Codex #2
         if (typeof pendingRender === 'function') pendingRender();
         if (typeof renderList === 'function') renderList();
         if (typeof renderSummary === 'function') renderSummary();
@@ -19495,7 +19485,9 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
           })
           .then(d => {
             if (d.success && d.result && d.result.action === 'pending_already_processed') {
-              // 另一设备已处理: 本地 merge 可能跟真实状态不一致 → pull 拿真状态
+              // v6.88 Codex #3: 先回滚 snapshot 再 pull (gsPullSilent 可能失败)
+              _rollbackMerge();
+              if (typeof renderList === 'function') renderList();
               if (typeof toast === 'function') toast('⚠️ Merge: 这条已被另一设备处理, 正在同步真实数据');
               if (typeof gsPullSilent === 'function') setTimeout(() => gsPullSilent(), 500);
               return;
@@ -19507,20 +19499,8 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
           })
           .catch(e => {
             // 回滚: 恢复 lead 旧值 + 放回 pending + 红 toast
-            if (existingInState && _origSnapshot) {
-              existingInState.status = _origSnapshot.status;
-              existingInState.remark = _origSnapshot.remark;
-              existingInState.channelId = _origSnapshot.channelId;
-              existingInState.channelName = _origSnapshot.channelName;
-              existingInState.platform = _origSnapshot.platform;
-              existingInState.name = _origSnapshot.name;
-              existingInState.apptDate = _origSnapshot.apptDate;
-              existingInState.locationId = _origSnapshot.locationId;
-              existingInState.location = _origSnapshot.location;
-              existingInState.updatedAt = _origSnapshot.updatedAt;
-              if (typeof saveState === 'function') saveState();
-            }
-            pendingData.push(pendingItem);
+            _rollbackMerge();
+            _restorePendingLocal(pendingItem);  // v6.88 Codex #2
             if (typeof toast === 'function') toast('❌ Merge sync failed: ' + e.message + ' — 已撤销并放回 Inbox');
             if (typeof pendingRender === 'function') pendingRender();
             if (typeof renderList === 'function') renderList();
