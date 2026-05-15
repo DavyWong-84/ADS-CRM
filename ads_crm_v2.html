@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.85</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.86</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.85</div>
+      <div class="nav-brand-version">v6.86</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3543,10 +3543,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-05-14</span>
+                      <span id="f_leadDate_label">2026-05-15</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-05-14">
+                    <input type="hidden" id="f_leadDate" value="2026-05-15">
                   </div>
                 </div>
               </div>
@@ -5023,7 +5023,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.62'; // v6.85
+const DATA_VERSION = '4.63'; // v6.86
 
 // ---------- State ----------
 let state = {
@@ -12018,10 +12018,13 @@ function onAsCellBlur(e) {
   } else {
     if (existing) {
       existing.amount = val;
+      // v6.86: 改 amount 时记 updatedAt
+      existing.updatedAt = new Date().toISOString();
       gsUpsert('AdsSpend', existing);
     } else {
       const ch = getChannel(channelId);
-      const rec = { id: uid('AS'), month, channelId, channelName: ch?.name, platform: ch?.platform, amount: val };
+      // v6.86: 新增 record 也写 updatedAt
+      const rec = { id: uid('AS'), month, channelId, channelName: ch?.name, platform: ch?.platform, amount: val, updatedAt: new Date().toISOString() };
       state.adsSpend.push(rec);
       gsUpsert('AdsSpend', rec);
     }
@@ -13076,6 +13079,8 @@ function onRvCellBlur(e) {
   }
 
   saveState();
+  // v6.86: 写 updatedAt — 让 dailyReport 能检测 Revenue 多久没填
+  rec.updatedAt = new Date().toISOString();
   gsUpsert('Revenue', rec);
 
   // Update Old column in this row
