@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.88</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.89</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.88</div>
+      <div class="nav-brand-version">v6.89</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3543,10 +3543,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-05-15</span>
+                      <span id="f_leadDate_label">2026-05-17</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-05-15">
+                    <input type="hidden" id="f_leadDate" value="2026-05-17">
                   </div>
                 </div>
               </div>
@@ -5023,7 +5023,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.65'; // v6.88 — Codex P1 修复: pending cache 同步 / already_processed 回滚 / updatedAt 写 Sheet / badge 时机 / 关 batchconfirmpending
+const DATA_VERSION = '4.66'; // v6.89 — 编辑撞号检查: 号码没改时跳过 (修 Loh Yong Fong 类场景)
 
 // ---------- State ----------
 let state = {
@@ -7097,10 +7097,23 @@ document.getElementById('leadForm').addEventListener('submit', e => {
   //   场景: 改电话号码时, 不小心改成已存在 lead 的号码 → 两条同号码 lead 数据脏.
   //   现状 (修前): 只有新建时 (currentEditingId == null) 检查, 编辑跳过.
   //   修后: 编辑时也检查, 但 .find() 加 l.id !== currentEditingId 排除自己.
+  // v6.89: 进一步细化 — 只在号码真的改了的情况下才拦.
+  //   之前 bug: 用户编辑 lead 但没改号, 只是改 status/spend/race, 系统也拦.
+  //   场景: 同号码客户 Feb 来过 (LEAD), 5 月又预约进店 (APPT), 用户改 Show Up + spend
+  //         → 系统检测到 Feb 那条同号 → 拦. 但用户根本没改号.
+  //   修复: 编辑时取出原 lead 的 contact, 跟新输入比对, 没改就跳过 dup check.
+  if (currentEditingId) {
+    const original = state.leads.find(l => l.id === currentEditingId);
+    if (original && normalizePhone(original.contact) === contact) {
+      // 号码没改 — 跳过 duplicate check, 直接保存
+      saveLead({ contact, channelId, leadDate });
+      return;
+    }
+  }
   const existing = state.leads.find(l => l.contact === contact && l.id !== currentEditingId);
   if (existing) {
     if (currentEditingId) {
-      // 编辑时撞号: 提示用户, 不弹 handleDuplicate modal (那是新建流程的)
+      // 编辑时改号撞到别人: 提示用户, 不弹 handleDuplicate modal (那是新建流程的)
       toast('⚠️ 此号码已存在另一条 lead — 请改回原号码或删除另一条');
       return;
     }
