@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.92</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.94</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.92</div>
+      <div class="nav-brand-version">v6.94</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5023,7 +5023,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v6.92 — 月份选择器记忆(v6.91) + Ads Funnel ROAS 列移到最后
+const DATA_VERSION = '4.68'; // v6.94 — Funnel 表加 Avg Ads Sales 列 (=Ads Sales/Show Up, 放 Ads Cost 右边)
 
 // ---------- State ----------
 let state = {
@@ -6288,16 +6288,19 @@ document.addEventListener('click', function(e) {
 
 // Build responsive table: desktop = metric rows × month cols
 // mobile = month rows × metric cols (transposed)
-function buildResponsiveTable(title, h4Style, metrics, mArr, fmt12) {
+function buildResponsiveTable(title, h4Style, metrics, mArr, fmt12, monthLeft) {
   // metrics = [{label, values, bold, formatter, totalValue?}]
   // totalValue: if provided, use this instead of sum for TOTAL column
+  // v6.92: monthLeft (可选) — true 时桌面也用 "月份在左" 布局 (跟手机一致).
+  //        默认 false = 桌面保持原 "Metric 在左" 横排. 只 CPL/CPA/CPS 传 true.
   const isMobile = window.innerWidth < 767;
+  const useMonthLeft = isMobile || monthLeft;  // 手机永远 month-left; 桌面看 monthLeft 参数
 
   // v5.69: 桌面 + 手机一致 — 都只显示有数据的月份
   const activeMonths = mArr.filter((m, mi) => metrics.some(met => (met.values[mi] || 0) !== 0));
   const activeIdx = activeMonths.map(m => mArr.indexOf(m));
 
-  if (!isMobile) {
+  if (!useMonthLeft) {
     const thd = `<thead><tr><th>Metric</th>${activeMonths.map(m => `<th class="num">${fmt12(m)}</th>`).join('')}<th class="num">TOTAL</th></tr></thead>`;
     const rows = metrics.map(({ label, values, bold, formatter, totalValue }) => {
       // TOTAL 仍用全年加总 (即使隐藏空月,总数还是全年12个月的)
@@ -6691,19 +6694,19 @@ function renderFunnelTab() {
         { label:'Meta CPL',   values:fullData.map(m => m.leadsByPlatformByLead.meta>0   ? m.costByPlatform.meta/m.leadsByPlatformByLead.meta     : null), formatter:fmtAvg, totalValue: tMetaLeads>0 ? tMetaCost/tMetaLeads : null },
         { label:'Google CPL', values:fullData.map(m => m.leadsByPlatformByLead.google>0 ? m.costByPlatform.google/m.leadsByPlatformByLead.google   : null), formatter:fmtAvg, totalValue: tGoogleLeads>0 ? tGoogleCost/tGoogleLeads : null },
         { label:'Total CPL',  values:fullData.map(m => m.totalLeads>0 ? m.totalAdsCost/m.totalLeads : null), formatter:fmtAvg, bold:true, totalValue: tLeads>0 ? tCost/tLeads : null },
-      ], mArr, fmtMS);
+      ], mArr, fmtMS, true);
     document.getElementById('cpaTableWrap').innerHTML = buildResponsiveTable('CPA · Cost per Appt', cplH4,
       [
         { label:'Meta CPA',   values:fullData.map((m,i) => apptsByPlatformByMonth[i].meta>0   ? m.costByPlatform.meta/apptsByPlatformByMonth[i].meta     : null), formatter:fmtAvg, totalValue: tMetaAppts>0 ? tMetaCost/tMetaAppts : null },
         { label:'Google CPA', values:fullData.map((m,i) => apptsByPlatformByMonth[i].google>0 ? m.costByPlatform.google/apptsByPlatformByMonth[i].google   : null), formatter:fmtAvg, totalValue: tGoogleAppts>0 ? tGoogleCost/tGoogleAppts : null },
         { label:'Total CPA',  values:fullData.map((m,i) => apptsByMonth[i]>0 ? m.totalAdsCost/apptsByMonth[i] : null), formatter:fmtAvg, bold:true, totalValue: tAppts>0 ? tCost/tAppts : null },
-      ], mArr, fmtMS);
+      ], mArr, fmtMS, true);
     document.getElementById('cpsTableWrap').innerHTML = buildResponsiveTable('CPS · Cost per Show-up', cplH4,
       [
         { label:'Meta CPS',   values:fullData.map((m,i) => showsByPlatformByMonth[i].meta>0   ? m.costByPlatform.meta/showsByPlatformByMonth[i].meta     : null), formatter:fmtAvg, totalValue: tMetaShows>0 ? tMetaCost/tMetaShows : null },
         { label:'Google CPS', values:fullData.map((m,i) => showsByPlatformByMonth[i].google>0 ? m.costByPlatform.google/showsByPlatformByMonth[i].google   : null), formatter:fmtAvg, totalValue: tGoogleShows>0 ? tGoogleCost/tGoogleShows : null },
         { label:'Total CPS',  values:fullData.map((m,i) => showsByMonth[i]>0 ? m.totalAdsCost/showsByMonth[i] : null), formatter:fmtAvg, bold:true, totalValue: tShows>0 ? tCost/tShows : null },
-      ], mArr, fmtMS);
+      ], mArr, fmtMS, true);
 
     // v6.59: 合并表 (CPL → CPA → CPS), 跟随顶部 channel filter, 不再 Meta/Google 分行
     // v6.62: outlet ≠ all 时, cost 不分 outlet 导致 CPL/CPA/CPS 数学错位, 隐藏数字 + 加提示
@@ -6719,7 +6722,7 @@ function renderFunnelTab() {
             { label: 'CPL', values: fullData.map(m => m.totalLeads>0 ? m.totalAdsCost/m.totalLeads : null), formatter: fmtAvg, totalValue: tLeads>0 ? tCost/tLeads : null },
             { label: 'CPA', values: fullData.map((m,i) => apptsByMonth[i]>0 ? m.totalAdsCost/apptsByMonth[i] : null), formatter: fmtAvg, totalValue: tAppts>0 ? tCost/tAppts : null },
             { label: 'CPS', values: fullData.map((m,i) => showsByMonth[i]>0 ? m.totalAdsCost/showsByMonth[i] : null), formatter: fmtAvg, totalValue: tShows>0 ? tCost/tShows : null },
-          ], mArr, fmtMS);
+          ], mArr, fmtMS, true);
       _cplCombo.innerHTML = warningHtml + tableHtml;
     }
   } else {
@@ -6756,11 +6759,11 @@ function renderFunnelTab() {
     }
 
     document.getElementById('cplTableWrap').innerHTML = buildResponsiveTable('CPL · Cost per Lead', cplH4,
-      [{ label:'CPL', values:monthData.map(d => d.totalLeads>0&&d.cost>0 ? d.cost/d.totalLeads : null), formatter:fmtAvg, totalValue: sLeads>0&&sCost>0 ? sCost/sLeads : null }], mArr, fmtMS);
+      [{ label:'CPL', values:monthData.map(d => d.totalLeads>0&&d.cost>0 ? d.cost/d.totalLeads : null), formatter:fmtAvg, totalValue: sLeads>0&&sCost>0 ? sCost/sLeads : null }], mArr, fmtMS, true);
     document.getElementById('cpaTableWrap').innerHTML = buildResponsiveTable('CPA · Cost per Appt', cplH4,
-      [{ label:'CPA', values:monthData.map((d,i) => apptsArr[i]>0&&d.cost>0 ? d.cost/apptsArr[i] : null), formatter:fmtAvg, totalValue: sApptsAdj>0&&sCost>0 ? sCost/sApptsAdj : null }], mArr, fmtMS);
+      [{ label:'CPA', values:monthData.map((d,i) => apptsArr[i]>0&&d.cost>0 ? d.cost/apptsArr[i] : null), formatter:fmtAvg, totalValue: sApptsAdj>0&&sCost>0 ? sCost/sApptsAdj : null }], mArr, fmtMS, true);
     document.getElementById('cpsTableWrap').innerHTML = buildResponsiveTable('CPS · Cost per Show-up', cplH4,
-      [{ label:'CPS', values:monthData.map((d,i) => showsArr[i]>0&&d.cost>0 ? d.cost/showsArr[i] : null), formatter:fmtAvg, totalValue: sShowsAdj>0&&sCost>0 ? sCost/sShowsAdj : null }], mArr, fmtMS);
+      [{ label:'CPS', values:monthData.map((d,i) => showsArr[i]>0&&d.cost>0 ? d.cost/showsArr[i] : null), formatter:fmtAvg, totalValue: sShowsAdj>0&&sCost>0 ? sCost/sShowsAdj : null }], mArr, fmtMS, true);
 
     // v6.59: 合并表 (CPL → CPA → CPS), 单平台模式
     // v6.62: outlet ≠ all 时同样隐藏 (cost 不分 outlet)
@@ -6776,7 +6779,7 @@ function renderFunnelTab() {
             { label: 'CPL', values: monthData.map(d => d.totalLeads>0&&d.cost>0 ? d.cost/d.totalLeads : null), formatter: fmtAvg, totalValue: sLeads>0&&sCost>0 ? sCost/sLeads : null },
             { label: 'CPA', values: monthData.map((d,i) => apptsArr[i]>0&&d.cost>0 ? d.cost/apptsArr[i] : null), formatter: fmtAvg, totalValue: sApptsAdj>0&&sCost>0 ? sCost/sApptsAdj : null },
             { label: 'CPS', values: monthData.map((d,i) => showsArr[i]>0&&d.cost>0 ? d.cost/showsArr[i] : null), formatter: fmtAvg, totalValue: sShowsAdj>0&&sCost>0 ? sCost/sShowsAdj : null },
-          ], mArr, fmtMS);
+          ], mArr, fmtMS, true);
       _cplCombo2.innerHTML = warningHtml2 + tableHtml2;
     }
   }
@@ -11388,6 +11391,7 @@ function renderFunnelComboTable() {
       <td class="num">${fmtNum(showUp)}${showPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(showPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(noShow)}${noShowPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(noShowPct)})</span>` : ''}</td>
       <td class="num">${useOutletFilter ? '—' : fmtMoney(adsCost)}</td>
+      <td class="num">${showUp > 0 ? fmtMoney(adsSales / showUp) : '—'}</td>
       <td class="num">${fmtMoney(adsSales)}${salesPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(salesPct)})</span>` : ''}</td>
       <td class="num">${totalRev > 0 ? fmtMoney(totalRev) : '—'}</td>
       <td class="num">${fmtRoas(roasShown)}</td>
@@ -11412,6 +11416,7 @@ function renderFunnelComboTable() {
       <th class="num">Show Up</th>
       <th class="num">No Show</th>
       <th class="num">Ads Cost</th>
+      <th class="num">Avg Ads Sales</th>
       <th class="num">Ads Sales</th>
       <th class="num">Total Revenue</th>
       <th class="num">ROAS</th>
@@ -11424,6 +11429,7 @@ function renderFunnelComboTable() {
       <td class="num">${fmtNum(tShow)}${totalShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalShowPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(tNoShow)}${totalNoShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalNoShowPct)})</span>` : ''}</td>
       <td class="num">${useOutletFilter ? '—' : fmtMoney(totalCostShow)}</td>
+      <td class="num">${tShow > 0 ? fmtMoney(tSales / tShow) : '—'}</td>
       <td class="num">${fmtMoney(tSales)}${totalSalesPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalSalesPct)})</span>` : ''}</td>
       <td class="num">${tRev > 0 ? fmtMoney(tRev) : '—'}</td>
       <td class="num">${useOutletFilter ? '—' : fmtRoas(totalRoas)}</td>
