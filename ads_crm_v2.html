@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.94</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v6.95</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v6.94</div>
+      <div class="nav-brand-version">v6.95</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5023,7 +5023,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v6.94 — Funnel 表加 Avg Ads Sales 列 (=Ads Sales/Show Up, 放 Ads Cost 右边)
+const DATA_VERSION = '4.68'; // v6.95 — Funnel 表 Ads Cost 加 (%) = Ads Cost/Total Revenue
 
 // ---------- State ----------
 let state = {
@@ -11390,7 +11390,7 @@ function renderFunnelComboTable() {
       <td class="num">${fmtNum(booked)}${bookedPct != null && !hideLead ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(bookedPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(showUp)}${showPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(showPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(noShow)}${noShowPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(noShowPct)})</span>` : ''}</td>
-      <td class="num">${useOutletFilter ? '—' : fmtMoney(adsCost)}</td>
+      <td class="num">${useOutletFilter ? '—' : fmtMoney(adsCost)}${(!useOutletFilter && adsCost != null && totalRev > 0) ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(adsCost / totalRev)})</span>` : ''}</td>
       <td class="num">${showUp > 0 ? fmtMoney(adsSales / showUp) : '—'}</td>
       <td class="num">${fmtMoney(adsSales)}${salesPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(salesPct)})</span>` : ''}</td>
       <td class="num">${totalRev > 0 ? fmtMoney(totalRev) : '—'}</td>
@@ -11428,7 +11428,7 @@ function renderFunnelComboTable() {
       <td class="num">${fmtNum(tBooked)}${totalBookedPct != null && !hideLead ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalBookedPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(tShow)}${totalShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalShowPct)})</span>` : ''}</td>
       <td class="num">${fmtNum(tNoShow)}${totalNoShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalNoShowPct)})</span>` : ''}</td>
-      <td class="num">${useOutletFilter ? '—' : fmtMoney(totalCostShow)}</td>
+      <td class="num">${useOutletFilter ? '—' : fmtMoney(totalCostShow)}${(!useOutletFilter && totalCostShow != null && tRev > 0) ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalCostShow / tRev)})</span>` : ''}</td>
       <td class="num">${tShow > 0 ? fmtMoney(tSales / tShow) : '—'}</td>
       <td class="num">${fmtMoney(tSales)}${totalSalesPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalSalesPct)})</span>` : ''}</td>
       <td class="num">${tRev > 0 ? fmtMoney(tRev) : '—'}</td>
