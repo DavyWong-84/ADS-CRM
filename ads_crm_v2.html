@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.06</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.07</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.06</div>
+      <div class="nav-brand-version">v7.07</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4007,6 +4007,7 @@ body.contact-view-table .modal-backdrop.open {
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
+        <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
       <thead><tr>
         <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
@@ -5100,7 +5101,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v7.06 — Data Entry Ads Spend 删除"离开格子自动保存"提示 (Google 已只读)
+const DATA_VERSION = '4.68'; // v7.07 — Data Entry Ads Cost 面板 (Google) 加 Last synced 时间提示 (跟 Revenue 一致)
 
 // ---------- State ----------
 let state = {
@@ -12065,6 +12066,14 @@ function renderAdsCostEntry() {
   // v7.05: Google 渠道改 Google Ads 自动同步 → 只读显示, 不能手填.
   //   其他渠道 (Meta/Organic/FU) 照常可手填, 完全不动.
   const isGoogleAuto = (channelId === 'ch-google');
+
+  // v7.07: Google 渠道显示最后同步时间 (跟 Revenue 一致); 其他渠道隐藏
+  const asSyncEl = document.getElementById('asEntrySyncStatus');
+  if (isGoogleAuto) {
+    _renderAdsSyncStatus('asEntrySyncStatus');
+  } else if (asSyncEl) {
+    asSyncEl.style.display = 'none';
+  }
 
   const months = entryVisibleMonths(year, m => state.adsSpend.some(a => a.month === m && a.channelId === channelId));
   let yearTotal = 0;
