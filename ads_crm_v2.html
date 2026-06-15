@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.03</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.05</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.03</div>
+      <div class="nav-brand-version">v7.05</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3789,6 +3789,8 @@ body.contact-view-table .modal-backdrop.open {
     </div>
     <div class="unified-header-spacer unified-header-spacer-tall"></div>
 
+    <div id="adsSyncStatus" style="display:none;font-size:12px;margin:0 0 10px 2px;"></div>
+
     <div id="adsspend_content">
       <!-- Ads Cost panel -->
       <div id="adsPanel_cost" style="display:block;">
@@ -3909,123 +3911,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <div id="revSyncStatus" style="display:none;font-size:12px;color:var(--gray);margin:0 0 10px 2px;"></div>
-    <div id="revenueReportWrap"><div class="card" style="margin-bottom:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-      <div>
-        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
-        <div style="font-size:12px;color:var(--gray);">0 months · 3 outlets</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
-        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">—</div>
-        <div style="font-size:12px;color:var(--green-dark);">● New: — · 0.0%</div>
-        <div style="font-size:12px;color:var(--gray);">● Old: — · 0.0%</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <div onclick="setRevOutlet('st-sunway')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">Sunway ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div><div onclick="setRevOutlet('st-cheras')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">Cheras ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div><div onclick="setRevOutlet('st-eco')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
-          <div style="font-size:11px;color:var(--gray);font-weight:600;">ECO ›</div>
-          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
-          <div style="font-size:11px;color:var(--gray);">0% of total</div>
-        </div>
-    </div>
-  </div><div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data">
-        <thead><tr>
-          <th>Month</th>
-          <th class="num">Ads Sales</th>
-          <th class="num">Walk-in</th>
-          <th class="num" style="border-left:2px solid var(--purple-deep);">Total New</th>
-          <th class="num">Total Existing</th>
-          <th class="num" style="border-left:2px solid var(--purple-deep);">Total Revenue</th>
-        </tr></thead>
-        <tbody><tr class="total-row">
-      <td style="font-weight:700;">TOTAL</td>
-      <td class="num" style="font-weight:700;">—</td>
-      <td class="num" style="font-weight:700;">—</td>
-      <td class="num" style="font-weight:700;border-left:2px solid var(--purple-deep);">—</td>
-      <td class="num" style="font-weight:700;">—</td>
-      <td class="num" style="font-weight:700;border-left:2px solid var(--purple-deep);">—</td>
-    </tr></tbody>
-      </table></div>
-    </div><div id="chart_rev_all" style="margin-top:14px;">
-      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:13px;font-weight:600;color:#374151;">All Outlets — Revenue Breakdown</span>
-          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
-            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#10B981;"></span>New Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#94a3b8;"></span>Old Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Ads New Sales</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#000000;"></span>Total Sales</span>
-          </div>
-        </div>
-        <div style="position:relative;width:100%;height:230px;">
-          <canvas role="img" aria-label="All Outlets — Revenue Breakdown" width="643" height="230" style="display: block; box-sizing: border-box; height: 230px; width: 643px;"></canvas>
-        </div>
-      </div></div><div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>Outlet Comparison 2026</h3></div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:var(--purple);">●</span> TOTAL REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = outlet share of monthly total</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#22C55E;">●</span> NEW CUSTOMER REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#FB923C;">●</span> WALK-IN REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#D97706;">●</span> EXISTING CUSTOMER REVENUE</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-      <div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#3B82F6;">●</span> ADS SALES (PAID LEADS)</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
-        </div>
-        <div class="table-wrap"><table class="data data-t">
-          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody></tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
-        </table></div>
-      </div>
-    </div></div>
+    <div id="revenueReportWrap"></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -4045,7 +3931,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -4055,37 +3941,112 @@ body.contact-view-table .modal-backdrop.open {
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
         <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th>Month</th>
+      <th class="num">New (RM)</th>
+      <th class="num">Total (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2026</td>
+    <td class="num">—</td>
+    <td class="num" style="font-weight:700;">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" fill="var(--meta-color)" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg><span>Simply 5</span></span>
+    <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"></path><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"></path><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"></path><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"></path></svg><span>Google Ads</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="as_entryChannel" data-pop="1" data-pop-icon="channel" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_as_entryChannel"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 离开格子自动保存</div>
         <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2026</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4099,7 +4060,7 @@ body.contact-view-table .modal-backdrop.open {
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
         <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
         <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -5140,7 +5101,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v7.03 — Revenue Outlet Comparison 5表桌面也改月份在左 (店铺横排), 跟手机统一, 删桌面店铺在左死代码
+const DATA_VERSION = '4.68'; // v7.05 — Data Entry Ads Spend: Google 渠道改只读 (自动同步), Meta/其他渠道照常手填
 
 // ---------- State ----------
 let state = {
@@ -10941,6 +10902,8 @@ function setAdsTab(tab, subChannel) {
 }
 
 function renderAdsSpend() {
+  // v7.04: 顶部显示 Google Ads 最后同步时间
+  _renderAdsSyncStatus();
   // v6.45: 进入 Ads Spend 时同步显示 outlet select (跟随当前 _adsTab)
   //   修 bug: 默认 tab=funnel 时 outlet select 仍是 HTML 默认 display:none, 不显示.
   const _curTab = _adsTab || 'funnel';
@@ -12100,6 +12063,10 @@ function renderAdsCostEntry() {
     return;
   }
 
+  // v7.05: Google 渠道改 Google Ads 自动同步 → 只读显示, 不能手填.
+  //   其他渠道 (Meta/Organic/FU) 照常可手填, 完全不动.
+  const isGoogleAuto = (channelId === 'ch-google');
+
   const months = entryVisibleMonths(year, m => state.adsSpend.some(a => a.month === m && a.channelId === channelId));
   let yearTotal = 0;
   const rows = months.map(m => {
@@ -12109,15 +12076,22 @@ function renderAdsCostEntry() {
     const isEmpty = val == null || val === 0;
     const bg = isEmpty ? 'var(--bg-muted, #f8f6fc)' : '#fff';
     const displayVal = val != null ? val : '';
+    // v7.05: Google 只读显示纯文字; 其他渠道用输入框
+    const cell = isGoogleAuto
+      ? (val != null ? fmt.money(val) : '<span style="color:var(--gray);">—</span>')
+      : `<input type="number" class="as-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">`;
     return `<tr style="${bg !== '#fff' ? 'background:'+bg+';' : ''}">
       <td><strong>${fmt.monthLabel(m)}</strong></td>
-      <td class="num" style="padding:4px 8px;">
-        <input type="number" class="as-cell" data-month="${m}" value="${displayVal}" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;">
-      </td>
+      <td class="num" style="padding:4px 8px;">${cell}</td>
     </tr>`;
   }).join('');
 
-  tableEl.innerHTML = `<div class="table-wrap"><table class="data">
+  // v7.05: Google 渠道顶部显示只读说明
+  const googleHint = isGoogleAuto
+    ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>'
+    : '';
+
+  tableEl.innerHTML = googleHint + `<div class="table-wrap"><table class="data">
       <thead><tr>
         <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
         <th class="num">Amount (RM)</th>
@@ -12129,11 +12103,13 @@ function renderAdsCostEntry() {
       </tr></tfoot>
     </table></div>`;
 
-  // Bind blur handlers
-  tableEl.querySelectorAll('.as-cell').forEach(input => {
-    input.addEventListener('blur', onAsCellBlur);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); }});
-  });
+  // Bind blur handlers — v7.05: 只在非 Google 渠道绑定 (Google 无输入框)
+  if (!isGoogleAuto) {
+    tableEl.querySelectorAll('.as-cell').forEach(input => {
+      input.addEventListener('blur', onAsCellBlur);
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); }});
+    });
+  }
 
   // Save prefs
   setAsEntryPref({ channelId, year });
@@ -12499,6 +12475,39 @@ function _fmtSyncStamp(ms) {
   const ampm = h >= 12 ? 'PM' : 'AM';
   h = h % 12; if (h === 0) h = 12;
   return `${dd}-${mm}-${yyyy} ${h}:${min} ${ampm}`;
+}
+
+// v7.04: Ads Spend 同步提示 — 只看 Google 渠道 (ch-google) 的 updatedAt,
+//   因为只有 Google 是自动同步的 (Meta 还是手填). 读 state.adsSpend 里 ch-google 最新 updatedAt.
+function _renderAdsSyncStatus(elId) {
+  const el = document.getElementById(elId || 'adsSyncStatus');
+  if (!el) return;
+  let maxTs = 0;
+  (state.adsSpend || []).forEach(a => {
+    if (a.channelId !== 'ch-google') return;  // 只看 Google 自动同步
+    if (!a.updatedAt) return;
+    const t = new Date(a.updatedAt).getTime();
+    if (!isNaN(t) && t > maxTs) maxTs = t;
+  });
+  if (maxTs === 0) { el.style.display = 'none'; return; }
+
+  const now = Date.now();
+  const hoursAgo = (now - maxTs) / (1000 * 60 * 60);
+  const stamp = _fmtSyncStamp(maxTs);
+
+  let dot, text, color;
+  if (hoursAgo <= 2) {
+    dot = '🟢'; text = `Google Ads · Last synced · ${stamp}`; color = '#10B981';
+  } else if (hoursAgo <= 24) {
+    const h = Math.round(hoursAgo);
+    dot = '🟡'; text = `Google Ads · Last synced ${h}h ago · ${stamp}`; color = '#D97706';
+  } else {
+    const days = Math.floor(hoursAgo / 24);
+    dot = '🔴'; text = `Google Ads · Not synced for ${days} day${days > 1 ? 's' : ''} · ${stamp} — check Google Ads`; color = '#DC2626';
+  }
+  el.textContent = `${dot} ${text}`;
+  el.style.color = color;
+  el.style.display = 'block';
 }
 
 function renderRevenue() {
