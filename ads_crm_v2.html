@@ -3330,7 +3330,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.09</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.10</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3386,7 +3386,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.09</div>
+      <div class="nav-brand-version">v7.10</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3951,13 +3951,13 @@ body.contact-view-table .modal-backdrop.open {
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
-        <div class="entry-info-zone" style="min-height:46px;">
+        <div class="entry-info-zone" style="min-height:48px;">
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
         <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
     <thead><tr>
-      <th>Month</th>
+      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
       <th class="num">New (RM)</th>
       <th class="num">Total (RM)</th>
     </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
@@ -4009,14 +4009,14 @@ body.contact-view-table .modal-backdrop.open {
   </button></span><select id="as_entryChannel" data-pop="1" data-pop-icon="channel" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_as_entryChannel"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
-        <div class="entry-info-zone" style="min-height:46px;">
+        <div class="entry-info-zone" style="min-height:48px;">
           <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
         <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
       <thead><tr>
-        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
+        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
         <th class="num">Amount (RM)</th>
       </tr></thead>
       <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
@@ -4064,8 +4064,9 @@ body.contact-view-table .modal-backdrop.open {
         <div id="fee_entryCustomRow" style="display:none;"></div>
         <input type="hidden" id="fee_entryCustomName">
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
-        <div class="entry-info-zone" style="min-height:46px;">
+        <div class="entry-info-zone" style="min-height:48px;">
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
+          <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
         <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
@@ -5109,7 +5110,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v7.09 — 修 Data Entry 三卡片顶部不对齐 (.card+.card 误加 12px 上边距, grid 里清零)
+const DATA_VERSION = '4.68'; // v7.10 — Data Entry: 3rd Party Name标签移到提示区(不推表格) + 三表Month列宽统一80px + 提示区48px对齐
 
 // ---------- State ----------
 let state = {
@@ -12108,7 +12109,7 @@ function renderAdsCostEntry() {
 
   tableEl.innerHTML = `<div class="table-wrap"><table class="data">
       <thead><tr>
-        <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
+        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
         <th class="num">Amount (RM)</th>
       </tr></thead>
       <tbody>${rows}</tbody>
@@ -12231,6 +12232,8 @@ function renderFeeEntry() {
   const platform = name ? inferFeePlatform(name) : 'other';
 
   if (!name) {
+    const ntEl = document.getElementById('fee_nameTag');
+    if (ntEl) ntEl.style.display = 'none';
     tableEl.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div>';
     return;
   }
@@ -12258,11 +12261,17 @@ function renderFeeEntry() {
 
   const platformBadge = `<span class="badge badge-${platform === 'meta' ? 'booked' : platform === 'google' ? 'pending' : 'lead'}" style="margin-left:8px;">${platform}</span>`;
 
+  // v7.10: Name 标签移到提示区 (不再放表格里, 否则把表格往下推), 跟 Revenue/Ads 对齐
+  const nameTagEl = document.getElementById('fee_nameTag');
+  if (nameTagEl) {
+    nameTagEl.innerHTML = `Name: <strong style="color:var(--purple-deep);">${esc(name)}</strong>${platformBadge}`;
+    nameTagEl.style.display = 'block';
+  }
+
   tableEl.innerHTML = `
-    <div style="font-size:12px;color:var(--gray);margin-bottom:8px;">Name: <strong style="color:var(--purple-deep);">${esc(name)}</strong>${platformBadge}</div>
     <div class="table-wrap"><table class="data">
       <thead><tr>
-        <th>Month</th>
+        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
         <th class="num">Amount (RM)</th>
       </tr></thead>
       <tbody>${rows}</tbody>
@@ -13145,7 +13154,7 @@ function renderRevenueEntry() {
   _renderRevSyncStatus('rvEntrySyncStatus');
   let html = `<div class="table-wrap"><table class="data">
     <thead><tr>
-      <th>Month</th>
+      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
       <th class="num">New (RM)</th>
       <th class="num">Total (RM)</th>
     </tr></thead><tbody>`;
