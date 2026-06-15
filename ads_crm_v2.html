@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.02</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.03</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.02</div>
+      <div class="nav-brand-version">v7.03</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3909,7 +3909,123 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <div id="revSyncStatus" style="display:none;font-size:12px;color:var(--gray);margin:0 0 10px 2px;"></div>
-    <div id="revenueReportWrap"></div>
+    <div id="revenueReportWrap"><div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
+        <div style="font-size:12px;color:var(--gray);">0 months · 3 outlets</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
+        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">—</div>
+        <div style="font-size:12px;color:var(--green-dark);">● New: — · 0.0%</div>
+        <div style="font-size:12px;color:var(--gray);">● Old: — · 0.0%</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div onclick="setRevOutlet('st-sunway')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Sunway ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-cheras')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">Cheras ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div><div onclick="setRevOutlet('st-eco')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">ECO ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">RM 0</div>
+          <div style="font-size:11px;color:var(--gray);">0% of total</div>
+        </div>
+    </div>
+  </div><div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
+      <div class="table-wrap"><table class="data">
+        <thead><tr>
+          <th>Month</th>
+          <th class="num">Ads Sales</th>
+          <th class="num">Walk-in</th>
+          <th class="num" style="border-left:2px solid var(--purple-deep);">Total New</th>
+          <th class="num">Total Existing</th>
+          <th class="num" style="border-left:2px solid var(--purple-deep);">Total Revenue</th>
+        </tr></thead>
+        <tbody><tr class="total-row">
+      <td style="font-weight:700;">TOTAL</td>
+      <td class="num" style="font-weight:700;">—</td>
+      <td class="num" style="font-weight:700;">—</td>
+      <td class="num" style="font-weight:700;border-left:2px solid var(--purple-deep);">—</td>
+      <td class="num" style="font-weight:700;">—</td>
+      <td class="num" style="font-weight:700;border-left:2px solid var(--purple-deep);">—</td>
+    </tr></tbody>
+      </table></div>
+    </div><div id="chart_rev_all" style="margin-top:14px;">
+      <div style="position:relative;width:100%;height:260px;padding:8px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:13px;font-weight:600;color:#374151;">All Outlets — Revenue Breakdown</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#10B981;"></span>New Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#94a3b8;"></span>Old Customer</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1877F2;"></span>Ads New Sales</span><span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#000000;"></span>Total Sales</span>
+          </div>
+        </div>
+        <div style="position:relative;width:100%;height:230px;">
+          <canvas role="img" aria-label="All Outlets — Revenue Breakdown" width="643" height="230" style="display: block; box-sizing: border-box; height: 230px; width: 643px;"></canvas>
+        </div>
+      </div></div><div class="card" style="margin-top:14px;">
+      <div class="section-title"><h3>Outlet Comparison 2026</h3></div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:var(--purple);">●</span> TOTAL REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = outlet share of monthly total</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#22C55E;">●</span> NEW CUSTOMER REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#FB923C;">●</span> WALK-IN REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#D97706;">●</span> EXISTING CUSTOMER REVENUE</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+      <div style="margin-top:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:#3B82F6;">●</span> ADS SALES (PAID LEADS)</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">% = share of that outlet revenue</div>
+        </div>
+        <div class="table-wrap"><table class="data data-t">
+          <thead><tr><th>Month</th><th class="num">Sunway</th><th class="num">Cheras</th><th class="num">ECO</th><th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+          <tbody></tbody>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num"><span style="color:var(--silver);">—</span></td><td class="num" style="vertical-align:top;border-left:2px solid var(--purple);"><span style="color:var(--silver);">—</span></td></tr></tfoot>
+        </table></div>
+      </div>
+    </div></div>
   </section>
 
   <!-- ENTRY PAGE (centralized data entry) -->
@@ -5024,7 +5140,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v7.02 — Data Entry Revenue 表 New↔Total 列对调 (跟Excel习惯) + Total 列加粗
+const DATA_VERSION = '4.68'; // v7.03 — Revenue Outlet Comparison 5表桌面也改月份在左 (店铺横排), 跟手机统一, 删桌面店铺在左死代码
 
 // ---------- State ----------
 let state = {
@@ -12787,7 +12903,6 @@ function renderRevenueSummary(mArr) {
     // (For Total Revenue table, where each cell's base = monthly all-outlet total)
     const buildCmpTable = (label, hint, color, getVal, getBase, isShareTable) => {
       let tbl = '';
-      if (isMobile) {
         const storeHdr = locs.map(l => `<th class="num">${esc(l.name)}</th>`).join('');
         let body = '';
         let colTotals = locs.map(() => 0);
@@ -12849,71 +12964,6 @@ function renderRevenueSummary(mArr) {
           <tbody>${body}</tbody>
           <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${grandCell}</td></tr></tfoot>
         </table>`;
-      } else {
-        const monthHdr = cmpMonths.map(m => `<th class="num">${fmt.monthShort(m)}</th>`).join('');
-        let body = '';
-        let colTotals = cmpMonths.map(() => 0);
-        let colBaseTotals = cmpMonths.map(() => 0);
-        let grandTotal = 0;
-        let grandBaseTotal = 0;
-        locs.forEach(loc => {
-          let rowTotal = 0;
-          let rowBaseTotal = 0;
-          let cells = '';
-          cmpMonths.forEach((m, i) => {
-            const v = getVal(m, loc.id);
-            const base = getBase(m, loc.id);
-            cells += `<td class="num" style="vertical-align:top;">${cellWithPct(v, base, color)}</td>`;
-            colTotals[i] += v || 0;
-            colBaseTotals[i] += base || 0;
-            rowTotal += v || 0;
-            rowBaseTotal += base || 0;
-          });
-          grandTotal += rowTotal;
-          grandBaseTotal += rowBaseTotal;
-          // Desktop row = a single store across 12 months
-          // For Total Revenue: row total = that store's yearly revenue.
-          //   row % = store / grand total = store's share of yearly all-outlet revenue (meaningful!)
-          // For other tables: row % = metric / store's revenue (also meaningful)
-          let rowCell;
-          if (rowTotal === 0) {
-            rowCell = '<span style="color:var(--silver);">—</span>';
-          } else if (isShareTable) {
-            const rowPct = grandTotal > 0 ? '('+((rowTotal/grandTotal)*100).toFixed(1)+'%)' : '—';
-            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
-          } else {
-            const rowPct = rowBaseTotal > 0 ? '('+((rowTotal/rowBaseTotal)*100).toFixed(1)+'%)' : '—';
-            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
-          }
-          body += `<tr><td style="font-weight:600;">${esc(loc.name)}</td>${cells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${rowCell}</td></tr>`;
-        });
-        // YTD column = each month, sum of all stores
-        // For Total Revenue: col total = monthly total = denominator → no % (always 100%)
-        // For other tables: col % = metric total / monthly total
-        const totalCells = colTotals.map((t, i) => {
-          if (t === 0) return '<td class="num"><span style="color:var(--silver);">—</span></td>';
-          if (isShareTable) {
-            return `<td class="num" style="vertical-align:top;"><div style="font-weight:700;">${fmt.money(t)}</div></td>`;
-          }
-          const pct = colBaseTotals[i] > 0 ? '('+((t/colBaseTotals[i])*100).toFixed(1)+'%)' : '—';
-          return `<td class="num" style="vertical-align:top;"><div style="font-weight:700;">${fmt.money(t)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${pct}</div></td>`;
-        }).join('');
-        // YTD x Total: yearly total. For Total Revenue: no % (this is the denominator)
-        let grandCell;
-        if (grandTotal === 0) {
-          grandCell = '<span style="color:var(--silver);">—</span>';
-        } else if (isShareTable) {
-          grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)}</div>`;
-        } else {
-          const grandPct = grandBaseTotal > 0 ? '('+((grandTotal/grandBaseTotal)*100).toFixed(1)+'%)' : '—';
-          grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${grandPct}</div>`;
-        }
-        tbl = `<table class="data data-t">
-          <thead><tr><th>Outlet</th>${monthHdr}<th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
-          <tbody>${body}</tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${grandCell}</td></tr></tfoot>
-        </table>`;
-      }
       return `<div style="margin-top:18px;">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
           <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:${color};">●</span> ${label.toUpperCase()}</div>
