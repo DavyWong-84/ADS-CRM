@@ -2037,6 +2037,7 @@ body.contact-view-table .modal-backdrop.open {
 /* Data Entry: equal-height 3-column cards (desktop) */
 @media (min-width: 768px) {
   .entry-card { display: flex; flex-direction: column; height: 100%; }
+  .entry-card + .entry-card { margin-top: 0; }
   .entry-card-table { flex: 1; }
 }
 @media (max-width: 767px) {
@@ -3329,7 +3330,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.08</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.09</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3386,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.08</div>
+      <div class="nav-brand-version">v7.09</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5108,7 +5109,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v7.08 — 修 adsSpend 丢 updatedAt (Last synced 显示) + Data Entry 三面板提示区固定高度对齐表格
+const DATA_VERSION = '4.68'; // v7.09 — 修 Data Entry 三卡片顶部不对齐 (.card+.card 误加 12px 上边距, grid 里清零)
 
 // ---------- State ----------
 let state = {
