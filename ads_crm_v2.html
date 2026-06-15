@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.01</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.02</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.01</div>
+      <div class="nav-brand-version">v7.02</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5024,7 +5024,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v7.01 — 同步提示英文+日月年12小时制, Data Entry 也显示, Revenue 改只读 (33CRM 接管)
+const DATA_VERSION = '4.68'; // v7.02 — Data Entry Revenue 表 New↔Total 列对调 (跟Excel习惯) + Total 列加粗
 
 // ---------- State ----------
 let state = {
@@ -13072,8 +13072,8 @@ function renderRevenueEntry() {
   let html = `<div class="table-wrap"><table class="data">
     <thead><tr>
       <th>Month</th>
-      <th class="num">Total (RM)</th>
       <th class="num">New (RM)</th>
+      <th class="num">Total (RM)</th>
     </tr></thead><tbody>`;
 
   let yearTotal = 0, yearNew = 0;
@@ -13088,18 +13088,18 @@ function renderRevenueEntry() {
     if (newC != null) yearNew += newC;
     const filled = rec && (total > 0 || newC > 0);
     const rowBg = filled ? '' : 'background:rgba(0,0,0,0.02);';
-    // v7.1: Revenue 改 33CRM 自动接管 — 只读显示, 不再手填 (Ads Spend / Fees 仍可手填)
+    // v7.02: Revenue 33CRM 只读. New 在左 Total 在右 (跟 Excel 习惯), Total 加粗
     html += `<tr style="${rowBg}">
       <td><strong>${mLabel} ${year}</strong></td>
-      <td class="num" style="padding:4px 8px;">${total != null ? fmt.money(total) : '<span style="color:var(--gray);">—</span>'}</td>
       <td class="num" style="padding:4px 8px;">${newC != null ? fmt.money(newC) : '<span style="color:var(--gray);">—</span>'}</td>
+      <td class="num" style="padding:4px 8px;font-weight:700;">${total != null ? fmt.money(total) : '<span style="color:var(--gray);font-weight:400;">—</span>'}</td>
     </tr>`;
   }
 
   html += `</tbody><tfoot><tr class="total-row">
     <td>TOTAL ${year}</td>
-    <td class="num">${fmt.money(yearTotal)}</td>
     <td class="num">${fmt.money(yearNew)}</td>
+    <td class="num" style="font-weight:700;">${fmt.money(yearTotal)}</td>
   </tr></tfoot></table></div>`;
   tableWrap.innerHTML = html;
   // v7.1: Revenue 由 33CRM 自动同步, 无手填输入框 — 不再绑定 blur 事件
