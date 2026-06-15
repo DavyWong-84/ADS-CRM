@@ -3329,7 +3329,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.07</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.08</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3385,7 +3385,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.07</div>
+      <div class="nav-brand-version">v7.08</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3950,8 +3950,10 @@ body.contact-view-table .modal-backdrop.open {
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
         </div>
-        <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
-        <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
+        <div class="entry-info-zone" style="min-height:46px;">
+          <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
+          <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
+        </div>
         <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
     <thead><tr>
       <th>Month</th>
@@ -4006,8 +4008,11 @@ body.contact-view-table .modal-backdrop.open {
   </button></span><select id="as_entryChannel" data-pop="1" data-pop-icon="channel" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_as_entryChannel"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
-        <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
-        <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
+        <div class="entry-info-zone" style="min-height:46px;">
+          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
+          <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
+          <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
+        </div>
         <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
       <thead><tr>
         <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
@@ -4058,8 +4063,10 @@ body.contact-view-table .modal-backdrop.open {
         <div id="fee_entryCustomRow" style="display:none;"></div>
         <input type="hidden" id="fee_entryCustomName">
         <input type="hidden" id="fee_entryCustomPlatform" value="other">
-        <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
-        <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
+        <div class="entry-info-zone" style="min-height:46px;">
+          <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">💡 选 Name + Year，离开格子自动保存</div>
+          <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
+        </div>
         <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
@@ -5101,7 +5108,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v7.07 — Data Entry Ads Cost 面板 (Google) 加 Last synced 时间提示 (跟 Revenue 一致)
+const DATA_VERSION = '4.68'; // v7.08 — 修 adsSpend 丢 updatedAt (Last synced 显示) + Data Entry 三面板提示区固定高度对齐表格
 
 // ---------- State ----------
 let state = {
@@ -12094,12 +12101,11 @@ function renderAdsCostEntry() {
     </tr>`;
   }).join('');
 
-  // v7.05: Google 渠道顶部显示只读说明
-  const googleHint = isGoogleAuto
-    ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>'
-    : '';
+  // v7.08: Google 渠道 Auto-synced 提示移到 header 提示区 (跟 Revenue 对齐), 不再放表格里
+  const autoHintEl = document.getElementById('as_autoSyncHint');
+  if (autoHintEl) autoHintEl.style.display = isGoogleAuto ? 'block' : 'none';
 
-  tableEl.innerHTML = googleHint + `<div class="table-wrap"><table class="data">
+  tableEl.innerHTML = `<div class="table-wrap"><table class="data">
       <thead><tr>
         <th style="width:36px;min-width:36px;white-space:nowrap;">Month</th>
         <th class="num">Amount (RM)</th>
@@ -14423,7 +14429,8 @@ function _normalizeSheetPullData(d) {
     channelId: a.channelId || '',
     channelName: a.channelName || '',
     platform: a.platform || '',
-    amount: toNum(a.amount)
+    amount: toNum(a.amount),
+    updatedAt: a.updatedAt || ''
   }));
 
   const rev = sheetRev.map(r => ({
