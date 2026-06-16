@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 911px;"><head>
+<html lang="en" style="--app-vh: 910px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -2702,6 +2702,21 @@ body.contact-view-table .modal-backdrop.open {
     border-bottom: none;
   }
 }
+/* v7.11: Desktop — filter toolbar sticks while scrolling so branch/year/channel
+   selectors stay reachable on Appt / Ads Spend / Revenue. Scoped to these 3 pages
+   only (Contact/Entry/Pending/Settings keep static). topbar is hidden on desktop,
+   so top:0 pins it to the viewport top cleanly (no blank bar). */
+@media (min-width: 768px) {
+  #page-store > .unified-header,
+  #page-adsspend > .unified-header,
+  #page-revenue > .unified-header {
+    position: sticky;
+    top: 0;
+    z-index: 45;
+    background: var(--white);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  }
+}
 /* v3.90: On mobile, main is the scroll container now. Sticky top:0 means
    "stick to the top of .main" — which is already below the fixed-flex topbar. */
 @media (max-width: 767px) {
@@ -3330,7 +3345,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.10</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.14</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3386,7 +3401,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.10</div>
+      <div class="nav-brand-version">v7.14</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3444,7 +3459,7 @@ body.contact-view-table .modal-backdrop.open {
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 911px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 910px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <!-- v4.93: + New Lead button on left of search (desktop only) -->
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
@@ -3503,7 +3518,7 @@ body.contact-view-table .modal-backdrop.open {
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 911px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 910px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -3544,10 +3559,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-06-15</span>
+                      <span id="f_leadDate_label">2026-06-16</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-06-15">
+                    <input type="hidden" id="f_leadDate" value="2026-06-16">
                   </div>
                 </div>
               </div>
@@ -3817,13 +3832,7 @@ body.contact-view-table .modal-backdrop.open {
 
       <!-- v6.52: Funnel panel — 单一表 + view filter (By Outlet Count / By Ads Count) -->
       <div id="adsPanel_funnel" style="display:none;">
-        <div style="font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5;">
-          <b style="color:var(--purple-deep);">By Outlet Count</b> = group by appointment month (matches monthly revenue). &nbsp; <b style="color:var(--purple-deep);">By Ads Count</b> = group by lead month (true ad attribution, cross-month tracking).
-        </div>
         <div id="funnelComboTableWrap"></div>
-
-        <!-- 漏斗图 -->
-        <div id="chart_funnel" style="margin-top:32px;"></div>
 
         <!-- 旧 wrap 保留 (隐藏) — 老代码 renderFunnelTab 仍写入这些 wrap, null 会让 JS 死. -->
         <div id="funnelLeadsWrap" style="display:none;"></div>
@@ -3932,7 +3941,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3942,11 +3951,11 @@ body.contact-view-table .modal-backdrop.open {
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -3955,52 +3964,11 @@ body.contact-view-table .modal-backdrop.open {
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-    <thead><tr>
-      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-      <th class="num">New (RM)</th>
-      <th class="num">Total (RM)</th>
-    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr></tbody><tfoot><tr class="total-row">
-    <td>TOTAL 2026</td>
-    <td class="num">—</td>
-    <td class="num" style="font-weight:700;">—</td>
-  </tr></tfoot></table></div></div>
+        <div id="rv_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4014,45 +3982,11 @@ body.contact-view-table .modal-backdrop.open {
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-      <thead><tr>
-        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-        <th class="num">Amount (RM)</th>
-      </tr></thead>
-      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" class="as-cell" data-month="2026-01" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" class="as-cell" data-month="2026-02" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" class="as-cell" data-month="2026-03" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" class="as-cell" data-month="2026-04" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" class="as-cell" data-month="2026-05" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" class="as-cell" data-month="2026-06" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" class="as-cell" data-month="2026-07" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><input type="number" class="as-cell" data-month="2026-08" value="" step="0.01" inputmode="decimal" placeholder="0.00" style="width:100%;text-align:center;border:1px solid var(--border-light);padding: 4px 6px;border-radius:4px;font-size:13px;line-height:1.4;"></td>
-    </tr></tbody>
-      <tfoot><tr class="total-row">
-        <td>TOTAL 2026</td>
-        <td class="num">—</td>
-      </tr></tfoot>
-    </table></div></div>
+        <div id="as_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4069,7 +4003,7 @@ body.contact-view-table .modal-backdrop.open {
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
+        <div id="fee_entryTable" class="entry-card-table"></div>
       </div>
 
     </div>
@@ -5110,7 +5044,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.68'; // v7.10 — Data Entry: 3rd Party Name标签移到提示区(不推表格) + 三表Month列宽统一80px + 提示区48px对齐
+const DATA_VERSION = '4.68'; // v7.14 — 删3图表: Conversion Funnel(Ads Spend) + Race Show Up Trend(Appt) + Monthly Leads(Weekly). 保留对应表格
 
 // ---------- State ----------
 let state = {
@@ -10233,7 +10167,7 @@ function renderStore() {
       weekly: 'Head Count & Weekly'
     };
     const sectionTitle = tabTitles[tab] || '';
-    let html = sectionTitle ? `<div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:10px;">${sectionTitle}</div>` : '';
+    let html = '';  // v7.13: 去掉 BY PLATFORM/BY RACE/HEAD COUNT 小标题 — pill 按钮已表明当前视图
     if (tab === 'overview') {
       const ovYear = document.getElementById('storeYear').value || String(new Date().getFullYear());
       const ovMonths = Array.from({length:12}, (_, i) => `${ovYear}-${String(i+1).padStart(2,'0')}`);
@@ -10712,13 +10646,8 @@ function renderStore() {
         }
 
         setTimeout(() => {
-          const colors = ['var(--meta-color)','var(--google-color)','var(--purple)','var(--organic-color)','#94a3b8'];
-          AdsChart.render(chartId, {
-            title: 'Race — Show Up Trend',
-            labels: raceMonths.map(m => fmt.monthShort(m)),
-            series: races.map((r,i) => ({ label:r, color:colors[i], data:raceChartData[r] })),
-            yFmt: v => v!=null ? v.toFixed(0) : '',
-          });
+          // v7.13: Race — Show Up Trend 图表删除 (保留表格) — 移除空容器避免留空隙
+          { const __rc = document.getElementById(chartId); if (__rc) __rc.remove(); }
           const raceColors = ['var(--meta-color)','var(--google-color)','var(--purple)','var(--organic-color)','#94a3b8'];
           AdsChart.render(chartId+'_avg', {
             title: 'AVG Spend per Show by Race — Trend',
@@ -10786,36 +10715,13 @@ function renderStore() {
         rows += `<tr style="border-top:2px solid var(--purple);background:var(--purple-bg);"><td style="text-align:center;font-weight:700;color:var(--purple);width:36px;min-width:36px;">TOTAL</td>${showLeadCols ? `<td class="num" style="font-weight:700;">${tc(gMeta)}</td><td class="num" style="font-weight:700;">${tc(gGoogle)}</td><td class="num" style="font-weight:700;">${tc(gOfu)}</td><td class="num" style="font-weight:700;border-right:2px solid var(--purple);">${tc(gTotal)}</td>` : ''}<td class="num" style="font-weight:700;">${tc(gAppt)}</td><td class="num" style="font-weight:700;">${tc(gShow)}</td><td class="num" style="font-weight:700;">${gSpend > 0 ? fmt.money(gSpend) : '—'}</td></tr>`;
       }
 
-      html += `<div id="chart_weekly_leads" style="margin-bottom:20px;"></div>
-        <div class="section-title"><h3>${wTitle}</h3></div>
+      html += `<div class="section-title"><h3>${wTitle}</h3></div>
         <div class="table-wrap"><table class="data">
           <thead><tr><th style="text-align:center;width:36px;min-width:36px;">Wk</th>${showLeadCols ? '<th class="num">Meta</th><th class="num">Google</th><th class="num">OFU</th><th class="num" style="font-weight:700;border-right:2px solid var(--purple);">Total</th>' : ''}<th class="num">Appt</th><th class="num">Show</th><th class="num" style="font-weight:700;">Sales</th></tr></thead>
           <tbody>${rows || `<tr><td colspan="${colSpan}" style="text-align:center;padding:20px;color:var(--gray);">No data</td></tr>`}</tbody>
         </table></div>`;
 
-      // Render leads chart after DOM update
-      setTimeout(() => {
-        const chartLabels = wMonths.map(m => fmt.monthShort(m));
-        const metaData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m) && l.platform === 'meta').length; return c || null; });
-        const googleData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m) && l.platform === 'google').length; return c || null; });
-        const ofuData = wMonths.map(m => { const c = state.leads.filter(l => l.leadDate && sw(l.leadDate, m) && (l.platform === 'organic' || l.platform === 'followup')).length; return c || null; });
-        // v6.31: totalData 已移除 (Total 折线删了, 改用柱顶 stackTopLabels)
-        const weeklyLeadsCfg = {
-          title: 'Monthly Leads — ' + wYear,
-          labels: chartLabels,
-          series: [
-            { label: 'Meta', color: 'var(--meta-color)', data: metaData },
-            { label: 'Google', color: 'var(--google-color)', data: googleData },
-            { label: 'OFU', color: 'var(--organic-color)', data: ofuData },
-            // v6.31 W1: 删掉 Total 折线 — 它就是堆叠柱顶, 重复信息. 改用 stackTopLabels 标在柱顶.
-          ],
-          yFmt: v => v != null ? v.toFixed(0) : '',
-          stacked: true,
-          stackTopLabels: true  // v6.31: 柱顶标 Total 数字 (替代之前的 Total 折线)
-        };
-        if (USE_CHARTJS) ChartJS.render('chart_weekly_leads', weeklyLeadsCfg);
-        else AdsChart.render('chart_weekly_leads', weeklyLeadsCfg);
-      }, 30);
+      // v7.13: Monthly Leads — {year} 图表删除 (保留 Weekly Report 表格)
     }
 
     container.innerHTML = html;
