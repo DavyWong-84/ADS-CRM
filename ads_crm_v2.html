@@ -3345,7 +3345,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.15</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.16</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3401,7 +3401,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.15</div>
+      <div class="nav-brand-version">v7.16</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4127,6 +4127,13 @@ body.contact-view-table .modal-backdrop.open {
                 </div>
                 <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
               </div>
+              <div class="settings-row" onclick="exportMetaAudience()">
+                <div>
+                  <div class="settings-row-label">Meta 受众名单</div>
+                  <div class="settings-row-sublabel">下载成交客户 CSV (上传 Meta Lookalike)</div>
+                </div>
+                <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
+              </div>
               <div class="settings-row danger" onclick="confirmClearCacheReload()">
                 <div>
                   <div class="settings-row-label">Clear cache &amp; reload</div>
@@ -4192,6 +4199,9 @@ body.contact-view-table .modal-backdrop.open {
             </div>
             <div class="settings-md-nav-row" onclick="exportAllData()">
               <span>Export data</span>
+            </div>
+            <div class="settings-md-nav-row" onclick="exportMetaAudience()">
+              <span>Meta 受众名单</span>
             </div>
             <div class="settings-md-nav-row danger" onclick="confirmClearCacheReload()">
               <span>Clear cache &amp; reload</span>
@@ -5044,7 +5054,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.69'; // v7.15 — Meta(Simply5/Chia) Data Entry 改只读, 跟 Google/营业额 一致 (Meta 花费已自动同步, 手填会被覆盖)
+const DATA_VERSION = '4.70'; // v7.16 — Settings 加「Meta 受众名单」一键下载 CSV (成交客户去重+累计消费, Meta 价值型受众格式) | v7.15 Meta Data Entry 改只读
 
 // ---------- State ----------
 let state = {
@@ -13958,6 +13968,40 @@ function exportAllData() {
   const a = document.createElement('a');
   a.href = url; a.download = 'ads-crm-backup-' + todayStr() + '.json';
   a.click(); URL.revokeObjectURL(url);
+}
+
+// v7.16: 下载 Meta 受众 CSV (上传 Custom Audience → 价值型 Lookalike 种子).
+//   筛 status=done & spend>0 的所有真成交客户 (全渠道 Meta/Google/Organic/FU 都算 — 种子越肥越准).
+//   按电话去重, value = 该客户累计消费 (同一人多次到店合并). 只留有效马来号码 (60 开头).
+//   格式 = Meta 价值型受众要的: phone,first_name,country,value (上次上传同款).
+function exportMetaAudience() {
+  const byPhone = {};
+  (state.leads || []).forEach(l => {
+    if (String(l.status).toLowerCase().trim() !== 'done') return;
+    const val = Number(l.spend) || 0;
+    if (val <= 0) return;
+    const phone = normalizePhone(l.contact);
+    if (!phone || phone.indexOf('60') !== 0) return;   // 只留有效马来号码 (60 开头), 丢外国/残号
+    if (!byPhone[phone]) {
+      byPhone[phone] = { phone: phone, first_name: String(l.name || '').trim().split(/\s+/)[0] || '', value: 0 };
+    }
+    byPhone[phone].value += val;                        // 同一客户多次到店 → 累计消费 (lifetime value)
+  });
+  const rows = Object.values(byPhone);
+  if (rows.length === 0) { toast('没有可导出的成交客户'); return; }
+
+  const esc = s => '"' + String(s).replace(/"/g, '""') + '"';  // first_name 用引号包 (防名字含逗号)
+  let csv = 'phone,first_name,country,value\n';
+  rows.forEach(r => {
+    csv += r.phone + ',' + esc(r.first_name) + ',MY,' + (Math.round(r.value * 100) / 100) + '\n';
+  });
+
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });  // BOM 防中文名乱码
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'meta-audience-' + todayStr() + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('✅ 导出 ' + rows.length + ' 个成交客户 → 上传 Meta 受众');
 }
 
 // =============================================================================
