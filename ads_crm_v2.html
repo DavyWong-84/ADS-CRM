@@ -2008,6 +2008,15 @@ body.contact-view-table .modal-backdrop.open {
 .modal-close:hover { background: var(--surface-2); color: var(--black); }
 .modal-footer { display: flex; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
 
+/* v7.19: Meta audience download modal — chip-based filters */
+.ma-sec { font-size: 11px; font-weight: 600; color: var(--silver); text-transform: uppercase; letter-spacing: 0.7px; margin: 0 0 9px; }
+.ma-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.ma-chip { padding: 7px 15px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); transition: all 0.12s ease; }
+.ma-chip:hover { border-color: var(--silver); color: var(--black); }
+.ma-chip.on { background: var(--purple); color: #fff; border-color: var(--purple); }
+.ma-count { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #f6f4fc; border: 1px solid #e9e4fb; border-radius: 10px; }
+.ma-count-n { font-size: 26px; font-weight: 600; color: var(--black); line-height: 1; }
+
 /* Toast */
 .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--black); color: white; padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; z-index: 200; box-shadow: var(--shadow-lg); animation: toastin 0.2s ease; }
 @keyframes toastin { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
@@ -3345,7 +3354,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.18</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.19</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3401,7 +3410,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.18</div>
+      <div class="nav-brand-version">v7.19</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4129,8 +4138,8 @@ body.contact-view-table .modal-backdrop.open {
               </div>
               <div class="settings-row" onclick="exportMetaAudience()">
                 <div>
-                  <div class="settings-row-label">Meta 受众名单</div>
-                  <div class="settings-row-sublabel">下载成交客户 CSV (上传 Meta Lookalike)</div>
+                  <div class="settings-row-label">Meta audience</div>
+                  <div class="settings-row-sublabel">Download customer list for Lookalike</div>
                 </div>
                 <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
               </div>
@@ -4201,7 +4210,7 @@ body.contact-view-table .modal-backdrop.open {
               <span>Export data</span>
             </div>
             <div class="settings-md-nav-row" onclick="exportMetaAudience()">
-              <span>Meta 受众名单</span>
+              <span>Meta audience</span>
             </div>
             <div class="settings-md-nav-row danger" onclick="confirmClearCacheReload()">
               <span>Clear cache &amp; reload</span>
@@ -5054,7 +5063,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.72'; // v7.18 — Meta 受众下载改成筛选弹窗 (打勾选 状态/渠道/种族/最低消费 + 实时人数 + ≥100提示) | v7.17 只导华人 | v7.16 加下载 | v7.15 Meta 只读
+const DATA_VERSION = '4.73'; // v7.19 — Meta 受众弹窗重做 UI (全英文 + chip 选择器 + 对齐设计系统) | v7.18 筛选弹窗 | v7.17 只导华人 | v7.16 加下载
 
 // ---------- State ----------
 let state = {
@@ -13970,39 +13979,41 @@ function exportAllData() {
   a.click(); URL.revokeObjectURL(url);
 }
 
-// v7.16–18: 下载 Meta 受众 CSV (上传 Custom Audience → Lookalike 种子).
-//   v7.18: Settings 按钮改成开「筛选弹窗」—— 打勾选 状态/渠道/种族/最低消费, 实时看人数, 再下载.
-//          固定: 按电话去重, 只留 60 开头马来号码, value 只累计 Show Up 消费, 格式 phone,first_name,country,value.
-//          状态: Show Up(done) 才看消费; Lead/No Show 无消费(value=0). 种族 'blank'=未填.
+// v7.16–19: download Meta audience CSV (upload as Custom Audience → Lookalike seed).
+//   v7.18: Settings button opens a filter modal — pick status/channel/race/min-spend, live count, download.
+//   v7.19: redesigned UI (English, chip selectors, matches CRM design system). Fixed: dedup by phone,
+//          MY phones only, value = cumulative Show Up spend, format phone,first_name,country,value.
+//          Status: only Show Up(done) carries spend; Lead/No Show have value 0. Race 'blank' = no race.
 function exportMetaAudience() {
-  const ck = (k, label, on) => '<label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" data-k="' + k + '" ' + (on ? 'checked' : '') + ' onchange="_metaAudienceRecalc()"> ' + label + '</label>';
+  const chip = (g, k, label, on) => '<button class="ma-chip' + (on ? ' on' : '') + '" data-g="' + g + '" data-k="' + k + '" onclick="_metaChipToggle(this)">' + label + '</button>';
   const html =
-    '<div class="modal-header"><div class="modal-title">下载 Meta 受众名单</div>' +
-    '<button class="modal-close" onclick="closeModal()" aria-label="关闭">✕</button></div>' +
-    '<div style="font-size:12px;color:var(--silver);margin:-8px 0 14px;">选条件 → 看人数 → 下载，不用改代码</div>' +
-    '<div style="font-size:12px;color:var(--gray);font-weight:600;margin:0 0 6px;">状态</div>' +
-    '<div id="maStatus" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:14px;">' +
-      ck('done', 'Show Up 到店', true) + ck('lead', 'Lead 询问', false) + ck('noshow', 'No Show 爽约', false) + '</div>' +
-    '<div style="font-size:12px;color:var(--gray);font-weight:600;margin:0 0 6px;">渠道</div>' +
-    '<div id="maChannel" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:14px;">' +
-      ck('meta', 'Meta', true) + ck('google', 'Google', true) + ck('organic', 'Organic', true) + ck('followup', 'Follow Up', true) + '</div>' +
-    '<div style="font-size:12px;color:var(--gray);font-weight:600;margin:0 0 6px;">种族</div>' +
-    '<div id="maRace" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:14px;">' +
-      ck('Chinese', 'Chinese 华人', true) + ck('Malay', 'Malay', false) + ck('Indian', 'Indian', false) +
-      ck('Foreigner', 'Foreigner', false) + ck('Others', 'Others', false) + ck('blank', '未填种族', false) + '</div>' +
-    '<div style="font-size:12px;color:var(--gray);font-weight:600;margin:0 0 6px;">最低消费 <span style="color:var(--silver);font-weight:400;">（只对 Show Up 有效）</span></div>' +
-    '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;">' +
-      '<button id="maSpendAll" onclick="document.getElementById(\'maSpendInput\').value=\'\';_metaAudienceRecalc()" style="font-size:13px;padding:6px 14px;">全部</button>' +
-      '<span style="font-size:13px;color:var(--silver);">或</span>' +
-      '<span style="font-size:13px;">RM <input id="maSpendInput" type="number" min="0" step="50" placeholder="自己填" oninput="_metaAudienceRecalc()" style="width:96px;"></span></div>' +
-    '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface-2);border-radius:10px;">' +
-      '<div style="font-size:13px;color:var(--gray);">符合条件</div><div style="text-align:right;">' +
-      '<span id="maCount" style="font-size:24px;font-weight:600;">0</span><span style="font-size:13px;color:var(--silver);"> 人</span>' +
-      '<div id="maHint" style="font-size:11px;color:var(--silver);margin-top:1px;"></div></div></div>' +
+    '<div class="modal-header"><div class="modal-title">Download Meta audience</div>' +
+    '<button class="modal-close" onclick="closeModal()" aria-label="Close">✕</button></div>' +
+    '<div style="font-size:13px;color:var(--silver);margin:-8px 0 18px;">Pick filters, check the count, then download.</div>' +
+    '<div class="ma-sec">Status</div><div class="ma-chips">' +
+      chip('status', 'done', 'Show Up', true) + chip('status', 'lead', 'Lead', false) + chip('status', 'noshow', 'No Show', false) + '</div>' +
+    '<div class="ma-sec">Channel</div><div class="ma-chips">' +
+      chip('channel', 'meta', 'Meta', true) + chip('channel', 'google', 'Google', true) + chip('channel', 'organic', 'Organic', true) + chip('channel', 'followup', 'Follow Up', true) + '</div>' +
+    '<div class="ma-sec">Race</div><div class="ma-chips">' +
+      chip('race', 'Chinese', 'Chinese', true) + chip('race', 'Malay', 'Malay', false) + chip('race', 'Indian', 'Indian', false) +
+      chip('race', 'Foreigner', 'Foreigner', false) + chip('race', 'Others', 'Others', false) + chip('race', 'blank', 'No race', false) + '</div>' +
+    '<div class="ma-sec">Min spend <span style="text-transform:none;letter-spacing:0;font-weight:500;">· Show Up only</span></div>' +
+    '<div class="ma-chips" style="align-items:center;">' +
+      '<button id="maSpendAll" class="ma-chip on" onclick="document.getElementById(\'maSpendInput\').value=\'\';_metaAudienceRecalc()">All</button>' +
+      '<span style="font-size:13px;color:var(--silver);">or</span>' +
+      '<span style="display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--gray);">RM <input id="maSpendInput" type="number" min="0" step="50" placeholder="Custom" oninput="_metaAudienceRecalc()" style="width:108px;padding:7px 11px;font-size:13px;"></span></div>' +
+    '<div class="ma-count"><div><div style="font-size:11px;font-weight:600;color:var(--silver);text-transform:uppercase;letter-spacing:0.7px;">Matches</div>' +
+      '<div id="maHint" style="font-size:12px;color:var(--silver);margin-top:3px;"></div></div>' +
+      '<div id="maCount" class="ma-count-n">0</div></div>' +
     '<div class="modal-footer" style="justify-content:flex-end;">' +
-      '<button onclick="closeModal()" style="padding:7px 16px;">取消</button>' +
-      '<button id="maDownloadBtn" onclick="_metaAudienceDownload()" style="padding:7px 16px;background:#7132f5;color:#fff;border-color:#7132f5;">下载 CSV</button></div>';
+      '<button onclick="closeModal()" style="padding:8px 18px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;color:var(--gray);">Cancel</button>' +
+      '<button id="maDownloadBtn" onclick="_metaAudienceDownload()" style="padding:8px 18px;background:var(--purple);color:#fff;border-radius:8px;font-size:13px;font-weight:500;">Download CSV</button></div>';
   showModal(html);
+  _metaAudienceRecalc();
+}
+
+function _metaChipToggle(el) {
+  el.classList.toggle('on');
   _metaAudienceRecalc();
 }
 
@@ -14029,9 +14040,9 @@ function _metaAudienceRows(f) {
 
 function _metaAudienceFilters() {
   const f = { status: {}, platform: {}, race: {}, minSpend: 0 };
-  document.querySelectorAll('#maStatus input').forEach(i => f.status[i.dataset.k] = i.checked);
-  document.querySelectorAll('#maChannel input').forEach(i => f.platform[i.dataset.k] = i.checked);
-  document.querySelectorAll('#maRace input').forEach(i => f.race[i.dataset.k] = i.checked);
+  document.querySelectorAll('.ma-chip[data-g="status"]').forEach(c => f.status[c.dataset.k] = c.classList.contains('on'));
+  document.querySelectorAll('.ma-chip[data-g="channel"]').forEach(c => f.platform[c.dataset.k] = c.classList.contains('on'));
+  document.querySelectorAll('.ma-chip[data-g="race"]').forEach(c => f.race[c.dataset.k] = c.classList.contains('on'));
   const inp = document.getElementById('maSpendInput');
   const v = inp ? parseInt(inp.value, 10) : 0;
   f.minSpend = (!isNaN(v) && v > 0) ? v : 0;
@@ -14043,30 +14054,25 @@ function _metaAudienceRecalc() {
   const numEl = document.getElementById('maCount'), hintEl = document.getElementById('maHint'), btn = document.getElementById('maDownloadBtn');
   const allBtn = document.getElementById('maSpendAll'), inp = document.getElementById('maSpendInput');
   if (numEl) numEl.textContent = n.toLocaleString();
-  if (allBtn) {                                                   // 「全部」高亮 = 没填自定义金额
-    const isAll = !inp || !inp.value;
-    allBtn.style.background = isAll ? '#7132f5' : '';
-    allBtn.style.color = isAll ? '#fff' : '';
-    allBtn.style.borderColor = isAll ? '#7132f5' : '';
-  }
+  if (allBtn) allBtn.classList.toggle('on', !inp || !inp.value);   // "All" chip on = no custom amount
   if (hintEl && btn) {
-    if (n < 100) { hintEl.textContent = '不足 100，Meta 用不了'; hintEl.style.color = 'var(--red)'; if (numEl) numEl.style.color = 'var(--red)'; btn.disabled = true; btn.style.opacity = '0.5'; }
-    else { hintEl.textContent = '够 100，可上传'; hintEl.style.color = 'var(--silver)'; if (numEl) numEl.style.color = ''; btn.disabled = false; btn.style.opacity = '1'; }
+    if (n < 100) { hintEl.textContent = 'Need ≥ 100 to upload'; hintEl.style.color = 'var(--red)'; if (numEl) numEl.style.color = 'var(--red)'; btn.disabled = true; btn.style.opacity = '0.45'; }
+    else { hintEl.textContent = '≥ 100, ready to upload'; hintEl.style.color = 'var(--silver)'; if (numEl) numEl.style.color = ''; btn.disabled = false; btn.style.opacity = '1'; }
   }
 }
 
 function _metaAudienceDownload() {
   const rows = _metaAudienceRows(_metaAudienceFilters());
-  if (rows.length === 0) { toast('没有符合条件的客户'); return; }
+  if (rows.length === 0) { toast('No matching customers'); return; }
   const esc = s => '"' + String(s).replace(/"/g, '""') + '"';
   let csv = 'phone,first_name,country,value\n';
   rows.forEach(r => { csv += r.phone + ',' + esc(r.first_name) + ',MY,' + (Math.round(r.value * 100) / 100) + '\n'; });
-  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });  // BOM 防中文名乱码
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });  // BOM keeps names clean
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'meta-audience-' + todayStr() + '.csv';
   a.click(); URL.revokeObjectURL(url);
-  toast('✅ 导出 ' + rows.length + ' 个客户 → 上传 Meta 受众');
+  toast('Exported ' + rows.length + ' customers');
   closeModal();
 }
 
