@@ -3354,7 +3354,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.19</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.20</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3410,7 +3410,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.19</div>
+      <div class="nav-brand-version">v7.20</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4143,6 +4143,13 @@ body.contact-view-table .modal-backdrop.open {
                 </div>
                 <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
               </div>
+              <div class="settings-row" onclick="exportGoogleConversions()">
+                <div>
+                  <div class="settings-row-label">Google conversions</div>
+                  <div class="settings-row-sublabel">Download Show Up sales for Google Ads</div>
+                </div>
+                <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
+              </div>
               <div class="settings-row danger" onclick="confirmClearCacheReload()">
                 <div>
                   <div class="settings-row-label">Clear cache &amp; reload</div>
@@ -4211,6 +4218,9 @@ body.contact-view-table .modal-backdrop.open {
             </div>
             <div class="settings-md-nav-row" onclick="exportMetaAudience()">
               <span>Meta audience</span>
+            </div>
+            <div class="settings-md-nav-row" onclick="exportGoogleConversions()">
+              <span>Google conversions</span>
             </div>
             <div class="settings-md-nav-row danger" onclick="confirmClearCacheReload()">
               <span>Clear cache &amp; reload</span>
@@ -5063,7 +5073,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.73'; // v7.19 — Meta 受众弹窗重做 UI (全英文 + chip 选择器 + 对齐设计系统) | v7.18 筛选弹窗 | v7.17 只导华人 | v7.16 加下载
+const DATA_VERSION = '4.74'; // v7.20 — Settings 加「Google conversions」导出 (Google 渠道成交 → Google 离线转化格式, 喂 Enhanced Conversions for Leads) | v7.19 Meta 弹窗重做 UI
 
 // ---------- State ----------
 let state = {
@@ -14074,6 +14084,39 @@ function _metaAudienceDownload() {
   a.click(); URL.revokeObjectURL(url);
   toast('Exported ' + rows.length + ' customers');
   closeModal();
+}
+
+// v7.20: 导出 Google 离线转化 CSV (上传 Google Ads → 让 campaign 按真成交优化).
+//   筛 status=done & spend>0 & platform=google (只回传 Google 渠道成交). 每笔成交一行 (不去重).
+//   格式 = Google Ads 离线转化模板: 第一行 Parameters:TimeZone, 然后列头 + 数据.
+//   电话 E.164 明文 (+60..., Google 上传时自动哈希). 转化时间用到店日 apptDate (UTC+8).
+//   ⚠️ 转化名必须跟 Google 后台那个转化动作完全一致, 改名了告诉 Claude.
+const GOOGLE_CONV_NAME = 'Appointment Show UP Sales';
+function exportGoogleConversions() {
+  const rows = [];
+  (state.leads || []).forEach(l => {
+    if (String(l.status).toLowerCase().trim() !== 'done') return;
+    if (String(l.platform || '').toLowerCase().trim() !== 'google') return;  // 只 Google 渠道成交
+    const val = Number(l.spend) || 0;
+    if (val <= 0) return;
+    let phone = normalizePhone(l.contact);
+    if (!phone || phone.indexOf('60') !== 0) return;                         // 有效马来号码
+    const t = String(l.apptDate || l.updatedAt || '').trim();                // 成交时间 = 到店日
+    const dm = t.match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2})(:\d{2})?)?/);
+    if (!dm) return;                                                          // 没有效日期就跳过
+    const time = dm[1] + ' ' + (dm[2] ? dm[2] + (dm[3] || ':00') : '12:00:00');
+    rows.push({ phone: '+' + phone, time: time, value: Math.round(val * 100) / 100 });
+  });
+  if (rows.length === 0) { toast('No Google conversions to export'); return; }
+  let csv = 'Parameters:TimeZone=+0800\n';
+  csv += 'Email,Phone Number,Conversion Name,Conversion Time,Conversion Value,Conversion Currency\n';
+  rows.forEach(r => { csv += ',' + r.phone + ',' + GOOGLE_CONV_NAME + ',' + r.time + ',' + r.value + ',MYR\n'; });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'google-conversions-' + todayStr() + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('Exported ' + rows.length + ' Google conversions');
 }
 
 // =============================================================================
