@@ -3345,7 +3345,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.16</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.18</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3401,7 +3401,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.16</div>
+      <div class="nav-brand-version">v7.18</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5054,7 +5054,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.70'; // v7.16 — Settings 加「Meta 受众名单」一键下载 CSV (成交客户去重+累计消费, Meta 价值型受众格式) | v7.15 Meta Data Entry 改只读
+const DATA_VERSION = '4.72'; // v7.18 — Meta 受众下载改成筛选弹窗 (打勾选 状态/渠道/种族/最低消费 + 实时人数 + ≥100提示) | v7.17 只导华人 | v7.16 加下载 | v7.15 Meta 只读
 
 // ---------- State ----------
 let state = {
@@ -13970,38 +13970,104 @@ function exportAllData() {
   a.click(); URL.revokeObjectURL(url);
 }
 
-// v7.16: 下载 Meta 受众 CSV (上传 Custom Audience → 价值型 Lookalike 种子).
-//   筛 status=done & spend>0 的所有真成交客户 (全渠道 Meta/Google/Organic/FU 都算 — 种子越肥越准).
-//   按电话去重, value = 该客户累计消费 (同一人多次到店合并). 只留有效马来号码 (60 开头).
-//   格式 = Meta 价值型受众要的: phone,first_name,country,value (上次上传同款).
+// v7.16–18: 下载 Meta 受众 CSV (上传 Custom Audience → Lookalike 种子).
+//   v7.18: Settings 按钮改成开「筛选弹窗」—— 打勾选 状态/渠道/种族/最低消费, 实时看人数, 再下载.
+//          固定: 按电话去重, 只留 60 开头马来号码, value 只累计 Show Up 消费, 格式 phone,first_name,country,value.
+//          状态: Show Up(done) 才看消费; Lead/No Show 无消费(value=0). 种族 'blank'=未填.
 function exportMetaAudience() {
+  const ck = (k, label, on) => '<label style="display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" data-k="' + k + '" ' + (on ? 'checked' : '') + ' onchange="_metaAudienceRecalc()"> ' + label + '</label>';
+  const html =
+    '<div class="modal-header"><div class="modal-title">下载 Meta 受众名单</div>' +
+    '<button class="modal-close" onclick="closeModal()" aria-label="关闭">✕</button></div>' +
+    '<div style="font-size:12px;color:var(--silver);margin:-8px 0 14px;">选条件 → 看人数 → 下载，不用改代码</div>' +
+    '<div style="font-size:12px;color:var(--gray);font-weight:600;margin:0 0 6px;">状态</div>' +
+    '<div id="maStatus" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:14px;">' +
+      ck('done', 'Show Up 到店', true) + ck('lead', 'Lead 询问', false) + ck('noshow', 'No Show 爽约', false) + '</div>' +
+    '<div style="font-size:12px;color:var(--gray);font-weight:600;margin:0 0 6px;">渠道</div>' +
+    '<div id="maChannel" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:14px;">' +
+      ck('meta', 'Meta', true) + ck('google', 'Google', true) + ck('organic', 'Organic', true) + ck('followup', 'Follow Up', true) + '</div>' +
+    '<div style="font-size:12px;color:var(--gray);font-weight:600;margin:0 0 6px;">种族</div>' +
+    '<div id="maRace" style="display:flex;flex-wrap:wrap;gap:8px 16px;margin-bottom:14px;">' +
+      ck('Chinese', 'Chinese 华人', true) + ck('Malay', 'Malay', false) + ck('Indian', 'Indian', false) +
+      ck('Foreigner', 'Foreigner', false) + ck('Others', 'Others', false) + ck('blank', '未填种族', false) + '</div>' +
+    '<div style="font-size:12px;color:var(--gray);font-weight:600;margin:0 0 6px;">最低消费 <span style="color:var(--silver);font-weight:400;">（只对 Show Up 有效）</span></div>' +
+    '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px;">' +
+      '<button id="maSpendAll" onclick="document.getElementById(\'maSpendInput\').value=\'\';_metaAudienceRecalc()" style="font-size:13px;padding:6px 14px;">全部</button>' +
+      '<span style="font-size:13px;color:var(--silver);">或</span>' +
+      '<span style="font-size:13px;">RM <input id="maSpendInput" type="number" min="0" step="50" placeholder="自己填" oninput="_metaAudienceRecalc()" style="width:96px;"></span></div>' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--surface-2);border-radius:10px;">' +
+      '<div style="font-size:13px;color:var(--gray);">符合条件</div><div style="text-align:right;">' +
+      '<span id="maCount" style="font-size:24px;font-weight:600;">0</span><span style="font-size:13px;color:var(--silver);"> 人</span>' +
+      '<div id="maHint" style="font-size:11px;color:var(--silver);margin-top:1px;"></div></div></div>' +
+    '<div class="modal-footer" style="justify-content:flex-end;">' +
+      '<button onclick="closeModal()" style="padding:7px 16px;">取消</button>' +
+      '<button id="maDownloadBtn" onclick="_metaAudienceDownload()" style="padding:7px 16px;background:#7132f5;color:#fff;border-color:#7132f5;">下载 CSV</button></div>';
+  showModal(html);
+  _metaAudienceRecalc();
+}
+
+// 读弹窗里的勾选 → 过滤 + 去重, 返回 [{phone,first_name,value}]. 给实时人数 + 下载共用.
+function _metaAudienceRows(f) {
   const byPhone = {};
   (state.leads || []).forEach(l => {
-    if (String(l.status).toLowerCase().trim() !== 'done') return;
-    const val = Number(l.spend) || 0;
-    if (val <= 0) return;
+    const st = String(l.status).toLowerCase().trim();
+    if (!f.status[st]) return;                                    // 状态
+    if (!f.platform[String(l.platform || '').toLowerCase().trim()]) return;  // 渠道
+    if (!f.race[String(l.race || '').trim() || 'blank']) return;  // 种族 (空→blank)
+    const spend = Number(l.spend) || 0;
+    if (st === 'done' && spend <= 0) return;                      // Show Up 没消费的不算 (非真成交)
     const phone = normalizePhone(l.contact);
-    if (!phone || phone.indexOf('60') !== 0) return;   // 只留有效马来号码 (60 开头), 丢外国/残号
-    if (!byPhone[phone]) {
-      byPhone[phone] = { phone: phone, first_name: String(l.name || '').trim().split(/\s+/)[0] || '', value: 0 };
-    }
-    byPhone[phone].value += val;                        // 同一客户多次到店 → 累计消费 (lifetime value)
+    if (!phone || phone.indexOf('60') !== 0) return;              // 只留 60 开头马来号码
+    if (!byPhone[phone]) byPhone[phone] = { phone: phone, first_name: String(l.name || '').trim().split(/\s+/)[0] || '', value: 0, hasDone: false };
+    if (st === 'done') { byPhone[phone].value += spend; byPhone[phone].hasDone = true; }  // value 累计 Show Up 消费
   });
-  const rows = Object.values(byPhone);
-  if (rows.length === 0) { toast('没有可导出的成交客户'); return; }
+  // 最低消费按「累计消费」筛 (只管 Show Up 客户; Lead/No Show 无消费, 不受限)
+  let rows = Object.values(byPhone);
+  if (f.minSpend > 0) rows = rows.filter(r => !r.hasDone || r.value >= f.minSpend);
+  return rows;
+}
 
-  const esc = s => '"' + String(s).replace(/"/g, '""') + '"';  // first_name 用引号包 (防名字含逗号)
+function _metaAudienceFilters() {
+  const f = { status: {}, platform: {}, race: {}, minSpend: 0 };
+  document.querySelectorAll('#maStatus input').forEach(i => f.status[i.dataset.k] = i.checked);
+  document.querySelectorAll('#maChannel input').forEach(i => f.platform[i.dataset.k] = i.checked);
+  document.querySelectorAll('#maRace input').forEach(i => f.race[i.dataset.k] = i.checked);
+  const inp = document.getElementById('maSpendInput');
+  const v = inp ? parseInt(inp.value, 10) : 0;
+  f.minSpend = (!isNaN(v) && v > 0) ? v : 0;
+  return f;
+}
+
+function _metaAudienceRecalc() {
+  const n = _metaAudienceRows(_metaAudienceFilters()).length;
+  const numEl = document.getElementById('maCount'), hintEl = document.getElementById('maHint'), btn = document.getElementById('maDownloadBtn');
+  const allBtn = document.getElementById('maSpendAll'), inp = document.getElementById('maSpendInput');
+  if (numEl) numEl.textContent = n.toLocaleString();
+  if (allBtn) {                                                   // 「全部」高亮 = 没填自定义金额
+    const isAll = !inp || !inp.value;
+    allBtn.style.background = isAll ? '#7132f5' : '';
+    allBtn.style.color = isAll ? '#fff' : '';
+    allBtn.style.borderColor = isAll ? '#7132f5' : '';
+  }
+  if (hintEl && btn) {
+    if (n < 100) { hintEl.textContent = '不足 100，Meta 用不了'; hintEl.style.color = 'var(--red)'; if (numEl) numEl.style.color = 'var(--red)'; btn.disabled = true; btn.style.opacity = '0.5'; }
+    else { hintEl.textContent = '够 100，可上传'; hintEl.style.color = 'var(--silver)'; if (numEl) numEl.style.color = ''; btn.disabled = false; btn.style.opacity = '1'; }
+  }
+}
+
+function _metaAudienceDownload() {
+  const rows = _metaAudienceRows(_metaAudienceFilters());
+  if (rows.length === 0) { toast('没有符合条件的客户'); return; }
+  const esc = s => '"' + String(s).replace(/"/g, '""') + '"';
   let csv = 'phone,first_name,country,value\n';
-  rows.forEach(r => {
-    csv += r.phone + ',' + esc(r.first_name) + ',MY,' + (Math.round(r.value * 100) / 100) + '\n';
-  });
-
+  rows.forEach(r => { csv += r.phone + ',' + esc(r.first_name) + ',MY,' + (Math.round(r.value * 100) / 100) + '\n'; });
   const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });  // BOM 防中文名乱码
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'meta-audience-' + todayStr() + '.csv';
   a.click(); URL.revokeObjectURL(url);
-  toast('✅ 导出 ' + rows.length + ' 个成交客户 → 上传 Meta 受众');
+  toast('✅ 导出 ' + rows.length + ' 个客户 → 上传 Meta 受众');
+  closeModal();
 }
 
 // =============================================================================
