@@ -487,6 +487,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .badge-pending { background: var(--amber-subtle); color: var(--amber); }
 .badge-done { background: var(--green-subtle); color: var(--green-dark); }
 .badge-noshow { background: var(--red-subtle); color: var(--red); }
+.badge-auto { background: var(--purple-bg); color: var(--purple-deep); margin-left: 6px; } /* v7.23: auto-added lead tag */
 
 /* Forms */
 .form-grid { display: grid; gap: 14px; }
@@ -3354,7 +3355,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.22</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.23</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3410,7 +3411,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.22</div>
+      <div class="nav-brand-version">v7.23</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3521,6 +3522,7 @@ body.contact-view-table .modal-backdrop.open {
         </div>
         <!-- v4.23: Filters moved here from unified-header -->
         
+        <div id="autoTodayHint" style="display:none;align-items:center;gap:5px;font-size:11px;color:var(--silver);margin:0 0 10px 2px;">0 leads added automatically today</div>
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <!-- v4.20: Mobile-only "Load More" button (hidden on desktop via CSS) -->
         <div id="loadMoreWrap"></div>
@@ -4804,6 +4806,11 @@ body.contact-view-table .modal-backdrop.open {
 // when user-entered data (name/contact/remark/location/channelName) is
 // injected into innerHTML. Defined here so all <script> blocks can use it.
 // v4.82: List card helpers — remark icon (only if remark present) + reschedule chip (only if flag set & still booked)
+// v7.23: AUTO 标签 — 后端 ghlSavePending 自动入库的 lead flags='auto'
+function autoBadgeHTML(l) {
+  return (l && String(l.flags || '').indexOf('auto') >= 0) ? '<span class="badge badge-auto">Auto</span>' : '';
+}
+
 function remarkIconHTML(l) {
   if (!l || !l.remark) return '';
   const fullText = String(l.remark).trim();
@@ -5073,7 +5080,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.76'; // v7.22 — gsPullSilent 加"变化检测"短路: 拉回数据跟上次字节一致就跳过 解析/双序列化/清缓存/整页重画 (治刷新卡顿, 占绝大多数自动刷新) | v7.21 Google 导出同意列
+const DATA_VERSION = '4.77'; // v7.23 — 新 lead 自动入库(后端 v3.13): 全新电话+渠道清楚的 ghl_lead 直接进 Leads(flags='auto'), 前端显示 AUTO 标签 + "当天自动加入"计数; 疑似重复(电话已存在)留 Pending | v7.22 — gsPullSilent 加"变化检测"短路 (治刷新卡顿) | v7.21 Google 导出同意列
 
 // ---------- State ----------
 let state = {
@@ -8933,6 +8940,13 @@ function renderList() {
   // v4.20+v4.22: Cumulative "Load More" on BOTH mobile and desktop.
   const slice = list.slice(0, state.listPage * pageSize);
 
+  // v7.23: 当天自动入库计数 (全局, 不随筛选/分页变)
+  try {
+    const _at = (state.leads || []).filter(l => String(l.flags || '').indexOf('auto') >= 0 && String(l.leadDate || '') === todayStr()).length;
+    const _ah = document.getElementById('autoTodayHint');
+    if (_ah) { _ah.textContent = _at + (_at === 1 ? ' lead added automatically today' : ' leads added automatically today'); _ah.style.display = _at > 0 ? 'flex' : 'none'; }
+  } catch (e) {}
+
   if (slice.length === 0) {
     document.getElementById('leadList').innerHTML = '<div class="empty"><div>No leads found</div></div>';
   } else if (!isMobile && state.contactViewMode === 'table') {
@@ -8965,7 +8979,7 @@ function renderList() {
         }
         return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-lead lead-compact-v2${selected ? ' selected' : ''} swipe-card" onclick="editLead('${esc(l.id)}')">
           <div class="lc-head">
-            <div class="lc-name">${esc(l.name || l.contact || '(no contact)')}${remarkIconHTML(l)}</div>
+            <div class="lc-name">${esc(l.name || l.contact || '(no contact)')}${remarkIconHTML(l)}${autoBadgeHTML(l)}</div>
             <div style="display:flex;align-items:center;gap:4px;">
               ${rescheduleChipHTML(l)}
               <span class="badge badge-lead">Lead</span>
@@ -8993,7 +9007,7 @@ function renderList() {
       }
       return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${esc(l.id)}')">
         <div class="lc-head">
-          <div class="lc-name">${esc(l.name || l.contact || '(no data)')}${remarkIconHTML(l)}</div>
+          <div class="lc-name">${esc(l.name || l.contact || '(no data)')}${remarkIconHTML(l)}${autoBadgeHTML(l)}</div>
           <div style="display:flex;align-items:center;gap:4px;">
             ${rescheduleChipHTML(l)}
             <span class="badge badge-${l.status}">${statusLabelText}</span>
