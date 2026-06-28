@@ -3125,6 +3125,17 @@ body.contact-view-table .modal-backdrop.open {
   transition: transform 0.1s;
 }
 .cl-color-dot:hover { transform: scale(1.15); }
+/* v7.24: 配置匹配字段 (GHL keyword / 33CRM code) */
+.cl-row.cfg-row { align-items: flex-start; }
+.cl-row.cfg-row .settings-toggle { margin-top: 2px; }
+.cl-row-info .cfg-fields { display: flex; gap: 8px; margin-top: 7px; flex-wrap: wrap; }
+.cl-row-info .cfg-field { display: flex; flex-direction: column; gap: 3px; }
+.cl-row-info .cfg-field label { font-size: 10px; color: var(--silver); letter-spacing: 0.2px; }
+.cl-row-info .cfg-in { font-family: inherit; font-size: 12px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--black); width: 130px; }
+.cl-row-info .cfg-in.cfg-in-sm { width: 70px; }
+.cl-row-info .cfg-in:focus { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-subtle); }
+.cfg-save-bar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 14px 0 2px; flex-wrap: wrap; }
+.cfg-save-hint { font-size: 11px; color: var(--silver); flex: 1; min-width: 140px; }
 
 /* Pseudo-select (looks like input but opens modal) */
 .pseudo-select {
@@ -3355,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.23</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.24</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3411,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.23</div>
+      <div class="nav-brand-version">v7.24</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5080,7 +5091,7 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.77'; // v7.23 — 新 lead 自动入库(后端 v3.13): 全新电话+渠道清楚的 ghl_lead 直接进 Leads(flags='auto'), 前端显示 AUTO 标签 + "当天自动加入"计数; 疑似重复(电话已存在)留 Pending | v7.22 — gsPullSilent 加"变化检测"短路 (治刷新卡顿) | v7.21 Google 导出同意列
+const DATA_VERSION = '4.78'; // v7.24 — 门店/渠道可配置 UI(配后端 v3.14): Stores/Channels 设置每行加 GHL keyword + 33CRM code 输入 + Save(确认 modal)+ 提示; pull 带回 Channels/Locations, push 合并写(不洗手填值). 加新店/渠道在界面填两栏即可, 不碰 Sheet. | v7.23 — 新 lead 自动入库(后端 v3.13): 全新电话+渠道清楚的 ghl_lead 直接进 Leads(flags='auto'), 前端显示 AUTO 标签 + "当天自动加入"计数; 疑似重复(电话已存在)留 Pending | v7.22 — gsPullSilent 加"变化检测"短路 (治刷新卡顿) | v7.21 Google 导出同意列
 
 // ---------- State ----------
 let state = {
@@ -13339,6 +13350,10 @@ function _buildSettingsModalBody(kind) {
     return `
       <div class="settings-modal-section">
         <div id="modalChannelsList"></div>
+        <div class="cfg-save-bar">
+          <span class="cfg-save-hint">Fill the GHL tag keyword so leads auto-match this channel.</span>
+          <button class="btn btn-primary" onclick="_saveCfg()">Save changes</button>
+        </div>
       </div>
       <div class="settings-modal-section">
         <div class="settings-modal-section-title">Add new channel</div>
@@ -13368,6 +13383,10 @@ function _buildSettingsModalBody(kind) {
     return `
       <div class="settings-modal-section">
         <div id="modalStoresList"></div>
+        <div class="cfg-save-bar">
+          <span class="cfg-save-hint">GHL keyword matches your GHL calendar name (comma-separate for multiple, e.g. eco, ardence). 33CRM code = the branch code in 33CRM.</span>
+          <button class="btn btn-primary" onclick="_saveCfg()">Save changes</button>
+        </div>
       </div>
       <div class="settings-modal-section">
         <div class="settings-modal-section-title">Add new store</div>
@@ -13508,12 +13527,15 @@ function _renderModalChannelsList() {
     const isActive = c.active !== false;
     const color = c.color || (typeof hashColor === 'function' ? hashColor(c.name) : '#888');
     const platLabel = platLabels[c.platform] || c.platform || '?';
-    return `<div class="cl-row ${isActive ? '' : 'inactive'}">
+    return `<div class="cl-row cfg-row ${isActive ? '' : 'inactive'}">
       <div class="cl-row-left">
         <button type="button" class="cl-color-dot" onclick="openColorPicker(event, 'channel', '${esc(c.id)}')" title="改颜色" style="background:${color};"></button>
         <div class="cl-row-info">
           <div class="cl-row-name">${esc(c.name)}</div>
           <div class="cl-row-meta">${platLabel}</div>
+          <div class="cfg-fields">
+            <div class="cfg-field"><label>GHL tag keyword</label><input type="text" class="cfg-in" value="${esc(c.ghlKeyword || '')}" placeholder="e.g. google" onchange="_setChannelKeyword('${esc(c.id)}', this.value)"></div>
+          </div>
         </div>
       </div>
       <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setChannelActive('${esc(c.id)}', ${!isActive}); setTimeout(_renderModalChannelsList, 30); setTimeout(updateSettingsRowStatuses, 50);"></div>
@@ -13527,16 +13549,31 @@ function _renderModalStoresList() {
   target.innerHTML = (state.locations || []).map(l => {
     const isActive = l.active !== false;
     const color = l.color || (typeof hashColor === 'function' ? hashColor(l.name) : '#888');
-    return `<div class="cl-row ${isActive ? '' : 'inactive'}">
+    return `<div class="cl-row cfg-row ${isActive ? '' : 'inactive'}">
       <div class="cl-row-left">
         <span class="cl-color-dot" style="background:${color};cursor:default;" title="自动生成 (Locations 不支持自定义颜色)"></span>
         <div class="cl-row-info">
           <div class="cl-row-name">${esc(l.name)}</div>
+          <div class="cfg-fields">
+            <div class="cfg-field"><label>GHL keyword</label><input type="text" class="cfg-in" value="${esc(l.ghlKeyword || '')}" placeholder="e.g. sunway" onchange="_setStoreKeyword('${esc(l.id)}', this.value)"></div>
+            <div class="cfg-field"><label>33CRM code</label><input type="text" class="cfg-in cfg-in-sm" value="${esc(l.crm33Code || '')}" placeholder="e.g. SUN" onchange="_setStoreCode('${esc(l.id)}', this.value)"></div>
+          </div>
         </div>
       </div>
       <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setLocationActive('${esc(l.id)}', ${!isActive}); setTimeout(_renderModalStoresList, 30); setTimeout(updateSettingsRowStatuses, 50);"></div>
     </div>`;
   }).join('');
+}
+
+// v7.24: 配置字段编辑 — onchange 只更新 state(草稿, 不重渲染防丢焦点), 点 Save 才推 Sheet.
+function _setChannelKeyword(id, v) { const c = (state.channels || []).find(x => x.id === id); if (c) c.ghlKeyword = v; }
+function _setStoreKeyword(id, v)   { const l = (state.locations || []).find(x => x.id === id); if (l) l.ghlKeyword = v; }
+function _setStoreCode(id, v)      { const l = (state.locations || []).find(x => x.id === id); if (l) l.crm33Code = v; }
+async function _saveCfg() {
+  const ok = await showConfirm('Update the match names for stores and channels. GHL, 33CRM and revenue sync will use these.', { title: 'Save changes?', okText: 'Save' });
+  if (!ok) return;
+  try { await gsPushConfig(); toast('Saved'); }
+  catch (e) { toast('Save failed — try again'); }
 }
 
 // Wrappers — write modal input back to legacy hidden input, then call original handler
@@ -13826,14 +13863,17 @@ async function gsPushConfig() {
       platform: c.platform || '',
       active: c.active === false ? false : true,
       color: c.color || '',
-      addedMonth: c.addedMonth || ''
+      addedMonth: c.addedMonth || '',
+      ghlKeyword: c.ghlKeyword || ''   // v7.24: 带回 GHL 匹配词
     }));
     const enrichedLocations = state.locations.map(l => ({
       id: l.id,
       name: l.name || '',
       active: l.active === false ? false : true,
-      addedMonth: l.addedMonth || ''
+      addedMonth: l.addedMonth || '',
       // v6.71: 不带 color (codex P2 #3, location 不要 color)
+      ghlKeyword: l.ghlKeyword || '',  // v7.24: 带回 GHL 匹配词
+      crm33Code: l.crm33Code || ''     // v7.24: 带回 33CRM code
     }));
     const payload = {
       action: 'pushAll',
@@ -14583,13 +14623,16 @@ function _normalizeSheetPullData(d) {
     platform: c.platform || '',
     active: toBool(c.active),
     color: c.color || '',
-    addedMonth: toMonthStr(c.addedMonth)
+    addedMonth: toMonthStr(c.addedMonth),
+    ghlKeyword: c.ghlKeyword || ''   // v7.24: GHL tag 匹配词
   }));
   const locations = sheetLocations === null ? null : sheetLocations.filter(l => l && l.id).map(l => ({
     id: l.id,
     name: l.name || '',
     active: toBool(l.active),
-    addedMonth: toMonthStr(l.addedMonth)
+    addedMonth: toMonthStr(l.addedMonth),
+    ghlKeyword: l.ghlKeyword || '',  // v7.24: GHL 日历名匹配词
+    crm33Code: l.crm33Code || ''     // v7.24: 33CRM 分行 code
   }));
 
   return { leads, ads, rev, fees, channels, locations, suspiciousLead };
@@ -14688,13 +14731,16 @@ async function gsPushAll() {
       platform: c.platform || '',
       active: c.active === false ? false : true,  // 默认 true, 除非显式 false
       color: c.color || '',
-      addedMonth: c.addedMonth || ''
+      addedMonth: c.addedMonth || '',
+      ghlKeyword: c.ghlKeyword || ''   // v7.24
     }));
     const enrichedLocations = state.locations.map(l => ({
       id: l.id,
       name: l.name || '',
       active: l.active === false ? false : true,
-      addedMonth: l.addedMonth || ''
+      addedMonth: l.addedMonth || '',
+      ghlKeyword: l.ghlKeyword || '',  // v7.24
+      crm33Code: l.crm33Code || ''     // v7.24
     }));
     const payload = {
       action: 'pushAll',
