@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.33</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.37</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.33</div>
+      <div class="nav-brand-version">v7.37</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12826,7 +12826,15 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-card .sub{font-size:11px;color:var(--gray);margin-top:4px;}
 #pnlRoot .pnl-card .pbar{height:6px;border-radius:99px;background:#eeedf6;margin-top:9px;overflow:hidden;}
 #pnlRoot .pnl-card .pbar>i{display:block;height:100%;border-radius:99px;background:var(--purple);}
-#pnlRoot .pnl-scroll{overflow:auto;max-height:560px;border:1px solid #ececf1;border-radius:12px;}
+#pnlRoot .pnl-scroll{overflow:auto;max-height:calc(100vh - 230px);min-height:300px;border:1px solid #ececf1;border-radius:12px;}
+@media(min-width:768px){
+  body:has(#page-pnl.active) .main{padding-bottom:16px!important;}
+  #pnlRoot{height:calc(100vh - 32px);display:flex;flex-direction:column;}
+  #pnlRoot .pnl-scroll{flex:1 1 auto;max-height:none;min-height:120px;}
+}
+@media(max-width:767px){ /* 手机版 P&L: 只留卡片, 表格太挤先隐藏 (Employees 名册不受影响) */
+  #pnlRoot .pnl-scroll-main,#pnlRoot .pnl-foot-note{display:none!important;}
+}
 #pnlRoot table.pnl-t{border-collapse:separate;border-spacing:0;font-size:11.5px;white-space:nowrap;width:100%;}
 #pnlRoot .pnl-t th,#pnlRoot .pnl-t td{padding:7px 10px;text-align:right;border-bottom:.5px solid #f3f3f7;font-variant-numeric:tabular-nums;}
 #pnlRoot .pnl-t thead th{height:32px;box-sizing:border-box;font-size:9.5px;font-weight:500;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;background:var(--surface);border-bottom:1px solid #e6e6ee;position:sticky;top:0;z-index:6;text-align:center;}
@@ -12877,7 +12885,7 @@ function _pnlInjectCss() {
 #pnlRoot .emp-legend span{display:inline-flex;align-items:center;gap:5px;}
 #pnlRoot .bdot{width:9px;height:9px;border-radius:3px;display:inline-block;}
 #pnlRoot .emp-t th,#pnlRoot .emp-t td{text-align:center;}
-#pnlRoot .emp-t th.l,#pnlRoot .emp-t td.l{text-align:left;}
+#pnlRoot .emp-t th.l,#pnlRoot .emp-t td.l{text-align:left;width:100%;}
 #pnlRoot .emp-t th.r,#pnlRoot .emp-t td.r{text-align:right;font-variant-numeric:tabular-nums;}
 #pnlRoot .emp-t td.l .nmrow{display:flex;align-items:center;gap:6px;}
 #pnlRoot .emp-t td.l .nm{font-weight:600;font-size:13px;}
@@ -12938,7 +12946,7 @@ function renderPnL() {
   const companySales = _pnlSum(pnlAutoRows('all', year).sales, idx);            // 全公司营业额(各店之和)
   const netCol = N < 0 ? _PNL_RED : _PNL_BLUE;
   const card = (acc, lbl, valHtml, sub, bar) => `<div class="pnl-card"><div class="acc" style="background:${acc}"></div><div class="pd">${e(P.nm)}</div><div class="lbl">${lbl}</div><div class="val">${valHtml}</div>${bar || ''}<div class="sub">${sub}</div></div>`;
-  const cardsHtml = card('#1ea672', 'Net profit', `<span style="color:${netCol}">RM ${_pnlFmt(N)}</span>`, (S ? Math.round(N / S * 100) : 0) + '% margin')
+  const cardsHtml = card('#1ea672', 'Net profit', `<span style="color:${netCol}">RM ${_pnlFmt(N)}</span>`, `${(S ? Math.round(N / S * 100) : 0)}% margin<br>Revenue RM ${_pnlFmt(S)}`)
     + card('#7132f5', 'Sales vs target', (T ? Math.round(S / T * 100) : 0) + '%', `RM ${_pnlFmt(S)} / ${_pnlFmt(T)}`, `<div class="pbar"><i style="width:${T ? Math.min(100, Math.round(S / T * 100)) : 0}%"></i></div>`)
     + card('#e08a1e', 'Manpower + Commission', 'RM ' + _pnlFmt(manComm), (S ? Math.round(manComm / S * 100) : 0) + '% of sales')
     + card('#1098ad', 'Management expenses', 'RM ' + _pnlFmt(mgmtExp), (companySales ? Math.round(mgmtExp / companySales * 100) : 0) + '% of total sales')
@@ -13040,7 +13048,7 @@ function renderPnL() {
       + (editable ? _pnlSaveBtnHtml() : '')
       + `</div></div>`
     + `<div class="pnl-cards">` + cardsHtml + `</div>`
-    + `<div class="pnl-scroll"><table class="pnl-t">` + head + b + `</table></div>`
+    + `<div class="pnl-scroll pnl-scroll-main"><table class="pnl-t">` + head + b + `</table></div>`
     + (editable ? `<div class="pnl-foot-note">Suggested target sales = total break-even × (outlet expenses ÷ total outlet expenses)</div>` : `<div class="pnl-foot-note">All outlets is a read-only roll-up of every store minus Mgmt Office.</div>`);
   const _newScroll = root.querySelector('.pnl-scroll');
   if (_newScroll) { _newScroll.scrollTop = _sTop; _newScroll.scrollLeft = _sLeft; }
