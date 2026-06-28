@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.45</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.46</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.45</div>
+      <div class="nav-brand-version">v7.46</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12667,7 +12667,7 @@ const _PNL_PERIODS = { full: { nm: 'Full year', idx: [0,1,2,3,4,5,6,7,8,9,10,11]
   Q3: { nm: 'Q3', idx: [6,7,8], sub: 'Q3' }, Q4: { nm: 'Q4', idx: [9,10,11], sub: 'Q4' } };
 const _PNL_BLUE = '#1763d6', _PNL_RED = '#d4153b';
 function _pnlFmt(n) { return isFinite(n) ? Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'; }
-function _pnlPct(v, s) { return s ? Math.round(v / s * 100) + '%' : '—'; }
+function _pnlPct(v, s) { return (s ? (v / s * 100) : 0).toFixed(2) + '%'; }
 function _pnlSum(a, idx) { return idx.reduce((t, i) => t + (a[i] || 0), 0); }
 function _pnlAvg(a, idx) { return _pnlSum(a, idx) / idx.length; }
 function _pnlStoreList() {
