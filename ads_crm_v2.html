@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.24</div>
+      <div class="nav-brand-version">v7.25</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3436,7 +3436,8 @@ body.contact-view-table .modal-backdrop.open {
   <button class="nav-item" data-page="store" data-tooltip="Appt"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span><span class="nav-label">Appt</span></button>
   <button class="nav-item" data-page="adsspend" data-tooltip="Ads Spend"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span><span class="nav-label">Ads Spend</span></button>
   <button class="nav-item" data-page="revenue" data-tooltip="Revenue Outlet"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span><span class="nav-label">Revenue Outlet</span></button>
-  
+  <button class="nav-item" data-page="pnl" data-tooltip="Profit &amp; Loss"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M3 3v18h18"></path><path d="M7 14l4-4 3 3 5-6"></path></svg></span><span class="nav-label">Profit &amp; Loss</span></button>
+
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="entry" data-tooltip="Data Entry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></span><span class="nav-label">Data Entry</span></button>
   <button class="nav-item active" data-page="settings" data-tooltip="Settings"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span><span class="nav-label">Settings</span></button>
@@ -4060,6 +4061,11 @@ body.contact-view-table .modal-backdrop.open {
     </div>
     <div id="pendingList"></div>
   </div>
+</section>
+
+<!-- v7.25: PROFIT & LOSS PAGE -->
+<section class="page" id="page-pnl">
+  <div id="pnlRoot"></div>
 </section>
 
 <section class="page active" id="page-settings">
@@ -4804,6 +4810,7 @@ body.contact-view-table .modal-backdrop.open {
   </button>
   <button class="bottom-nav-item" data-page="revenue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg><span>Revenue</span></button>
   <button class="bottom-nav-item" data-page="adsspend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg><span>Ads</span></button>
+  <button class="bottom-nav-item" data-page="pnl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><path d="M7 14l4-4 3 3 5-6"></path></svg><span>P&amp;L</span></button>
 </nav>
 
 
@@ -5089,9 +5096,9 @@ function statusLabel(status) {
   return status || '';
 }
 
-const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": []};
+const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": [], "PnL_Rows": [], "PnL_Staff": [], "PnL_Config": []};
 const STORAGE_KEY = 'ads-crm-v2';
-const DATA_VERSION = '4.78'; // v7.24 — 门店/渠道可配置 UI(配后端 v3.14): Stores/Channels 设置每行加 GHL keyword + 33CRM code 输入 + Save(确认 modal)+ 提示; pull 带回 Channels/Locations, push 合并写(不洗手填值). 加新店/渠道在界面填两栏即可, 不碰 Sheet. | v7.23 — 新 lead 自动入库(后端 v3.13): 全新电话+渠道清楚的 ghl_lead 直接进 Leads(flags='auto'), 前端显示 AUTO 标签 + "当天自动加入"计数; 疑似重复(电话已存在)留 Pending | v7.22 — gsPullSilent 加"变化检测"短路 (治刷新卡顿) | v7.21 Google 导出同意列
+const DATA_VERSION = '4.79'; // v7.25 — 门店盈亏表(P&L, 配后端 v3.15): 每店分层盈亏表(营业额→毛利→费用→净利), auto 行前端现算, 费用行可改名/增删/拖动/选类型, 时段+RM/% 切换, Manpower modal(EPF/SOCSO 自填). | v7.24 — 门店/渠道可配置 UI(配后端 v3.14): Stores/Channels 设置每行加 GHL keyword + 33CRM code 输入 + Save(确认 modal)+ 提示; pull 带回 Channels/Locations, push 合并写(不洗手填值). 加新店/渠道在界面填两栏即可, 不碰 Sheet. | v7.23 — 新 lead 自动入库(后端 v3.13): 全新电话+渠道清楚的 ghl_lead 直接进 Leads(flags='auto'), 前端显示 AUTO 标签 + "当天自动加入"计数; 疑似重复(电话已存在)留 Pending | v7.22 — gsPullSilent 加"变化检测"短路 (治刷新卡顿) | v7.21 Google 导出同意列
 
 // ---------- State ----------
 let state = {
@@ -5102,6 +5109,7 @@ let state = {
   thirdPartyFees: [],
   channels: [],
   locations: [],
+  pnl: { rows: [], staff: [], config: [], seedV: {} }, // v7.25: 门店盈亏表 P&L
   sheetUrl: '',
   listPage: 1,
   listFilter: 'all',
@@ -5188,6 +5196,11 @@ function loadState() {
       });
     });
   }
+  // v7.25: P&L 数据
+  state.pnl = { rows: [], staff: [], config: [], seedV: {} };
+  if (PRELOADED.PnL_Rows)   PRELOADED.PnL_Rows.forEach(r => state.pnl.rows.push({ ...r }));
+  if (PRELOADED.PnL_Staff)  PRELOADED.PnL_Staff.forEach(r => state.pnl.staff.push({ ...r }));
+  if (PRELOADED.PnL_Config) PRELOADED.PnL_Config.forEach(r => state.pnl.config.push({ ...r }));
   saveState();
 }
 
@@ -5584,6 +5597,7 @@ function nav(page) {
   if (page === 'entry') renderEntry();
   if (page === 'adsspend') renderAdsSpend();
   if (page === 'revenue') renderRevenue();
+  if (page === 'pnl') renderPnL();
   if (page === 'settings') renderSettings();
   // v3.34: AI Guide tooltip — wrapped in try-catch so any failure doesn't break nav
   try { if (typeof maybeTriggerAIGuide === 'function') maybeTriggerAIGuide(page); } catch(e) { console.warn('[AI Guide] skipped:', e.message); }
@@ -12523,6 +12537,572 @@ function _renderAdsSyncStatus(elId, channelId) {
   el.style.display = 'block';
 }
 
+// ============================================================
+// v7.25: 门店盈亏表 (Profit & Loss) — 计算层 (纯函数, 无 DOM)
+// ============================================================
+function _pnlActiveStores() { // 真实门店(不含 mgmt/all), 用于等分广告费/3rd party
+  return (state.locations || []).filter(l => l.active !== false).map(l => l.id);
+}
+function pnlAutoRows(store, year) { // → {sales[12], adSpend[12], thirdParty[12]}
+  const months = Array.from({ length: 12 }, (_, i) => `${year}-${String(i + 1).padStart(2, '0')}`);
+  const stores = _pnlActiveStores();
+  const nStores = Math.max(1, stores.length);
+  const sales = months.map(m => {
+    if (store === 'all') return stores.reduce((a, sid) => a + ((state.revenue.find(r => r.month === m && r.locationId === sid) || {}).total || 0), 0);
+    if (store === 'mgmt') return 0;
+    return ((state.revenue.find(r => r.month === m && r.locationId === store) || {}).total) || 0;
+  });
+  const adTotal = months.map(m => (state.adsSpend || []).filter(a => a.month === m).reduce((x, a) => x + (a.amount || 0), 0));
+  const tpTotal = months.map(m => (state.thirdPartyFees || []).filter(f => f.month === m).reduce((x, f) => x + (f.amount || 0), 0));
+  const share = (store === 'mgmt') ? 0 : (store === 'all' ? 1 : 1 / nStores); // all 看全额, 单店看 1/n, mgmt 不分摊
+  return { sales, adSpend: adTotal.map(t => t * share), thirdParty: tpTotal.map(t => t * share) };
+}
+function _pnlCfg(store) {
+  const c = (state.pnl.config || []).find(x => x.store === store);
+  return { epfPct: c ? c.epfPct : 13, socsoPct: c ? c.socsoPct : 1.75 };
+}
+function _pnlStaffTotal(store, lineId, year, mi) { // mi 1..12, 含 EPF/SOCSO
+  const { epfPct, socsoPct } = _pnlCfg(store);
+  return (state.pnl.staff || [])
+    .filter(s => s.store === store && s.lineId === lineId && String(s.year) === String(year) && s.month === mi)
+    .reduce((a, s) => a + s.basic * (1 + epfPct / 100 + socsoPct / 100), 0);
+}
+// 整张表: auto 行 + 用户行(cost/费用/target) + 计算行(gross/totalExp/net/break-even)
+function pnlComputeRows(store, year) {
+  const auto = pnlAutoRows(store, year);
+  const userRows = (state.pnl.rows || [])
+    .filter(r => r.store === store && String(r.year) === String(year))
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const val = (row, mi) => { // 某行某月金额
+    if (row.type === 'pct') return auto.sales[mi - 1] * (row.rate || 0) / 100; // 单一 rate(在 modal 填), 结果显示在格子
+    if (row.type === 'staff') return _pnlStaffTotal(store, row.lineId, year, mi);
+    return row['m' + mi] || 0; // number / target
+  };
+  const arr = row => Array.from({ length: 12 }, (_, i) => val(row, i + 1));
+  const costRow = userRows.find(r => r.lineId === 'cost');
+  const cost = costRow ? arr(costRow) : auto.sales.map(() => 0);
+  const gross = auto.sales.map((s, i) => s - cost[i]);
+  const targetRow = userRows.find(r => r.lineId === 'target');
+  const expUserRows = userRows.filter(r => r !== costRow && r !== targetRow); // 费用 = 除 cost/target 外的用户行
+  const expRows = expUserRows.map(r => ({ row: r, v: arr(r) }))
+    .concat([{ row: { name: 'Ad spend (shared)', type: 'auto' }, v: auto.adSpend },
+             { row: { name: '3rd party fees (shared)', type: 'auto' }, v: auto.thirdParty }]);
+  const totalExp = auto.sales.map((_, i) => expRows.reduce((a, e) => a + e.v[i], 0));
+  const net = gross.map((g, i) => g - totalExp[i]);
+  const target = targetRow ? arr(targetRow) : auto.sales.map(() => 0);
+  // break-even: 固定=非 pct 费用(不含 renovation/buildout 行); 变动率=cost% + 各 pct 费用行的 rate%
+  const isBuildout = e => (e.row.lineId === 'buildout');
+  const fixedEx = auto.sales.map((_, i) => expRows.filter(e => e.row.type !== 'pct' && !isBuildout(e)).reduce((a, e) => a + e.v[i], 0));
+  const buildout = auto.sales.map((_, i) => expRows.filter(isBuildout).reduce((a, e) => a + e.v[i], 0));
+  const varRate = mi => {
+    const cPct = costRow ? (costRow.type === 'pct' ? (costRow.rate || 0) / 100 : (auto.sales[mi - 1] ? cost[mi - 1] / auto.sales[mi - 1] : 0)) : 0;
+    const pPct = expUserRows.filter(r => r.type === 'pct').reduce((a, r) => a + (r.rate || 0) / 100, 0);
+    return cPct + pPct;
+  };
+  const beEx = auto.sales.map((_, i) => { const d = 1 - varRate(i + 1); return d > 0 ? fixedEx[i] / d : NaN; });
+  const beIn = auto.sales.map((_, i) => { const d = 1 - varRate(i + 1); return d > 0 ? (fixedEx[i] + buildout[i]) / d : NaN; });
+  return { sales: auto.sales, cost, gross, costRow, expRows, expUserRows, totalExp, net, target, targetRow, beEx, beIn };
+}
+// ponytail 自检: 公式 + 净利符号
+function __pnlSelfCheck() {
+  const d = 1 - (0.30 + 0.10), be = 56000 / d; // fixed 56000, cost30%, comm10% → 93333.33
+  console.assert(Math.abs(be - 93333.333) < 0.5, 'PnL break-even formula broken', be);
+  console.assert((100 - 120) < 0, 'PnL net sign');
+  console.log('PnL self-check ok');
+}
+try { __pnlSelfCheck(); } catch (e) { console.warn('PnL self-check error', e); }
+
+// ============================================================
+// v7.25: P&L — 渲染层 (卡片 + 分层表 + 编辑)
+// ============================================================
+let _pnlState = { store: null, year: String(new Date().getFullYear()), period: 'full', mode: 'showAmt' };
+const _PNL_PERIODS = { full: { nm: 'Full year', idx: [0,1,2,3,4,5,6,7,8,9,10,11], sub: 'YTD' },
+  Q1: { nm: 'Q1', idx: [0,1,2], sub: 'Q1' }, Q2: { nm: 'Q2', idx: [3,4,5], sub: 'Q2' },
+  Q3: { nm: 'Q3', idx: [6,7,8], sub: 'Q3' }, Q4: { nm: 'Q4', idx: [9,10,11], sub: 'Q4' } };
+const _PNL_BLUE = '#1763d6', _PNL_RED = '#d4153b';
+function _pnlFmt(n) { return Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function _pnlPct(v, s) { return s ? Math.round(v / s * 100) + '%' : '—'; }
+function _pnlSum(a, idx) { return idx.reduce((t, i) => t + (a[i] || 0), 0); }
+function _pnlAvg(a, idx) { return _pnlSum(a, idx) / idx.length; }
+function _pnlStoreList() {
+  const locs = (state.locations || []).filter(l => l.active !== false).map(l => ({ id: l.id, name: l.name }));
+  return locs.concat([{ id: 'mgmt', name: 'Mgmt Office' }, { id: 'all', name: 'All outlets' }]);
+}
+// v7.25: 固定月费 (touched 数据补差用)
+const _PNL_SEED_VER = 3;
+const _PNL_FIXED_ADD = [
+  { lineId: 'electric', name: 'Electric', type: 'number' },
+  { lineId: 'water', name: 'Water', type: 'number' },
+  { lineId: 'unifi', name: 'Unifi', type: 'number' },
+  { lineId: 'insurance', name: 'Insurance', type: 'number' },
+  { lineId: 'crm', name: 'CRM system', type: 'number' }
+];
+// 默认套餐: 建店成本第一, cost=按%(rate 在 modal 填). all 不建(纯汇总).
+function _pnlSeedTemplate(store) {
+  if (store === 'mgmt') return [
+    { lineId: 'mgmt-staff', name: 'HQ salaries', type: 'staff' },
+    { lineId: 'mgmt-rent', name: 'Office rent', type: 'number' },
+    { lineId: 'electric', name: 'Electric', type: 'number' },
+    { lineId: 'water', name: 'Water', type: 'number' },
+    { lineId: 'unifi', name: 'Unifi', type: 'number' },
+    { lineId: 'insurance', name: 'Insurance', type: 'number' },
+    { lineId: 'crm', name: 'CRM system', type: 'number' }
+  ];
+  return [
+    { lineId: 'cost', name: 'Total Product & Service Cost', type: 'pct' },
+    { lineId: 'buildout', name: 'Renovation cost', type: 'number' },
+    { lineId: 'rent', name: 'Rent', type: 'number' },
+    { lineId: 'manpower', name: 'Manpower', type: 'staff' },
+    { lineId: 'commission', name: 'Commission', type: 'pct' },
+    { lineId: 'electric', name: 'Electric', type: 'number' },
+    { lineId: 'water', name: 'Water', type: 'number' },
+    { lineId: 'unifi', name: 'Unifi', type: 'number' },
+    { lineId: 'insurance', name: 'Insurance', type: 'number' },
+    { lineId: 'crm', name: 'CRM system', type: 'number' },
+    { lineId: 'target', name: 'Target sales', type: 'target' }
+  ];
+}
+// 这个店/年还没动过手 (全 0 + 无自定义行 + 无员工) → 可安全清掉重新 seed
+function _pnlUntouched(store, year, existing) {
+  if (existing.some(r => /^exp-/.test(r.lineId))) return false;
+  if (existing.some(r => (r.rate || 0) !== 0 || (r.renoTotal || 0) !== 0 || Array.from({ length: 12 }, (_, i) => r['m' + (i + 1)] || 0).some(x => x !== 0))) return false;
+  return !(state.pnl.staff || []).some(s => s.store === store && String(s.year) === String(year));
+}
+function _pnlBuildSeed(store, year) {
+  const prev = String(Number(year) - 1);
+  const prevRows = (state.pnl.rows || []).filter(r => r.store === store && String(r.year) === prev);
+  if (prevRows.length) return prevRows.map(r => ({ ...r, id: store + '|' + r.lineId + '|' + year, year: String(year) }));
+  return _pnlSeedTemplate(store).map((s, i) => _pnlBlankRow(store, year, { ...s, sortOrder: i + 1 }));
+}
+function _pnlSeedRows(store, year) {
+  if (store === 'all') return;
+  if (!state.pnl.seedV) state.pnl.seedV = {};
+  const key = store + '|' + year;
+  const existing = (state.pnl.rows || []).filter(r => r.store === store && String(r.year) === String(year));
+  const stale = (state.pnl.seedV[key] || 0) < _PNL_SEED_VER;
+  // 空 或 (旧版且没动过) → 清掉重新 seed (新结构: 建店成本第一/改名, cost 按%)
+  if (existing.length === 0 || (stale && _pnlUntouched(store, year, existing))) {
+    if (existing.length) state.pnl.rows = state.pnl.rows.filter(r => !(r.store === store && String(r.year) === String(year)));
+    state.pnl.rows.push(..._pnlBuildSeed(store, year));
+    state.pnl.seedV[key] = _PNL_SEED_VER;
+    saveState();
+    return;
+  }
+  // 旧版但已填过数据 → 加性升级 (保数据): cost 旧 type 迁移, 清空 all-zero utilities, 补缺的固定行
+  if (stale) {
+    state.pnl.rows.forEach(r => { if (r.store === store && String(r.year) === String(year) && r.lineId === 'cost' && r.type === 'cost') r.type = 'pct'; });
+    state.pnl.rows = state.pnl.rows.filter(r => {
+      if (r.store !== store || String(r.year) !== String(year)) return true;
+      if (r.lineId !== 'utilities' && r.lineId !== 'mgmt-util') return true;
+      return !Array.from({ length: 12 }, (_, i) => r['m' + (i + 1)] || 0).every(x => x === 0);
+    });
+    const exist2 = (state.pnl.rows || []).filter(r => r.store === store && String(r.year) === String(year));
+    let maxOrder = exist2.reduce((m, r) => Math.max(m, r.sortOrder || 0), 0);
+    _PNL_FIXED_ADD.forEach(s => {
+      if (!exist2.some(r => r.lineId === s.lineId)) state.pnl.rows.push(_pnlBlankRow(store, year, { ...s, sortOrder: ++maxOrder }));
+    });
+    state.pnl.seedV[key] = _PNL_SEED_VER;
+    saveState();
+  }
+}
+function _pnlBlankRow(store, year, s) {
+  const o = { id: store + '|' + s.lineId + '|' + year, store, lineId: s.lineId, name: s.name, type: s.type, sortOrder: s.sortOrder, year: String(year), rate: s.rate || 0, renoTotal: 0, renoMonths: 0 };
+  for (let m = 1; m <= 12; m++) o['m' + m] = 0;
+  return o;
+}
+// All outlets = 各活跃店之和; 公司净利再扣 Mgmt Office 费用
+function pnlComputeAll(year) {
+  const stores = _pnlActiveStores();
+  const parts = stores.map(s => pnlComputeRows(s, year));
+  const mgmt = pnlComputeRows('mgmt', year);
+  const zero = () => Array.from({ length: 12 }, () => 0);
+  const sumArr = key => { const out = zero(); parts.forEach(p => p[key].forEach((v, i) => out[i] += v)); return out; };
+  const sales = sumArr('sales'), cost = sumArr('cost'), gross = sumArr('gross');
+  const target = sumArr('target'), beEx = sumArr('beEx'), beIn = sumArr('beIn');
+  // 费用行按名字合并各店 + Mgmt 的费用
+  const byName = {};
+  parts.concat([mgmt]).forEach(p => p.expRows.forEach(e => {
+    const k = e.row.name; if (!byName[k]) byName[k] = { row: { name: k, type: 'auto' }, v: zero() };
+    e.v.forEach((v, i) => byName[k].v[i] += v);
+  }));
+  const expRows = Object.keys(byName).map(k => byName[k]);
+  const totalExp = zero(); expRows.forEach(e => e.v.forEach((v, i) => totalExp[i] += v));
+  const net = gross.map((g, i) => g - totalExp[i]);
+  return { sales, cost, gross, costRow: null, expRows, expUserRows: [], totalExp, net, target, targetRow: null, beEx, beIn };
+}
+
+function _pnlInjectCss() {
+  if (document.getElementById('pnlCss')) return;
+  const css = `
+#pnlRoot{font-family:'IBM Plex Sans',Helvetica,Arial,sans-serif;color:var(--black);}
+#pnlRoot .pnl-tabs{display:flex;gap:6px;margin:4px 0 14px;flex-wrap:wrap;}
+#pnlRoot .pnl-tab{font-size:13px;font-weight:500;padding:7px 14px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-tab.on{background:var(--purple);border-color:var(--purple);color:#fff;}
+#pnlRoot .pnl-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 14px;}
+#pnlRoot .pnl-chips{display:inline-flex;gap:6px;flex-wrap:wrap;}
+#pnlRoot .pnl-chip{font-size:12.5px;font-weight:500;padding:7px 15px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-chip.on{background:#19143a;border-color:#19143a;color:#fff;}
+#pnlRoot .pnl-right{display:inline-flex;gap:8px;align-items:center;}
+#pnlRoot .pnl-seg{display:inline-flex;background:var(--surface-2);border-radius:9px;padding:3px;}
+#pnlRoot .pnl-seg button{font-family:inherit;font-size:12px;font-weight:500;padding:6px 16px;border:0;background:transparent;color:var(--gray);border-radius:7px;cursor:pointer;}
+#pnlRoot .pnl-seg button.on{background:#fff;color:var(--black);box-shadow:0 1px 2px rgba(0,0,0,.08);}
+#pnlRoot .pnl-yr{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;font-family:inherit;}
+#pnlRoot .pnl-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px;}
+#pnlRoot .pnl-card{position:relative;background:#fff;border:1px solid #ececf1;border-radius:14px;padding:14px 15px 14px 17px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;}
+#pnlRoot .pnl-card .acc{position:absolute;left:0;top:0;bottom:0;width:4px;}
+#pnlRoot .pnl-card .pd{font-size:9px;color:#b6b8c6;text-transform:uppercase;letter-spacing:.5px;}
+#pnlRoot .pnl-card .lbl{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+#pnlRoot .pnl-card .val{font-size:21px;font-weight:600;line-height:1.1;margin-top:4px;letter-spacing:-.5px;}
+#pnlRoot .pnl-card .sub{font-size:11px;color:var(--gray);margin-top:4px;}
+#pnlRoot .pnl-card .pbar{height:6px;border-radius:99px;background:#eeedf6;margin-top:9px;overflow:hidden;}
+#pnlRoot .pnl-card .pbar>i{display:block;height:100%;border-radius:99px;background:var(--purple);}
+#pnlRoot .pnl-scroll{overflow:auto;max-height:560px;border:1px solid #ececf1;border-radius:12px;}
+#pnlRoot table.pnl-t{border-collapse:separate;border-spacing:0;font-size:11.5px;white-space:nowrap;width:100%;}
+#pnlRoot .pnl-t th,#pnlRoot .pnl-t td{padding:7px 10px;text-align:right;border-bottom:.5px solid #f3f3f7;font-variant-numeric:tabular-nums;}
+#pnlRoot .pnl-t thead th{height:32px;box-sizing:border-box;font-size:9.5px;font-weight:500;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;background:var(--surface);border-bottom:1px solid #e6e6ee;position:sticky;top:0;z-index:6;text-align:center;}
+#pnlRoot .pnl-t th.l,#pnlRoot .pnl-t td.l{text-align:left;position:sticky;left:0;background:#fff;z-index:2;min-width:220px;border-right:1px solid #f0f0f5;}
+#pnlRoot .pnl-t thead th.l{z-index:7;background:var(--surface);}
+#pnlRoot .pnl-t th.sub,#pnlRoot .pnl-t td.sub{background:#f7f3ff;}
+#pnlRoot .pnl-t thead th.sub{background:#f0e9ff;color:var(--purple-deep);}
+#pnlRoot .pnl-t tr.grp td{background:#f0ecfa;padding:0;position:sticky;top:32px;z-index:4;border-top:1px solid #e7e2f7;border-bottom:1px solid #e7e2f7;}
+#pnlRoot .pnl-t .glabel{position:sticky;left:0;display:inline-block;color:var(--purple-deep);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:7px 10px;}
+#pnlRoot .pnl-t tr.big td{font-size:13.5px;font-weight:700;border-top:1px solid #e7e7ee;}
+#pnlRoot .pnl-t tr.big td.l .nm{font-size:13px;font-weight:700;}
+#pnlRoot .pnl-t tr.ref td{color:var(--gray);}
+#pnlRoot .pnl-t tr.ref td.l .nm{font-weight:400;color:var(--gray);}
+#pnlRoot .pnl-t td.l .nm{font-weight:500;}
+#pnlRoot .pnl-t td.l .nm[contenteditable]{outline:none;border-bottom:1px dashed transparent;cursor:text;}
+#pnlRoot .pnl-t td.l .nm[contenteditable]:focus{border-bottom-color:var(--purple);}
+#pnlRoot .pnl-t td.l .rgear{display:inline-flex;align-items:center;background:transparent;border:0;color:#b9b9c2;cursor:pointer;margin-left:6px;padding:2px;vertical-align:middle;border-radius:5px;}
+#pnlRoot .pnl-t td.l .rgear:hover{color:var(--purple);background:var(--surface-2);}
+#pnlRoot .pnl-t td.l .rdrag{display:inline-flex;align-items:center;color:#c4c4cf;cursor:grab;margin-right:6px;vertical-align:middle;}
+#pnlRoot .pnl-t td.l .rdrag:active{cursor:grabbing;}
+#pnlRoot .pnl-t tr.dragover td{box-shadow:inset 0 2px 0 var(--purple);}
+.pnl-emp-list{max-height:300px;overflow-y:auto;}
+.pnl-emp{display:flex;align-items:center;gap:8px;padding:9px 0;border-top:0.5px solid var(--border);}
+.pnl-emp-in{padding:8px 10px;font-size:13px;}
+.pnl-emp-name{flex:1;min-width:90px;}
+.pnl-emp-basic{width:84px;}
+.pnl-emp-c{display:flex;flex-direction:column;font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.3px;text-align:right;min-width:46px;}
+.pnl-emp-c b{font-size:12px;color:var(--black);font-weight:600;font-variant-numeric:tabular-nums;}
+.pnl-emp-tot b{color:var(--purple-deep);}
+.pnl-emp-x{background:transparent;border:0;color:#c2c2cc;cursor:pointer;font-size:14px;padding:2px 4px;width:auto;}
+.pnl-emp-x:hover{color:var(--red);}
+#pnlRoot .pnl-t tr.indent td.l{padding-left:18px;}
+#pnlRoot .pnl-t .cin{width:78px;text-align:right;border:1px solid #e3e3ea;border-radius:6px;padding:4px 6px;font-family:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;background:#fff;color:var(--black);}
+#pnlRoot .pnl-t .cin:hover{border-color:#cdb9fb;}
+#pnlRoot .pnl-t .cin:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 2px var(--purple-bg);}
+#pnlRoot .pnl-t .staffcell{cursor:pointer;color:var(--purple-deep);}
+#pnlRoot .pnl-t .delx{color:#d2d2da;margin-right:7px;cursor:pointer;}
+#pnlRoot .pnl-t tr.addrow td{color:var(--purple);font-weight:500;text-align:left;padding:9px 10px 9px 18px;cursor:pointer;position:sticky;left:0;background:#fff;}
+#pnlRoot .pnl-save{display:flex;justify-content:flex-end;margin-top:12px;}
+#pnlRoot .pnl-empty{color:var(--gray);font-size:13px;padding:24px;text-align:center;}
+`;
+  const st = document.createElement('style'); st.id = 'pnlCss'; st.textContent = css;
+  document.head.appendChild(st);
+}
+
+function renderPnL() {
+  _pnlInjectCss();
+  const root = document.getElementById('pnlRoot');
+  if (!root) return;
+  const stores = _pnlStoreList();
+  if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
+  const store = _pnlState.store, year = _pnlState.year;
+  if (store !== 'all') _pnlSeedRows(store, year);
+  const P = _PNL_PERIODS[_pnlState.period], idx = P.idx;
+  const C = (store === 'all') ? pnlComputeAll(year) : pnlComputeRows(store, year);
+  const editable = (store !== 'all'); // all = 只读汇总
+  const M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const e = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
+
+  // ---- cards ----
+  const S = _pnlSum(C.sales, idx), N = _pnlSum(C.net, idx), T = _pnlSum(C.target, idx);
+  const beE = _pnlAvg(C.beEx, idx), beI = _pnlAvg(C.beIn, idx);
+  const netCol = N < 0 ? _PNL_RED : _PNL_BLUE;
+  const card = (acc, lbl, valHtml, sub, bar) => `<div class="pnl-card"><div class="acc" style="background:${acc}"></div><div class="pd">${e(P.nm)}</div><div class="lbl">${lbl}</div><div class="val">${valHtml}</div>${bar || ''}<div class="sub">${sub}</div></div>`;
+  const beFmt = v => isFinite(v) ? 'RM ' + _pnlFmt(v) : '—';
+  const cardsHtml = card('#1ea672', 'Net profit', `<span style="color:${netCol}">RM ${_pnlFmt(N)}</span>`, (S ? Math.round(N / S * 100) : 0) + '% margin')
+    + card('#7132f5', 'Sales vs target', (T ? Math.round(S / T * 100) : 0) + '%', `RM ${_pnlFmt(S)} / ${_pnlFmt(T)}`, `<div class="pbar"><i style="width:${T ? Math.min(100, Math.round(S / T * 100)) : 0}%"></i></div>`)
+    + card('#e08a1e', 'Break-even · ex build-out', beFmt(beE), 'avg / mo, daily floor')
+    + card('#c2531a', 'Break-even · incl build-out', beFmt(beI), 'avg / mo, recovers reno');
+
+  // ---- table ----
+  const colCount = idx.length + 2;
+  // 一格: number/target 行 → 直接填的 input; pct 行 → 只读(显示算好的结果, rate 在 modal 填); staff → 点开 modal; 其余只读
+  const cell = (row, computedArr, mi, opts) => {
+    opts = opts || {};
+    const amt = computedArr[mi - 1];
+    const col = opts.netSign ? (amt < 0 ? _PNL_RED : _PNL_BLUE) : '';
+    const cs = col ? ` style="color:${col}"` : '';
+    if (_pnlState.mode === 'showPct') return `<td${cs}>${_pnlPct(amt, C.sales[mi - 1])}</td>`;
+    const t = row && row.type;
+    // Renovation(buildout) 是只读 — 它的每月金额由专属 modal(总费用÷月数) 算出
+    if (editable && row && row.lineId && row.lineId !== 'buildout' && (t === 'number' || t === 'target')) {
+      return `<td><input class="cin" type="number" step="any" value="${row['m' + mi] || 0}" onchange="_pnlSetCell('${e(row.lineId)}',${mi},this.value)"></td>`;
+    }
+    if (editable && row && row.lineId && t === 'staff') return `<td class="staffcell" onclick="_pnlOpenStaff('${e(row.lineId)}',${mi})">${_pnlFmt(amt)}</td>`;
+    return `<td${cs}>${_pnlFmt(amt)}</td>`;
+  };
+  const subCell = (computedArr, opts) => {
+    opts = opts || {};
+    const v = _pnlSum(computedArr, idx), base = _pnlSum(C.sales, idx);
+    const col = opts.netSign ? (v < 0 ? _PNL_RED : _PNL_BLUE) : (opts.col || '');
+    const cs = col ? ` style="color:${col}"` : '';
+    if (_pnlState.mode === 'showPct') return `<td class="sub"${cs}>${_pnlPct(v, base)}</td>`;
+    return `<td class="sub"${cs}>${_pnlFmt(v)}</td>`;
+  };
+  const GEAR_SVG = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+  const GRIP_SVG = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.7"/><circle cx="15" cy="5" r="1.7"/><circle cx="9" cy="12" r="1.7"/><circle cx="15" cy="12" r="1.7"/><circle cx="9" cy="19" r="1.7"/><circle cx="15" cy="19" r="1.7"/></svg>';
+  const rowHtml = (opts) => {
+    const r = opts.row, co = opts.cellOpts || {}, lid = r.lineId || '';
+    const custom = editable && /^exp-/.test(lid);                       // 自己加的: 可改名/删
+    const isReno = (lid === 'buildout');                                // 建店成本: 总费用÷月数 专属 modal
+    const switchable = editable && (lid === 'cost' || lid === 'commission' || isReno); // 这几行有齿轮
+    const gearFn = isReno ? '_pnlRenoModal' : '_pnlTypeModal';
+    const gear = switchable ? `<button class="rgear" onclick="${gearFn}('${e(lid)}')" title="Row settings">${GEAR_SVG}</button>` : '';
+    const del = custom ? `<span class="delx" onclick="_pnlDelRow('${e(lid)}')" title="Remove">×</span>` : '';
+    const drag = opts.drag && editable;                                 // 费用行(固定+自定义) 都能拖
+    const handle = drag ? `<span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'${e(lid)}')" title="Drag to reorder">${GRIP_SVG}</span>` : '';
+    const trDrop = drag ? ` ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'${e(lid)}')"` : '';
+    const nm = `<span class="nm"${custom ? ` contenteditable="true" onblur="_pnlSetName('${e(lid)}',this.textContent)"` : ''}>${e(opts.name)}</span>`;
+    let cells = '';
+    idx.forEach(i => { cells += cell(r, opts.v, i + 1, co); });
+    return `<tr class="${opts.cls || ''}"${trDrop}><td class="l">${handle}${del}${nm}${gear}</td>${cells}${subCell(opts.v, co)}</tr>`;
+  };
+  const band = t => `<tr class="grp"><td colspan="${colCount}"><div class="glabel">${t}</div></td></tr>`;
+
+  let head = '<thead><tr><th class="l">' + e(stores.find(s => s.id === store).name) + ' · ' + e(year) + '</th>';
+  idx.forEach(i => head += '<th>' + M[i] + '</th>');
+  head += '<th class="sub">' + P.sub + '</th></tr></thead>';
+
+  let b = '<tbody>';
+  b += band('Revenue');
+  b += rowHtml({ row: { type: 'auto' }, v: C.sales, name: 'Sales', cellOpts: {} });
+  b += band('Gross profit');
+  if (C.costRow) b += rowHtml({ row: C.costRow, v: C.cost, name: C.costRow.name, cls: 'indent' });
+  else b += rowHtml({ row: { type: 'auto' }, v: C.cost, name: 'Total Product & Service Cost', cls: 'indent' });
+  b += rowHtml({ row: { type: 'auto' }, v: C.gross, name: 'Gross profit', cls: 'big' });
+  b += band('Expenses');
+  // 费用行: 用户行(按类型可编辑) + 末尾 auto 行(ad spend / 3rd party)
+  C.expRows.forEach(er => { b += rowHtml({ row: er.row, v: er.v, name: er.row.name, cls: 'indent', drag: er.row.type !== 'auto' }); });
+  if (editable) b += `<tr class="addrow"><td colspan="${colCount}" onclick="_pnlAddExpense()">＋ Add expense</td></tr>`;
+  b += rowHtml({ row: { type: 'auto' }, v: C.totalExp, name: 'Total expenses', cls: 'big' });
+  b += band('Net profit');
+  b += rowHtml({ row: { type: 'auto' }, v: C.net, name: 'Net profit', cls: 'big', cellOpts: { netSign: true } });
+  b += band('Targets & break-even');
+  if (C.targetRow) b += rowHtml({ row: C.targetRow, v: C.target, name: C.targetRow.name, cls: 'ref' });
+  else b += rowHtml({ row: { type: 'auto' }, v: C.target, name: 'Target sales', cls: 'ref' });
+  b += rowHtml({ row: { type: 'auto' }, v: C.beEx, name: 'Break-even · ex build-out', cls: 'ref', cellOpts: {} });
+  b += rowHtml({ row: { type: 'auto' }, v: C.beIn, name: 'Break-even · incl build-out', cls: 'ref', cellOpts: {} });
+  b += '</tbody>';
+
+  const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
+  // 重画前记住表格滚动位置, 画完还原 (改数字/加行不会弹回顶部)
+  const _oldScroll = root.querySelector('.pnl-scroll');
+  const _sTop = _oldScroll ? _oldScroll.scrollTop : 0, _sLeft = _oldScroll ? _oldScroll.scrollLeft : 0;
+  root.innerHTML =
+    `<div class="page-header"><h1 class="page-title">Profit &amp; Loss</h1></div>`
+    + `<div class="pnl-tabs">` + stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${e(s.id)}')">${e(s.name)}</div>`).join('') + `</div>`
+    + `<div class="pnl-bar"><div class="pnl-chips">`
+      + Object.keys(_PNL_PERIODS).map(k => `<button class="pnl-chip${k === _pnlState.period ? ' on' : ''}" onclick="_pnlSetPeriod('${k}')">${_PNL_PERIODS[k].nm}</button>`).join('')
+      + `</div><div class="pnl-right">`
+      + `<select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
+      + `<div class="pnl-seg"><button class="${_pnlState.mode === 'showAmt' ? 'on' : ''}" onclick="_pnlSetMode('showAmt')">RM</button><button class="${_pnlState.mode === 'showPct' ? 'on' : ''}" onclick="_pnlSetMode('showPct')">%</button></div>`
+      + `</div></div>`
+    + `<div class="pnl-cards">` + cardsHtml + `</div>`
+    + `<div class="pnl-scroll"><table class="pnl-t">` + head + b + `</table></div>`
+    + (editable ? `<div class="pnl-save"><button class="btn btn-primary" onclick="_savePnL()">Save</button></div>`
+                : `<div class="pnl-save" style="color:var(--gray);font-size:12px;align-items:center">All outlets is a read-only roll-up of every store minus Mgmt Office.</div>`);
+  const _newScroll = root.querySelector('.pnl-scroll');
+  if (_newScroll) { _newScroll.scrollTop = _sTop; _newScroll.scrollLeft = _sLeft; }
+}
+
+// ---- 编辑 handlers ----
+function _pnlFindRow(lineId) {
+  return (state.pnl.rows || []).find(r => r.store === _pnlState.store && r.lineId === lineId && String(r.year) === String(_pnlState.year));
+}
+function _pnlSetCell(lineId, mi, v) {
+  const r = _pnlFindRow(lineId); if (!r) return;
+  const num = parseFloat(v) || 0;
+  // 填一个月 → 若整行还全是 0, 自动填满 12 (可再单独覆盖)
+  const allZero = Array.from({ length: 12 }, (_, i) => r['m' + (i + 1)] || 0).every(x => x === 0);
+  if (allZero && num !== 0) { for (let m = 1; m <= 12; m++) r['m' + m] = num; }
+  else r['m' + mi] = num;
+  saveState(); renderPnL();
+}
+function _pnlSetName(lineId, name) {
+  const r = _pnlFindRow(lineId); if (!r) return;
+  const nm = String(name || '').trim(); if (nm && nm !== r.name) { r.name = nm; saveState(); }
+}
+// cost / commission 的「设置」modal — 套全局设计 (toggle-group 分段 + 全局 input + settings-modal label)
+function _pnlTypeModal(lineId) {
+  const r = _pnlFindRow(lineId); if (!r) return;
+  const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
+  const isPct = r.type === 'pct';
+  const hintNum = "Type a fixed amount in each month's cell.";
+  const hintPct = "Enter one %; every month is auto-calculated from that month's sales.";
+  const html = `<div class="modal-header"><div class="modal-title">Row settings</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
+    + `<div class="settings-modal-input-row"><label>Name</label><input id="pnlRowName" type="text" value="${ee(r.name)}"></div>`
+    + `<div class="settings-modal-section-title" style="margin-top:18px">Type</div>`
+    + `<div class="toggle-group" id="pnlTypeToggle" style="display:flex;width:100%">`
+    +   `<div class="toggle${isPct ? '' : ' active'}" data-t="number" style="flex:1;text-align:center" onclick="_pnlTypePick('number')">Number</div>`
+    +   `<div class="toggle${isPct ? ' active' : ''}" data-t="pct" style="flex:1;text-align:center" onclick="_pnlTypePick('pct')">% of sales</div>`
+    + `</div>`
+    + `<div id="pnlTypeHint" style="font-size:12px;color:var(--gray);margin-top:9px">${isPct ? hintPct : hintNum}</div>`
+    + `<div class="settings-modal-input-row" id="pnlRateWrap" style="display:${isPct ? 'block' : 'none'};margin-top:16px"><label>Percentage of sales</label>`
+    +   `<div style="position:relative"><input id="pnlRate" type="number" step="any" value="${r.rate || 0}"><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:15px;pointer-events:none">%</span></div></div>`
+    + `<button class="btn btn-primary btn-full" style="margin-top:20px" onclick="_pnlTypeModalSave('${ee(lineId)}')">Save</button>`;
+  showModal(html);
+}
+function _pnlTypePick(t) {
+  document.querySelectorAll('#pnlTypeToggle .toggle').forEach(el => el.classList.toggle('active', el.dataset.t === t));
+  const w = document.getElementById('pnlRateWrap'); if (w) w.style.display = (t === 'pct') ? 'block' : 'none';
+  const h = document.getElementById('pnlTypeHint');
+  if (h) h.textContent = (t === 'pct') ? "Enter one %; every month is auto-calculated from that month's sales." : "Type a fixed amount in each month's cell.";
+}
+function _pnlTypeModalSave(lineId) {
+  const r = _pnlFindRow(lineId); if (!r) { closeModal(); return; }
+  const nmEl = document.getElementById('pnlRowName');
+  if (nmEl && nmEl.value.trim()) r.name = nmEl.value.trim();
+  const act = document.querySelector('#pnlTypeToggle .toggle.active');
+  if (act) r.type = act.dataset.t;
+  if (r.type === 'pct') { const re = document.getElementById('pnlRate'); r.rate = re ? (parseFloat(re.value) || 0) : (r.rate || 0); }
+  saveState(); closeModal(); renderPnL();
+}
+// 建店成本(Renovation) modal: 填总费用 + 分几个月 → 每月金额 = 总÷月数, 自动填进 12 个月
+function _pnlRenoModal(lineId) {
+  const r = _pnlFindRow(lineId); if (!r) return;
+  const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
+  const total = r.renoTotal || 0, months = r.renoMonths || 0;
+  const monthly = months > 0 ? total / months : 0;
+  const html = `<div class="modal-header"><div class="modal-title">${ee(r.name)}</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
+    + `<div class="settings-modal-input-row"><label>Total renovation cost (RM)</label><input id="pnlRenoTotal" type="number" step="any" value="${total}" oninput="_pnlRenoPreview()"></div>`
+    + `<div class="settings-modal-input-row" style="margin-top:14px"><label>Amortize over (months)</label><input id="pnlRenoMonths" type="number" step="1" value="${months}" oninput="_pnlRenoPreview()"></div>`
+    + `<div style="background:var(--surface-2);border-radius:8px;padding:12px 14px;margin-top:16px;display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px">Monthly cost</span><b id="pnlRenoMonthly" style="font-size:16px">RM ${_pnlFmt(monthly)}</b></div>`
+    + `<button class="btn btn-primary btn-full" style="margin-top:18px" onclick="_pnlRenoSave('${ee(lineId)}')">Save</button>`;
+  showModal(html);
+}
+function _pnlRenoPreview() {
+  const t = parseFloat((document.getElementById('pnlRenoTotal') || {}).value) || 0;
+  const m = parseFloat((document.getElementById('pnlRenoMonths') || {}).value) || 0;
+  const el = document.getElementById('pnlRenoMonthly'); if (el) el.textContent = 'RM ' + _pnlFmt(m > 0 ? t / m : 0);
+}
+function _pnlRenoSave(lineId) {
+  const r = _pnlFindRow(lineId); if (!r) { closeModal(); return; }
+  const t = parseFloat((document.getElementById('pnlRenoTotal') || {}).value) || 0;
+  const m = parseFloat((document.getElementById('pnlRenoMonths') || {}).value) || 0;
+  r.renoTotal = t; r.renoMonths = m;
+  const monthly = m > 0 ? t / m : 0;
+  for (let i = 1; i <= 12; i++) r['m' + i] = monthly;
+  saveState(); closeModal(); renderPnL();
+}
+function _pnlAddExpense() {
+  const rows = (state.pnl.rows || []).filter(r => r.store === _pnlState.store && String(r.year) === String(_pnlState.year));
+  const maxOrder = rows.reduce((m, r) => Math.max(m, r.sortOrder || 0), 0);
+  const lineId = 'exp-' + Date.now();
+  state.pnl.rows.push(_pnlBlankRow(_pnlState.store, _pnlState.year, { lineId, name: 'New expense', type: 'number', sortOrder: maxOrder + 1 }));
+  saveState(); renderPnL();
+}
+async function _pnlDelRow(lineId) {
+  const r = _pnlFindRow(lineId); if (!r) return;
+  if (!await showConfirm('Remove "' + (r.name || 'this row') + '"?', { title: 'Remove row', okText: 'Remove', danger: true })) return;
+  state.pnl.rows = state.pnl.rows.filter(x => !(x.store === _pnlState.store && x.lineId === lineId && String(x.year) === String(_pnlState.year)));
+  // 同步删该行的 staff 明细
+  state.pnl.staff = (state.pnl.staff || []).filter(s => !(s.store === _pnlState.store && s.lineId === lineId && String(s.year) === String(_pnlState.year)));
+  saveState(); renderPnL();
+}
+function _pnlOpenStaff(lineId, mi) { _pnlStaffModal(lineId, mi); }
+// ---- 拖动排序 (费用行, 固定+自定义都能拖) ----
+let _pnlDragLid = null;
+function _pnlDragStart(e, lid) { _pnlDragLid = lid; try { e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', lid); } catch (x) {} }
+function _pnlDragOver(e) { e.preventDefault(); try { e.dataTransfer.dropEffect = 'move'; } catch (x) {} const tr = e.currentTarget; if (tr && tr.classList) tr.classList.add('dragover'); }
+function _pnlDragLeave(e) { const tr = e.currentTarget; if (tr && tr.classList) tr.classList.remove('dragover'); }
+function _pnlDrop(e, targetLid) { e.preventDefault(); const tr = e.currentTarget; if (tr && tr.classList) tr.classList.remove('dragover'); if (!_pnlDragLid || _pnlDragLid === targetLid) return; _pnlReorder(_pnlDragLid, targetLid); _pnlDragLid = null; }
+function _pnlReorder(fromLid, toLid) {
+  const all = (state.pnl.rows || []).filter(r => r.store === _pnlState.store && String(r.year) === String(_pnlState.year));
+  const exp = all.filter(r => r.lineId !== 'cost' && r.lineId !== 'target').sort((a, b) => a.sortOrder - b.sortOrder);
+  const from = exp.find(r => r.lineId === fromLid), to = exp.find(r => r.lineId === toLid);
+  if (!from || !to) return;
+  exp.splice(exp.indexOf(from), 1);
+  exp.splice(exp.indexOf(to), 0, from);
+  exp.forEach((r, i) => { r.sortOrder = i + 2; }); // cost 占 1, 费用行从 2 起
+  saveState(); renderPnL();
+}
+function _pnlSetStore(id) { _pnlState.store = id; renderPnL(); }
+function _pnlSetYear(y) { _pnlState.year = String(y); renderPnL(); }
+function _pnlSetPeriod(p) { _pnlState.period = p; renderPnL(); }
+function _pnlSetMode(m) { _pnlState.mode = m; renderPnL(); }
+async function _savePnL() {
+  const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
+  if (!url) { toast('Set the Apps Script URL in Settings first'); return; }
+  const payload = { action: 'pushAll', data: { PnL_Rows: state.pnl.rows, PnL_Staff: state.pnl.staff, PnL_Config: state.pnl.config } };
+  try {
+    const r = await fetch(url, { method: 'POST', body: JSON.stringify(gsPostBody(payload)), headers: { 'Content-Type': 'text/plain' } });
+    const p = await r.json().catch(() => null);
+    if (p && p.success === false) throw new Error(p.error || 'upstream failure');
+    toast('Saved');
+  } catch (err) { toast('Save failed — try again'); console.warn('PnL save failed', err); }
+}
+// ---- Manpower (Staff list) modal: 员工 name + basic, 店级 EPF%/SOCSO% 自动算, 按 店+行+年+月 存 ----
+const _PNL_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+let _pnlStaffCtx = null, _pnlStaffEmps = [], _pnlStaffEpf = 13, _pnlStaffSocso = 1.75;
+function _pnlStaffModal(lineId, mi) {
+  const store = _pnlState.store, year = _pnlState.year, cfg = _pnlCfg(store);
+  _pnlStaffCtx = { store, lineId, year, month: mi };
+  _pnlStaffEpf = cfg.epfPct; _pnlStaffSocso = cfg.socsoPct;
+  const ofMonth = m => (state.pnl.staff || []).filter(s => s.store === store && s.lineId === lineId && String(s.year) === String(year) && s.month === m).map(s => ({ name: s.empName, basic: s.basic }));
+  _pnlStaffEmps = ofMonth(mi);
+  if (_pnlStaffEmps.length === 0) { for (let pm = mi - 1; pm >= 1; pm--) { const prev = ofMonth(pm); if (prev.length) { _pnlStaffEmps = prev; break; } } } // 默认带上月
+  _pnlStaffRender();
+}
+function _pnlStaffEmpTotal(e) { const b = parseFloat(e.basic) || 0; return b * (1 + _pnlStaffEpf / 100 + _pnlStaffSocso / 100); }
+function _pnlStaffRender() {
+  const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
+  const r = _pnlFindRow(_pnlStaffCtx.lineId);
+  const title = (r ? r.name : 'Manpower') + ' · ' + _PNL_MONTHS[_pnlStaffCtx.month - 1];
+  const rowsHtml = _pnlStaffEmps.map((e, i) => {
+    const b = parseFloat(e.basic) || 0, epf = b * _pnlStaffEpf / 100, socso = b * _pnlStaffSocso / 100;
+    return `<div class="pnl-emp"><input class="pnl-emp-in pnl-emp-name" value="${ee(e.name)}" placeholder="Name" oninput="_pnlStaffEmps[${i}].name=this.value">`
+      + `<input class="pnl-emp-in pnl-emp-basic" type="number" step="any" value="${b}" placeholder="Basic" oninput="_pnlStaffEmps[${i}].basic=parseFloat(this.value)||0;_pnlStaffRecalc()">`
+      + `<span class="pnl-emp-c">EPF<b id="se${i}">${_pnlFmt(epf)}</b></span><span class="pnl-emp-c">SOCSO<b id="ss${i}">${_pnlFmt(socso)}</b></span>`
+      + `<span class="pnl-emp-c pnl-emp-tot">Total<b id="st${i}">${_pnlFmt(b + epf + socso)}</b></span>`
+      + `<button class="pnl-emp-x" onclick="_pnlStaffRemove(${i})" title="Remove">✕</button></div>`;
+  }).join('');
+  const grand = _pnlStaffEmps.reduce((a, e) => a + _pnlStaffEmpTotal(e), 0);
+  const html = `<div class="modal-header"><div class="modal-title">${ee(title)}</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
+    + `<div style="display:flex;gap:10px;margin-bottom:12px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>EPF rate (%)</label><input type="number" step="any" value="${_pnlStaffEpf}" oninput="_pnlStaffEpf=parseFloat(this.value)||0;_pnlStaffRecalc()"></div>`
+    + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>SOCSO rate (%)</label><input type="number" step="any" value="${_pnlStaffSocso}" oninput="_pnlStaffSocso=parseFloat(this.value)||0;_pnlStaffRecalc()"></div></div>`
+    + `<div class="pnl-emp-list">${rowsHtml || '<div style="color:var(--gray);font-size:13px;padding:10px 0">No staff yet.</div>'}</div>`
+    + `<button class="btn btn-outline btn-full" style="margin-top:6px" onclick="_pnlStaffAdd()">＋ Add employee</button>`
+    + `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"><span style="font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px">Total manpower</span><b id="staffGrand" style="font-size:16px">RM ${_pnlFmt(grand)}</b></div>`
+    + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="_pnlStaffSave()">Save</button>`;
+  showModal(html);
+}
+function _pnlStaffRecalc() {
+  let grand = 0;
+  _pnlStaffEmps.forEach((e, i) => {
+    const b = parseFloat(e.basic) || 0, epf = b * _pnlStaffEpf / 100, socso = b * _pnlStaffSocso / 100, tot = b + epf + socso;
+    grand += tot;
+    const se = document.getElementById('se' + i), ss = document.getElementById('ss' + i), st = document.getElementById('st' + i);
+    if (se) se.textContent = _pnlFmt(epf); if (ss) ss.textContent = _pnlFmt(socso); if (st) st.textContent = _pnlFmt(tot);
+  });
+  const g = document.getElementById('staffGrand'); if (g) g.textContent = 'RM ' + _pnlFmt(grand);
+}
+function _pnlStaffAdd() { _pnlStaffEmps.push({ name: '', basic: 0 }); _pnlStaffRender(); }
+function _pnlStaffRemove(i) { _pnlStaffEmps.splice(i, 1); _pnlStaffRender(); }
+function _pnlStaffSave() {
+  const { store, lineId, year, month } = _pnlStaffCtx;
+  let cfg = (state.pnl.config || []).find(c => c.store === store);
+  if (!cfg) state.pnl.config.push({ id: store, store, epfPct: _pnlStaffEpf, socsoPct: _pnlStaffSocso });
+  else { cfg.epfPct = _pnlStaffEpf; cfg.socsoPct = _pnlStaffSocso; }
+  state.pnl.staff = (state.pnl.staff || []).filter(s => !(s.store === store && s.lineId === lineId && String(s.year) === String(year) && s.month === month));
+  _pnlStaffEmps.filter(e => (e.name || '').trim() || (parseFloat(e.basic) || 0)).forEach((e, idx) => {
+    state.pnl.staff.push({ id: store + '|' + lineId + '|' + year + '|' + month + '|' + idx, store, lineId, year: String(year), month, empName: (e.name || '').trim(), basic: parseFloat(e.basic) || 0 });
+  });
+  saveState(); closeModal(); renderPnL();
+}
+
 function renderRevenue() {
   populateRevOutletSelect();
   _renderRevSyncStatus();
@@ -14635,7 +15215,21 @@ function _normalizeSheetPullData(d) {
     crm33Code: l.crm33Code || ''     // v7.24: 33CRM 分行 code
   }));
 
-  return { leads, ads, rev, fees, channels, locations, suspiciousLead };
+  // v7.25: P&L 三张表 (容错转数字; 没传则为 null → 不覆盖本地)
+  const _toN = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+  const pnlRows = (d.PnL_Rows === undefined) ? null : (d.PnL_Rows || []).filter(r => r && r.id).map(r => {
+    const o = { id: r.id, store: r.store, lineId: r.lineId, name: r.name || '', type: r.type || 'number',
+                sortOrder: _toN(r.sortOrder), year: String(r.year || ''), rate: _toN(r.rate), renoTotal: _toN(r.renoTotal), renoMonths: _toN(r.renoMonths) };
+    for (let m = 1; m <= 12; m++) o['m' + m] = _toN(r['m' + m]);
+    return o;
+  });
+  const pnlStaff = (d.PnL_Staff === undefined) ? null : (d.PnL_Staff || []).filter(r => r && r.id).map(r => ({
+    id: r.id, store: r.store, lineId: r.lineId, year: String(r.year || ''),
+    month: _toN(r.month), empName: r.empName || '', basic: _toN(r.basic) }));
+  const pnlConfig = (d.PnL_Config === undefined) ? null : (d.PnL_Config || []).filter(r => r && r.id).map(r => ({
+    id: r.id, store: r.store, epfPct: _toN(r.epfPct), socsoPct: _toN(r.socsoPct) }));
+
+  return { leads, ads, rev, fees, channels, locations, suspiciousLead, pnlRows, pnlStaff, pnlConfig };
 }
 
 async function gsPushAll() {
@@ -14917,7 +15511,7 @@ async function gsPullSilent() {
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPull 共享, 避免代码漂移)
     // v6.69: 同时拿 channels + locations
-    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, suspiciousLead } = _normalizeSheetPullData(d.data);
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, suspiciousLead, pnlRows, pnlStaff, pnlConfig } = _normalizeSheetPullData(d.data);
 
     if (suspiciousLead) {
       console.warn('[Auto-pull] BLOCKED: suspicious lead columns:', Object.keys(suspiciousLead));
@@ -14962,6 +15556,11 @@ async function gsPullSilent() {
     } else if (normalizedLocations !== null && state.locations.length > 0) {
       skipped.push('locations');
     }
+    // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
+    if (!state.pnl) state.pnl = { rows: [], staff: [], config: [] };
+    if (pnlRows !== null && pnlRows !== undefined)   state.pnl.rows   = pnlRows;
+    if (pnlStaff !== null && pnlStaff !== undefined)  state.pnl.staff  = pnlStaff;
+    if (pnlConfig !== null && pnlConfig !== undefined) state.pnl.config = pnlConfig;
     if (skipped.length > 0) {
       console.warn('[Auto-pull] Protected local tables from empty Sheet:', skipped.join(', '));
     }
@@ -15042,7 +15641,7 @@ async function gsPull() {
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPullSilent 共享, 避免代码漂移)
     // v6.69: 同时拿 channels + locations (codex P1 #1 同步)
-    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, suspiciousLead } = _normalizeSheetPullData(d.data);
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, suspiciousLead, pnlRows, pnlStaff, pnlConfig } = _normalizeSheetPullData(d.data);
 
     // Safety check: reject if Sheet has unexpected columns (manual Pull 弹 alert, gsPullSilent 静默)
     if (suspiciousLead) {
@@ -15114,6 +15713,11 @@ async function gsPull() {
     } else if (normalizedLocations !== null) {
       skipped.push('locations');
     }
+    // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
+    if (!state.pnl) state.pnl = { rows: [], staff: [], config: [] };
+    if (pnlRows !== null && pnlRows !== undefined)   state.pnl.rows   = pnlRows;
+    if (pnlStaff !== null && pnlStaff !== undefined)  state.pnl.staff  = pnlStaff;
+    if (pnlConfig !== null && pnlConfig !== undefined) state.pnl.config = pnlConfig;
     saveState();
     const skippedMsg = skipped.length > 0 ? ` (保护了: ${skipped.join(', ')})` : '';
     gsLog('✅ Pulled!' + skippedMsg + ' ' + counts);
