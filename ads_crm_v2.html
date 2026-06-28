@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.27</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.28</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.27</div>
+      <div class="nav-brand-version">v7.28</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13217,9 +13217,17 @@ function _pnlExportPdf() {
   const printCss = vars + css + `
     @page{size:A4 landscape;margin:8mm;}
     body{margin:0;font-family:'IBM Plex Sans',Helvetica,Arial,sans-serif;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    #pnlRoot .pnl-toptabs,#pnlRoot .pnl-bar,#pnlRoot .pnl-tabs,#pnlRoot .addrow,#pnlRoot .rgear,#pnlRoot .rdrag,#pnlRoot .delx{display:none!important;}
-    #pnlRoot .pnl-scroll{max-height:none!important;overflow:visible!important;}
+    #pnlRoot .pnl-toptabs,#pnlRoot .pnl-bar,#pnlRoot .pnl-bar2,#pnlRoot .pnl-tabs,#pnlRoot .addrow,#pnlRoot .rgear,#pnlRoot .rdrag,#pnlRoot .delx{display:none!important;}
+    #pnlRoot .pnl-scroll{max-height:none!important;overflow:visible!important;border:1px solid #8a8a93!important;}
     #pnlRoot .pnl-t th,#pnlRoot .pnl-t td,#pnlRoot .pnl-t tr.grp td,#pnlRoot .emp-t tfoot td{position:static!important;}
+    /* PDF: 线条加深, 看得清 */
+    #pnlRoot .pnl-t th,#pnlRoot .pnl-t td{border-bottom:0.5px solid #b2b2bb!important;}
+    #pnlRoot .pnl-t thead th{border-bottom:1px solid #8a8a93!important;}
+    #pnlRoot .pnl-t th.l,#pnlRoot .pnl-t td.l{border-right:0.5px solid #b2b2bb!important;}
+    #pnlRoot .pnl-t th.sub,#pnlRoot .pnl-t td.sub{border-left:0.5px solid #b2b2bb!important;}
+    #pnlRoot .pnl-t tr.big td{border-top:1px solid #9a9aa3!important;}
+    #pnlRoot .emp-t tfoot td{border-top:1px solid #8a8a93!important;}
+    #pnlRoot .pnl-card{border:1px solid #a8a8b2!important;}
     /* 卡片压成一排小卡, 省高度 (PDF 里别占太多) */
     #pnlRoot .pnl-cards{grid-template-columns:repeat(5,1fr)!important;gap:6px!important;margin-bottom:8px!important;}
     #pnlRoot .pnl-card{padding:6px 9px!important;border-radius:8px!important;}
