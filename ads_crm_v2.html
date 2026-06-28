@@ -3570,10 +3570,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-06-27</span>
+                      <span id="f_leadDate_label">2026-06-28</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-06-27">
+                    <input type="hidden" id="f_leadDate" value="2026-06-28">
                   </div>
                 </div>
               </div>
@@ -4808,7 +4808,7 @@ body.contact-view-table .modal-backdrop.open {
 // v4.82: List card helpers — remark icon (only if remark present) + reschedule chip (only if flag set & still booked)
 // v7.23: AUTO 标签 — 后端 ghlSavePending 自动入库的 lead flags='auto'
 function autoBadgeHTML(l) {
-  return (l && String(l.flags || '').indexOf('auto') >= 0) ? '<span class="badge badge-auto">Auto</span>' : '';
+  return (l && l.flags && l.flags.auto) ? '<span class="badge badge-auto">Auto</span>' : '';  // flags 是 object
 }
 
 function remarkIconHTML(l) {
@@ -8942,7 +8942,7 @@ function renderList() {
 
   // v7.23: 当天自动入库计数 (全局, 不随筛选/分页变)
   try {
-    const _at = (state.leads || []).filter(l => String(l.flags || '').indexOf('auto') >= 0 && String(l.leadDate || '') === todayStr()).length;
+    const _at = (state.leads || []).filter(l => l.flags && l.flags.auto && String(l.leadDate || '') === todayStr()).length;
     const _ah = document.getElementById('autoTodayHint');
     if (_ah) { _ah.textContent = _at + (_at === 1 ? ' lead added automatically today' : ' leads added automatically today'); _ah.style.display = _at > 0 ? 'flex' : 'none'; }
   } catch (e) {}
