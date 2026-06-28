@@ -3522,7 +3522,7 @@ body.contact-view-table .modal-backdrop.open {
         </div>
         <!-- v4.23: Filters moved here from unified-header -->
         
-        <div id="autoTodayHint" style="display:none;align-items:center;gap:5px;font-size:11px;color:var(--silver);margin:0 0 10px 2px;">0 leads added automatically today</div>
+        <div id="autoTodayHint" style="display:none;align-items:center;gap:5px;font-size:11px;color:var(--silver);margin:14px 0 10px 2px;">0 leads added automatically today</div>
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <!-- v4.20: Mobile-only "Load More" button (hidden on desktop via CSS) -->
         <div id="loadMoreWrap"></div>
@@ -8717,7 +8717,7 @@ function renderListAsTableHTML(slice) {
       ? `<span class="countdown ${cd.cls}">${esc(cd.text)}</span>`
       : '<span class="muted">—</span>';
     return `<tr class="${rowCls}${selected}" onclick="editLead('${esc(l.id)}')">
-      <td><div class="cell-name">${avatarHTML(displayName)}<span class="nm">${esc(displayName)}${remarkIconHTML(l)}</span></div></td>
+      <td><div class="cell-name">${avatarHTML(displayName)}<span class="nm">${esc(displayName)}${remarkIconHTML(l)}${autoBadgeHTML(l)}</span></div></td>
       <td class="ph">${esc(l.contact || '')}</td>
       <td>${stBadge}</td>
       <td>${channelChip}</td>
