@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.31</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.33</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.31</div>
+      <div class="nav-brand-version">v7.33</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12796,7 +12796,6 @@ function pnlSuggestedTarget(store, year) {
     return (denom[i] > 0 && isFinite(compBE[i])) ? compBE[i] * e / denom[i] : 0;
   });
 }
-
 function _pnlInjectCss() {
   if (document.getElementById('pnlCss')) return;
   const css = `
@@ -12843,7 +12842,7 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t tr.ref td.l .nm{font-weight:400;color:var(--gray);}
 #pnlRoot .pnl-t tr.sugg td{color:#0e7c8b;}
 #pnlRoot .pnl-t tr.sugg td.l .nm{color:#0e7c8b;font-weight:500;}
-#pnlRoot .pnl-t .nm-i{color:#0e7c8b;font-size:11px;cursor:help;}
+#pnlRoot .pnl-foot-note{color:var(--gray);font-size:12px;margin-top:10px;}
 #pnlRoot .pnl-t td.l .nm{font-weight:500;}
 #pnlRoot .pnl-t td.l .nm[contenteditable]{outline:none;border-bottom:1px dashed transparent;cursor:text;}
 #pnlRoot .pnl-t td.l .nm[contenteditable]:focus{border-bottom-color:var(--purple);}
@@ -12992,7 +12991,7 @@ function renderPnL() {
     const drag = opts.drag && editable;                                 // 费用行(固定+自定义) 都能拖
     const handle = drag ? `<span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'${e(lid)}')" title="Drag to reorder">${GRIP_SVG}</span>` : '';
     const trDrop = drag ? ` ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'${e(lid)}')"` : '';
-    const nm = `<span class="nm"${custom ? ` contenteditable="true" onblur="_pnlSetName('${e(lid)}',this.textContent)"` : ''}${co.nmTitle ? ` title="${e(co.nmTitle)}"` : ''}>${e(opts.name)}${co.nmTitle ? ` <span class="nm-i" title="${e(co.nmTitle)}">&#9432;</span>` : ''}</span>`;
+    const nm = `<span class="nm"${custom ? ` contenteditable="true" onblur="_pnlSetName('${e(lid)}',this.textContent)"` : ''}>${e(opts.name)}</span>`;
     let cells = '';
     idx.forEach(i => { cells += cell(r, opts.v, i + 1, co); });
     return `<tr class="${opts.cls || ''}"${trDrop}><td class="l">${handle}${del}${nm}${gear}</td>${cells}${subCell(opts.v, co)}</tr>`;
@@ -13020,7 +13019,7 @@ function renderPnL() {
   b += band('Targets & break-even');
   if (C.targetRow) b += rowHtml({ row: C.targetRow, v: C.target, name: C.targetRow.name, cls: 'ref' });
   else b += rowHtml({ row: { type: 'auto' }, v: C.target, name: 'Target sales', cls: 'ref' });
-  b += rowHtml({ row: { type: 'auto' }, v: pnlSuggestedTarget(store, year), name: 'Suggested target sales', cls: 'ref sugg', cellOpts: { nmTitle: 'Suggested target = Total break-even × (outlet expenses ÷ total outlet expenses). Sums to the company break-even so all stores together cover head office too.' } });
+  b += rowHtml({ row: { type: 'auto' }, v: pnlSuggestedTarget(store, year), name: 'Suggested target sales', cls: 'ref sugg', cellOpts: { avgSub: true } });
   b += rowHtml({ row: { type: 'auto' }, v: C.beEx, name: 'Break-even (without renovation)', cls: 'ref', cellOpts: { avgSub: true } });
   b += rowHtml({ row: { type: 'auto' }, v: C.beIn, name: 'Break-even (with renovation)', cls: 'ref', cellOpts: { avgSub: true } });
   b += '</tbody>';
@@ -13042,7 +13041,7 @@ function renderPnL() {
       + `</div></div>`
     + `<div class="pnl-cards">` + cardsHtml + `</div>`
     + `<div class="pnl-scroll"><table class="pnl-t">` + head + b + `</table></div>`
-    + (editable ? '' : `<div class="pnl-save" style="color:var(--gray);font-size:12px">All outlets is a read-only roll-up of every store minus Mgmt Office.</div>`);
+    + (editable ? `<div class="pnl-foot-note">Suggested target sales = total break-even × (outlet expenses ÷ total outlet expenses)</div>` : `<div class="pnl-foot-note">All outlets is a read-only roll-up of every store minus Mgmt Office.</div>`);
   const _newScroll = root.querySelector('.pnl-scroll');
   if (_newScroll) { _newScroll.scrollTop = _sTop; _newScroll.scrollLeft = _sLeft; }
 }
