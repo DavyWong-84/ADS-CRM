@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.25.19</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.27</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.25.19</div>
+      <div class="nav-brand-version">v7.27</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13191,7 +13191,9 @@ function _pnlBranchMeta() {
   const m = {};
   _pnlActiveStores().forEach((id, i) => {
     const loc = (state.locations || []).find(l => l.id === id); const nm = loc ? loc.name : id;
-    m[id] = { name: nm, abbr: (nm.replace(/[^A-Za-z]/g, '').slice(0, 3) || id.slice(0, 3)).toUpperCase(), color: _PNL_BR_COLORS[i % _PNL_BR_COLORS.length] };
+    // 标签跟着 33CRM code (Locations 表的 crm33Code, 如 SUN/SCM/ECO); 没填才用名字前3个字母
+    const abbr = (loc && loc.crm33Code) ? String(loc.crm33Code).trim().toUpperCase() : (nm.replace(/[^A-Za-z]/g, '').slice(0, 3) || id.slice(0, 3)).toUpperCase();
+    m[id] = { name: nm, abbr, color: _PNL_BR_COLORS[i % _PNL_BR_COLORS.length] };
   });
   m['mgmt'] = { name: 'Mgmt Office', abbr: 'HQ', color: '#5b6470' };
   return m;
