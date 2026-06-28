@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.25</div>
+      <div class="nav-brand-version">v7.25.3</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12826,8 +12826,8 @@ function renderPnL() {
   const beFmt = v => isFinite(v) ? 'RM ' + _pnlFmt(v) : '—';
   const cardsHtml = card('#1ea672', 'Net profit', `<span style="color:${netCol}">RM ${_pnlFmt(N)}</span>`, (S ? Math.round(N / S * 100) : 0) + '% margin')
     + card('#7132f5', 'Sales vs target', (T ? Math.round(S / T * 100) : 0) + '%', `RM ${_pnlFmt(S)} / ${_pnlFmt(T)}`, `<div class="pbar"><i style="width:${T ? Math.min(100, Math.round(S / T * 100)) : 0}%"></i></div>`)
-    + card('#e08a1e', 'Break-even · ex build-out', beFmt(beE), 'avg / mo, daily floor')
-    + card('#c2531a', 'Break-even · incl build-out', beFmt(beI), 'avg / mo, recovers reno');
+    + card('#e08a1e', 'Break-even (without renovation)', beFmt(beE), 'min monthly sales to not lose')
+    + card('#c2531a', 'Break-even (with renovation)', beFmt(beI), 'also pays back renovation');
 
   // ---- table ----
   const colCount = idx.length + 2;
@@ -12848,7 +12848,9 @@ function renderPnL() {
   };
   const subCell = (computedArr, opts) => {
     opts = opts || {};
-    const v = _pnlSum(computedArr, idx), base = _pnlSum(C.sales, idx);
+    // break-even 是「每月警戒线」, 小计用平均(跟卡片一致), 不是相加(相加 = 12 倍, 没意义)
+    const v = opts.avgSub ? _pnlAvg(computedArr, idx) : _pnlSum(computedArr, idx);
+    const base = opts.avgSub ? _pnlAvg(C.sales, idx) : _pnlSum(C.sales, idx);
     const col = opts.netSign ? (v < 0 ? _PNL_RED : _PNL_BLUE) : (opts.col || '');
     const cs = col ? ` style="color:${col}"` : '';
     if (_pnlState.mode === 'showPct') return `<td class="sub"${cs}>${_pnlPct(v, base)}</td>`;
@@ -12895,8 +12897,8 @@ function renderPnL() {
   b += band('Targets & break-even');
   if (C.targetRow) b += rowHtml({ row: C.targetRow, v: C.target, name: C.targetRow.name, cls: 'ref' });
   else b += rowHtml({ row: { type: 'auto' }, v: C.target, name: 'Target sales', cls: 'ref' });
-  b += rowHtml({ row: { type: 'auto' }, v: C.beEx, name: 'Break-even · ex build-out', cls: 'ref', cellOpts: {} });
-  b += rowHtml({ row: { type: 'auto' }, v: C.beIn, name: 'Break-even · incl build-out', cls: 'ref', cellOpts: {} });
+  b += rowHtml({ row: { type: 'auto' }, v: C.beEx, name: 'Break-even (without renovation)', cls: 'ref', cellOpts: { avgSub: true } });
+  b += rowHtml({ row: { type: 'auto' }, v: C.beIn, name: 'Break-even (with renovation)', cls: 'ref', cellOpts: { avgSub: true } });
   b += '</tbody>';
 
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
