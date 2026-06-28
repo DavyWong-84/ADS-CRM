@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.25.16</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.25.19</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.25.16</div>
+      <div class="nav-brand-version">v7.25.19</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12649,6 +12649,15 @@ try { __pnlSelfCheck(); } catch (e) { console.warn('PnL self-check error', e); }
 let _pnlState = { store: null, year: String(new Date().getFullYear()), period: 'full', mode: 'showAmt' };
 let _pnlView = 'pnl'; // 'pnl' | 'employees'
 let _pnlExporting = false; // 导出 PDF 时: 格子渲染成纯文本(不带 input)
+// 未保存提示: 比对当前 P&L 数据 vs 上次保存的快照 (自动覆盖所有改动, 不用逐个 hook)
+let _pnlSavedSnapshot = null;
+function _pnlSavableJson() { return JSON.stringify({ r: state.pnl.rows, s: state.pnl.staff, c: state.pnl.config, e: state.pnl.employees, sal: state.pnl.empSalary }); }
+function _pnlSaveBtnHtml() {
+  const dirty = _pnlSavableJson() !== _pnlSavedSnapshot;
+  return dirty
+    ? `<button class="btn btn-primary pnl-savebtn pnl-dirty" id="pnlSaveBtn" onclick="_savePnL()"><span class="pnl-dot"></span>Save changes</button>`
+    : `<button class="btn btn-outline pnl-savebtn" id="pnlSaveBtn" onclick="_savePnL()">Saved</button>`;
+}
 function _pnlSetView(v) { _pnlView = v; renderPnL(); }
 function _pnlTopTabs() {
   return `<div class="pnl-toptabs"><div class="pnl-toptab${_pnlView === 'pnl' ? ' on' : ''}" onclick="_pnlSetView('pnl')">Profit &amp; Loss</div><div class="pnl-toptab${_pnlView === 'employees' ? ' on' : ''}" onclick="_pnlSetView('employees')">Employees</div></div>`;
@@ -12793,6 +12802,8 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-yr{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;font-family:inherit;}
 #pnlRoot .pnl-savebtn{padding:8px 18px;font-size:13px;white-space:nowrap;}
 #pnlRoot .pnl-savebtn:disabled{opacity:.7;}
+#pnlRoot .pnl-dirty{box-shadow:0 0 0 3px rgba(255,184,0,.35);}
+#pnlRoot .pnl-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ffb800;margin-right:7px;vertical-align:middle;}
 #pnlRoot .pnl-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:18px;}
 @media(max-width:820px){#pnlRoot .pnl-cards{grid-template-columns:repeat(2,1fr);}}
 #pnlRoot .pnl-card{position:relative;background:#fff;border:1px solid #ececf1;border-radius:14px;padding:13px 14px 13px 16px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;}
@@ -13008,7 +13019,7 @@ function renderPnL() {
       + `<select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
       + `<div class="pnl-seg"><button class="${_pnlState.mode === 'showAmt' ? 'on' : ''}" onclick="_pnlSetMode('showAmt')">RM</button><button class="${_pnlState.mode === 'showPct' ? 'on' : ''}" onclick="_pnlSetMode('showPct')">%</button></div>`
       + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>`
-      + (editable ? `<button class="btn btn-primary pnl-savebtn" id="pnlSaveBtn" onclick="_savePnL()">Save</button>` : '')
+      + (editable ? _pnlSaveBtnHtml() : '')
       + `</div></div>`
     + `<div class="pnl-cards">` + cardsHtml + `</div>`
     + `<div class="pnl-scroll"><table class="pnl-t">` + head + b + `</table></div>`
@@ -13149,11 +13160,13 @@ async function _savePnL() {
     const r = await fetch(url, { method: 'POST', body: JSON.stringify(gsPostBody(payload)), headers: { 'Content-Type': 'text/plain' } });
     const p = await r.json().catch(() => null);
     if (p && p.success === false) throw new Error(p.error || 'upstream failure');
+    _pnlSavedSnapshot = _pnlSavableJson(); // 标记为已保存
     toast('✅ Saved to Google Sheet');
-    if (btn) { btn.disabled = false; btn.textContent = 'Saved ✓'; setTimeout(() => { const b2 = document.getElementById('pnlSaveBtn'); if (b2) b2.textContent = 'Save'; }, 2000); }
+    renderPnL(); // Save 钮变回 "Saved"(clean)
   } catch (err) {
     toast('❌ Save failed — try again');
-    if (btn) { btn.disabled = false; btn.textContent = 'Save'; }
+    if (btn) { btn.disabled = false; }
+    renderPnL(); // 仍 dirty
     console.warn('PnL save failed', err);
   }
 }
@@ -13205,16 +13218,24 @@ function _pnlExportPdf() {
     #pnlRoot .pnl-toptabs,#pnlRoot .pnl-bar,#pnlRoot .pnl-tabs,#pnlRoot .addrow,#pnlRoot .rgear,#pnlRoot .rdrag,#pnlRoot .delx{display:none!important;}
     #pnlRoot .pnl-scroll{max-height:none!important;overflow:visible!important;}
     #pnlRoot .pnl-t th,#pnlRoot .pnl-t td,#pnlRoot .pnl-t tr.grp td,#pnlRoot .emp-t tfoot td{position:static!important;}
+    /* 卡片压成一排小卡, 省高度 (PDF 里别占太多) */
+    #pnlRoot .pnl-cards{grid-template-columns:repeat(5,1fr)!important;gap:6px!important;margin-bottom:8px!important;}
+    #pnlRoot .pnl-card{padding:6px 9px!important;border-radius:8px!important;}
+    #pnlRoot .pnl-card .acc{width:3px!important;}
+    #pnlRoot .pnl-card .pd,#pnlRoot .pnl-card .pbar{display:none!important;}
+    #pnlRoot .pnl-card .val{font-size:13px!important;margin-top:2px!important;}
+    #pnlRoot .pnl-card .lbl{font-size:8.5px!important;}
+    #pnlRoot .pnl-card .sub{font-size:8.5px!important;margin-top:1px!important;}
     .printpage{page-break-after:always;}
     .printpage:last-child{page-break-after:auto;}
-    .printwrap{transform-origin:top left;}`;
+    .printwrap{transform-origin:top left;width:1040px;}`;
   const w = window.open('', '_blank');
   if (!w) { toast('Allow pop-ups to export PDF'); return; }
   w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Profit &amp; Loss</title><style>' + printCss + '</style></head><body><div id="pnlRoot">' + pages + '</div></body></html>');
   w.document.close();
   const go = () => {
     const wraps = w.document.querySelectorAll('.printwrap'); if (!wraps.length) { w.print(); return; }
-    const pageW = 1040, pageH = 712; // A4 横向可打印区 ≈ px
+    const pageW = 1052, pageH = 700; // A4 横向可打印区 ≈ px (留点余量防溢页)
     wraps.forEach(wrap => { const cw = wrap.scrollWidth, ch = wrap.scrollHeight; wrap.style.zoom = Math.min(pageW / cw, pageH / ch, 1); });
     setTimeout(() => { w.focus(); w.print(); }, 200);
   };
@@ -13239,7 +13260,7 @@ function _pnlStaffModal(lineId, mi, keepSel) {
     if (_pnlPickSel.size === 0) { // 默认带上月(不含冲突的)
       for (let pm = mi - 1; pm >= 1; pm--) {
         const prev = (state.pnl.staff || []).filter(s => s.store === store && s.lineId === lineId && String(s.year) === String(year) && s.month === pm).map(s => s.empId);
-        if (prev.length) { prev.forEach(id => { if (!_pnlPickConflict(id)) _pnlPickSel.add(id); }); break; }
+        if (prev.length) { prev.forEach(id => { if (!_pnlPickConflict(id) && _pnlEmpBasic(id, year, mi) > 0) _pnlPickSel.add(id); }); break; }
       }
     }
   }
@@ -13252,14 +13273,17 @@ function _pnlStaffRender() {
   const title = (r ? r.name : 'Manpower') + ' · ' + _PNL_MONTHS[month - 1];
   const emps = (state.pnl.employees || []).slice().sort((a, b) => _pnlEmpLatestBasic(b.id, year) - _pnlEmpLatestBasic(a.id, year));
   const rows = emps.map(e => {
-    const conf = _pnlPickConflict(e.id);
-    const basic = _pnlEmpBasic(e.id, year, month) || _pnlEmpLatestBasic(e.id, year);
-    const cost = basic * _pnlEmpRate(e);
-    return `<label class="pnl-pick${conf ? ' dis' : ''}"><input type="checkbox" ${_pnlPickSel.has(e.id) ? 'checked' : ''} ${conf ? 'disabled' : ''} onchange="_pnlPickToggle('${ee(e.id)}',this.checked)">`
+    const monthBasic = _pnlEmpBasic(e.id, year, month); // 没设薪 = 那个月还没入职/已离职
+    const employed = monthBasic > 0;
+    const conf = employed ? _pnlPickConflict(e.id) : null;
+    const disabled = !employed || !!conf;
+    const note = !employed ? 'Not employed this month' : (conf ? 'at ' + ee(conf) : '');
+    const cost = monthBasic * _pnlEmpRate(e);
+    return `<label class="pnl-pick${disabled ? ' dis' : ''}"><input type="checkbox" ${(_pnlPickSel.has(e.id) && !disabled) ? 'checked' : ''} ${disabled ? 'disabled' : ''} onchange="_pnlPickToggle('${ee(e.id)}',this.checked)">`
       + `<span class="pp-nm">${ee(e.name)}${e.position ? `<span class="pp-role">${ee(e.position)}</span>` : ''}</span>`
-      + `<span class="pp-cost">RM ${_pnlFmt(cost)}${conf ? `<span class="pp-conf">at ${ee(conf)}</span>` : ''}</span></label>`;
+      + `<span class="pp-cost">RM ${_pnlFmt(cost)}${note ? `<span class="pp-conf">${note}</span>` : ''}</span></label>`;
   }).join('');
-  const grand = emps.filter(e => _pnlPickSel.has(e.id)).reduce((a, e) => a + (_pnlEmpBasic(e.id, year, month) || _pnlEmpLatestBasic(e.id, year)) * _pnlEmpRate(e), 0);
+  const grand = emps.filter(e => _pnlPickSel.has(e.id)).reduce((a, e) => a + _pnlEmpBasic(e.id, year, month) * _pnlEmpRate(e), 0);
   const html = `<div class="modal-header"><div class="modal-title">${ee(title)}</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
     + `<div class="msub" style="font-size:12px;color:var(--gray);margin-bottom:12px">Tick who works at this branch this month. Salary &amp; EPF/SOCSO come from each employee.</div>`
     + `<div class="pnl-pick-list">${rows || '<div style="color:var(--gray);font-size:13px;padding:10px 0">No employees yet — add one below.</div>'}</div>`
@@ -13271,14 +13295,14 @@ function _pnlStaffRender() {
 function _pnlPickToggle(empId, on) { if (on) _pnlPickSel.add(empId); else _pnlPickSel.delete(empId); _pnlPickRecalc(); }
 function _pnlPickRecalc() {
   const { year, month } = _pnlPickCtx;
-  const grand = (state.pnl.employees || []).filter(e => _pnlPickSel.has(e.id)).reduce((a, e) => a + (_pnlEmpBasic(e.id, year, month) || _pnlEmpLatestBasic(e.id, year)) * _pnlEmpRate(e), 0);
+  const grand = (state.pnl.employees || []).filter(e => _pnlPickSel.has(e.id)).reduce((a, e) => a + _pnlEmpBasic(e.id, year, month) * _pnlEmpRate(e), 0);
   const g = document.getElementById('staffGrand'); if (g) g.textContent = 'RM ' + _pnlFmt(grand);
 }
 function _pnlStaffSave() {
   const { store, lineId, year, month } = _pnlPickCtx;
   state.pnl.staff = (state.pnl.staff || []).filter(s => !(s.store === store && s.lineId === lineId && String(s.year) === String(year) && s.month === month));
   _pnlPickSel.forEach(empId => {
-    if (_pnlPickConflict(empId)) return; // 冲突的不存
+    if (_pnlPickConflict(empId) || _pnlEmpBasic(empId, year, month) <= 0) return; // 冲突 / 当月没入职的不存
     state.pnl.staff.push({ id: store + '|' + lineId + '|' + year + '|' + month + '|' + empId, store, lineId, year: String(year), month, empId });
   });
   saveState(); closeModal(); renderPnL();
@@ -13308,8 +13332,17 @@ function _pnlEmpModal(empId, retLineId, retMonth) {
     + `<select id="pnlEmpEffM" style="flex:1">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('') + `</select>`
     + `<select id="pnlEmpEffY" style="width:110px">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select></div></div>`
     + `<div style="font-size:11px;color:#b3631a;background:#fdf6ee;border-radius:8px;padding:8px 12px;margin-top:10px">New salary applies from the chosen month onward; earlier months keep the old salary.</div>`
-    + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="_pnlEmpSave('${empId ? ee(empId) : ''}')">Save</button>`;
+    + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="_pnlEmpSave('${empId ? ee(empId) : ''}')">Save</button>`
+    + (e ? `<button class="btn btn-danger btn-full" style="margin-top:8px" onclick="_pnlEmpDelete('${ee(empId)}')">Delete employee</button>` : '');
   showModal(html);
+}
+async function _pnlEmpDelete(empId) {
+  const e = _pnlEmp(empId); if (!e) return;
+  if (!await showConfirm('Delete "' + (e.name || 'this employee') + '"? Removes them from all branches, months and salary history.', { title: 'Delete employee', okText: 'Delete', danger: true })) return;
+  state.pnl.employees = (state.pnl.employees || []).filter(x => x.id !== empId);
+  state.pnl.empSalary = (state.pnl.empSalary || []).filter(x => x.empId !== empId);
+  state.pnl.staff = (state.pnl.staff || []).filter(x => x.empId !== empId);
+  saveState(); closeModal(); renderPnL();
 }
 function _pnlEmpSave(empId) {
   const name = (_pnlV('pnlEmpName') || '').trim();
@@ -13365,7 +13398,7 @@ function renderPnlEmployees(root) {
     + `<div class="pnl-bar"><button class="btn btn-primary pnl-savebtn" onclick="_pnlEmpModal(null)">＋ Add employee</button>`
     + `<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
     + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>`
-    + `<button class="btn btn-primary pnl-savebtn" id="pnlSaveBtn" onclick="_savePnL()">Save</button></div></div>`
+    + _pnlSaveBtnHtml() + `</div></div>`
     + `<div class="pnl-cards" style="grid-template-columns:repeat(3,minmax(0,1fr))">` + cards + `</div>`
     + legend
     + `<div class="pnl-scroll"><table class="pnl-t emp-t">` + head + body + foot + `</table></div>`;
@@ -15844,6 +15877,7 @@ async function gsPullSilent() {
     if (!state.pnl.employees) state.pnl.employees = [];
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
+    try { _pnlSavedSnapshot = _pnlSavableJson(); } catch (e) {} // 刚 pull 的 = 已保存基线
     if (skipped.length > 0) {
       console.warn('[Auto-pull] Protected local tables from empty Sheet:', skipped.join(', '));
     }
@@ -16006,6 +16040,7 @@ async function gsPull() {
     if (!state.pnl.employees) state.pnl.employees = [];
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
+    try { _pnlSavedSnapshot = _pnlSavableJson(); } catch (e) {} // 刚 pull 的 = 已保存基线
     saveState();
     const skippedMsg = skipped.length > 0 ? ` (保护了: ${skipped.join(', ')})` : '';
     gsLog('✅ Pulled!' + skippedMsg + ' ' + counts);
