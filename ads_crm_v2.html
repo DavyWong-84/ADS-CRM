@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.25.3</div>
+      <div class="nav-brand-version">v7.25.8</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12590,22 +12590,22 @@ function pnlComputeRows(store, year) {
   const totalExp = auto.sales.map((_, i) => expRows.reduce((a, e) => a + e.v[i], 0));
   const net = gross.map((g, i) => g - totalExp[i]);
   const target = targetRow ? arr(targetRow) : auto.sales.map(() => 0);
-  // break-even: 固定=非 pct 费用(不含 renovation/buildout 行); 变动率=cost% + 各 pct 费用行的 rate%
-  const isBuildout = e => (e.row.lineId === 'buildout');
-  const fixedEx = auto.sales.map((_, i) => expRows.filter(e => e.row.type !== 'pct' && !isBuildout(e)).reduce((a, e) => a + e.v[i], 0));
-  const buildout = auto.sales.map((_, i) => expRows.filter(isBuildout).reduce((a, e) => a + e.v[i], 0));
-  const varRate = mi => {
-    const cPct = costRow ? (costRow.type === 'pct' ? (costRow.rate || 0) / 100 : (auto.sales[mi - 1] ? cost[mi - 1] / auto.sales[mi - 1] : 0)) : 0;
-    const pPct = expUserRows.filter(r => r.type === 'pct').reduce((a, r) => a + (r.rate || 0) / 100, 0);
-    return cPct + pPct;
+  // break-even = Total expenses ÷ 毛利率. commission/广告/水电…都已算在 totalExp 里(当固定额), 唯一变动是 COGS(体现在毛利率).
+  //   with renovation = 全部 totalExp; without renovation = 扣掉建店分期那行.
+  const renovation = auto.sales.map((_, i) => expRows.filter(e => e.row.lineId === 'buildout').reduce((a, e) => a + e.v[i], 0));
+  const margin = mi => {
+    const s = auto.sales[mi - 1];
+    if (s > 0) return gross[mi - 1] / s;                                       // 实际毛利率 = 毛利 / 营业额
+    if (costRow && costRow.type === 'pct') return 1 - (costRow.rate || 0) / 100; // 没营业额时用 cost rate 推
+    return NaN;
   };
-  const beEx = auto.sales.map((_, i) => { const d = 1 - varRate(i + 1); return d > 0 ? fixedEx[i] / d : NaN; });
-  const beIn = auto.sales.map((_, i) => { const d = 1 - varRate(i + 1); return d > 0 ? (fixedEx[i] + buildout[i]) / d : NaN; });
+  const beIn = auto.sales.map((_, i) => { const m = margin(i + 1); return m > 0 ? totalExp[i] / m : NaN; });
+  const beEx = auto.sales.map((_, i) => { const m = margin(i + 1); return m > 0 ? (totalExp[i] - renovation[i]) / m : NaN; });
   return { sales: auto.sales, cost, gross, costRow, expRows, expUserRows, totalExp, net, target, targetRow, beEx, beIn };
 }
 // ponytail 自检: 公式 + 净利符号
 function __pnlSelfCheck() {
-  const d = 1 - (0.30 + 0.10), be = 56000 / d; // fixed 56000, cost30%, comm10% → 93333.33
+  const be = 56000 / 0.6; // totalExp 56000 ÷ 毛利率 60% → 93333.33 (commission 不再单独扣)
   console.assert(Math.abs(be - 93333.333) < 0.5, 'PnL break-even formula broken', be);
   console.assert((100 - 120) < 0, 'PnL net sign');
   console.log('PnL self-check ok');
@@ -12749,12 +12749,13 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-yr{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;font-family:inherit;}
 #pnlRoot .pnl-savebtn{padding:8px 18px;font-size:13px;white-space:nowrap;}
 #pnlRoot .pnl-savebtn:disabled{opacity:.7;}
-#pnlRoot .pnl-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px;}
-#pnlRoot .pnl-card{position:relative;background:#fff;border:1px solid #ececf1;border-radius:14px;padding:14px 15px 14px 17px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;}
+#pnlRoot .pnl-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:18px;}
+@media(max-width:820px){#pnlRoot .pnl-cards{grid-template-columns:repeat(2,1fr);}}
+#pnlRoot .pnl-card{position:relative;background:#fff;border:1px solid #ececf1;border-radius:14px;padding:13px 14px 13px 16px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;}
 #pnlRoot .pnl-card .acc{position:absolute;left:0;top:0;bottom:0;width:4px;}
 #pnlRoot .pnl-card .pd{font-size:9px;color:#b6b8c6;text-transform:uppercase;letter-spacing:.5px;}
 #pnlRoot .pnl-card .lbl{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
-#pnlRoot .pnl-card .val{font-size:21px;font-weight:600;line-height:1.1;margin-top:4px;letter-spacing:-.5px;}
+#pnlRoot .pnl-card .val{font-size:18px;font-weight:600;line-height:1.1;margin-top:4px;letter-spacing:-.3px;white-space:nowrap;}
 #pnlRoot .pnl-card .sub{font-size:11px;color:var(--gray);margin-top:4px;}
 #pnlRoot .pnl-card .pbar{height:6px;border-radius:99px;background:#eeedf6;margin-top:9px;overflow:hidden;}
 #pnlRoot .pnl-card .pbar>i{display:block;height:100%;border-radius:99px;background:var(--purple);}
@@ -12766,7 +12767,7 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t thead th.l{z-index:7;background:var(--surface);}
 #pnlRoot .pnl-t th.sub,#pnlRoot .pnl-t td.sub{background:#f7f3ff;}
 #pnlRoot .pnl-t thead th.sub{background:#f0e9ff;color:var(--purple-deep);}
-#pnlRoot .pnl-t tr.grp td{background:#f0ecfa;padding:0;position:sticky;top:32px;z-index:4;border-top:1px solid #e7e2f7;border-bottom:1px solid #e7e2f7;}
+#pnlRoot .pnl-t tr.grp td{background:#f0ecfa;padding:0;text-align:left;position:sticky;top:32px;z-index:4;border-top:1px solid #e7e2f7;border-bottom:1px solid #e7e2f7;}
 #pnlRoot .pnl-t .glabel{position:sticky;left:0;display:inline-block;color:var(--purple-deep);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:7px 10px;}
 #pnlRoot .pnl-t tr.big td{font-size:13.5px;font-weight:700;border-top:1px solid #e7e7ee;}
 #pnlRoot .pnl-t tr.big td.l .nm{font-size:13px;font-weight:700;}
@@ -12820,14 +12821,18 @@ function renderPnL() {
 
   // ---- cards ----
   const S = _pnlSum(C.sales, idx), N = _pnlSum(C.net, idx), T = _pnlSum(C.target, idx);
-  const beE = _pnlAvg(C.beEx, idx), beI = _pnlAvg(C.beIn, idx);
+  const periodSumRows = pred => C.expRows.filter(pred).reduce((a, er) => a + _pnlSum(er.v, idx), 0);
+  const manComm = periodSumRows(er => er.row.type === 'staff' || er.row.lineId === 'commission'); // 人力 + 佣金
+  const totExp = _pnlSum(C.totalExp, idx);
+  const mgmtExp = _pnlSum(pnlComputeRows('mgmt', year).totalExp, idx);          // 管理层(HQ)总开销
+  const companySales = _pnlSum(pnlAutoRows('all', year).sales, idx);            // 全公司营业额(各店之和)
   const netCol = N < 0 ? _PNL_RED : _PNL_BLUE;
   const card = (acc, lbl, valHtml, sub, bar) => `<div class="pnl-card"><div class="acc" style="background:${acc}"></div><div class="pd">${e(P.nm)}</div><div class="lbl">${lbl}</div><div class="val">${valHtml}</div>${bar || ''}<div class="sub">${sub}</div></div>`;
-  const beFmt = v => isFinite(v) ? 'RM ' + _pnlFmt(v) : '—';
   const cardsHtml = card('#1ea672', 'Net profit', `<span style="color:${netCol}">RM ${_pnlFmt(N)}</span>`, (S ? Math.round(N / S * 100) : 0) + '% margin')
     + card('#7132f5', 'Sales vs target', (T ? Math.round(S / T * 100) : 0) + '%', `RM ${_pnlFmt(S)} / ${_pnlFmt(T)}`, `<div class="pbar"><i style="width:${T ? Math.min(100, Math.round(S / T * 100)) : 0}%"></i></div>`)
-    + card('#e08a1e', 'Break-even (without renovation)', beFmt(beE), 'min monthly sales to not lose')
-    + card('#c2531a', 'Break-even (with renovation)', beFmt(beI), 'also pays back renovation');
+    + card('#e08a1e', 'Manpower + Commission', 'RM ' + _pnlFmt(manComm), (S ? Math.round(manComm / S * 100) : 0) + '% of sales')
+    + card('#1098ad', 'Management expenses', 'RM ' + _pnlFmt(mgmtExp), (companySales ? Math.round(mgmtExp / companySales * 100) : 0) + '% of total sales')
+    + card('#c2531a', 'Total expenses', 'RM ' + _pnlFmt(totExp), (S ? Math.round(totExp / S * 100) : 0) + '% of sales');
 
   // ---- table ----
   const colCount = idx.length + 2;
@@ -13064,11 +13069,14 @@ async function _savePnL() {
 }
 // ---- Manpower (Staff list) modal: 员工 name + basic, 店级 EPF%/SOCSO% 自动算, 按 店+行+年+月 存 ----
 const _PNL_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-let _pnlStaffCtx = null, _pnlStaffEmps = [], _pnlStaffEpf = 13, _pnlStaffSocso = 1.75;
+let _pnlStaffCtx = null, _pnlStaffEmps = [], _pnlStaffEpf = 13, _pnlStaffSocso = 1.75, _pnlStaffPool = {};
 function _pnlStaffModal(lineId, mi) {
   const store = _pnlState.store, year = _pnlState.year, cfg = _pnlCfg(store);
   _pnlStaffCtx = { store, lineId, year, month: mi };
   _pnlStaffEpf = cfg.epfPct; _pnlStaffSocso = cfg.socsoPct;
+  // 旧员工名 → 最近 basic (本店历史所有月) 供下拉选 + 自动带薪
+  _pnlStaffPool = {};
+  (state.pnl.staff || []).filter(s => s.store === store && (s.empName || '').trim()).forEach(s => { _pnlStaffPool[s.empName.trim()] = s.basic; });
   const ofMonth = m => (state.pnl.staff || []).filter(s => s.store === store && s.lineId === lineId && String(s.year) === String(year) && s.month === m).map(s => ({ name: s.empName, basic: s.basic }));
   _pnlStaffEmps = ofMonth(mi);
   if (_pnlStaffEmps.length === 0) { for (let pm = mi - 1; pm >= 1; pm--) { const prev = ofMonth(pm); if (prev.length) { _pnlStaffEmps = prev; break; } } } // 默认带上月
@@ -13081,8 +13089,8 @@ function _pnlStaffRender() {
   const title = (r ? r.name : 'Manpower') + ' · ' + _PNL_MONTHS[_pnlStaffCtx.month - 1];
   const rowsHtml = _pnlStaffEmps.map((e, i) => {
     const b = parseFloat(e.basic) || 0, epf = b * _pnlStaffEpf / 100, socso = b * _pnlStaffSocso / 100;
-    return `<div class="pnl-emp"><input class="pnl-emp-in pnl-emp-name" value="${ee(e.name)}" placeholder="Name" oninput="_pnlStaffEmps[${i}].name=this.value">`
-      + `<input class="pnl-emp-in pnl-emp-basic" type="number" step="any" value="${b}" placeholder="Basic" oninput="_pnlStaffEmps[${i}].basic=parseFloat(this.value)||0;_pnlStaffRecalc()">`
+    return `<div class="pnl-emp"><input class="pnl-emp-in pnl-emp-name" list="pnlNameList" value="${ee(e.name)}" placeholder="Name" oninput="_pnlStaffEmps[${i}].name=this.value;_pnlStaffNamePick(${i})">`
+      + `<input id="sb${i}" class="pnl-emp-in pnl-emp-basic" type="number" step="any" value="${b}" placeholder="Basic" oninput="_pnlStaffEmps[${i}].basic=parseFloat(this.value)||0;_pnlStaffRecalc()">`
       + `<span class="pnl-emp-c">EPF<b id="se${i}">${_pnlFmt(epf)}</b></span><span class="pnl-emp-c">SOCSO<b id="ss${i}">${_pnlFmt(socso)}</b></span>`
       + `<span class="pnl-emp-c pnl-emp-tot">Total<b id="st${i}">${_pnlFmt(b + epf + socso)}</b></span>`
       + `<button class="pnl-emp-x" onclick="_pnlStaffRemove(${i})" title="Remove">✕</button></div>`;
@@ -13091,6 +13099,7 @@ function _pnlStaffRender() {
   const html = `<div class="modal-header"><div class="modal-title">${ee(title)}</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
     + `<div style="display:flex;gap:10px;margin-bottom:12px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>EPF rate (%)</label><input type="number" step="any" value="${_pnlStaffEpf}" oninput="_pnlStaffEpf=parseFloat(this.value)||0;_pnlStaffRecalc()"></div>`
     + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>SOCSO rate (%)</label><input type="number" step="any" value="${_pnlStaffSocso}" oninput="_pnlStaffSocso=parseFloat(this.value)||0;_pnlStaffRecalc()"></div></div>`
+    + `<datalist id="pnlNameList">${Object.keys(_pnlStaffPool).map(n => `<option value="${ee(n)}"></option>`).join('')}</datalist>`
     + `<div class="pnl-emp-list">${rowsHtml || '<div style="color:var(--gray);font-size:13px;padding:10px 0">No staff yet.</div>'}</div>`
     + `<button class="btn btn-outline btn-full" style="margin-top:6px" onclick="_pnlStaffAdd()">＋ Add employee</button>`
     + `<div style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)"><span style="font-size:12px;color:var(--gray);text-transform:uppercase;letter-spacing:.4px">Total manpower</span><b id="staffGrand" style="font-size:16px">RM ${_pnlFmt(grand)}</b></div>`
@@ -13106,6 +13115,15 @@ function _pnlStaffRecalc() {
     if (se) se.textContent = _pnlFmt(epf); if (ss) ss.textContent = _pnlFmt(socso); if (st) st.textContent = _pnlFmt(tot);
   });
   const g = document.getElementById('staffGrand'); if (g) g.textContent = 'RM ' + _pnlFmt(grand);
+}
+// 选了旧名字 → 若 basic 还空, 自动带出上次的底薪
+function _pnlStaffNamePick(i) {
+  const e = _pnlStaffEmps[i]; const nm = (e.name || '').trim();
+  if (nm && (parseFloat(e.basic) || 0) === 0 && _pnlStaffPool[nm] != null) {
+    e.basic = _pnlStaffPool[nm];
+    const bi = document.getElementById('sb' + i); if (bi) bi.value = e.basic;
+    _pnlStaffRecalc();
+  }
 }
 function _pnlStaffAdd() { _pnlStaffEmps.push({ name: '', basic: 0 }); _pnlStaffRender(); }
 function _pnlStaffRemove(i) { _pnlStaffEmps.splice(i, 1); _pnlStaffRender(); }
