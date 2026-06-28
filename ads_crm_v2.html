@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.28</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.31</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.28</div>
+      <div class="nav-brand-version">v7.31</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12783,6 +12783,19 @@ function pnlComputeAll(year) {
   const beEx = sales.map((_, i) => { const m = margin(i); return m > 0 ? (totalExp[i] - renovation[i]) / m : NaN; });
   return { sales, cost, gross, costRow: null, expRows, expUserRows: [], totalExp, net, target, targetRow: null, beEx, beIn };
 }
+// 建议目标 = 公司总保本(含 HQ) × 店消费 / 总店消费(不含 mgmt). 各店加埋 = 公司总保本.
+function pnlSuggestedTarget(store, year) {
+  const compBE = pnlComputeAll(year).beEx; // 公司总 break-even (含 HQ, 不含建店)
+  const stores = _pnlActiveStores();
+  const storeExp = {}; const denom = Array.from({ length: 12 }, () => 0);
+  stores.forEach(s => { const t = pnlComputeRows(s, year).totalExp; storeExp[s] = t; t.forEach((v, i) => denom[i] += v); });
+  return Array.from({ length: 12 }, (_, i) => {
+    if (store === 'all') return isFinite(compBE[i]) ? compBE[i] : 0;
+    if (store === 'mgmt') return 0;
+    const e = (storeExp[store] || [])[i] || 0;
+    return (denom[i] > 0 && isFinite(compBE[i])) ? compBE[i] * e / denom[i] : 0;
+  });
+}
 
 function _pnlInjectCss() {
   if (document.getElementById('pnlCss')) return;
@@ -12828,6 +12841,9 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t tr.big td.l .nm{font-size:13px;font-weight:700;}
 #pnlRoot .pnl-t tr.ref td{color:var(--gray);}
 #pnlRoot .pnl-t tr.ref td.l .nm{font-weight:400;color:var(--gray);}
+#pnlRoot .pnl-t tr.sugg td{color:#0e7c8b;}
+#pnlRoot .pnl-t tr.sugg td.l .nm{color:#0e7c8b;font-weight:500;}
+#pnlRoot .pnl-t .nm-i{color:#0e7c8b;font-size:11px;cursor:help;}
 #pnlRoot .pnl-t td.l .nm{font-weight:500;}
 #pnlRoot .pnl-t td.l .nm[contenteditable]{outline:none;border-bottom:1px dashed transparent;cursor:text;}
 #pnlRoot .pnl-t td.l .nm[contenteditable]:focus{border-bottom-color:var(--purple);}
@@ -12871,6 +12887,8 @@ function _pnlInjectCss() {
 #pnlRoot .emp-t td.l .rgear:hover{color:var(--purple);}
 #pnlRoot .emp-t .bchip{display:inline-block;min-width:36px;padding:3px 6px;border-radius:6px;font-size:10px;font-weight:600;}
 #pnlRoot .emp-t .bnone{color:#cfcfd6;}
+#pnlRoot .emp-t tr.emp-inactive td{opacity:.5;}
+#pnlRoot .emp-t .emp-resigned{font-size:8.5px;font-weight:600;color:var(--gray);background:var(--surface-2);border-radius:5px;padding:1px 5px;text-transform:uppercase;letter-spacing:.3px;}
 #pnlRoot .emp-t tfoot td{font-weight:700;background:#fbfafe;border-top:1px solid #ececf1;position:sticky;bottom:0;}
 #pnlRoot .emp-t tfoot td.l{background:#fbfafe;}
 /* Manpower 挑人 list (modal on body) */
@@ -12974,7 +12992,7 @@ function renderPnL() {
     const drag = opts.drag && editable;                                 // 费用行(固定+自定义) 都能拖
     const handle = drag ? `<span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'${e(lid)}')" title="Drag to reorder">${GRIP_SVG}</span>` : '';
     const trDrop = drag ? ` ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'${e(lid)}')"` : '';
-    const nm = `<span class="nm"${custom ? ` contenteditable="true" onblur="_pnlSetName('${e(lid)}',this.textContent)"` : ''}>${e(opts.name)}</span>`;
+    const nm = `<span class="nm"${custom ? ` contenteditable="true" onblur="_pnlSetName('${e(lid)}',this.textContent)"` : ''}${co.nmTitle ? ` title="${e(co.nmTitle)}"` : ''}>${e(opts.name)}${co.nmTitle ? ` <span class="nm-i" title="${e(co.nmTitle)}">&#9432;</span>` : ''}</span>`;
     let cells = '';
     idx.forEach(i => { cells += cell(r, opts.v, i + 1, co); });
     return `<tr class="${opts.cls || ''}"${trDrop}><td class="l">${handle}${del}${nm}${gear}</td>${cells}${subCell(opts.v, co)}</tr>`;
@@ -13002,6 +13020,7 @@ function renderPnL() {
   b += band('Targets & break-even');
   if (C.targetRow) b += rowHtml({ row: C.targetRow, v: C.target, name: C.targetRow.name, cls: 'ref' });
   else b += rowHtml({ row: { type: 'auto' }, v: C.target, name: 'Target sales', cls: 'ref' });
+  b += rowHtml({ row: { type: 'auto' }, v: pnlSuggestedTarget(store, year), name: 'Suggested target sales', cls: 'ref sugg', cellOpts: { nmTitle: 'Suggested target = Total break-even × (outlet expenses ÷ total outlet expenses). Sums to the company break-even so all stores together cover head office too.' } });
   b += rowHtml({ row: { type: 'auto' }, v: C.beEx, name: 'Break-even (without renovation)', cls: 'ref', cellOpts: { avgSub: true } });
   b += rowHtml({ row: { type: 'auto' }, v: C.beIn, name: 'Break-even (with renovation)', cls: 'ref', cellOpts: { avgSub: true } });
   b += '</tbody>';
@@ -13281,7 +13300,7 @@ function _pnlStaffRender() {
   const { store, lineId, year, month } = _pnlPickCtx;
   const r = _pnlFindRow(lineId);
   const title = (r ? r.name : 'Manpower') + ' · ' + _PNL_MONTHS[month - 1];
-  const emps = (state.pnl.employees || []).slice().sort((a, b) => _pnlEmpLatestBasic(b.id, year) - _pnlEmpLatestBasic(a.id, year));
+  const emps = (state.pnl.employees || []).filter(e => e.active !== false).slice().sort((a, b) => _pnlEmpLatestBasic(b.id, year) - _pnlEmpLatestBasic(a.id, year)); // 离职的不进 picker
   const rows = emps.map(e => {
     const monthBasic = _pnlEmpBasic(e.id, year, month); // 没设薪 = 那个月还没入职/已离职
     const employed = monthBasic > 0;
@@ -13333,6 +13352,7 @@ function _pnlEmpModal(empId, retLineId, retMonth) {
     + `<div class="settings-modal-section-title">Global — applies everywhere</div>`
     + `<div class="settings-modal-input-row"><label>Name</label><input id="pnlEmpName" type="text" value="${e ? ee(e.name) : ''}" placeholder="Employee name"></div>`
     + `<div class="settings-modal-input-row" style="margin-top:12px"><label>Position</label><input id="pnlEmpPos" type="text" value="${e ? ee(e.position || '') : ''}" placeholder="e.g. Therapist"></div>`
+    + `<div class="settings-modal-input-row" style="margin-top:12px"><label>Status</label><div class="toggle-group" id="pnlEmpStatus" style="display:flex;width:100%"><div class="toggle${(e ? e.active !== false : true) ? ' active' : ''}" data-v="1" style="flex:1;text-align:center" onclick="_pnlEmpStatusPick(1)">Active</div><div class="toggle${(e ? e.active !== false : true) ? '' : ' active'}" data-v="0" style="flex:1;text-align:center" onclick="_pnlEmpStatusPick(0)">Resigned</div></div></div>`
     + `<div style="display:flex;gap:10px;margin-top:12px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>EPF %</label><input id="pnlEmpEpf" type="number" step="any" value="${epf}"></div>`
     + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>SOCSO %</label><input id="pnlEmpSocso" type="number" step="any" value="${socso}"></div></div>`
     + `<div style="height:1px;background:var(--border);margin:16px 0"></div>`
@@ -13354,6 +13374,9 @@ async function _pnlEmpDelete(empId) {
   state.pnl.staff = (state.pnl.staff || []).filter(x => x.empId !== empId);
   saveState(); closeModal(); renderPnL();
 }
+function _pnlEmpStatusPick(v) {
+  document.querySelectorAll('#pnlEmpStatus .toggle').forEach(el => el.classList.toggle('active', el.dataset.v === String(v)));
+}
 function _pnlEmpSave(empId) {
   const name = (_pnlV('pnlEmpName') || '').trim();
   if (!name) { toast('Enter a name'); return; }
@@ -13361,9 +13384,10 @@ function _pnlEmpSave(empId) {
   const epf = parseFloat(_pnlV('pnlEmpEpf')) || 0, socso = parseFloat(_pnlV('pnlEmpSocso')) || 0;
   const basic = parseFloat(_pnlV('pnlEmpBasic')) || 0;
   const effM = parseInt(_pnlV('pnlEmpEffM'), 10) || 1, effY = _pnlV('pnlEmpEffY') || _pnlState.year;
+  const _act = document.querySelector('#pnlEmpStatus .toggle.active'); const isActive = _act ? _act.dataset.v === '1' : true;
   let e = empId ? _pnlEmp(empId) : null;
-  if (!e) { empId = 'emp-' + Date.now(); e = { id: empId, name, position: pos, epfPct: epf, socsoPct: socso }; state.pnl.employees.push(e); }
-  else { e.name = name; e.position = pos; e.epfPct = epf; e.socsoPct = socso; }
+  if (!e) { empId = 'emp-' + Date.now(); e = { id: empId, name, position: pos, epfPct: epf, socsoPct: socso, active: isActive }; state.pnl.employees.push(e); }
+  else { e.name = name; e.position = pos; e.epfPct = epf; e.socsoPct = socso; e.active = isActive; }
   let sal = (state.pnl.empSalary || []).find(s => s.empId === empId && String(s.year) === String(effY));
   if (!sal) { sal = { id: empId + '|' + effY, empId, year: String(effY) }; for (let m = 1; m <= 12; m++) sal['m' + m] = 0; state.pnl.empSalary.push(sal); }
   for (let m = effM; m <= 12; m++) sal['m' + m] = basic;
@@ -13376,7 +13400,7 @@ function _pnlEmpSave(empId) {
 function renderPnlEmployees(root) {
   const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
   const year = _pnlState.year, BR = _pnlBranchMeta();
-  const emps = (state.pnl.employees || []).slice().sort((a, b) => _pnlEmpLatestBasic(b.id, year) - _pnlEmpLatestBasic(a.id, year));
+  const emps = (state.pnl.employees || []).slice().sort((a, b) => ((a.active === false ? 1 : 0) - (b.active === false ? 1 : 0)) || (_pnlEmpLatestBasic(b.id, year) - _pnlEmpLatestBasic(a.id, year))); // 离职的沉到最底
   let repM = 1; for (let m = 12; m >= 1; m--) { if ((state.pnl.staff || []).some(s => String(s.year) === String(year) && s.month === m)) { repM = m; break; } }
   const activeIn = (e, m) => !!_pnlEmpBranch(e.id, year, m);
   const actEmps = emps.filter(e => activeIn(e, repM));
@@ -13394,7 +13418,8 @@ function renderPnlEmployees(root) {
   if (!emps.length) body += '<tr><td class="l" colspan="17" style="color:var(--gray);padding:18px;font-size:13px">No employees yet. Click “＋ Add employee”.</td></tr>';
   emps.forEach(e => {
     const basic = _pnlEmpLatestBasic(e.id, year);
-    body += `<tr><td class="l"><div class="nmrow"><span class="nm">${ee(e.name)}</span><button class="rgear" onclick="_pnlEmpModal('${ee(e.id)}')" title="Edit employee">${_PNL_GEAR}</button></div>${e.position ? `<div class="erole">${ee(e.position)}</div>` : ''}</td>`;
+    const inactive = e.active === false;
+    body += `<tr class="${inactive ? 'emp-inactive' : ''}"><td class="l"><div class="nmrow"><span class="nm">${ee(e.name)}</span>${inactive ? '<span class="emp-resigned">Resigned</span>' : ''}<button class="rgear" onclick="_pnlEmpModal('${ee(e.id)}')" title="Edit employee">${_PNL_GEAR}</button></div>${e.position ? `<div class="erole">${ee(e.position)}</div>` : ''}</td>`;
     body += `<td class="r">${_pnlFmt(basic)}</td><td class="r">${(e.epfPct || 0)}%</td><td class="r">${(e.socsoPct || 0)}%</td>`;
     for (let i = 0; i < 12; i++) { const st = _pnlEmpBranch(e.id, year, i + 1); if (st && BR[st]) body += `<td><span class="bchip" style="background:${BR[st].color}1f;color:${BR[st].color}">${BR[st].abbr}</span></td>`; else body += '<td><span class="bnone">—</span></td>'; }
     body += `<td class="r">${_pnlFmt(basic * _pnlEmpRate(e))}</td></tr>`;
@@ -15543,7 +15568,8 @@ function _normalizeSheetPullData(d) {
   const pnlConfig = (d.PnL_Config === undefined) ? null : (d.PnL_Config || []).filter(r => r && r.id).map(r => ({
     id: r.id, store: r.store, epfPct: _toN(r.epfPct), socsoPct: _toN(r.socsoPct) }));
   const pnlEmployees = (d.PnL_Employees === undefined) ? null : (d.PnL_Employees || []).filter(r => r && r.id).map(r => ({
-    id: r.id, name: r.name || '', position: r.position || '', epfPct: _toN(r.epfPct), socsoPct: _toN(r.socsoPct) }));
+    id: r.id, name: r.name || '', position: r.position || '', epfPct: _toN(r.epfPct), socsoPct: _toN(r.socsoPct),
+    active: (r.active === false || String(r.active).toLowerCase() === 'false' || r.active === 0 || String(r.active) === '0') ? false : true }));
   const pnlEmpSalary = (d.PnL_EmpSalary === undefined) ? null : (d.PnL_EmpSalary || []).filter(r => r && r.id).map(r => {
     const o = { id: r.id, empId: r.empId, year: String(r.year || '') };
     for (let m = 1; m <= 12; m++) o['m' + m] = _toN(r['m' + m]);
