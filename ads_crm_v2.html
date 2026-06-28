@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.24</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.25.10</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.25.8</div>
+      <div class="nav-brand-version">v7.25.10</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12782,7 +12782,10 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t td.l .rdrag:active{cursor:grabbing;}
 #pnlRoot .pnl-t tr.dragover td{box-shadow:inset 0 2px 0 var(--purple);}
 .pnl-emp-list{max-height:300px;overflow-y:auto;}
-.pnl-emp{display:flex;align-items:center;gap:8px;padding:9px 0;border-top:0.5px solid var(--border);}
+.pnl-emp-wrap{border-top:0.5px solid var(--border);}
+.pnl-emp-warn{color:var(--red);font-size:11px;padding:0 0 8px 2px;}
+.pnl-emp-warn:empty{display:none;}
+.pnl-emp{display:flex;align-items:center;gap:8px;padding:9px 0;}
 .pnl-emp-in{padding:8px 10px;font-size:13px;}
 .pnl-emp-name{flex:1;min-width:90px;}
 .pnl-emp-basic{width:84px;}
@@ -13074,9 +13077,9 @@ function _pnlStaffModal(lineId, mi) {
   const store = _pnlState.store, year = _pnlState.year, cfg = _pnlCfg(store);
   _pnlStaffCtx = { store, lineId, year, month: mi };
   _pnlStaffEpf = cfg.epfPct; _pnlStaffSocso = cfg.socsoPct;
-  // 旧员工名 → 最近 basic (本店历史所有月) 供下拉选 + 自动带薪
+  // 旧员工名 → 最近 basic (全部门店历史) 供下拉选 + 自动带薪
   _pnlStaffPool = {};
-  (state.pnl.staff || []).filter(s => s.store === store && (s.empName || '').trim()).forEach(s => { _pnlStaffPool[s.empName.trim()] = s.basic; });
+  (state.pnl.staff || []).filter(s => (s.empName || '').trim()).forEach(s => { _pnlStaffPool[s.empName.trim()] = s.basic; });
   const ofMonth = m => (state.pnl.staff || []).filter(s => s.store === store && s.lineId === lineId && String(s.year) === String(year) && s.month === m).map(s => ({ name: s.empName, basic: s.basic }));
   _pnlStaffEmps = ofMonth(mi);
   if (_pnlStaffEmps.length === 0) { for (let pm = mi - 1; pm >= 1; pm--) { const prev = ofMonth(pm); if (prev.length) { _pnlStaffEmps = prev; break; } } } // 默认带上月
@@ -13089,11 +13092,13 @@ function _pnlStaffRender() {
   const title = (r ? r.name : 'Manpower') + ' · ' + _PNL_MONTHS[_pnlStaffCtx.month - 1];
   const rowsHtml = _pnlStaffEmps.map((e, i) => {
     const b = parseFloat(e.basic) || 0, epf = b * _pnlStaffEpf / 100, socso = b * _pnlStaffSocso / 100;
-    return `<div class="pnl-emp"><input class="pnl-emp-in pnl-emp-name" list="pnlNameList" value="${ee(e.name)}" placeholder="Name" oninput="_pnlStaffEmps[${i}].name=this.value;_pnlStaffNamePick(${i})">`
+    const conf = _pnlStaffConflict(e.name);
+    return `<div class="pnl-emp-wrap"><div class="pnl-emp"><input class="pnl-emp-in pnl-emp-name" list="pnlNameList" value="${ee(e.name)}" placeholder="Name" oninput="_pnlStaffEmps[${i}].name=this.value;_pnlStaffNamePick(${i});_pnlStaffCheck(${i})">`
       + `<input id="sb${i}" class="pnl-emp-in pnl-emp-basic" type="number" step="any" value="${b}" placeholder="Basic" oninput="_pnlStaffEmps[${i}].basic=parseFloat(this.value)||0;_pnlStaffRecalc()">`
       + `<span class="pnl-emp-c">EPF<b id="se${i}">${_pnlFmt(epf)}</b></span><span class="pnl-emp-c">SOCSO<b id="ss${i}">${_pnlFmt(socso)}</b></span>`
       + `<span class="pnl-emp-c pnl-emp-tot">Total<b id="st${i}">${_pnlFmt(b + epf + socso)}</b></span>`
-      + `<button class="pnl-emp-x" onclick="_pnlStaffRemove(${i})" title="Remove">✕</button></div>`;
+      + `<button class="pnl-emp-x" onclick="_pnlStaffRemove(${i})" title="Remove">✕</button></div>`
+      + `<div class="pnl-emp-warn" id="sw${i}">${conf ? ('⚠ Already at ' + ee(conf) + ' this month') : ''}</div></div>`;
   }).join('');
   const grand = _pnlStaffEmps.reduce((a, e) => a + _pnlStaffEmpTotal(e), 0);
   const html = `<div class="modal-header"><div class="modal-title">${ee(title)}</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
@@ -13116,6 +13121,19 @@ function _pnlStaffRecalc() {
   });
   const g = document.getElementById('staffGrand'); if (g) g.textContent = 'RM ' + _pnlFmt(grand);
 }
+// 同名员工当月已在别的店 → 返回那家店名(防一人同月被算两家, 重复成本); 否则 null
+function _pnlStaffConflict(name) {
+  const nm = (name || '').trim().toLowerCase(); if (!nm || !_pnlStaffCtx) return null;
+  const { store, year, month } = _pnlStaffCtx;
+  const hit = (state.pnl.staff || []).find(s => s.store !== store && String(s.year) === String(year) && s.month === month && (s.empName || '').trim().toLowerCase() === nm);
+  if (!hit) return null;
+  const loc = (state.locations || []).find(l => l.id === hit.store);
+  return loc ? loc.name : (hit.store === 'mgmt' ? 'Mgmt Office' : hit.store);
+}
+function _pnlStaffCheck(i) {
+  const c = _pnlStaffConflict(_pnlStaffEmps[i].name);
+  const w = document.getElementById('sw' + i); if (w) w.textContent = c ? ('⚠ Already at ' + c + ' this month') : '';
+}
 // 选了旧名字 → 若 basic 还空, 自动带出上次的底薪
 function _pnlStaffNamePick(i) {
   const e = _pnlStaffEmps[i]; const nm = (e.name || '').trim();
@@ -13129,6 +13147,9 @@ function _pnlStaffAdd() { _pnlStaffEmps.push({ name: '', basic: 0 }); _pnlStaffR
 function _pnlStaffRemove(i) { _pnlStaffEmps.splice(i, 1); _pnlStaffRender(); }
 function _pnlStaffSave() {
   const { store, lineId, year, month } = _pnlStaffCtx;
+  // 防重复: 当月已在别店的同名员工不让存 (否则一人算两家)
+  const conf = _pnlStaffEmps.map(e => ({ n: (e.name || '').trim(), c: _pnlStaffConflict(e.name) })).find(x => x.n && x.c);
+  if (conf) { toast('⚠ ' + conf.n + ' is already at ' + conf.c + ' this month — remove to save'); return; }
   let cfg = (state.pnl.config || []).find(c => c.store === store);
   if (!cfg) state.pnl.config.push({ id: store, store, epfPct: _pnlStaffEpf, socsoPct: _pnlStaffSocso });
   else { cfg.epfPct = _pnlStaffEpf; cfg.socsoPct = _pnlStaffSocso; }
