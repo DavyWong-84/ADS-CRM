@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.42</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.43</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.42</div>
+      <div class="nav-brand-version">v7.43</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13259,7 +13259,8 @@ function _pnlExportPdf() {
     @page{size:A4 landscape;margin:8mm;}
     body{margin:0;font-family:'IBM Plex Sans',Helvetica,Arial,sans-serif;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     #pnlRoot .pnl-toptabs,#pnlRoot .pnl-bar,#pnlRoot .pnl-bar2,#pnlRoot .pnl-tabs,#pnlRoot .addrow,#pnlRoot .rgear,#pnlRoot .rdrag,#pnlRoot .delx{display:none!important;}
-    #pnlRoot .pnl-scroll{max-height:none!important;overflow:visible!important;border:1px solid #8a8a93!important;}
+    #pnlRoot{height:auto!important;display:block!important;}
+    #pnlRoot .pnl-scroll{max-height:none!important;overflow:visible!important;flex:none!important;border:1px solid #8a8a93!important;}
     #pnlRoot .pnl-t th,#pnlRoot .pnl-t td,#pnlRoot .pnl-t tr.grp td,#pnlRoot .emp-t tfoot td{position:static!important;}
     /* PDF: 线条加深, 看得清 */
     #pnlRoot .pnl-t th,#pnlRoot .pnl-t td{border-bottom:0.5px solid #b2b2bb!important;}
