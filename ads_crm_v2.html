@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.25.10</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.25.11</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.25.10</div>
+      <div class="nav-brand-version">v7.25.11</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12620,7 +12620,7 @@ const _PNL_PERIODS = { full: { nm: 'Full year', idx: [0,1,2,3,4,5,6,7,8,9,10,11]
   Q1: { nm: 'Q1', idx: [0,1,2], sub: 'Q1' }, Q2: { nm: 'Q2', idx: [3,4,5], sub: 'Q2' },
   Q3: { nm: 'Q3', idx: [6,7,8], sub: 'Q3' }, Q4: { nm: 'Q4', idx: [9,10,11], sub: 'Q4' } };
 const _PNL_BLUE = '#1763d6', _PNL_RED = '#d4153b';
-function _pnlFmt(n) { return Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function _pnlFmt(n) { return isFinite(n) ? Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'; }
 function _pnlPct(v, s) { return s ? Math.round(v / s * 100) + '%' : '—'; }
 function _pnlSum(a, idx) { return idx.reduce((t, i) => t + (a[i] || 0), 0); }
 function _pnlAvg(a, idx) { return _pnlSum(a, idx) / idx.length; }
@@ -12717,17 +12717,24 @@ function pnlComputeAll(year) {
   const mgmt = pnlComputeRows('mgmt', year);
   const zero = () => Array.from({ length: 12 }, () => 0);
   const sumArr = key => { const out = zero(); parts.forEach(p => p[key].forEach((v, i) => out[i] += v)); return out; };
-  const sales = sumArr('sales'), cost = sumArr('cost'), gross = sumArr('gross');
-  const target = sumArr('target'), beEx = sumArr('beEx'), beIn = sumArr('beIn');
-  // 费用行按名字合并各店 + Mgmt 的费用
+  const sales = sumArr('sales'), cost = sumArr('cost'), gross = sumArr('gross'), target = sumArr('target');
+  // 费用行按名字合并各店 + Mgmt; 保留 type/lineId 让卡片识别 manpower/commission, break-even 识别 buildout
   const byName = {};
   parts.concat([mgmt]).forEach(p => p.expRows.forEach(e => {
-    const k = e.row.name; if (!byName[k]) byName[k] = { row: { name: k, type: 'auto' }, v: zero() };
+    const k = e.row.name;
+    if (!byName[k]) byName[k] = { row: { name: k, type: e.row.type, lineId: e.row.lineId }, v: zero() };
     e.v.forEach((v, i) => byName[k].v[i] += v);
   }));
   const expRows = Object.keys(byName).map(k => byName[k]);
   const totalExp = zero(); expRows.forEach(e => e.v.forEach((v, i) => totalExp[i] += v));
   const net = gross.map((g, i) => g - totalExp[i]);
+  // break-even: 全公司聚合算(不是各店相加) = 公司总费用 ÷ 公司毛利率; 没营业额的月用全年混合毛利率兜底
+  const renovation = zero(); expRows.filter(e => e.row.lineId === 'buildout').forEach(e => e.v.forEach((v, i) => renovation[i] += v));
+  const totSales = sales.reduce((a, b) => a + b, 0), totGross = gross.reduce((a, b) => a + b, 0);
+  const blended = totSales > 0 ? totGross / totSales : 0;
+  const margin = i => (sales[i] > 0 ? gross[i] / sales[i] : blended);
+  const beIn = sales.map((_, i) => { const m = margin(i); return m > 0 ? totalExp[i] / m : NaN; });
+  const beEx = sales.map((_, i) => { const m = margin(i); return m > 0 ? (totalExp[i] - renovation[i]) / m : NaN; });
   return { sales, cost, gross, costRow: null, expRows, expUserRows: [], totalExp, net, target, targetRow: null, beEx, beIn };
 }
 
