@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.38</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.42</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.38</div>
+      <div class="nav-brand-version">v7.42</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12718,7 +12718,14 @@ function _pnlBuildSeed(store, year) {
   const prev = String(Number(year) - 1);
   const prevRows = (state.pnl.rows || []).filter(r => r.store === store && String(r.year) === prev);
   if (prevRows.length) return prevRows.map(r => ({ ...r, id: store + '|' + r.lineId + '|' + year, year: String(year) }));
-  return _pnlSeedTemplate(store).map((s, i) => _pnlBlankRow(store, year, { ...s, sortOrder: i + 1 }));
+  const seed = _pnlSeedTemplate(store).map((s, i) => _pnlBlankRow(store, year, { ...s, sortOrder: i + 1 }));
+  // cost/commission 全公司统一: 新店继承别店(同年)已设的 type/rate/name
+  ['cost', 'commission'].forEach(lid => {
+    const ref = (state.pnl.rows || []).find(rr => rr.lineId === lid && String(rr.year) === String(year));
+    const tgt = seed.find(s => s.lineId === lid);
+    if (ref && tgt) { tgt.type = ref.type; tgt.rate = ref.rate; tgt.name = ref.name; }
+  });
+  return seed;
 }
 function _pnlSeedRows(store, year) {
   if (store === 'all') return;
@@ -12874,9 +12881,9 @@ function _pnlInjectCss() {
 .pnl-emp-x{background:transparent;border:0;color:#c2c2cc;cursor:pointer;font-size:14px;padding:2px 4px;width:auto;}
 .pnl-emp-x:hover{color:var(--red);}
 /* v7.25: P&L/Employees top tabs */
-#pnlRoot .pnl-toptabs{display:inline-flex;background:var(--surface-2);border-radius:11px;padding:4px;margin-bottom:16px;}
-#pnlRoot .pnl-toptab{font-size:14px;font-weight:600;padding:8px 20px;border-radius:8px;color:var(--gray);cursor:pointer;}
-#pnlRoot .pnl-toptab.on{background:var(--purple);color:#fff;box-shadow:0 1px 3px rgba(113,50,245,.3);}
+#pnlRoot .pnl-toptabs{display:inline-flex;gap:6px;margin-bottom:16px;}
+#pnlRoot .pnl-toptab{font-size:14px;font-weight:600;padding:8px 18px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-toptab.on{background:var(--purple);border-color:var(--purple);color:#fff;}
 #pnlRoot .pnl-bar2{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:16px;}
 #pnlRoot .pnl-bar2 .pnl-tabs,#pnlRoot .pnl-bar2 .pnl-chips{margin:0;}
 #pnlRoot .pnl-bar2 .pnl-right{margin-left:auto;}
@@ -12886,7 +12893,7 @@ function _pnlInjectCss() {
 #pnlRoot .emp-legend span{display:inline-flex;align-items:center;gap:5px;}
 #pnlRoot .bdot{width:9px;height:9px;border-radius:3px;display:inline-block;}
 #pnlRoot .emp-t th,#pnlRoot .emp-t td{text-align:center;}
-#pnlRoot .emp-t th.l,#pnlRoot .emp-t td.l{text-align:left;width:100%;}
+#pnlRoot .emp-t th.l,#pnlRoot .emp-t td.l{text-align:left;width:200px;max-width:200px;}
 #pnlRoot .emp-t th.r,#pnlRoot .emp-t td.r{text-align:right;font-variant-numeric:tabular-nums;}
 #pnlRoot .emp-t td.l .nmrow{display:flex;align-items:center;gap:6px;}
 #pnlRoot .emp-t td.l .nm{font-weight:600;font-size:13px;}
@@ -13013,7 +13020,7 @@ function renderPnL() {
 
   let b = '<tbody>';
   b += band('Revenue');
-  b += rowHtml({ row: { type: 'auto' }, v: C.sales, name: 'Sales', cellOpts: {} });
+  b += rowHtml({ row: { type: 'auto' }, v: C.sales, name: 'Sales', cls: 'big', cellOpts: {} });
   b += band('Gross profit');
   if (C.costRow) b += rowHtml({ row: C.costRow, v: C.cost, name: C.costRow.name, cls: 'indent' });
   else b += rowHtml({ row: { type: 'auto' }, v: C.cost, name: 'Total Product & Service Cost', cls: 'indent' });
@@ -13111,6 +13118,13 @@ function _pnlTypeModalSave(lineId) {
   const act = document.querySelector('#pnlTypeToggle .toggle.active');
   if (act) r.type = act.dataset.t;
   if (r.type === 'pct') { const re = document.getElementById('pnlRate'); r.rate = re ? (parseFloat(re.value) || 0) : (r.rate || 0); }
+  // cost / commission 是全公司统一: 改一处 → 同步到所有店(同年)的同名行
+  if (lineId === 'cost' || lineId === 'commission') {
+    const yr = String(_pnlState.year);
+    (state.pnl.rows || []).forEach(row => {
+      if (row.lineId === lineId && String(row.year) === yr && row !== r) { row.type = r.type; row.rate = r.rate; row.name = r.name; }
+    });
+  }
   saveState(); closeModal(); renderPnL();
 }
 // 建店成本(Renovation) modal: 填总费用 + 分几个月 → 每月金额 = 总÷月数, 自动填进 12 个月
@@ -13355,6 +13369,8 @@ function _pnlEmpModal(empId, retLineId, retMonth) {
   const year = _pnlState.year;
   const basic = e ? _pnlEmpLatestBasic(e.id, year) : 0;
   const epf = e ? (e.epfPct || 0) : 13, socso = e ? (e.socsoPct || 0) : 1.75;
+  let startM = 1; // 入职月 = 当年第一个有薪的月 (modal 默认显示这个, 不再每次回 Jan)
+  if (e) { const sal = (state.pnl.empSalary || []).find(s => s.empId === e.id && String(s.year) === String(year)); if (sal) { for (let m = 1; m <= 12; m++) { if (sal['m' + m] > 0) { startM = m; break; } } } }
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
   const html = `<div class="modal-header"><div class="modal-title">${e ? ee(e.name) : 'New employee'}</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
     + `<div class="settings-modal-section-title">Global — applies everywhere</div>`
@@ -13367,9 +13383,9 @@ function _pnlEmpModal(empId, retLineId, retMonth) {
     + `<div class="settings-modal-section-title">Salary</div>`
     + `<div class="settings-modal-input-row"><label>Basic salary (RM)</label><input id="pnlEmpBasic" type="number" step="any" value="${basic}"></div>`
     + `<div class="settings-modal-input-row" style="margin-top:12px"><label>Effective from</label><div style="display:flex;gap:10px">`
-    + `<select id="pnlEmpEffM" style="flex:1">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('') + `</select>`
+    + `<select id="pnlEmpEffM" style="flex:1">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}"${(i + 1) === startM ? ' selected' : ''}>${m}</option>`).join('') + `</select>`
     + `<select id="pnlEmpEffY" style="width:110px">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select></div></div>`
-    + `<div style="font-size:11px;color:#b3631a;background:#fdf6ee;border-radius:8px;padding:8px 12px;margin-top:10px">New salary applies from the chosen month onward; earlier months keep the old salary.</div>`
+    + `<div style="font-size:11px;color:#b3631a;background:#fdf6ee;border-radius:8px;padding:8px 12px;margin-top:10px">Salary applies from this month onward. Months before it are set to RM 0 (not employed yet).</div>`
     + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="_pnlEmpSave('${empId ? ee(empId) : ''}')">Save</button>`
     + (e ? `<button class="btn btn-danger btn-full" style="margin-top:8px" onclick="_pnlEmpDelete('${ee(empId)}')">Delete employee</button>` : '');
   showModal(html);
@@ -13398,7 +13414,8 @@ function _pnlEmpSave(empId) {
   else { e.name = name; e.position = pos; e.epfPct = epf; e.socsoPct = socso; e.active = isActive; }
   let sal = (state.pnl.empSalary || []).find(s => s.empId === empId && String(s.year) === String(effY));
   if (!sal) { sal = { id: empId + '|' + effY, empId, year: String(effY) }; for (let m = 1; m <= 12; m++) sal['m' + m] = 0; state.pnl.empSalary.push(sal); }
-  for (let m = effM; m <= 12; m++) sal['m' + m] = basic;
+  for (let m = 1; m < effM; m++) sal['m' + m] = 0;        // 入职月之前 = 没在职 (0)
+  for (let m = effM; m <= 12; m++) sal['m' + m] = basic;  // 入职月起 = 薪金
   saveState();
   if (_pnlEmpReturn) { const rp = _pnlEmpReturn; _pnlEmpReturn = null; _pnlPickSel.add(empId); _pnlStaffModal(rp.lineId, rp.month, true); }
   else { closeModal(); renderPnL(); }
