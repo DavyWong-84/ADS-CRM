@@ -12747,6 +12747,8 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-seg button{font-family:inherit;font-size:12px;font-weight:500;padding:6px 16px;border:0;background:transparent;color:var(--gray);border-radius:7px;cursor:pointer;}
 #pnlRoot .pnl-seg button.on{background:#fff;color:var(--black);box-shadow:0 1px 2px rgba(0,0,0,.08);}
 #pnlRoot .pnl-yr{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;font-family:inherit;}
+#pnlRoot .pnl-savebtn{padding:8px 18px;font-size:13px;white-space:nowrap;}
+#pnlRoot .pnl-savebtn:disabled{opacity:.7;}
 #pnlRoot .pnl-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px;}
 #pnlRoot .pnl-card{position:relative;background:#fff;border:1px solid #ececf1;border-radius:14px;padding:14px 15px 14px 17px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;}
 #pnlRoot .pnl-card .acc{position:absolute;left:0;top:0;bottom:0;width:4px;}
@@ -12909,11 +12911,11 @@ function renderPnL() {
       + `</div><div class="pnl-right">`
       + `<select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
       + `<div class="pnl-seg"><button class="${_pnlState.mode === 'showAmt' ? 'on' : ''}" onclick="_pnlSetMode('showAmt')">RM</button><button class="${_pnlState.mode === 'showPct' ? 'on' : ''}" onclick="_pnlSetMode('showPct')">%</button></div>`
+      + (editable ? `<button class="btn btn-primary pnl-savebtn" id="pnlSaveBtn" onclick="_savePnL()">Save</button>` : '')
       + `</div></div>`
     + `<div class="pnl-cards">` + cardsHtml + `</div>`
     + `<div class="pnl-scroll"><table class="pnl-t">` + head + b + `</table></div>`
-    + (editable ? `<div class="pnl-save"><button class="btn btn-primary" onclick="_savePnL()">Save</button></div>`
-                : `<div class="pnl-save" style="color:var(--gray);font-size:12px;align-items:center">All outlets is a read-only roll-up of every store minus Mgmt Office.</div>`);
+    + (editable ? '' : `<div class="pnl-save" style="color:var(--gray);font-size:12px">All outlets is a read-only roll-up of every store minus Mgmt Office.</div>`);
   const _newScroll = root.querySelector('.pnl-scroll');
   if (_newScroll) { _newScroll.scrollTop = _sTop; _newScroll.scrollLeft = _sLeft; }
 }
@@ -12925,10 +12927,16 @@ function _pnlFindRow(lineId) {
 function _pnlSetCell(lineId, mi, v) {
   const r = _pnlFindRow(lineId); if (!r) return;
   const num = parseFloat(v) || 0;
-  // 填一个月 → 若整行还全是 0, 自动填满 12 (可再单独覆盖)
+  // 第一次填(整行还全 0) → 只自动填「有营业额」的月份(+你填的那格); 没营业额的留 0, 不用手动清.
+  //   整年都没营业额(如 Mgmt 或数据还没同步) → 退回填满 12, 方便.
   const allZero = Array.from({ length: 12 }, (_, i) => r['m' + (i + 1)] || 0).every(x => x === 0);
-  if (allZero && num !== 0) { for (let m = 1; m <= 12; m++) r['m' + m] = num; }
-  else r['m' + mi] = num;
+  if (allZero && num !== 0) {
+    const sales = pnlAutoRows(_pnlState.store, _pnlState.year).sales;
+    const anyRev = sales.some(s => s > 0);
+    for (let m = 1; m <= 12; m++) r['m' + m] = (m === mi || !anyRev || sales[m - 1] > 0) ? num : 0;
+  } else {
+    r['m' + mi] = num;
+  }
   saveState(); renderPnL();
 }
 function _pnlSetName(lineId, name) {
@@ -13035,14 +13043,22 @@ function _pnlSetPeriod(p) { _pnlState.period = p; renderPnL(); }
 function _pnlSetMode(m) { _pnlState.mode = m; renderPnL(); }
 async function _savePnL() {
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
-  if (!url) { toast('Set the Apps Script URL in Settings first'); return; }
+  if (!url) { toast('⚠️ Set the Apps Script URL in Settings first'); return; }
+  const btn = document.getElementById('pnlSaveBtn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+  toast('⏳ Saving to Google Sheet…');
   const payload = { action: 'pushAll', data: { PnL_Rows: state.pnl.rows, PnL_Staff: state.pnl.staff, PnL_Config: state.pnl.config } };
   try {
     const r = await fetch(url, { method: 'POST', body: JSON.stringify(gsPostBody(payload)), headers: { 'Content-Type': 'text/plain' } });
     const p = await r.json().catch(() => null);
     if (p && p.success === false) throw new Error(p.error || 'upstream failure');
-    toast('Saved');
-  } catch (err) { toast('Save failed — try again'); console.warn('PnL save failed', err); }
+    toast('✅ Saved to Google Sheet');
+    if (btn) { btn.disabled = false; btn.textContent = 'Saved ✓'; setTimeout(() => { const b2 = document.getElementById('pnlSaveBtn'); if (b2) b2.textContent = 'Save'; }, 2000); }
+  } catch (err) {
+    toast('❌ Save failed — try again');
+    if (btn) { btn.disabled = false; btn.textContent = 'Save'; }
+    console.warn('PnL save failed', err);
+  }
 }
 // ---- Manpower (Staff list) modal: 员工 name + basic, 店级 EPF%/SOCSO% 自动算, 按 店+行+年+月 存 ----
 const _PNL_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
