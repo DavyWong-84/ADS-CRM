@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.37</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.38</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.37</div>
+      <div class="nav-brand-version">v7.38</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12811,7 +12811,7 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-seg{display:inline-flex;background:var(--surface-2);border-radius:9px;padding:3px;}
 #pnlRoot .pnl-seg button{font-family:inherit;font-size:12px;font-weight:500;padding:6px 16px;border:0;background:transparent;color:var(--gray);border-radius:7px;cursor:pointer;}
 #pnlRoot .pnl-seg button.on{background:#fff;color:var(--black);box-shadow:0 1px 2px rgba(0,0,0,.08);}
-#pnlRoot .pnl-yr{font-size:13px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;font-family:inherit;}
+#pnlRoot .pnl-yr{font-size:13px;width:auto;padding:7px 30px 7px 11px;border:1px solid var(--border);border-radius:9px;background-color:#fff;font-family:inherit;}
 #pnlRoot .pnl-savebtn{padding:8px 18px;font-size:13px;white-space:nowrap;}
 #pnlRoot .pnl-savebtn:disabled{opacity:.7;}
 #pnlRoot .pnl-dirty{box-shadow:0 0 0 3px rgba(255,184,0,.35);}
@@ -12834,6 +12834,7 @@ function _pnlInjectCss() {
 }
 @media(max-width:767px){ /* 手机版 P&L: 只留卡片, 表格太挤先隐藏 (Employees 名册不受影响) */
   #pnlRoot .pnl-scroll-main,#pnlRoot .pnl-foot-note{display:none!important;}
+  #pnlRoot .pnl-toptabs{margin-top:8px;} /* 别被固定 topbar 压到 */
 }
 #pnlRoot table.pnl-t{border-collapse:separate;border-spacing:0;font-size:11.5px;white-space:nowrap;width:100%;}
 #pnlRoot .pnl-t th,#pnlRoot .pnl-t td{padding:7px 10px;text-align:right;border-bottom:.5px solid #f3f3f7;font-variant-numeric:tabular-nums;}
