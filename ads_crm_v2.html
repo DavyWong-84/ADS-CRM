@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.58</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.60</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.58</div>
+      <div class="nav-brand-version">v7.60</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3964,7 +3964,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3974,11 +3974,11 @@ body.contact-view-table .modal-backdrop.open {
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -3987,56 +3987,11 @@ body.contact-view-table .modal-backdrop.open {
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-    <thead><tr>
-      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-      <th class="num">New (RM)</th>
-      <th class="num">Total (RM)</th>
-    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Sep 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr></tbody><tfoot><tr class="total-row">
-    <td>TOTAL 2026</td>
-    <td class="num">—</td>
-    <td class="num" style="font-weight:700;">—</td>
-  </tr></tfoot></table></div></div>
+        <div id="rv_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4046,52 +4001,15 @@ body.contact-view-table .modal-backdrop.open {
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
+          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-      <thead><tr>
-        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-        <th class="num">Amount (RM)</th>
-      </tr></thead>
-      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Sep 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr></tbody>
-      <tfoot><tr class="total-row">
-        <td>TOTAL 2026</td>
-        <td class="num">—</td>
-      </tr></tfoot>
-    </table></div></div>
+        <div id="as_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4108,7 +4026,7 @@ body.contact-view-table .modal-backdrop.open {
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
+        <div id="fee_entryTable" class="entry-card-table"></div>
       </div>
 
     </div>
@@ -12747,7 +12665,7 @@ function _pnlSaveBtnHtml() {
 }
 function _pnlSetView(v) { _pnlView = v; renderPnL(); }
 function _pnlTopTabs() {
-  return `<div class="pnl-toptabs"><div class="pnl-toptab${_pnlView === 'pnl' ? ' on' : ''}" onclick="_pnlSetView('pnl')">Profit &amp; Loss</div><div class="pnl-toptab${_pnlView === 'employees' ? ' on' : ''}" onclick="_pnlSetView('employees')">Employees</div><div class="pnl-toptab${_pnlView === 'product' ? ' on' : ''}" onclick="_pnlSetView('product')">Product</div><div class="pnl-toptab${_pnlView === 'service' ? ' on' : ''}" onclick="_pnlSetView('service')">Service</div></div>`;
+  return `<div class="pnl-toptabs"><div class="pnl-toptab${_pnlView === 'pnl' ? ' on' : ''}" onclick="_pnlSetView('pnl')">Profit &amp; Loss</div><div class="pnl-toptab${_pnlView === 'employees' ? ' on' : ''}" onclick="_pnlSetView('employees')">Employees</div><div class="pnl-toptab${_pnlView === 'product' ? ' on' : ''}" onclick="_pnlSetView('product')">Product</div><div class="pnl-toptab${_pnlView === 'service' ? ' on' : ''}" onclick="_pnlSetView('service')">Service</div><div class="pnl-toptab${_pnlView === 'forecast' ? ' on' : ''}" onclick="_pnlSetView('forecast')">Forecast</div></div>`;
 }
 const _PNL_PERIODS = { full: { nm: 'Full year', idx: [0,1,2,3,4,5,6,7,8,9,10,11], sub: 'YTD' },
   Q1: { nm: 'Q1', idx: [0,1,2], sub: 'Q1' }, Q2: { nm: 'Q2', idx: [3,4,5], sub: 'Q2' },
@@ -13036,6 +12954,7 @@ function renderPnL() {
   if (_pnlView === 'employees') { renderPnlEmployees(root); return; } // v7.25: Employees 子页
   if (_pnlView === 'product') { renderPnlStock(root, 'product'); return; } // v7.49: Product(库存出库)
   if (_pnlView === 'service') { renderPnlStock(root, 'service'); return; } // v7.49: Service(领取次数)
+  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.60: Forecast(用量预测)
   const stores = _pnlStoreList();
   if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
   const store = _pnlState.store, year = _pnlState.year;
@@ -13714,8 +13633,13 @@ function renderPnlStock(root, kind) {
   head += '<th class="sub">YTD</th></tr></thead>';
   let sub = ''; idx.forEach(i => sub += `<td>${mode === 'qty' ? Math.round(tot[i]) : _pnlFmt(tot[i])}</td>`);
   const totRow = `<tr class="big"><td class="l">Total ${isSvc ? 'service' : 'product'} ${mode === 'qty' ? 'qty' : 'cost'}</td><td></td>${sub}<td class="sub">${mode === 'qty' ? Math.round(totY) : _pnlFmt(totY)}</td></tr>`;
+  const salesY = pnlAutoRows(store, year).sales.reduce((a, b) => a + b, 0);           // 该店该年 YTD 营业额
+  const combinedY = _stockMonthlyCost(store, year).reduce((a, b) => a + b, 0);         // product + service 总成本
+  const pctSalesS = salesY ? (costY / salesY * 100).toFixed(1) + '%' : '—';            // 本 tab 占营业额%
+  const pctCostS = combinedY ? Math.round(costY / combinedY * 100) + '% of Product + Service cost' : '—'; // 占总成本%
   const cards = `<div class="pnl-card"><div class="lbl">${isSvc ? 'Service' : 'Product'} cost · ${ee(year)} YTD</div><div class="val">RM ${_pnlFmt(costY)}</div><div class="sub">${isSvc ? 'count × cost/session' : 'stock-out × unit cost'}</div></div>`
-    + `<div class="pnl-card"><div class="lbl">Items</div><div class="val">${rows.length}</div><div class="sub">with collection this year</div></div>`;
+    + `<div class="pnl-card"><div class="lbl">Items</div><div class="val">${rows.length}</div><div class="sub">with collection this year</div></div>`
+    + `<div class="pnl-card"><div class="lbl">Cost share</div><div class="val">${pctSalesS}${salesY ? ' <span style="font-size:12px;font-weight:500;color:var(--gray)">of sales</span>' : ''}</div><div class="sub" style="color:var(--purple)">${pctCostS}</div></div>`;
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
   const _os = root.querySelector('.pnl-scroll'); const _sT = _os ? _os.scrollTop : 0, _sL = _os ? _os.scrollLeft : 0, _wY = window.scrollY; // 记住滚动, 画完还原(免得填成本后跳顶)
   root.innerHTML = _pnlTopTabs()
@@ -13723,10 +13647,104 @@ function renderPnlStock(root, kind) {
     + `<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
     + `<div class="pnl-seg"><button class="${mode === 'rm' ? 'on' : ''}" onclick="_pnlSetStockMode('rm')">RM</button><button class="${mode === 'qty' ? 'on' : ''}" onclick="_pnlSetStockMode('qty')">Qty</button><button class="${mode === 'pct' ? 'on' : ''}" onclick="_pnlSetStockMode('pct')">%</button></div>`
     + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>` + _pnlSaveBtnHtml() + `</div></div>`
-    + `<div class="pnl-cards" style="grid-template-columns:repeat(2,minmax(0,1fr))">` + cards + `</div>`
+    + `<div class="pnl-cards" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">` + cards + `</div>`
     + `<div class="pnl-scroll"><table class="pnl-t">` + head + '<tbody>' + bodyRows + totRow + '</tbody></table></div>'
     + `<div class="pnl-foot-note">RM = qty × ${isSvc ? 'cost/session' : 'unit cost'}. Qty = collection count. ${isSvc ? '' : 'Leave 0 for consumables the service cost already covers. '}Total Product &amp; Service Cost (Product + Service) feeds the P&amp;L. Data = 33CRM collection, ${store === 'all' ? 'all outlets summed' : (store === 'mgmt' ? 'Mgmt has none' : 'this outlet')}.</div>`;
   const _ns = root.querySelector('.pnl-scroll'); if (_ns) { _ns.scrollTop = _sT; _ns.scrollLeft = _sL; } window.scrollTo(0, _wY); // 还原滚动
+}
+
+// ── Forecast (Product only) ───────────────────────────────────────────
+// 逻辑: 选 base period → 算每个产品 per RM1,000 比率 + 月均用量; 顶部 Months 或 Revenue 驱动全表.
+let _fcState = { by: 'months', months: 3, revenue: 0, from: 0, to: null, period: 'month' };
+function _fcSetBy(v) { _fcState.by = v; renderPnL(); }
+function _fcSetMonths(v) { _fcState.months = Math.max(0, Number(v) || 0); renderPnL(); }
+function _fcSetRevenue(v) { _fcState.revenue = Math.max(0, parseFloat(String(v).replace(/,/g, '')) || 0); renderPnL(); }
+function _fcSetFrom(v) { _fcState.from = Number(v); renderPnL(); }
+function _fcSetTo(v) { _fcState.to = Number(v); renderPnL(); }
+function _fcSetPeriod(v) { _fcState.period = v; renderPnL(); }
+function _fcCols(period) { // 比率表列分组
+  if (period === 'quarter') return [{ n: 'Q1', mi: [0, 1, 2] }, { n: 'Q2', mi: [3, 4, 5] }, { n: 'Q3', mi: [6, 7, 8] }, { n: 'Q4', mi: [9, 10, 11] }];
+  if (period === 'half') return [{ n: 'H1', mi: [0, 1, 2, 3, 4, 5] }, { n: 'H2', mi: [6, 7, 8, 9, 10, 11] }];
+  return _PNL_MONTHS.map((m, i) => ({ n: m, mi: [i] }));
+}
+function renderForecast(root) {
+  const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
+  const stores = _pnlStoreList();
+  if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
+  const store = _pnlState.store, year = _pnlState.year;
+  const rows = _stockAgg(state.InvUsage || [], 'itemCode', 'itemName', store, year); // product only
+  const sales = pnlAutoRows(store, year).sales;                                       // 12-月营业额
+  let lastM = 0; for (let i = 0; i < 12; i++) if (sales[i] > 0) lastM = i;
+  if (_fcState.to == null || _fcState.to > 11) _fcState.to = lastM;
+  const from = Math.min(_fcState.from, _fcState.to), to = Math.max(_fcState.from, _fcState.to);
+  const nMonths = to - from + 1;
+  const rangeRev = sales.slice(from, to + 1).reduce((a, b) => a + b, 0);
+  const byMonths = _fcState.by === 'months';
+  const N = Number(_fcState.months) || 0, V = Number(_fcState.revenue) || 0;
+  const items = rows.map(r => {
+    const rangeQty = r.m.slice(from, to + 1).reduce((a, b) => a + b, 0);
+    const avg = nMonths ? rangeQty / nMonths : 0;
+    const ratio = rangeRev ? rangeQty * 1000 / rangeRev : 0;
+    const uc = _stockCostOf('inv', r.code);
+    const fcQty = byMonths ? avg * N : ratio * V / 1000;
+    return { code: r.code, name: r.name, rangeQty, avg, ratio, uc, fcQty, fcCost: fcQty * uc };
+  }).filter(it => it.rangeQty > 0 || it.fcQty > 0);
+
+  // ---- Section A: 只读 per RM1,000 比率表 ----
+  const cols = _fcCols(_fcState.period);
+  let aHead = '<thead><tr><th class="l">Usage / RM1,000 · ' + ee(year) + '</th>';
+  cols.forEach(c => aHead += '<th>' + c.n + '</th>');
+  aHead += '<th class="sub">YTD</th></tr></thead>';
+  let aBody = '';
+  rows.forEach(r => {
+    let cells = '';
+    cols.forEach(c => {
+      const q = c.mi.reduce((a, i) => a + (r.m[i] || 0), 0), rev = c.mi.reduce((a, i) => a + (sales[i] || 0), 0);
+      cells += '<td>' + (rev ? (q * 1000 / rev).toFixed(2) : '—') + '</td>';
+    });
+    const qY = r.m.reduce((a, b) => a + b, 0), revY = sales.reduce((a, b) => a + b, 0);
+    aBody += '<tr><td class="l"><span class="nm">' + ee(r.name) + '</span><div style="font-size:9px;color:#aeb0bd">' + ee(r.code) + '</div></td>' + cells + '<td class="sub">' + (revY ? (qY * 1000 / revY).toFixed(2) : '—') + '</td></tr>';
+  });
+  if (!rows.length) aBody = '<tr><td class="l" colspan="' + (cols.length + 2) + '" style="color:var(--gray);padding:16px;font-size:13px">No product collection for this outlet / year.</td></tr>';
+
+  // ---- Section B: forecast 计算 ----
+  const _mOpt = sel => _PNL_MONTHS.map((m, i) => '<option value="' + i + '"' + (i === sel ? ' selected' : '') + '>' + m + '</option>').join('');
+  let bBody = '', totQty = 0, totCost = 0;
+  items.forEach(it => {
+    totQty += it.fcQty; totCost += it.fcCost;
+    bBody += '<tr><td class="l"><span class="nm">' + ee(it.name) + '</span><div style="font-size:9px;color:#aeb0bd">' + ee(it.code) + '</div></td>'
+      + '<td>' + Math.round(it.rangeQty) + '</td>'
+      + '<td>' + (it.avg ? it.avg.toFixed(1) : '—') + '</td>'
+      + '<td>' + (it.ratio ? it.ratio.toFixed(2) : '—') + '</td>'
+      + '<td style="color:var(--purple);font-weight:600">' + Math.round(it.fcQty) + '</td>'
+      + '<td style="color:var(--purple);font-weight:600">' + (it.fcCost ? 'RM ' + _pnlFmt(it.fcCost) : '—') + '</td></tr>';
+  });
+  if (!items.length) bBody = '<tr><td class="l" colspan="6" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
+  const bTot = '<tr class="big"><td class="l">Total</td><td></td><td></td><td></td><td>' + Math.round(totQty) + '</td><td>RM ' + _pnlFmt(totCost) + '</td></tr>';
+  const bHead = '<thead><tr><th class="l">Product</th><th>Actual<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">' + _PNL_MONTHS[from] + '–' + _PNL_MONTHS[to] + '</span></th><th>Monthly<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">avg</span></th><th>per<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">RM1,000</span></th><th style="color:var(--purple)">Forecast<br><span style="font-weight:400;font-size:9px">qty</span></th><th style="color:var(--purple)">Forecast<br><span style="font-weight:400;font-size:9px">cost</span></th></tr></thead>';
+
+  const inpStyle = 'font-family:inherit;font-size:14px;font-weight:600;text-align:right;border:1px solid var(--purple);border-radius:7px;padding:5px 8px;background:#fff;color:var(--black);';
+  const byCtrl = byMonths
+    ? '<input type="number" min="0" value="' + N + '" onchange="_fcSetMonths(this.value)" style="width:56px;text-align:center;' + inpStyle + '"> <span style="font-size:13px">months ahead</span>'
+    : '<span style="font-size:12px;color:var(--gray)">RM</span> <input type="number" min="0" value="' + V + '" onchange="_fcSetRevenue(this.value)" style="width:120px;' + inpStyle + '">';
+
+  const _wY = window.scrollY;
+  root.innerHTML = _pnlTopTabs()
+    + '<div class="pnl-bar2"><div class="pnl-tabs">' + stores.map(s => '<div class="pnl-tab' + (s.id === store ? ' on' : '') + '" onclick="_pnlSetStore(\'' + ee(s.id) + '\')">' + ee(s.name) + '</div>').join('') + '</div>'
+    + '<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">' + [new Date().getFullYear() + 1, new Date().getFullYear(), 2025].filter((v, i, a) => a.indexOf(v) === i).map(y => '<option value="' + y + '"' + (String(y) === year ? ' selected' : '') + '>' + y + '</option>').join('') + '</select>'
+    + '<div class="pnl-seg"><button class="' + (_fcState.period === 'month' ? 'on' : '') + '" onclick="_fcSetPeriod(\'month\')">Month</button><button class="' + (_fcState.period === 'quarter' ? 'on' : '') + '" onclick="_fcSetPeriod(\'quarter\')">Quarter</button><button class="' + (_fcState.period === 'half' ? 'on' : '') + '" onclick="_fcSetPeriod(\'half\')">Half</button></div>'
+    + '</div></div>'
+    + '<div class="pnl-secttl" style="margin:4px 2px 8px;font-size:11px;letter-spacing:.4px;color:var(--gray);font-weight:600">USAGE PER RM1,000 · READ-ONLY <span style="color:#c4c4cf;font-weight:500">(actual usage ÷ revenue)</span></div>'
+    + '<div class="pnl-scroll"><table class="pnl-t">' + aHead + '<tbody>' + aBody + '</tbody></table></div>'
+    + '<div class="pnl-secttl" style="margin:22px 2px 10px;font-size:11px;letter-spacing:.4px;color:var(--purple);font-weight:600">FORECAST</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end;margin-bottom:14px">'
+    +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Base period (for the rate)</div><div style="display:flex;align-items:center;gap:6px"><select class="pnl-yr" onchange="_fcSetFrom(this.value)">' + _mOpt(from) + '</select><span style="color:var(--gray)">→</span><select class="pnl-yr" onchange="_fcSetTo(this.value)">' + _mOpt(to) + '</select></div></div>'
+    +   '<div style="background:#eef7f0;border:1px solid #c9e6d2;border-radius:10px;padding:7px 14px"><div style="font-size:11px;color:#0f6e56;font-weight:600">Range revenue (actual)</div><div style="font-size:16px;font-weight:700;color:#0f6e56;margin-top:1px">RM ' + _pnlFmt(rangeRev) + '</div></div>'
+    +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast by</div><div style="display:flex;align-items:center;gap:10px"><div class="pnl-seg"><button class="' + (byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'months\')">Months</button><button class="' + (!byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'revenue\')">Revenue</button></div>' + byCtrl + '</div></div>'
+    + '</div>'
+    + '<div class="pnl-scroll"><table class="pnl-t">' + bHead + '<tbody>' + bBody + bTot + '</tbody></table></div>'
+    + '<div class="pnl-foot-note">Rate from your selected base period. <b>By Months</b>: forecast qty = monthly avg × months. <b>By Revenue</b>: forecast qty = per RM1,000 × (revenue ÷ 1,000). Forecast cost = qty × unit cost. Product only · ' + (store === 'all' ? 'all outlets summed' : (store === 'mgmt' ? 'Mgmt has none' : 'this outlet')) + '.</div>';
+  window.scrollTo(0, _wY);
 }
 
 function renderRevenue() {
