@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.56</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.58</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.56</div>
+      <div class="nav-brand-version">v7.58</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12723,6 +12723,7 @@ function __pnlSelfCheck() {
   console.assert(Math.abs(be - 93333.333) < 0.5, 'PnL break-even formula broken', be);
   console.assert((100 - 120) < 0, 'PnL net sign');
   console.assert(_calcEval('44×3+10') === 142, 'calc eval', _calcEval('44×3+10')); // 计算器求值
+  console.assert(_calcEval('158×40%') === 63.2, 'calc percent', _calcEval('158×40%')); // 158×40% = 63.2
   console.assert(_calcEval('12+abc') === null, 'calc reject non-numeric');
   console.log('PnL self-check ok');
 }
@@ -13123,7 +13124,7 @@ function renderPnL() {
   b += rowHtml({ row: { type: 'auto' }, v: C.sales, name: 'Sales', cls: 'big', cellOpts: {} });
   b += band('Gross profit');
   if (C.costRow) b += rowHtml({ row: C.costRow, v: C.cost, name: C.costRow.name, cls: 'indent' });
-  else b += rowHtml({ row: { type: 'auto' }, v: C.cost, name: 'Total Product & Service Cost', cls: 'indent' });
+  else b += rowHtml({ row: { type: 'auto', lineId: 'cost' }, v: C.cost, name: 'Total Product & Service Cost', cls: 'indent' }); // lineId 让 all 视图也显示 cost 齿轮
   b += rowHtml({ row: { type: 'auto' }, v: C.gross, name: 'Gross profit', cls: 'big' });
   b += band('Expenses');
   // 费用行: 用户行(按类型可编辑) + 末尾 auto 行(ad spend / 3rd party)
@@ -13624,9 +13625,9 @@ function _stockAgg(arr, codeKey, nameKey, store, year) {
   return Object.keys(map).map(k => { const o = map[k]; o.ytd = o.m.reduce((a, b) => a + b, 0); return o; }).sort((a, b) => b.ytd - a.ytd);
 }
 // ── 成本输入格计算器 (modal) ──────────────────────────────
-let _calcExpr = '';
-function _calcEval(ex) { // 只允许数字/运算符, 返回 number 或 null
-  const s = String(ex).replace(/÷/g, '/').replace(/×/g, '*').replace(/−/g, '-');
+let _calcExpr = '', _calcTarget = null;
+function _calcEval(ex) { // 只允许数字/运算符; % → /100; 返回 number 或 null
+  const s = String(ex).replace(/÷/g, '/').replace(/×/g, '*').replace(/−/g, '-').replace(/%/g, '/100');
   if (!s.trim() || !/^[-0-9.+*/() ]+$/.test(s)) return null;
   try { const v = Function('return (' + s + ')')(); return (typeof v === 'number' && isFinite(v)) ? v : null; } catch (e) { return null; }
 }
@@ -13646,12 +13647,16 @@ function _calcKey(k) {
 function _stockCalc(ck, code) {
   const cur = _stockCostOf(ck, code);
   _calcExpr = cur ? String(cur) : '';
-  const key = k => `<button class="${'+−×÷'.includes(k) ? 'op' : ''}" onclick="_calcKey('${k}')">${k}</button>`;
-  const pad = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','⌫','+'].map(key).join('');
+  _calcTarget = { ck: ck, code: code }; // 键盘 Enter 保存要用
+  const key = k => `<button class="${'+−×÷%'.includes(k) ? 'op' : ''}" onclick="_calcKey('${k}')">${k}</button>`;
+  const pad = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'].map(key).join('')
+    + `<button style="grid-column:span 2" onclick="_calcKey('⌫')">⌫</button>`
+    + `<button class="clr" style="grid-column:span 2" onclick="_calcKey('C')">Clear</button>`;
   const html = `<div class="modal-header"><div class="modal-title">Calculator</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
     + `<div class="calc-disp"><div class="ex" id="calcEx">0</div><div class="rs" id="calcRs">0</div></div>`
-    + `<div class="calc-pad">${pad}<button class="clr" style="grid-column:span 4" onclick="_calcKey('C')">Clear</button></div>`
-    + `<button class="btn btn-primary btn-full" style="margin-top:14px" onclick="_stockCalcSave('${ck}','${code}')">Save to cost</button>`;
+    + `<div class="calc-pad">${pad}</div>`
+    + `<button class="btn btn-primary btn-full" style="margin-top:14px" onclick="_stockCalcSave('${ck}','${code}')">Save to cost</button>`
+    + `<div style="font-size:12px;color:var(--gray);text-align:center;margin-top:10px">Keyboard works too · Enter = save · Esc = close</div>`;
   showModal(html); _calcRender();
 }
 function _stockCalcSave(ck, code) {
@@ -13660,6 +13665,18 @@ function _stockCalcSave(ck, code) {
   _stockSetCost(ck, code, Math.round(v * 100) / 100); // _stockSetCost 内部会 renderPnL
   closeModal();
 }
+function _calcKeydown(e) { // 计算器 modal 开着时接管键盘
+  if (!document.getElementById('calcRs')) return;
+  const k = e.key;
+  if ((k >= '0' && k <= '9') || k === '.' || k === '+' || k === '%') { _calcKey(k); e.preventDefault(); }
+  else if (k === '-') { _calcKey('−'); e.preventDefault(); }
+  else if (k === '*') { _calcKey('×'); e.preventDefault(); }
+  else if (k === '/') { _calcKey('÷'); e.preventDefault(); }
+  else if (k === 'Backspace') { _calcKey('⌫'); e.preventDefault(); }
+  else if (k === 'Enter' || k === '=') { if (_calcTarget) _stockCalcSave(_calcTarget.ck, _calcTarget.code); e.preventDefault(); }
+  else if (k === 'Escape') { closeModal(); }
+}
+document.addEventListener('keydown', _calcKeydown);
 // P&L cost 行用: 某店某年 每月「产品+服务」成本 RM (= 用量 × 单位成本). store='all' 汇总3店, 'mgmt'=0.
 function _stockMonthlyCost(store, year) {
   const out = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
