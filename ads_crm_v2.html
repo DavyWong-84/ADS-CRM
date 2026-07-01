@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.49</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.51</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.49</div>
+      <div class="nav-brand-version">v7.51</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3964,7 +3964,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3974,11 +3974,11 @@ body.contact-view-table .modal-backdrop.open {
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -3987,56 +3987,11 @@ body.contact-view-table .modal-backdrop.open {
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-    <thead><tr>
-      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-      <th class="num">New (RM)</th>
-      <th class="num">Total (RM)</th>
-    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Sep 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr></tbody><tfoot><tr class="total-row">
-    <td>TOTAL 2026</td>
-    <td class="num">—</td>
-    <td class="num" style="font-weight:700;">—</td>
-  </tr></tfoot></table></div></div>
+        <div id="rv_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4046,52 +4001,15 @@ body.contact-view-table .modal-backdrop.open {
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
+          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-      <thead><tr>
-        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-        <th class="num">Amount (RM)</th>
-      </tr></thead>
-      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Sep 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr></tbody>
-      <tfoot><tr class="total-row">
-        <td>TOTAL 2026</td>
-        <td class="num">—</td>
-      </tr></tfoot>
-    </table></div></div>
+        <div id="as_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4108,7 +4026,7 @@ body.contact-view-table .modal-backdrop.open {
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
+        <div id="fee_entryTable" class="entry-card-table"></div>
       </div>
 
     </div>
@@ -12731,7 +12649,7 @@ try { __pnlSelfCheck(); } catch (e) { console.warn('PnL self-check error', e); }
 // ============================================================
 let _pnlState = { store: null, year: String(new Date().getFullYear()), period: 'full', mode: 'showAmt' };
 let _pnlView = 'pnl'; // 'pnl' | 'employees' | 'stock'
-let _pnlStockMode = 'rm'; // 'rm' | 'qty'  — Inventory & Service 表的切换
+let _pnlStockMode = 'qty'; // 'rm' | 'qty'  — Product/Service 表的切换 (默认 Qty, 免得成本没填以为空)
 let _pnlExporting = false; // 导出 PDF 时: 格子渲染成纯文本(不带 input)
 // 未保存提示: 比对当前 P&L 数据 vs 上次保存的快照 (自动覆盖所有改动, 不用逐个 hook)
 let _pnlSavedSnapshot = null;
@@ -12744,7 +12662,7 @@ function _pnlSaveBtnHtml() {
 }
 function _pnlSetView(v) { _pnlView = v; renderPnL(); }
 function _pnlTopTabs() {
-  return `<div class="pnl-toptabs"><div class="pnl-toptab${_pnlView === 'pnl' ? ' on' : ''}" onclick="_pnlSetView('pnl')">Profit &amp; Loss</div><div class="pnl-toptab${_pnlView === 'employees' ? ' on' : ''}" onclick="_pnlSetView('employees')">Employees</div><div class="pnl-toptab${_pnlView === 'stock' ? ' on' : ''}" onclick="_pnlSetView('stock')">Inventory &amp; Service</div></div>`;
+  return `<div class="pnl-toptabs"><div class="pnl-toptab${_pnlView === 'pnl' ? ' on' : ''}" onclick="_pnlSetView('pnl')">Profit &amp; Loss</div><div class="pnl-toptab${_pnlView === 'employees' ? ' on' : ''}" onclick="_pnlSetView('employees')">Employees</div><div class="pnl-toptab${_pnlView === 'product' ? ' on' : ''}" onclick="_pnlSetView('product')">Product</div><div class="pnl-toptab${_pnlView === 'service' ? ' on' : ''}" onclick="_pnlSetView('service')">Service</div></div>`;
 }
 const _PNL_PERIODS = { full: { nm: 'Full year', idx: [0,1,2,3,4,5,6,7,8,9,10,11], sub: 'YTD' },
   Q1: { nm: 'Q1', idx: [0,1,2], sub: 'Q1' }, Q2: { nm: 'Q2', idx: [3,4,5], sub: 'Q2' },
@@ -13020,7 +12938,8 @@ function renderPnL() {
   if (!root) return;
   _pnlMigrateEmployees(); // 旧 staff → 员工主表 (一次性)
   if (_pnlView === 'employees') { renderPnlEmployees(root); return; } // v7.25: Employees 子页
-  if (_pnlView === 'stock') { renderPnlStock(root); return; } // v7.49: Inventory & Service 子页
+  if (_pnlView === 'product') { renderPnlStock(root, 'product'); return; } // v7.49: Product(库存出库)
+  if (_pnlView === 'service') { renderPnlStock(root, 'service'); return; } // v7.49: Service(领取次数)
   const stores = _pnlStoreList();
   if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
   const store = _pnlState.store, year = _pnlState.year;
@@ -13554,15 +13473,43 @@ function renderPnlEmployees(root) {
 }
 
 // ===== v7.49: Inventory & Service (库存出库 + service 领取, 33CRM collection) =====
-function _stockCostOf(kind, code) { const it = (state.pnl.stockCost || []).find(x => x.id === kind + ':' + code); return it ? (Number(it.cost) || 0) : 0; }
-function _stockSetCost(kind, code, v) {
-  const id = kind + ':' + code, cost = parseFloat(v) || 0;
-  const arr = state.pnl.stockCost || (state.pnl.stockCost = []);
-  const it = arr.find(x => x.id === id);
-  if (it) it.cost = cost; else arr.push({ id: id, kind: kind, cost: cost });
-  renderPnL(); // onchange(blur) 后重画: 更新总计 + Save 变 dirty (跟 P&L 格子同款)
+function _stockItem(kind, code) { return (state.pnl.stockCost || []).find(x => x.id === kind + ':' + code); }
+function _stockCostOf(kind, code) { const it = _stockItem(kind, code); return it ? (Number(it.cost) || 0) : 0; }
+function _stockSortOf(kind, code) { const it = _stockItem(kind, code); return (it && it.sort != null && it.sort !== '') ? Number(it.sort) : null; }
+function _stockUpsert(kind, code, patch) {
+  const id = kind + ':' + code, arr = state.pnl.stockCost || (state.pnl.stockCost = []);
+  let it = arr.find(x => x.id === id); if (!it) { it = { id: id, kind: kind, cost: 0, sort: null }; arr.push(it); }
+  Object.assign(it, patch); return it;
 }
+function _stockSetCost(kind, code, v) { _stockUpsert(kind, code, { cost: parseFloat(v) || 0 }); renderPnL(); } // onchange(blur) 重画: 更新总计 + Save dirty
 function _pnlSetStockMode(m) { _pnlStockMode = m; renderPnL(); }
+// 排序: 有手拖 sort 的排前(按 sort), 其余按用量高→低
+function _stockOrdered(kind, store, year) {
+  const arr = (kind === 'svc') ? _stockAgg(state.SvcColl || [], 'svcCode', 'svcName', store, year) : _stockAgg(state.InvUsage || [], 'itemCode', 'itemName', store, year);
+  return arr.sort((a, b) => {
+    const sa = _stockSortOf(kind, a.code), sb = _stockSortOf(kind, b.code);
+    if (sa != null && sb != null) return sa - sb;
+    if (sa != null) return -1; if (sb != null) return 1;
+    return b.ytd - a.ytd;
+  });
+}
+// 拖拽排序 (复用 P&L 那套思路)
+let _stockDrag = null;
+function _stockDragStart(ev, code) { _stockDrag = code; try { ev.dataTransfer.effectAllowed = 'move'; } catch (e) {} }
+function _stockDragOver(ev) { ev.preventDefault(); const tr = ev.target.closest && ev.target.closest('tr'); if (tr) tr.classList.add('dragover'); }
+function _stockDragLeave(ev) { const tr = ev.target.closest && ev.target.closest('tr'); if (tr) tr.classList.remove('dragover'); }
+function _stockDrop(ev, dropCode, kind) {
+  ev.preventDefault();
+  const drag = _stockDrag; _stockDrag = null;
+  if (!drag || drag === dropCode) { renderPnL(); return; }
+  const list = _stockOrdered(kind, _pnlState.store, _pnlState.year).map(r => r.code);
+  const fi = list.indexOf(drag); if (fi < 0) return;
+  list.splice(fi, 1);
+  const ti = list.indexOf(dropCode);
+  list.splice(ti < 0 ? list.length : ti, 0, drag);
+  list.forEach((code, i) => _stockUpsert(kind, code, { sort: i })); // 把当前可见顺序写成 sort
+  renderPnL();
+}
 // 按 店+年 汇总: [{code,name,m[12],ytd}] (qty)
 function _stockAgg(arr, codeKey, nameKey, store, year) {
   if (store === 'mgmt') return [];
@@ -13577,60 +13524,44 @@ function _stockAgg(arr, codeKey, nameKey, store, year) {
   });
   return Object.keys(map).map(k => { const o = map[k]; o.ytd = o.m.reduce((a, b) => a + b, 0); return o; }).sort((a, b) => b.ytd - a.ytd);
 }
-function renderPnlStock(root) {
+function renderPnlStock(root, kind) {
   const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
   const year = _pnlState.year, store = _pnlState.store, mode = _pnlStockMode;
   const stores = _pnlStoreList();
-  const svc = _stockAgg(state.SvcColl || [], 'svcCode', 'svcName', store, year);
-  const inv = _stockAgg(state.InvUsage || [], 'itemCode', 'itemName', store, year);
+  const isSvc = (kind === 'service'), ck = isSvc ? 'svc' : 'inv';
+  const rows = _stockOrdered(ck, store, year);
   const idx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   const cell = v => v ? (mode === 'qty' ? Math.round(v) : _pnlFmt(v)) : '—';
-  const totCell = v => mode === 'qty' ? Math.round(v) : _pnlFmt(v);
-  const grand = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; let grandY = 0;
-  let svcCostY = 0, invCostY = 0;
-
-  function group(title, rows, kind) {
-    let h = `<tr class="grp"><td class="l" colspan="15"><span class="glabel">${title}</span></td></tr>`;
-    if (!rows.length) h += `<tr><td class="l" colspan="15" style="color:var(--gray);padding:14px;font-size:13px">No ${kind === 'svc' ? 'service' : 'inventory'} collection for this outlet / year.</td></tr>`;
-    const tot = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; let totY = 0;
-    rows.forEach(r => {
-      const cost = _stockCostOf(kind, r.code); let ytd = 0, cells = '';
-      idx.forEach(i => { const q = r.m[i], val = mode === 'qty' ? q : q * cost; cells += `<td>${cell(val)}</td>`; tot[i] += val; grand[i] += (q * cost); ytd += val; });
-      const ytdRM = r.ytd * cost; totY += ytd; if (kind === 'svc') svcCostY += ytdRM; else invCostY += ytdRM;
-      h += `<tr><td class="l"><div class="nm">${ee(r.name)}</div><div style="font-size:9px;color:#aeb0bd">${ee(r.code)}</div></td>`
-        + `<td><input class="cin" type="number" step="any" value="${cost || 0}" onchange="_stockSetCost('${kind}','${ee(r.code)}',this.value)"></td>`
-        + cells + `<td class="sub">${cell(ytd)}</td></tr>`;
-    });
-    let sub = ''; idx.forEach(i => sub += `<td>${totCell(tot[i])}</td>`);
-    h += `<tr class="big"><td class="l">Total ${kind === 'svc' ? 'service' : 'inventory'} ${mode === 'qty' ? 'qty' : 'cost'}</td><td></td>${sub}<td class="sub">${totCell(totY)}</td></tr>`;
-    return h;
-  }
-  let head = '<thead><tr><th class="l">Item · ' + ee(year) + '</th><th>Unit cost</th>';
+  const tot = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; let totY = 0, costY = 0;
+  let bodyRows = '';
+  rows.forEach(r => {
+    const cost = _stockCostOf(ck, r.code); let ytd = 0, cells = ''; const c = ee(r.code);
+    idx.forEach(i => { const q = r.m[i], val = mode === 'qty' ? q : q * cost; cells += `<td>${cell(val)}</td>`; tot[i] += val; ytd += val; });
+    costY += r.ytd * cost;
+    bodyRows += `<tr ondragover="_stockDragOver(event)" ondragleave="_stockDragLeave(event)" ondrop="_stockDrop(event,'${c}','${ck}')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_stockDragStart(event,'${c}')" title="Drag to reorder">⠿</span> <span class="nm">${ee(r.name)}</span><div style="font-size:9px;color:#aeb0bd">${c}</div></td>`
+      + `<td><input class="cin" type="number" step="any" value="${cost || 0}" onchange="_stockSetCost('${ck}','${c}',this.value)"></td>`
+      + cells + `<td class="sub">${cell(ytd)}</td></tr>`;
+  });
+  idx.forEach(i => totY += tot[i]);
+  if (!rows.length) bodyRows = `<tr><td class="l" colspan="15" style="color:var(--gray);padding:16px;font-size:13px">No ${isSvc ? 'service' : 'product'} collection for this outlet / year.</td></tr>`;
+  let head = '<thead><tr><th class="l">' + (isSvc ? 'Service' : 'Product') + ' · ' + ee(year) + '</th><th>' + (isSvc ? 'Cost/session' : 'Unit cost') + '</th>';
   for (let i = 0; i < 12; i++) head += '<th>' + _PNL_MONTHS[i] + '</th>';
   head += '<th class="sub">YTD</th></tr></thead>';
-  let body = '<tbody>' + group('Services · count × cost/session', svc, 'svc') + group('Inventory · stock-out × unit cost', inv, 'inv');
-  // grand total (RM = svc + inv; qty = 单纯把两组月量相加)
-  let gcells = ''; idx.forEach(i => { grandY += grand[i]; gcells += `<td>${mode === 'qty' ? '' : _pnlFmt(grand[i])}</td>`; });
-  const grandRM = svcCostY + invCostY;
-  body += `<tr class="big" style="border-top:1.5px solid #cdbff5;background:#f3eefe;color:#3c2a86"><td class="l">Total Product &amp; Service Cost</td><td></td>${mode === 'qty' ? idx.map(() => '<td>—</td>').join('') : gcells}<td class="sub">${_pnlFmt(grandRM)}</td></tr>`;
-  body += '</tbody>';
-
-  const cardsHtml = `<div class="pnl-card"><div class="lbl">Total Product &amp; Service Cost</div><div class="val">RM ${_pnlFmt(grandRM)}</div><div class="sub">${ee(year)} YTD · from 33CRM collection</div></div>`
-    + `<div class="pnl-card"><div class="lbl">Service cost</div><div class="val">RM ${_pnlFmt(svcCostY)}</div><div class="sub">count × cost/session</div></div>`
-    + `<div class="pnl-card"><div class="lbl">Inventory cost</div><div class="val">RM ${_pnlFmt(invCostY)}</div><div class="sub">stock-out × unit cost</div></div>`;
-
+  let sub = ''; idx.forEach(i => sub += `<td>${mode === 'qty' ? Math.round(tot[i]) : _pnlFmt(tot[i])}</td>`);
+  const totRow = `<tr class="big"><td class="l">Total ${isSvc ? 'service' : 'product'} ${mode === 'qty' ? 'qty' : 'cost'}</td><td></td>${sub}<td class="sub">${mode === 'qty' ? Math.round(totY) : _pnlFmt(totY)}</td></tr>`;
+  const cards = `<div class="pnl-card"><div class="lbl">${isSvc ? 'Service' : 'Product'} cost · ${ee(year)} YTD</div><div class="val">RM ${_pnlFmt(costY)}</div><div class="sub">${isSvc ? 'count × cost/session' : 'stock-out × unit cost'}</div></div>`
+    + `<div class="pnl-card"><div class="lbl">Items</div><div class="val">${rows.length}</div><div class="sub">with collection this year</div></div>`;
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
+  const _os = root.querySelector('.pnl-scroll'); const _sT = _os ? _os.scrollTop : 0, _sL = _os ? _os.scrollLeft : 0, _wY = window.scrollY; // 记住滚动, 画完还原(免得填成本后跳顶)
   root.innerHTML = _pnlTopTabs()
-    + `<div class="pnl-bar2">`
-    + `<div class="pnl-tabs">` + stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${ee(s.id)}')">${ee(s.name)}</div>`).join('') + `</div>`
-    + `<div class="pnl-right">`
-    + `<select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
+    + `<div class="pnl-bar2"><div class="pnl-tabs">` + stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${ee(s.id)}')">${ee(s.name)}</div>`).join('') + `</div>`
+    + `<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
     + `<div class="pnl-seg"><button class="${mode === 'rm' ? 'on' : ''}" onclick="_pnlSetStockMode('rm')">RM</button><button class="${mode === 'qty' ? 'on' : ''}" onclick="_pnlSetStockMode('qty')">Qty</button></div>`
-    + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>`
-    + _pnlSaveBtnHtml() + `</div></div>`
-    + `<div class="pnl-cards" style="grid-template-columns:repeat(3,minmax(0,1fr))">` + cardsHtml + `</div>`
-    + `<div class="pnl-scroll"><table class="pnl-t">` + head + body + `</table></div>`
-    + `<div class="pnl-foot-note">RM = qty × unit cost. Qty = collection count (products taken / services done). Set unit cost per item; leave 0 for consumables the service cost already covers (no double-count). Data = 33CRM collection, ${store === 'all' ? 'all outlets summed' : (store === 'mgmt' ? 'Mgmt has none' : 'this outlet')}.</div>`;
+    + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>` + _pnlSaveBtnHtml() + `</div></div>`
+    + `<div class="pnl-cards" style="grid-template-columns:repeat(2,minmax(0,1fr))">` + cards + `</div>`
+    + `<div class="pnl-scroll"><table class="pnl-t">` + head + '<tbody>' + bodyRows + totRow + '</tbody></table></div>'
+    + `<div class="pnl-foot-note">RM = qty × ${isSvc ? 'cost/session' : 'unit cost'}. Qty = collection count. ${isSvc ? '' : 'Leave 0 for consumables the service cost already covers. '}Total Product &amp; Service Cost (Product + Service) feeds the P&amp;L. Data = 33CRM collection, ${store === 'all' ? 'all outlets summed' : (store === 'mgmt' ? 'Mgmt has none' : 'this outlet')}.</div>`;
+  const _ns = root.querySelector('.pnl-scroll'); if (_ns) { _ns.scrollTop = _sT; _ns.scrollLeft = _sL; } window.scrollTo(0, _wY); // 还原滚动
 }
 
 function renderRevenue() {
@@ -16108,7 +16039,7 @@ async function gsPullSilent() {
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     if (d.data && d.data.InvUsage !== undefined) state.InvUsage = (d.data.InvUsage || []);
     if (d.data && d.data.SvcColl !== undefined) state.SvcColl = (d.data.SvcColl || []);
-    if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0 }));
+    if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
     try { _pnlSavedSnapshot = _pnlSavableJson(); } catch (e) {} // 刚 pull 的 = 已保存基线
@@ -16275,7 +16206,7 @@ async function gsPull() {
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     if (d.data && d.data.InvUsage !== undefined) state.InvUsage = (d.data.InvUsage || []);
     if (d.data && d.data.SvcColl !== undefined) state.SvcColl = (d.data.SvcColl || []);
-    if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0 }));
+    if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
     try { _pnlSavedSnapshot = _pnlSavableJson(); } catch (e) {} // 刚 pull 的 = 已保存基线
