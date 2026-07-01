@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.51</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.53</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.51</div>
+      <div class="nav-brand-version">v7.53</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12612,7 +12612,7 @@ function pnlComputeRows(store, year) {
   };
   const arr = row => Array.from({ length: 12 }, (_, i) => val(row, i + 1));
   const costRow = userRows.find(r => r.lineId === 'cost');
-  const cost = costRow ? arr(costRow) : auto.sales.map(() => 0);
+  const cost = costRow ? (costRow.type === 'crm' ? _stockMonthlyCost(store, year) : arr(costRow)) : auto.sales.map(() => 0);
   const gross = auto.sales.map((s, i) => s - cost[i]);
   const targetRow = userRows.find(r => r.lineId === 'target');
   const expUserRows = userRows.filter(r => r !== costRow && r !== targetRow); // 费用 = 除 cost/target 外的用户行
@@ -12649,7 +12649,7 @@ try { __pnlSelfCheck(); } catch (e) { console.warn('PnL self-check error', e); }
 // ============================================================
 let _pnlState = { store: null, year: String(new Date().getFullYear()), period: 'full', mode: 'showAmt' };
 let _pnlView = 'pnl'; // 'pnl' | 'employees' | 'stock'
-let _pnlStockMode = 'qty'; // 'rm' | 'qty'  — Product/Service 表的切换 (默认 Qty, 免得成本没填以为空)
+let _pnlStockMode = 'qty'; // 'rm' | 'qty' | 'pct'(占当列总成本%) — Product/Service 表的切换 (默认 Qty, 免得成本没填以为空)
 let _pnlExporting = false; // 导出 PDF 时: 格子渲染成纯文本(不带 input)
 // 未保存提示: 比对当前 P&L 数据 vs 上次保存的快照 (自动覆盖所有改动, 不用逐个 hook)
 let _pnlSavedSnapshot = null;
@@ -13094,17 +13094,19 @@ function _pnlSetName(lineId, name) {
 function _pnlTypeModal(lineId) {
   const r = _pnlFindRow(lineId); if (!r) return;
   const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
-  const isPct = r.type === 'pct';
+  const isPct = r.type === 'pct', isCrm = r.type === 'crm', showCrm = (lineId === 'cost');
   const hintNum = "Type a fixed amount in each month's cell.";
   const hintPct = "Enter one %; every month is auto-calculated from that month's sales.";
+  const hintCrm = "Auto — uses the Product & Service tab total (33CRM collection × your unit costs). Nothing to type.";
   const html = `<div class="modal-header"><div class="modal-title">Row settings</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
     + `<div class="settings-modal-input-row"><label>Name</label><input id="pnlRowName" type="text" value="${ee(r.name)}"></div>`
-    + `<div class="settings-modal-section-title" style="margin-top:18px">Type</div>`
+    + `<div class="settings-modal-section-title" style="margin-top:18px">Source</div>`
     + `<div class="toggle-group" id="pnlTypeToggle" style="display:flex;width:100%">`
-    +   `<div class="toggle${isPct ? '' : ' active'}" data-t="number" style="flex:1;text-align:center" onclick="_pnlTypePick('number')">Number</div>`
+    +   `<div class="toggle${(!isPct && !isCrm) ? ' active' : ''}" data-t="number" style="flex:1;text-align:center" onclick="_pnlTypePick('number')">Number</div>`
     +   `<div class="toggle${isPct ? ' active' : ''}" data-t="pct" style="flex:1;text-align:center" onclick="_pnlTypePick('pct')">% of sales</div>`
+    +   (showCrm ? `<div class="toggle${isCrm ? ' active' : ''}" data-t="crm" style="flex:1;text-align:center" onclick="_pnlTypePick('crm')">CRM (real)</div>` : '')
     + `</div>`
-    + `<div id="pnlTypeHint" style="font-size:12px;color:var(--gray);margin-top:9px">${isPct ? hintPct : hintNum}</div>`
+    + `<div id="pnlTypeHint" style="font-size:12px;color:var(--gray);margin-top:9px">${isCrm ? hintCrm : (isPct ? hintPct : hintNum)}</div>`
     + `<div class="settings-modal-input-row" id="pnlRateWrap" style="display:${isPct ? 'block' : 'none'};margin-top:16px"><label>Percentage of sales</label>`
     +   `<div style="position:relative"><input id="pnlRate" type="number" step="any" value="${r.rate || 0}"><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:15px;pointer-events:none">%</span></div></div>`
     + `<button class="btn btn-primary btn-full" style="margin-top:20px" onclick="_pnlTypeModalSave('${ee(lineId)}')">Save</button>`;
@@ -13114,7 +13116,7 @@ function _pnlTypePick(t) {
   document.querySelectorAll('#pnlTypeToggle .toggle').forEach(el => el.classList.toggle('active', el.dataset.t === t));
   const w = document.getElementById('pnlRateWrap'); if (w) w.style.display = (t === 'pct') ? 'block' : 'none';
   const h = document.getElementById('pnlTypeHint');
-  if (h) h.textContent = (t === 'pct') ? "Enter one %; every month is auto-calculated from that month's sales." : "Type a fixed amount in each month's cell.";
+  if (h) h.textContent = (t === 'crm') ? "Auto — uses the Product & Service tab total (33CRM collection × your unit costs). Nothing to type." : (t === 'pct') ? "Enter one %; every month is auto-calculated from that month's sales." : "Type a fixed amount in each month's cell.";
 }
 function _pnlTypeModalSave(lineId) {
   const r = _pnlFindRow(lineId); if (!r) { closeModal(); return; }
@@ -13524,6 +13526,14 @@ function _stockAgg(arr, codeKey, nameKey, store, year) {
   });
   return Object.keys(map).map(k => { const o = map[k]; o.ytd = o.m.reduce((a, b) => a + b, 0); return o; }).sort((a, b) => b.ytd - a.ytd);
 }
+// P&L cost 行用: 某店某年 每月「产品+服务」成本 RM (= 用量 × 单位成本). store='all' 汇总3店, 'mgmt'=0.
+function _stockMonthlyCost(store, year) {
+  const out = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const add = (rows, ck) => rows.forEach(r => { const c = _stockCostOf(ck, r.code); for (let i = 0; i < 12; i++) out[i] += (r.m[i] || 0) * c; });
+  add(_stockAgg(state.SvcColl || [], 'svcCode', 'svcName', store, year), 'svc');
+  add(_stockAgg(state.InvUsage || [], 'itemCode', 'itemName', store, year), 'inv');
+  return out;
+}
 function renderPnlStock(root, kind) {
   const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
   const year = _pnlState.year, store = _pnlState.store, mode = _pnlStockMode;
@@ -13531,16 +13541,20 @@ function renderPnlStock(root, kind) {
   const isSvc = (kind === 'service'), ck = isSvc ? 'svc' : 'inv';
   const rows = _stockOrdered(ck, store, year);
   const idx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  const isPct = mode === 'pct';
   const cell = v => v ? (mode === 'qty' ? Math.round(v) : _pnlFmt(v)) : '—';
+  const pctc = (v, t) => (v && t) ? (v / t * 100).toFixed(1) + '%' : '—'; // 占当列总成本 %
   const tot = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; let totY = 0, costY = 0;
+  const colT = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; let colTY = 0; // pct 分母: 每月/YTD 总成本 RM
+  if (isPct) rows.forEach(r => { const c2 = _stockCostOf(ck, r.code); idx.forEach(i => colT[i] += r.m[i] * c2); colTY += r.ytd * c2; });
   let bodyRows = '';
   rows.forEach(r => {
     const cost = _stockCostOf(ck, r.code); let ytd = 0, cells = ''; const c = ee(r.code);
-    idx.forEach(i => { const q = r.m[i], val = mode === 'qty' ? q : q * cost; cells += `<td>${cell(val)}</td>`; tot[i] += val; ytd += val; });
+    idx.forEach(i => { const q = r.m[i], val = mode === 'qty' ? q : q * cost; cells += `<td>${isPct ? pctc(val, colT[i]) : cell(val)}</td>`; tot[i] += val; ytd += val; });
     costY += r.ytd * cost;
     bodyRows += `<tr ondragover="_stockDragOver(event)" ondragleave="_stockDragLeave(event)" ondrop="_stockDrop(event,'${c}','${ck}')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_stockDragStart(event,'${c}')" title="Drag to reorder">⠿</span> <span class="nm">${ee(r.name)}</span><div style="font-size:9px;color:#aeb0bd">${c}</div></td>`
       + `<td><input class="cin" type="number" step="any" value="${cost || 0}" onchange="_stockSetCost('${ck}','${c}',this.value)"></td>`
-      + cells + `<td class="sub">${cell(ytd)}</td></tr>`;
+      + cells + `<td class="sub">${isPct ? pctc(ytd, colTY) : cell(ytd)}</td></tr>`;
   });
   idx.forEach(i => totY += tot[i]);
   if (!rows.length) bodyRows = `<tr><td class="l" colspan="15" style="color:var(--gray);padding:16px;font-size:13px">No ${isSvc ? 'service' : 'product'} collection for this outlet / year.</td></tr>`;
@@ -13556,7 +13570,7 @@ function renderPnlStock(root, kind) {
   root.innerHTML = _pnlTopTabs()
     + `<div class="pnl-bar2"><div class="pnl-tabs">` + stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${ee(s.id)}')">${ee(s.name)}</div>`).join('') + `</div>`
     + `<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
-    + `<div class="pnl-seg"><button class="${mode === 'rm' ? 'on' : ''}" onclick="_pnlSetStockMode('rm')">RM</button><button class="${mode === 'qty' ? 'on' : ''}" onclick="_pnlSetStockMode('qty')">Qty</button></div>`
+    + `<div class="pnl-seg"><button class="${mode === 'rm' ? 'on' : ''}" onclick="_pnlSetStockMode('rm')">RM</button><button class="${mode === 'qty' ? 'on' : ''}" onclick="_pnlSetStockMode('qty')">Qty</button><button class="${mode === 'pct' ? 'on' : ''}" onclick="_pnlSetStockMode('pct')">%</button></div>`
     + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>` + _pnlSaveBtnHtml() + `</div></div>`
     + `<div class="pnl-cards" style="grid-template-columns:repeat(2,minmax(0,1fr))">` + cards + `</div>`
     + `<div class="pnl-scroll"><table class="pnl-t">` + head + '<tbody>' + bodyRows + totRow + '</tbody></table></div>'
