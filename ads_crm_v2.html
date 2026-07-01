@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.53</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.55</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.53</div>
+      <div class="nav-brand-version">v7.55</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12818,9 +12818,9 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-chip{font-size:12.5px;font-weight:500;padding:7px 15px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
 #pnlRoot .pnl-chip.on{background:#19143a;border-color:#19143a;color:#fff;}
 #pnlRoot .pnl-right{display:inline-flex;gap:8px;align-items:center;}
-#pnlRoot .pnl-seg{display:inline-flex;background:var(--surface-2);border-radius:9px;padding:3px;}
+#pnlRoot .pnl-seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:3px;}
 #pnlRoot .pnl-seg button{font-family:inherit;font-size:12px;font-weight:500;padding:6px 16px;border:0;background:transparent;color:var(--gray);border-radius:7px;cursor:pointer;}
-#pnlRoot .pnl-seg button.on{background:#fff;color:var(--black);box-shadow:0 1px 2px rgba(0,0,0,.08);}
+#pnlRoot .pnl-seg button.on{background:#fff;color:var(--black);box-shadow:0 0 0 1px var(--border),0 1px 3px rgba(0,0,0,.14);}
 #pnlRoot .pnl-yr{font-size:13px;width:auto;padding:7px 30px 7px 11px;border:1px solid var(--border);border-radius:9px;background-color:#fff;font-family:inherit;}
 #pnlRoot .pnl-savebtn{padding:8px 18px;font-size:13px;white-space:nowrap;}
 #pnlRoot .pnl-savebtn:disabled{opacity:.7;}
@@ -13005,7 +13005,7 @@ function renderPnL() {
     const r = opts.row, co = opts.cellOpts || {}, lid = r.lineId || '';
     const custom = editable && /^exp-/.test(lid);                       // 自己加的: 可改名/删
     const isReno = (lid === 'buildout');                                // 建店成本: 总费用÷月数 专属 modal
-    const switchable = editable && (lid === 'cost' || lid === 'commission' || isReno); // 这几行有齿轮
+    const switchable = editable ? (lid === 'cost' || lid === 'commission' || isReno) : (store === 'all' && lid === 'cost'); // 这几行有齿轮; all 视图只放 cost(来源全局统一)
     const gearFn = isReno ? '_pnlRenoModal' : '_pnlTypeModal';
     const gear = switchable ? `<button class="rgear" onclick="${gearFn}('${e(lid)}')" title="Row settings">${GEAR_SVG}</button>` : '';
     const del = custom ? `<span class="delx" onclick="_pnlDelRow('${e(lid)}')" title="Remove">×</span>` : '';
@@ -13069,7 +13069,9 @@ function renderPnL() {
 
 // ---- 编辑 handlers ----
 function _pnlFindRow(lineId) {
-  return (state.pnl.rows || []).find(r => r.store === _pnlState.store && r.lineId === lineId && String(r.year) === String(_pnlState.year));
+  const rows = state.pnl.rows || [], yr = String(_pnlState.year);
+  if (_pnlState.store === 'all') return rows.find(r => r.lineId === lineId && String(r.year) === yr); // all: 任一店的行(cost 全局同步, save 时会传播到所有店)
+  return rows.find(r => r.store === _pnlState.store && r.lineId === lineId && String(r.year) === yr);
 }
 function _pnlSetCell(lineId, mi, v) {
   const r = _pnlFindRow(lineId); if (!r) return;
