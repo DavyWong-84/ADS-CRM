@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.60</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.61</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.60</div>
+      <div class="nav-brand-version">v7.61</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12922,6 +12922,9 @@ function _pnlInjectCss() {
 .pnl-pick .pp-conf{display:block;font-size:10px;color:var(--red);}
 .pnl-pick.dis{opacity:.55;cursor:not-allowed;}
 #pnlRoot .pnl-t tr.indent td.l{padding-left:18px;}
+#pnlRoot .pnl-t.fc-t{width:auto;}
+#pnlRoot .pnl-t.fc-t th,#pnlRoot .pnl-t.fc-t td{text-align:center;}
+#pnlRoot .pnl-t.fc-t th.l,#pnlRoot .pnl-t.fc-t td.l{text-align:left;min-width:0;}
 #pnlRoot .pnl-t .cin{width:78px;text-align:right;border:1px solid #e3e3ea;border-radius:6px;padding:4px 6px;font-family:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;background:#fff;color:var(--black);}
 #pnlRoot .pnl-t .cin:hover{border-color:#cdb9fb;}
 #pnlRoot .pnl-t .cin:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 2px var(--purple-bg);}
@@ -12954,7 +12957,7 @@ function renderPnL() {
   if (_pnlView === 'employees') { renderPnlEmployees(root); return; } // v7.25: Employees 子页
   if (_pnlView === 'product') { renderPnlStock(root, 'product'); return; } // v7.49: Product(库存出库)
   if (_pnlView === 'service') { renderPnlStock(root, 'service'); return; } // v7.49: Service(领取次数)
-  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.60: Forecast(用量预测)
+  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.61: Forecast(用量预测)
   const stores = _pnlStoreList();
   if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
   const store = _pnlState.store, year = _pnlState.year;
@@ -13672,7 +13675,7 @@ function renderForecast(root) {
   const stores = _pnlStoreList();
   if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
   const store = _pnlState.store, year = _pnlState.year;
-  const rows = _stockAgg(state.InvUsage || [], 'itemCode', 'itemName', store, year); // product only
+  const rows = _stockOrdered('inv', store, year); // product, 跟 Product tab 同序(手动序→qty降序)
   const sales = pnlAutoRows(store, year).sales;                                       // 12-月营业额
   let lastM = 0; for (let i = 0; i < 12; i++) if (sales[i] > 0) lastM = i;
   if (_fcState.to == null || _fcState.to > 11) _fcState.to = lastM;
@@ -13735,14 +13738,14 @@ function renderForecast(root) {
     + '<div class="pnl-seg"><button class="' + (_fcState.period === 'month' ? 'on' : '') + '" onclick="_fcSetPeriod(\'month\')">Month</button><button class="' + (_fcState.period === 'quarter' ? 'on' : '') + '" onclick="_fcSetPeriod(\'quarter\')">Quarter</button><button class="' + (_fcState.period === 'half' ? 'on' : '') + '" onclick="_fcSetPeriod(\'half\')">Half</button></div>'
     + '</div></div>'
     + '<div class="pnl-secttl" style="margin:4px 2px 8px;font-size:11px;letter-spacing:.4px;color:var(--gray);font-weight:600">USAGE PER RM1,000 · READ-ONLY <span style="color:#c4c4cf;font-weight:500">(actual usage ÷ revenue)</span></div>'
-    + '<div class="pnl-scroll"><table class="pnl-t">' + aHead + '<tbody>' + aBody + '</tbody></table></div>'
+    + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + aHead + '<tbody>' + aBody + '</tbody></table></div>'
     + '<div class="pnl-secttl" style="margin:22px 2px 10px;font-size:11px;letter-spacing:.4px;color:var(--purple);font-weight:600">FORECAST</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end;margin-bottom:14px">'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Base period (for the rate)</div><div style="display:flex;align-items:center;gap:6px"><select class="pnl-yr" onchange="_fcSetFrom(this.value)">' + _mOpt(from) + '</select><span style="color:var(--gray)">→</span><select class="pnl-yr" onchange="_fcSetTo(this.value)">' + _mOpt(to) + '</select></div></div>'
     +   '<div style="background:#eef7f0;border:1px solid #c9e6d2;border-radius:10px;padding:7px 14px"><div style="font-size:11px;color:#0f6e56;font-weight:600">Range revenue (actual)</div><div style="font-size:16px;font-weight:700;color:#0f6e56;margin-top:1px">RM ' + _pnlFmt(rangeRev) + '</div></div>'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast by</div><div style="display:flex;align-items:center;gap:10px"><div class="pnl-seg"><button class="' + (byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'months\')">Months</button><button class="' + (!byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'revenue\')">Revenue</button></div>' + byCtrl + '</div></div>'
     + '</div>'
-    + '<div class="pnl-scroll"><table class="pnl-t">' + bHead + '<tbody>' + bBody + bTot + '</tbody></table></div>'
+    + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + bHead + '<tbody>' + bBody + bTot + '</tbody></table></div>'
     + '<div class="pnl-foot-note">Rate from your selected base period. <b>By Months</b>: forecast qty = monthly avg × months. <b>By Revenue</b>: forecast qty = per RM1,000 × (revenue ÷ 1,000). Forecast cost = qty × unit cost. Product only · ' + (store === 'all' ? 'all outlets summed' : (store === 'mgmt' ? 'Mgmt has none' : 'this outlet')) + '.</div>';
   window.scrollTo(0, _wY);
 }
