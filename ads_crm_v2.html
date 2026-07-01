@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.61</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.62</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.61</div>
+      <div class="nav-brand-version">v7.62</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12925,6 +12925,7 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t.fc-t{width:auto;}
 #pnlRoot .pnl-t.fc-t th,#pnlRoot .pnl-t.fc-t td{text-align:center;}
 #pnlRoot .pnl-t.fc-t th.l,#pnlRoot .pnl-t.fc-t td.l{text-align:left;min-width:0;}
+#pnlRoot .pnl-t.fc-t tbody td{border-bottom:1px solid #e4e4ec;}
 #pnlRoot .pnl-t .cin{width:78px;text-align:right;border:1px solid #e3e3ea;border-radius:6px;padding:4px 6px;font-family:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;background:#fff;color:var(--black);}
 #pnlRoot .pnl-t .cin:hover{border-color:#cdb9fb;}
 #pnlRoot .pnl-t .cin:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 2px var(--purple-bg);}
@@ -12957,7 +12958,7 @@ function renderPnL() {
   if (_pnlView === 'employees') { renderPnlEmployees(root); return; } // v7.25: Employees 子页
   if (_pnlView === 'product') { renderPnlStock(root, 'product'); return; } // v7.49: Product(库存出库)
   if (_pnlView === 'service') { renderPnlStock(root, 'service'); return; } // v7.49: Service(领取次数)
-  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.61: Forecast(用量预测)
+  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.62: Forecast(用量预测)
   const stores = _pnlStoreList();
   if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
   const store = _pnlState.store, year = _pnlState.year;
@@ -13691,7 +13692,7 @@ function renderForecast(root) {
     const uc = _stockCostOf('inv', r.code);
     const fcQty = byMonths ? avg * N : ratio * V / 1000;
     return { code: r.code, name: r.name, rangeQty, avg, ratio, uc, fcQty, fcCost: fcQty * uc };
-  }).filter(it => it.rangeQty > 0 || it.fcQty > 0);
+  }); // 不过滤: 跟上面 Section A 完全同行同序(默认 = Product tab 排序)
 
   // ---- Section A: 只读 per RM1,000 比率表 ----
   const cols = _fcCols(_fcState.period);
@@ -13724,12 +13725,18 @@ function renderForecast(root) {
   });
   if (!items.length) bBody = '<tr><td class="l" colspan="6" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
   const bTot = '<tr class="big"><td class="l">Total</td><td></td><td></td><td></td><td>' + Math.round(totQty) + '</td><td>RM ' + _pnlFmt(totCost) + '</td></tr>';
-  const bHead = '<thead><tr><th class="l">Product</th><th>Actual<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">' + _PNL_MONTHS[from] + '–' + _PNL_MONTHS[to] + '</span></th><th>Monthly<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">avg</span></th><th>per<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">RM1,000</span></th><th style="color:var(--purple)">Forecast<br><span style="font-weight:400;font-size:9px">qty</span></th><th style="color:var(--purple)">Forecast<br><span style="font-weight:400;font-size:9px">cost</span></th></tr></thead>';
+  const bHead = '<thead><tr><th class="l">Product</th><th>Qty Used<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">' + _PNL_MONTHS[from] + '–' + _PNL_MONTHS[to] + '</span></th><th>Monthly<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">avg</span></th><th>per<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">RM1,000</span></th><th style="color:var(--purple)">Forecast<br><span style="font-weight:400;font-size:9px">qty</span></th><th style="color:var(--purple)">Forecast<br><span style="font-weight:400;font-size:9px">cost</span></th></tr></thead>';
 
   const inpStyle = 'font-family:inherit;font-size:14px;font-weight:600;text-align:right;border:1px solid var(--purple);border-radius:7px;padding:5px 8px;background:#fff;color:var(--black);';
   const byCtrl = byMonths
     ? '<input type="number" min="0" value="' + N + '" onchange="_fcSetMonths(this.value)" style="width:56px;text-align:center;' + inpStyle + '"> <span style="font-size:13px">months ahead</span>'
     : '<span style="font-size:12px;color:var(--gray)">RM</span> <input type="number" min="0" value="' + V + '" onchange="_fcSetRevenue(this.value)" style="width:120px;' + inpStyle + '">';
+  // 反推(全行答案一致 → 给一个): by months → 能撑营业额; by revenue → 能撑几个月
+  const revEquiv = nMonths ? (N / nMonths) * rangeRev : 0;
+  const monthsEquiv = rangeRev ? (V / rangeRev) * nMonths : 0;
+  const equivChip = '<span style="background:var(--purple-bg);color:var(--purple);border-radius:8px;padding:7px 13px;font-weight:600;font-size:13px">'
+    + (byMonths ? '≈ supports RM ' + _pnlFmt(revEquiv) + ' revenue' : '≈ ' + (Math.round(monthsEquiv * 10) / 10) + ' months of stock')
+    + '</span>';
 
   const _wY = window.scrollY;
   root.innerHTML = _pnlTopTabs()
@@ -13744,6 +13751,7 @@ function renderForecast(root) {
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Base period (for the rate)</div><div style="display:flex;align-items:center;gap:6px"><select class="pnl-yr" onchange="_fcSetFrom(this.value)">' + _mOpt(from) + '</select><span style="color:var(--gray)">→</span><select class="pnl-yr" onchange="_fcSetTo(this.value)">' + _mOpt(to) + '</select></div></div>'
     +   '<div style="background:#eef7f0;border:1px solid #c9e6d2;border-radius:10px;padding:7px 14px"><div style="font-size:11px;color:#0f6e56;font-weight:600">Range revenue (actual)</div><div style="font-size:16px;font-weight:700;color:#0f6e56;margin-top:1px">RM ' + _pnlFmt(rangeRev) + '</div></div>'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast by</div><div style="display:flex;align-items:center;gap:10px"><div class="pnl-seg"><button class="' + (byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'months\')">Months</button><button class="' + (!byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'revenue\')">Revenue</button></div>' + byCtrl + '</div></div>'
+    +   '<div style="padding-bottom:2px">' + equivChip + '</div>'
     + '</div>'
     + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + bHead + '<tbody>' + bBody + bTot + '</tbody></table></div>'
     + '<div class="pnl-foot-note">Rate from your selected base period. <b>By Months</b>: forecast qty = monthly avg × months. <b>By Revenue</b>: forecast qty = per RM1,000 × (revenue ÷ 1,000). Forecast cost = qty × unit cost. Product only · ' + (store === 'all' ? 'all outlets summed' : (store === 'mgmt' ? 'Mgmt has none' : 'this outlet')) + '.</div>';
