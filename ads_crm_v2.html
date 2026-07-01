@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.63</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.64</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.63</div>
+      <div class="nav-brand-version">v7.64</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12959,7 +12959,7 @@ function renderPnL() {
   if (_pnlView === 'employees') { renderPnlEmployees(root); return; } // v7.25: Employees 子页
   if (_pnlView === 'product') { renderPnlStock(root, 'product'); return; } // v7.49: Product(库存出库)
   if (_pnlView === 'service') { renderPnlStock(root, 'service'); return; } // v7.49: Service(领取次数)
-  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.63: Forecast(用量预测)
+  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.64: Forecast(用量预测)
   const stores = _pnlStoreList();
   if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
   const store = _pnlState.store, year = _pnlState.year;
@@ -13664,6 +13664,7 @@ let _fcState = { by: 'months', months: 3, revenue: 0, from: 0, to: null, period:
 function _fcSetBy(v) { _fcState.by = v; renderPnL(); }
 function _fcSetMonths(v) { _fcState.months = Math.max(0, Number(v) || 0); renderPnL(); }
 function _fcSetRevenue(v) { _fcState.revenue = Math.max(0, parseFloat(String(v).replace(/,/g, '')) || 0); renderPnL(); }
+function _fcFmtInput(el) { const r = el.value.replace(/[^\d]/g, ''); el.value = r ? Number(r).toLocaleString('en-US') : ''; } // 输入时实时加千分位逗号
 function _fcSetFrom(v) { _fcState.from = Number(v); renderPnL(); }
 function _fcSetTo(v) { _fcState.to = Number(v); renderPnL(); }
 function _fcSetPeriod(v) { _fcState.period = v; renderPnL(); }
@@ -13731,7 +13732,7 @@ function renderForecast(root) {
   const inpStyle = 'font-family:inherit;font-size:14px;font-weight:600;text-align:right;border:1px solid var(--purple);border-radius:7px;padding:5px 8px;background:#fff;color:var(--black);';
   const byCtrl = byMonths
     ? '<input type="number" min="0" value="' + N + '" onchange="_fcSetMonths(this.value)" style="width:56px;text-align:center;' + inpStyle + '"> <span style="font-size:13px">months ahead</span>'
-    : '<span style="font-size:12px;color:var(--gray)">RM</span> <input type="number" min="0" value="' + V + '" onchange="_fcSetRevenue(this.value)" style="width:120px;' + inpStyle + '">';
+    : '<span style="font-size:12px;color:var(--gray)">RM</span> <input type="text" inputmode="numeric" value="' + (V ? V.toLocaleString('en-US') : '') + '" placeholder="0" oninput="_fcFmtInput(this)" onchange="_fcSetRevenue(this.value)" style="width:130px;' + inpStyle + '">';
   // 反推(全行答案一致 → 给一个): by months → 能撑营业额; by revenue → 能撑几个月
   const revEquiv = nMonths ? (N / nMonths) * rangeRev : 0;
   const monthsEquiv = rangeRev ? (V / rangeRev) * nMonths : 0;
