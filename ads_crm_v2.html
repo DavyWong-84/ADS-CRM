@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.66</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.67</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.66</div>
+      <div class="nav-brand-version">v7.67</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5199,7 +5199,7 @@ function loadState() {
   // v7.25: P&L 数据
   state.pnl = { rows: [], staff: [], config: [], seedV: {}, employees: [], empSalary: [], empV: 0, stockCost: [] };
   state.InvUsage = []; state.SvcColl = []; // v7.49: 库存出库 / service 领取 (只读, pull 带回)
-  state.InvBalance = []; // v7.66: 最新库存 balance (3店+HQ, 只读, pull 带回)
+  state.InvBalance = []; // v7.67: 最新库存 balance (3店+HQ, 只读, pull 带回)
   if (PRELOADED.PnL_Rows)      PRELOADED.PnL_Rows.forEach(r => state.pnl.rows.push({ ...r }));
   if (PRELOADED.PnL_Staff)     PRELOADED.PnL_Staff.forEach(r => state.pnl.staff.push({ ...r }));
   if (PRELOADED.PnL_Config)    PRELOADED.PnL_Config.forEach(r => state.pnl.config.push({ ...r }));
@@ -12960,7 +12960,7 @@ function renderPnL() {
   if (_pnlView === 'employees') { renderPnlEmployees(root); return; } // v7.25: Employees 子页
   if (_pnlView === 'product') { renderPnlStock(root, 'product'); return; } // v7.49: Product(库存出库)
   if (_pnlView === 'service') { renderPnlStock(root, 'service'); return; } // v7.49: Service(领取次数)
-  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.66: Forecast(用量预测)
+  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.67: Forecast(用量预测)
   const stores = _pnlStoreList();
   if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
   const store = _pnlState.store, year = _pnlState.year;
@@ -13730,6 +13730,7 @@ function renderForecast(root) {
   items.forEach(it => {
     totQty += it.fcQty; totCost += it.fcCost; totOrder += it.toOrder;
     bBody += '<tr><td class="l"><span class="nm">' + ee(it.name) + '</span><div style="font-size:9px;color:#aeb0bd">' + ee(it.code) + '</div></td>'
+      + '<td>' + Math.round(it.rangeQty) + '</td>'
       + '<td>' + (it.avg ? it.avg.toFixed(1) : '—') + '</td>'
       + '<td>' + (it.ratio ? it.ratio.toFixed(2) : '—') + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + Math.round(it.fcQty) + '</td>'
@@ -13739,11 +13740,12 @@ function renderForecast(root) {
       + '<td>' + (it.lasts == null ? '—' : (Math.round(it.lasts * 10) / 10)) + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + (it.toOrder || 0) + '</td></tr>';
   });
-  if (!items.length) bBody = '<tr><td class="l" colspan="' + (isAll ? 9 : 8) + '" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
-  const bTot = '<tr class="big"><td class="l">Total</td><td></td><td></td><td>' + Math.round(totQty) + '</td><td>RM ' + _pnlFmt(totCost) + '</td><td></td>' + (isAll ? '<td></td>' : '') + '<td></td><td>' + totOrder + '</td></tr>';
+  if (!items.length) bBody = '<tr><td class="l" colspan="' + (isAll ? 10 : 9) + '" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
+  const bTot = '<tr class="big"><td class="l">Total</td><td></td><td></td><td></td><td>' + Math.round(totQty) + '</td><td>RM ' + _pnlFmt(totCost) + '</td><td></td>' + (isAll ? '<td></td>' : '') + '<td></td><td>' + totOrder + '</td></tr>';
   const _sub = t => '<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">' + t + '</span>';
   const bHead = '<thead><tr><th class="l">Product</th>'
-    + '<th>Monthly' + _sub('avg ' + _PNL_MONTHS[from] + '–' + _PNL_MONTHS[to]) + '</th>'
+    + '<th>Qty used' + _sub(_PNL_MONTHS[from] + '–' + _PNL_MONTHS[to]) + '</th>'
+    + '<th>Monthly' + _sub('avg') + '</th>'
     + '<th>per' + _sub('RM1,000') + '</th>'
     + '<th style="color:var(--purple)">Forecast' + _sub('qty') + '</th>'
     + '<th style="color:var(--purple)">Forecast' + _sub('cost') + '</th>'
@@ -16260,7 +16262,7 @@ async function gsPullSilent() {
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     if (d.data && d.data.InvUsage !== undefined) state.InvUsage = (d.data.InvUsage || []);
     if (d.data && d.data.SvcColl !== undefined) state.SvcColl = (d.data.SvcColl || []);
-    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.66: 最新库存(3店+HQ)
+    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.67: 最新库存(3店+HQ)
     if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
@@ -16428,7 +16430,7 @@ async function gsPull() {
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     if (d.data && d.data.InvUsage !== undefined) state.InvUsage = (d.data.InvUsage || []);
     if (d.data && d.data.SvcColl !== undefined) state.SvcColl = (d.data.SvcColl || []);
-    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.66: 最新库存(3店+HQ)
+    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.67: 最新库存(3店+HQ)
     if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
