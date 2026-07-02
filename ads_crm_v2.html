@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.80</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.82</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.80</div>
+      <div class="nav-brand-version">v7.82</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13170,7 +13170,7 @@ function _pnlTypeModal(lineId) {
     + `<div class="settings-modal-input-row"><label>Name</label><input id="pnlRowName" type="text" value="${ee(r.name)}"></div>`
     + `<div class="settings-modal-section-title" style="margin-top:18px">Source</div>`
     + `<div class="toggle-group" id="pnlTypeToggle" style="display:flex;width:100%">`
-    +   `<div class="toggle${(!isPct && !isCrm) ? ' active' : ''}" data-t="number" style="flex:1;text-align:center" onclick="_pnlTypePick('number')">Number</div>`
+    +   (showCrm ? '' : `<div class="toggle${(!isPct && !isCrm) ? ' active' : ''}" data-t="number" style="flex:1;text-align:center" onclick="_pnlTypePick('number')">Number</div>`) // cost 行不给 Number(有 CRM 真实了); 其他费用行照留
     +   `<div class="toggle${isPct ? ' active' : ''}" data-t="pct" style="flex:1;text-align:center" onclick="_pnlTypePick('pct')">% of sales</div>`
     +   (showCrm ? `<div class="toggle${isCrm ? ' active' : ''}" data-t="crm" style="flex:1;text-align:center" onclick="_pnlTypePick('crm')">CRM (real)</div>` : '')
     + `</div>`
@@ -13753,6 +13753,9 @@ function renderForecast(root) {
   const rangeRev = sales.slice(from, to + 1).reduce((a, b) => a + b, 0);
   const byMonths = _fcState.by === 'months';
   const N = Number(_fcState.months) || 0, V = Number(_fcState.revenue) || 0;
+  // Forecast cost 跟 P&L cost 行同一套: CRM(单价) → qty×单价; % → 预测营业额×cost% (cost/commission 全局同步, 任一店的行都行)
+  const _costRow = _pnlFindRow('cost'); const costPct = !!(_costRow && _costRow.type === 'pct'); const costRate = _costRow ? (Number(_costRow.rate) || 0) : 0;
+  const fcRev = byMonths ? (nMonths ? (N / nMonths) * rangeRev : 0) : V; // 预测营业额
   const isAll = (store === 'all');
   const balMap = {}; (state.InvBalance || []).forEach(b => { balMap[b.locationId + '|' + b.itemCode] = Number(b.qty) || 0; }); // 最新库存 loc|code → qty
   const _balOf = code => isAll
@@ -13793,27 +13796,28 @@ function renderForecast(root) {
   let bBody = '', totQty = 0, totCost = 0;
   let totOrder = 0;
   items.forEach(it => {
-    totQty += it.fcQty; totCost += it.fcCost; totOrder += it.toOrder;
+    totQty += it.fcQty; totOrder += it.toOrder; if (!costPct) totCost += it.fcCost; // % 模式成本不逐项加(见下面 total)
     bBody += '<tr><td class="l"><span class="nm">' + ee(it.name) + '</span><div style="font-size:9px;color:#aeb0bd">' + ee(it.code) + '</div></td>'
       + '<td>' + Math.round(it.rangeQty) + '</td>'
       + '<td>' + (it.avg ? it.avg.toFixed(1) : '—') + '</td>'
       + '<td>' + (it.ratio ? it.ratio.toFixed(2) : '—') + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + Math.round(it.fcQty) + '</td>'
-      + '<td style="color:var(--purple);font-weight:600">' + (it.fcCost ? 'RM ' + _pnlFmt(it.fcCost) : '—') + '</td>'
+      + '<td style="color:var(--purple);font-weight:600">' + (costPct ? '—' : (it.fcCost ? 'RM ' + _pnlFmt(it.fcCost) : '—')) + '</td>' // % 模式没有单品成本 → 只在 Total 出
       + '<td>' + Math.round(it.stock) + '</td>'
       + (isAll ? '<td>' + Math.round(it.hq) + '</td>' : '')
       + '<td>' + (it.lasts == null ? '—' : (Math.round(it.lasts * 10) / 10)) + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + (it.toOrder || 0) + '</td></tr>';
   });
+  const totCostFinal = costPct ? (fcRev * costRate / 100) : totCost; // % 模式: 预测营业额 × cost%
   if (!items.length) bBody = '<tr><td class="l" colspan="' + (isAll ? 10 : 9) + '" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
-  const bTot = '<tr class="big"><td class="l">Total</td><td></td><td></td><td></td><td>' + Math.round(totQty) + '</td><td>RM ' + _pnlFmt(totCost) + '</td><td></td>' + (isAll ? '<td></td>' : '') + '<td></td><td>' + totOrder + '</td></tr>';
+  const bTot = '<tr class="big"><td class="l">Total</td><td></td><td></td><td></td><td>' + Math.round(totQty) + '</td><td>RM ' + _pnlFmt(totCostFinal) + '</td><td></td>' + (isAll ? '<td></td>' : '') + '<td></td><td>' + totOrder + '</td></tr>';
   const _sub = t => '<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">' + t + '</span>';
   const bHead = '<thead><tr><th class="l">Product</th>'
     + '<th>Qty used' + _sub(_PNL_MONTHS[from] + '–' + _PNL_MONTHS[to]) + '</th>'
     + '<th>Monthly' + _sub('avg') + '</th>'
     + '<th>per' + _sub('RM1,000') + '</th>'
     + '<th style="color:var(--purple)">Forecast' + _sub('qty') + '</th>'
-    + '<th style="color:var(--purple)">Forecast' + _sub('cost') + '</th>'
+    + '<th style="color:var(--purple)">Forecast' + _sub(costPct ? (costRate + '% of sales') : 'cost') + '</th>'
     + '<th>Stock now' + _sub(isAll ? '3 outlets' : 'this outlet') + '</th>'
     + (isAll ? '<th>HQ' + _sub('stock') + '</th>' : '')
     + '<th>Lasts' + _sub('months') + '</th>'
