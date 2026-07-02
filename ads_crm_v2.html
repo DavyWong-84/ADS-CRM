@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.79</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.80</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.79</div>
+      <div class="nav-brand-version">v7.80</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13730,8 +13730,8 @@ function _fcSetBy(v) { _fcState.by = v; _fcSave(); renderPnL(); }
 function _fcSetMonths(v) { _fcState.months = Math.max(0, Number(v) || 0); _fcSave(); renderPnL(); }
 function _fcSetRevenue(v) { _fcState.revenue = Math.max(0, parseFloat(String(v).replace(/,/g, '')) || 0); _fcSave(); renderPnL(); }
 function _fcFmtInput(el) { const r = el.value.replace(/[^\d]/g, ''); el.value = r ? Number(r).toLocaleString('en-US') : ''; } // 输入时实时加千分位逗号
-function _fcSetFrom(v) { _fcState.from = Number(v); _fcSave(); renderPnL(); }
-function _fcSetTo(v) { _fcState.to = Number(v); _fcSave(); renderPnL(); }
+function _fcSetFrom(v) { _fcState.from = Number(v); if (_fcState.to != null && _fcState.to < _fcState.from) _fcState.to = _fcState.from; _fcSave(); renderPnL(); } // From 选晚过 To → To 自动跳同月
+function _fcSetTo(v) { _fcState.to = Number(v); if (_fcState.to < _fcState.from) _fcState.from = _fcState.to; _fcSave(); renderPnL(); } // To 选早过 From → From 自动跳同月
 function _fcSetPeriod(v) { _fcState.period = v; _fcSave(); renderPnL(); }
 function _fcSetTab(v) { _fcState.tab = v; _fcSave(); renderPnL(); }
 function _fcCols(period) { // 比率表列分组
