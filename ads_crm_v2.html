@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.85</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.87</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.85</div>
+      <div class="nav-brand-version">v7.87</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13890,24 +13890,26 @@ function renderForecast(root) {
       + '<td>' + (it.avg ? it.avg.toFixed(1) : '—') + '</td>'
       + '<td>' + (it.ratio ? it.ratio.toFixed(2) : '—') + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + Math.round(it.fcQty) + '</td>'
-      + (costByPct ? '<td>' + (it.price ? _pnlFmt(it.price) : '—') + '</td>' : '')
-      + (costByPct ? '<td><input type="number" step="any" value="' + (it.pct == null ? '' : it.pct) + '" placeholder="%" onchange="_stockSetPct(\'inv\',\'' + cc + '\',this.value)" style="' + pinp + '"></td>' : '')
+      + '<td>' + (it.price ? _pnlFmt(it.price) : '—') + '</td>' // Sell price 两模式都显示(只读, 来自 Product tab)
+      + (costByPct
+        ? '<td><input type="number" step="any" value="' + (it.pct == null ? '' : it.pct) + '" placeholder="%" onchange="_stockSetPct(\'inv\',\'' + cc + '\',this.value)" style="' + pinp + '"></td>'
+        : '<td>' + (it.uc ? _pnlFmt(it.uc) : '—') + '</td>') // CRM real: 显示实际单位成本(只读)
       + '<td style="color:var(--purple);font-weight:600">' + (it.fcCost ? 'RM ' + _pnlFmt(it.fcCost) : '—') + '</td>'
       + '<td>' + Math.round(it.stock) + '</td>'
       + (isAll ? '<td>' + Math.round(it.hq) + '</td>' : '')
       + '<td>' + (it.lasts == null ? '—' : (Math.round(it.lasts * 10) / 10)) + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + (it.toOrder || 0) + '</td></tr>';
   });
-  if (!items.length) bBody = '<tr><td class="l" colspan="' + ((isAll ? 10 : 9) + (costByPct ? 2 : 0)) + '" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
+  if (!items.length) bBody = '<tr><td class="l" colspan="' + ((isAll ? 10 : 9) + 2) + '" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
   const _sub = t => '<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">' + t + '</span>';
   const bHead = '<thead><tr><th class="l">Product</th>'
     + '<th>Qty used' + _sub(_PNL_MONTHS[from] + '–' + _PNL_MONTHS[to]) + '</th>'
     + '<th>Monthly' + _sub('avg') + '</th>'
     + '<th>per' + _sub('RM1,000') + '</th>'
     + '<th style="color:var(--purple)">Forecast' + _sub('qty') + '</th>'
-    + (costByPct ? '<th>Sell price</th>' : '')
-    + (costByPct ? '<th style="color:var(--purple)">Cost %</th>' : '')
-    + '<th style="color:var(--purple)">Forecast' + _sub(costByPct ? 'qty×price×%' : 'cost') + '</th>'
+    + '<th>Sell price</th>'
+    + (costByPct ? '<th style="color:var(--purple)">Cost %</th>' : '<th>Cost' + _sub('unit') + '</th>')
+    + '<th style="color:var(--purple)">Forecast' + _sub(costByPct ? 'qty×price×%' : 'qty×cost') + '</th>'
     + '<th>Stock now' + _sub(isAll ? '3 outlets' : 'this outlet') + '</th>'
     + (isAll ? '<th>HQ' + _sub('stock') + '</th>' : '')
     + '<th>Lasts' + _sub('months') + '</th>'
@@ -13949,7 +13951,7 @@ function renderForecast(root) {
     + '<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">' + [new Date().getFullYear() + 1, new Date().getFullYear(), 2025].filter((v, i, a) => a.indexOf(v) === i).map(y => '<option value="' + y + '"' + (String(y) === year ? ' selected' : '') + '>' + y + '</option>').join('') + '</select>'
     + '<div class="pnl-seg"><button class="' + (showB ? 'on' : '') + '" onclick="_fcSetTab(\'fc\')">Forecast</button><button class="' + (showA && !_pnlExporting ? 'on' : '') + '" onclick="_fcSetTab(\'usage\')">Usage / RM1,000</button></div>'
     + (showA && !_pnlExporting ? '<div class="pnl-seg"><button class="' + (_fcState.period === 'month' ? 'on' : '') + '" onclick="_fcSetPeriod(\'month\')">Month</button><button class="' + (_fcState.period === 'quarter' ? 'on' : '') + '" onclick="_fcSetPeriod(\'quarter\')">Quarter</button><button class="' + (_fcState.period === 'half' ? 'on' : '') + '" onclick="_fcSetPeriod(\'half\')">Half</button></div>' : '')
-    + '<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>'
+    + '<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>' + _pnlSaveBtnHtml() // v7.86: Forecast 也放 Save(存 Sell price/Cost% 去 Sheet)
     + '</div></div>'
     + (showA ? secA : '')
     + (showB ? secB : '');
