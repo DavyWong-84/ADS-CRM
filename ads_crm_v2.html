@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.70</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.74</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.70</div>
+      <div class="nav-brand-version">v7.74</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3964,7 +3964,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3974,11 +3974,11 @@ body.contact-view-table .modal-backdrop.open {
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -3987,56 +3987,11 @@ body.contact-view-table .modal-backdrop.open {
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-    <thead><tr>
-      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-      <th class="num">New (RM)</th>
-      <th class="num">Total (RM)</th>
-    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Sep 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr></tbody><tfoot><tr class="total-row">
-    <td>TOTAL 2026</td>
-    <td class="num">—</td>
-    <td class="num" style="font-weight:700;">—</td>
-  </tr></tfoot></table></div></div>
+        <div id="rv_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4046,52 +4001,15 @@ body.contact-view-table .modal-backdrop.open {
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
+          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-      <thead><tr>
-        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-        <th class="num">Amount (RM)</th>
-      </tr></thead>
-      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Sep 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr></tbody>
-      <tfoot><tr class="total-row">
-        <td>TOTAL 2026</td>
-        <td class="num">—</td>
-      </tr></tfoot>
-    </table></div></div>
+        <div id="as_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4108,7 +4026,7 @@ body.contact-view-table .modal-backdrop.open {
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
+        <div id="fee_entryTable" class="entry-card-table"></div>
       </div>
 
     </div>
@@ -5301,9 +5219,23 @@ function ensureLegacyChannels() {
   }
 }
 
+// v7.71: 库存 3 表(一天一变)单独缓存 — 不塞主快照(省每次 saveState 的序列化), 版本号没变 pull 也不重拉
+let _stockVer = '';
+function _stockCacheLoad() {
+  state.InvUsage = state.InvUsage || []; state.SvcColl = state.SvcColl || []; state.InvBalance = state.InvBalance || [];
+  try {
+    const c = JSON.parse(localStorage.getItem('stockCache'));
+    if (c) { _stockVer = c.ver || ''; state.InvUsage = c.InvUsage || []; state.SvcColl = c.SvcColl || []; state.InvBalance = c.InvBalance || []; }
+  } catch (e) {}
+}
+function _stockCacheStore(ver) {
+  _stockVer = ver || '';
+  try { localStorage.setItem('stockCache', JSON.stringify({ ver: _stockVer, InvUsage: state.InvUsage, SvcColl: state.SvcColl, InvBalance: state.InvBalance })); } catch (e) { console.error(e); }
+}
 function saveState() {
   const toSave = { ...state };
   delete toSave.listPage; delete toSave.listSearch;
+  delete toSave.InvUsage; delete toSave.SvcColl; delete toSave.InvBalance; // v7.71: 库存 3 表在 stockCache, 别塞主快照
   // v6.36: 不持久化 Ads Spend 的 tab/subChannel filter — 每次刷新页面回 'all', 防 popover 跟 state 不一致.
   delete toSave.adsTab; delete toSave.adsSubChannel;
   // v6.67: 同理不持久化 Appt 页 channel filter — 之前 bug: 选过 Google 后刷新, DOM select 默认显示 "All channels" 但 state 仍是 'google', 数据按 google 过滤造成困惑.
@@ -12927,6 +12859,9 @@ function _pnlInjectCss() {
   body:has(#page-pnl.active) .main{padding-bottom:16px!important;}
   #pnlRoot{height:calc(100vh - 32px);display:flex;flex-direction:column;}
   #pnlRoot .pnl-scroll{flex:1 1 auto;max-height:none;min-height:120px;}
+  /* Forecast: fc-secA/fc-secB 包装(PDF 分页用)要把 flex 传下去, 两张表才能像 Product/Service 一样内部滚 */
+  #pnlRoot .fc-secA,#pnlRoot .fc-secB{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;}
+  #pnlRoot .fc-secA .pnl-scroll,#pnlRoot .fc-secB .pnl-scroll{flex:1 1 auto;max-height:none;min-height:120px;}
 }
 @media screen and (max-width:767px){ /* 手机版 P&L: 只留卡片, 表格太挤先隐藏 (Employees 名册不受影响; 限 screen, 别影响 PDF print) */
   #pnlRoot .pnl-scroll-main,#pnlRoot .pnl-foot-note{display:none!important;}
@@ -13775,7 +13710,7 @@ function renderPnlStock(root, kind) {
 
 // ── Forecast (Product only) ───────────────────────────────────────────
 // 逻辑: 选 base period → 算每个产品 per RM1,000 比率 + 月均用量; 顶部 Months 或 Revenue 驱动全表.
-let _fcState = { by: 'months', months: 3, revenue: 0, from: 0, to: null, period: 'month' };
+let _fcState = { by: 'months', months: 3, revenue: 0, from: 0, to: null, period: 'month', tab: 'fc' }; // tab: 'fc'(Forecast, 默认) | 'usage'(比率表)
 try { const _s = JSON.parse(localStorage.getItem('fcState')); if (_s) Object.assign(_fcState, _s); } catch (e) {} // 记住上次的选择
 function _fcSave() { try { localStorage.setItem('fcState', JSON.stringify(_fcState)); } catch (e) {} }
 function _fcSetBy(v) { _fcState.by = v; _fcSave(); renderPnL(); }
@@ -13785,6 +13720,7 @@ function _fcFmtInput(el) { const r = el.value.replace(/[^\d]/g, ''); el.value = 
 function _fcSetFrom(v) { _fcState.from = Number(v); _fcSave(); renderPnL(); }
 function _fcSetTo(v) { _fcState.to = Number(v); _fcSave(); renderPnL(); }
 function _fcSetPeriod(v) { _fcState.period = v; _fcSave(); renderPnL(); }
+function _fcSetTab(v) { _fcState.tab = v; _fcSave(); renderPnL(); }
 function _fcCols(period) { // 比率表列分组
   if (period === 'quarter') return [{ n: 'Q1', mi: [0, 1, 2] }, { n: 'Q2', mi: [3, 4, 5] }, { n: 'Q3', mi: [6, 7, 8] }, { n: 'Q4', mi: [9, 10, 11] }];
   if (period === 'half') return [{ n: 'H1', mi: [0, 1, 2, 3, 4, 5] }, { n: 'H2', mi: [6, 7, 8, 9, 10, 11] }];
@@ -13883,19 +13819,15 @@ function renderForecast(root) {
       : '<div style="font-size:11px;color:var(--purple);font-weight:600">Stock lasts</div><div style="font-size:16px;font-weight:700;color:var(--purple);margin-top:1px">' + (Math.round(monthsEquiv * 10) / 10) + ' months</div>')
     + '</div>';
 
-  const _wY = window.scrollY;
-  root.innerHTML = _pnlTopTabs()
-    + '<div class="pnl-bar2"><div class="pnl-tabs">' + stores.map(s => '<div class="pnl-tab' + (s.id === store ? ' on' : '') + '" onclick="_pnlSetStore(\'' + ee(s.id) + '\')">' + ee(s.name) + '</div>').join('') + '</div>'
-    + '<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">' + [new Date().getFullYear() + 1, new Date().getFullYear(), 2025].filter((v, i, a) => a.indexOf(v) === i).map(y => '<option value="' + y + '"' + (String(y) === year ? ' selected' : '') + '>' + y + '</option>').join('') + '</select>'
-    + '<div class="pnl-seg"><button class="' + (_fcState.period === 'month' ? 'on' : '') + '" onclick="_fcSetPeriod(\'month\')">Month</button><button class="' + (_fcState.period === 'quarter' ? 'on' : '') + '" onclick="_fcSetPeriod(\'quarter\')">Quarter</button><button class="' + (_fcState.period === 'half' ? 'on' : '') + '" onclick="_fcSetPeriod(\'half\')">Half</button></div>'
-    + '<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>'
-    + '</div></div>'
-    + '<div class="fc-secA">' // PDF 分页用: A=比率表 / B=forecast 各一页
+  // v7.74: 两张表用 pill 切换(左 Forecast 默认 / 右 Usage), 一次一张整屏高度; PDF 导出时两张都画(分页要用)
+  const showA = _pnlExporting || _fcState.tab === 'usage';
+  const showB = _pnlExporting || _fcState.tab !== 'usage';
+  const secA = '<div class="fc-secA">'
     + '<div class="pnl-secttl" style="margin:4px 2px 8px;font-size:11px;letter-spacing:.4px;color:var(--gray);font-weight:600">USAGE PER RM1,000 · READ-ONLY <span style="color:#c4c4cf;font-weight:500">(actual usage ÷ revenue)</span></div>'
     + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + aHead + '<tbody>' + aBody + '</tbody></table></div>'
-    + '</div><div class="fc-secB">'
-    + '<div class="pnl-secttl" style="margin:22px 2px 10px;font-size:11px;letter-spacing:.4px;color:var(--purple);font-weight:600">FORECAST</div>'
-    + '<div style="display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end;margin-bottom:14px">'
+    + '</div>';
+  const secB = '<div class="fc-secB">'
+    + '<div style="display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end;margin:4px 0 14px">'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Base period (for the rate)</div><div style="display:flex;align-items:center;gap:6px"><select class="pnl-yr" onchange="_fcSetFrom(this.value)">' + _mOpt(from) + '</select><span style="color:var(--gray)">→</span><select class="pnl-yr" onchange="_fcSetTo(this.value)">' + _mOpt(to) + '</select></div></div>'
     +   '<div style="background:#eef7f0;border:1px solid #c9e6d2;border-radius:10px;padding:7px 14px"><div style="font-size:11px;color:#0f6e56;font-weight:600">Range revenue (actual)</div><div style="font-size:16px;font-weight:700;color:#0f6e56;margin-top:1px">RM ' + _pnlFmt(rangeRev) + '</div></div>'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast by</div><div style="display:flex;align-items:center;gap:10px"><div class="pnl-seg"><button class="' + (byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'months\')">Months</button><button class="' + (!byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'revenue\')">Revenue</button></div>' + byCtrl + '</div></div>'
@@ -13903,6 +13835,16 @@ function renderForecast(root) {
     + '</div>'
     + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + bHead + '<tbody>' + bBody + bTot + '</tbody></table></div>'
     + '</div>';
+  const _wY = window.scrollY;
+  root.innerHTML = _pnlTopTabs()
+    + '<div class="pnl-bar2"><div class="pnl-tabs">' + stores.map(s => '<div class="pnl-tab' + (s.id === store ? ' on' : '') + '" onclick="_pnlSetStore(\'' + ee(s.id) + '\')">' + ee(s.name) + '</div>').join('') + '</div>'
+    + '<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">' + [new Date().getFullYear() + 1, new Date().getFullYear(), 2025].filter((v, i, a) => a.indexOf(v) === i).map(y => '<option value="' + y + '"' + (String(y) === year ? ' selected' : '') + '>' + y + '</option>').join('') + '</select>'
+    + '<div class="pnl-seg"><button class="' + (showB ? 'on' : '') + '" onclick="_fcSetTab(\'fc\')">Forecast</button><button class="' + (showA && !_pnlExporting ? 'on' : '') + '" onclick="_fcSetTab(\'usage\')">Usage / RM1,000</button></div>'
+    + (showA && !_pnlExporting ? '<div class="pnl-seg"><button class="' + (_fcState.period === 'month' ? 'on' : '') + '" onclick="_fcSetPeriod(\'month\')">Month</button><button class="' + (_fcState.period === 'quarter' ? 'on' : '') + '" onclick="_fcSetPeriod(\'quarter\')">Quarter</button><button class="' + (_fcState.period === 'half' ? 'on' : '') + '" onclick="_fcSetPeriod(\'half\')">Half</button></div>' : '')
+    + '<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>'
+    + '</div></div>'
+    + (showA ? secA : '')
+    + (showB ? secB : '');
   window.scrollTo(0, _wY);
 }
 
@@ -16317,7 +16259,7 @@ async function gsPullSilent() {
     return;
   }
   try {
-    const r = await fetch(gsGetUrl(url, 'pull'));
+    const r = await fetch(gsGetUrl(url, 'pull', _stockVer ? { stockver: _stockVer } : null)); // v7.71: 版本没变后端就不送库存 3 表
     const text = await r.text();
     if (text === _lastPullText) return;  // ponytail: byte-identical to last clean pull → skip parse/normalize/double-stringify/re-render (most auto-pulls)
     const d = JSON.parse(text);
@@ -16381,7 +16323,12 @@ async function gsPullSilent() {
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     if (d.data && d.data.InvUsage !== undefined) state.InvUsage = (d.data.InvUsage || []);
     if (d.data && d.data.SvcColl !== undefined) state.SvcColl = (d.data.SvcColl || []);
-    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.68: 最新库存(3店+HQ)
+    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // 最新库存(3店+HQ)
+    // v7.71: 库存版本号 — 后端送了新库存就存进 stockCache; 没送(版本没变)就只记版本, 用本地缓存
+    if (d.data && d.data.stockVer !== undefined) {
+      if (d.data.InvUsage !== undefined || d.data.SvcColl !== undefined || d.data.InvBalance !== undefined) _stockCacheStore(d.data.stockVer);
+      else _stockVer = d.data.stockVer || '';
+    }
     if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
@@ -16460,7 +16407,7 @@ async function gsPull() {
   }
   gsLog('⬇️ Pulling from Sheet...');
   try {
-    const r = await fetch(gsGetUrl(url, 'pull'));
+    const r = await fetch(gsGetUrl(url, 'pull', _stockVer ? { stockver: _stockVer } : null)); // v7.71: 版本没变后端就不送库存 3 表
     const d = await r.json();
     if (!d.success) { gsLog('❌ Pull failed: ' + (d.error || 'Unknown'), true); return; }
 
@@ -16549,7 +16496,12 @@ async function gsPull() {
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     if (d.data && d.data.InvUsage !== undefined) state.InvUsage = (d.data.InvUsage || []);
     if (d.data && d.data.SvcColl !== undefined) state.SvcColl = (d.data.SvcColl || []);
-    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.68: 最新库存(3店+HQ)
+    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // 最新库存(3店+HQ)
+    // v7.71: 库存版本号 — 后端送了新库存就存进 stockCache; 没送(版本没变)就只记版本, 用本地缓存
+    if (d.data && d.data.stockVer !== undefined) {
+      if (d.data.InvUsage !== undefined || d.data.SvcColl !== undefined || d.data.InvBalance !== undefined) _stockCacheStore(d.data.stockVer);
+      else _stockVer = d.data.stockVer || '';
+    }
     if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
@@ -19244,6 +19196,7 @@ function toggleSidebar() {
 
 function init() {
   loadState();
+  _stockCacheLoad(); // v7.71: 库存 3 表从 stockCache 进来(不在主快照里了)
   // v4.21: Restore sidebar collapsed state from localStorage
   try {
     if (localStorage.getItem('ads_crm_sidebar_collapsed') === '1') {
