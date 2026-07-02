@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.82</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.84</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.82</div>
+      <div class="nav-brand-version">v7.84</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13793,24 +13793,26 @@ function renderForecast(root) {
 
   // ---- Section B: forecast 计算 ----
   const _mOpt = sel => _PNL_MONTHS.map((m, i) => '<option value="' + i + '"' + (i === sel ? ' selected' : '') + '>' + m + '</option>').join('');
-  let bBody = '', totQty = 0, totCost = 0;
-  let totOrder = 0;
+  // % 模式: 总成本 = 预测营业额×cost%, 按各产品成本占比分摊到每格(加起来 = 总额); 单价全 0 就按数量分摊
+  const crmTot = items.reduce((a, it) => a + it.fcCost, 0);
+  const qtyTot = items.reduce((a, it) => a + it.fcQty, 0);
+  const pctTot = fcRev * costRate / 100;
+  const _costOf = it => !costPct ? it.fcCost : (crmTot > 0 ? it.fcCost * pctTot / crmTot : (qtyTot > 0 ? pctTot * it.fcQty / qtyTot : 0));
+  let bBody = '';
   items.forEach(it => {
-    totQty += it.fcQty; totOrder += it.toOrder; if (!costPct) totCost += it.fcCost; // % 模式成本不逐项加(见下面 total)
+    const c = _costOf(it);
     bBody += '<tr><td class="l"><span class="nm">' + ee(it.name) + '</span><div style="font-size:9px;color:#aeb0bd">' + ee(it.code) + '</div></td>'
       + '<td>' + Math.round(it.rangeQty) + '</td>'
       + '<td>' + (it.avg ? it.avg.toFixed(1) : '—') + '</td>'
       + '<td>' + (it.ratio ? it.ratio.toFixed(2) : '—') + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + Math.round(it.fcQty) + '</td>'
-      + '<td style="color:var(--purple);font-weight:600">' + (costPct ? '—' : (it.fcCost ? 'RM ' + _pnlFmt(it.fcCost) : '—')) + '</td>' // % 模式没有单品成本 → 只在 Total 出
+      + '<td style="color:var(--purple);font-weight:600">' + (c ? 'RM ' + _pnlFmt(c) : '—') + '</td>'
       + '<td>' + Math.round(it.stock) + '</td>'
       + (isAll ? '<td>' + Math.round(it.hq) + '</td>' : '')
       + '<td>' + (it.lasts == null ? '—' : (Math.round(it.lasts * 10) / 10)) + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + (it.toOrder || 0) + '</td></tr>';
   });
-  const totCostFinal = costPct ? (fcRev * costRate / 100) : totCost; // % 模式: 预测营业额 × cost%
   if (!items.length) bBody = '<tr><td class="l" colspan="' + (isAll ? 10 : 9) + '" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
-  const bTot = '<tr class="big"><td class="l">Total</td><td></td><td></td><td></td><td>' + Math.round(totQty) + '</td><td>RM ' + _pnlFmt(totCostFinal) + '</td><td></td>' + (isAll ? '<td></td>' : '') + '<td></td><td>' + totOrder + '</td></tr>';
   const _sub = t => '<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">' + t + '</span>';
   const bHead = '<thead><tr><th class="l">Product</th>'
     + '<th>Qty used' + _sub(_PNL_MONTHS[from] + '–' + _PNL_MONTHS[to]) + '</th>'
@@ -13850,7 +13852,7 @@ function renderForecast(root) {
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast by</div><div style="display:flex;align-items:center;gap:10px"><div class="pnl-seg"><button class="' + (byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'months\')">Months</button><button class="' + (!byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'revenue\')">Revenue</button></div>' + byCtrl + '</div></div>'
     +   equivChip
     + '</div>'
-    + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + bHead + '<tbody>' + bBody + bTot + '</tbody></table></div>'
+    + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + bHead + '<tbody>' + bBody + '</tbody></table></div>'
     + '</div>';
   const _wY = window.scrollY;
   root.innerHTML = _pnlTopTabs()
