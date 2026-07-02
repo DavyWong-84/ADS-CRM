@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.67</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.68</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.67</div>
+      <div class="nav-brand-version">v7.68</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5199,7 +5199,7 @@ function loadState() {
   // v7.25: P&L 数据
   state.pnl = { rows: [], staff: [], config: [], seedV: {}, employees: [], empSalary: [], empV: 0, stockCost: [] };
   state.InvUsage = []; state.SvcColl = []; // v7.49: 库存出库 / service 领取 (只读, pull 带回)
-  state.InvBalance = []; // v7.67: 最新库存 balance (3店+HQ, 只读, pull 带回)
+  state.InvBalance = []; // v7.68: 最新库存 balance (3店+HQ, 只读, pull 带回)
   if (PRELOADED.PnL_Rows)      PRELOADED.PnL_Rows.forEach(r => state.pnl.rows.push({ ...r }));
   if (PRELOADED.PnL_Staff)     PRELOADED.PnL_Staff.forEach(r => state.pnl.staff.push({ ...r }));
   if (PRELOADED.PnL_Config)    PRELOADED.PnL_Config.forEach(r => state.pnl.config.push({ ...r }));
@@ -12960,7 +12960,7 @@ function renderPnL() {
   if (_pnlView === 'employees') { renderPnlEmployees(root); return; } // v7.25: Employees 子页
   if (_pnlView === 'product') { renderPnlStock(root, 'product'); return; } // v7.49: Product(库存出库)
   if (_pnlView === 'service') { renderPnlStock(root, 'service'); return; } // v7.49: Service(领取次数)
-  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.67: Forecast(用量预测)
+  if (_pnlView === 'forecast') { renderForecast(root); return; } // v7.68: Forecast(用量预测)
   const stores = _pnlStoreList();
   if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = stores[0].id;
   const store = _pnlState.store, year = _pnlState.year;
@@ -13275,12 +13275,28 @@ function _pnlExportPdf() {
   const root = document.getElementById('pnlRoot'); if (!root) return;
   _pnlExporting = true;
   let pages = '';
+  const _pg = html => '<div class="printpage"><div class="printwrap">' + html + '</div></div>';
   if (_pnlView === 'pnl') {
     const saved = _pnlState.store;
-    _pnlStoreList().forEach(s => { _pnlState.store = s.id; renderPnL(); pages += '<div class="printpage"><div class="printwrap">' + root.innerHTML + '</div></div>'; });
+    _pnlStoreList().forEach(s => { _pnlState.store = s.id; renderPnL(); pages += _pg(root.innerHTML); });
+    _pnlState.store = saved;
+  } else if (_pnlView === 'product' || _pnlView === 'service' || _pnlView === 'forecast') {
+    // 每店一份(不含 Mgmt, 没库存); forecast 拆 2 页: A=比率表 / B=forecast 表
+    const saved = _pnlState.store;
+    const vName = _pnlView === 'forecast' ? 'Forecast' : (_pnlView === 'product' ? 'Product' : 'Service');
+    const ttl = s => '<div style="font-size:13px;font-weight:700;margin:0 0 6px">' + s.name + ' · ' + vName + ' · ' + _pnlState.year + '</div>';
+    _pnlStoreList().filter(s => s.id !== 'mgmt').forEach(s => {
+      _pnlState.store = s.id; renderPnL();
+      if (_pnlView === 'forecast') {
+        const a = root.querySelector('.fc-secA'), b = root.querySelector('.fc-secB');
+        pages += _pg(ttl(s) + (a ? a.outerHTML : '')) + _pg(ttl(s) + (b ? b.outerHTML : ''));
+      } else {
+        pages += _pg(ttl(s) + root.innerHTML);
+      }
+    });
     _pnlState.store = saved;
   } else {
-    renderPnL(); pages = '<div class="printpage"><div class="printwrap">' + root.innerHTML + '</div></div>';
+    renderPnL(); pages = _pg(root.innerHTML);
   }
   _pnlExporting = false; renderPnL(); // 还原界面(可编辑 + 原门店)
   const css = (document.getElementById('pnlCss') || {}).textContent || '';
@@ -13315,7 +13331,8 @@ function _pnlExportPdf() {
     .printwrap{transform-origin:top left;width:max-content;}`;
   const w = window.open('', '_blank');
   if (!w) { toast('Allow pop-ups to export PDF'); return; }
-  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Profit &amp; Loss</title><style>' + printCss + '</style></head><body><div id="pnlRoot">' + pages + '</div></body></html>');
+  const _wTtl = { pnl: 'Profit &amp; Loss', employees: 'Employees', product: 'Product', service: 'Service', forecast: 'Forecast' }[_pnlView] || 'Profit &amp; Loss';
+  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + _wTtl + '</title><style>' + printCss + '</style></head><body><div id="pnlRoot">' + pages + '</div></body></html>');
   w.document.close();
   const go = () => {
     const wraps = w.document.querySelectorAll('.printwrap'); if (!wraps.length) { w.print(); return; }
@@ -13772,9 +13789,12 @@ function renderForecast(root) {
     + '<div class="pnl-bar2"><div class="pnl-tabs">' + stores.map(s => '<div class="pnl-tab' + (s.id === store ? ' on' : '') + '" onclick="_pnlSetStore(\'' + ee(s.id) + '\')">' + ee(s.name) + '</div>').join('') + '</div>'
     + '<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">' + [new Date().getFullYear() + 1, new Date().getFullYear(), 2025].filter((v, i, a) => a.indexOf(v) === i).map(y => '<option value="' + y + '"' + (String(y) === year ? ' selected' : '') + '>' + y + '</option>').join('') + '</select>'
     + '<div class="pnl-seg"><button class="' + (_fcState.period === 'month' ? 'on' : '') + '" onclick="_fcSetPeriod(\'month\')">Month</button><button class="' + (_fcState.period === 'quarter' ? 'on' : '') + '" onclick="_fcSetPeriod(\'quarter\')">Quarter</button><button class="' + (_fcState.period === 'half' ? 'on' : '') + '" onclick="_fcSetPeriod(\'half\')">Half</button></div>'
+    + '<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>'
     + '</div></div>'
+    + '<div class="fc-secA">' // PDF 分页用: A=比率表 / B=forecast 各一页
     + '<div class="pnl-secttl" style="margin:4px 2px 8px;font-size:11px;letter-spacing:.4px;color:var(--gray);font-weight:600">USAGE PER RM1,000 · READ-ONLY <span style="color:#c4c4cf;font-weight:500">(actual usage ÷ revenue)</span></div>'
     + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + aHead + '<tbody>' + aBody + '</tbody></table></div>'
+    + '</div><div class="fc-secB">'
     + '<div class="pnl-secttl" style="margin:22px 2px 10px;font-size:11px;letter-spacing:.4px;color:var(--purple);font-weight:600">FORECAST</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end;margin-bottom:14px">'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Base period (for the rate)</div><div style="display:flex;align-items:center;gap:6px"><select class="pnl-yr" onchange="_fcSetFrom(this.value)">' + _mOpt(from) + '</select><span style="color:var(--gray)">→</span><select class="pnl-yr" onchange="_fcSetTo(this.value)">' + _mOpt(to) + '</select></div></div>'
@@ -13783,7 +13803,7 @@ function renderForecast(root) {
     +   equivChip
     + '</div>'
     + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + bHead + '<tbody>' + bBody + bTot + '</tbody></table></div>'
-    + '<div class="pnl-foot-note">Rate from your selected base period. <b>By Months</b>: forecast qty = monthly avg × months. <b>By Revenue</b>: forecast qty = per RM1,000 × (revenue ÷ 1,000). Forecast cost = qty × unit cost. <b>Stock now</b> = latest balance (synced nightly). <b>Lasts</b> = ' + (isAll ? '(3 outlets + HQ)' : 'this outlet stock') + ' ÷ monthly avg. <b>To order</b> = forecast qty − ' + (isAll ? '(stock + HQ)' : 'stock') + ', 0 = enough. Product only · ' + (store === 'all' ? 'all outlets summed' : (store === 'mgmt' ? 'Mgmt has none' : 'this outlet')) + '.</div>';
+    + '</div>';
   window.scrollTo(0, _wY);
 }
 
@@ -16262,7 +16282,7 @@ async function gsPullSilent() {
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     if (d.data && d.data.InvUsage !== undefined) state.InvUsage = (d.data.InvUsage || []);
     if (d.data && d.data.SvcColl !== undefined) state.SvcColl = (d.data.SvcColl || []);
-    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.67: 最新库存(3店+HQ)
+    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.68: 最新库存(3店+HQ)
     if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
@@ -16430,7 +16450,7 @@ async function gsPull() {
     if (!state.pnl.empSalary) state.pnl.empSalary = [];
     if (d.data && d.data.InvUsage !== undefined) state.InvUsage = (d.data.InvUsage || []);
     if (d.data && d.data.SvcColl !== undefined) state.SvcColl = (d.data.SvcColl || []);
-    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.67: 最新库存(3店+HQ)
+    if (d.data && d.data.InvBalance !== undefined) state.InvBalance = (d.data.InvBalance || []); // v7.68: 最新库存(3店+HQ)
     if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
