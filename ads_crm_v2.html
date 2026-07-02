@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.84</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.85</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.84</div>
+      <div class="nav-brand-version">v7.85</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13569,6 +13569,10 @@ function _stockUpsert(kind, code, patch) {
   Object.assign(it, patch); return it;
 }
 function _stockSetCost(kind, code, v) { _stockUpsert(kind, code, { cost: parseFloat(v) || 0 }); renderPnL(); } // onchange(blur) 重画: 更新总计 + Save dirty
+function _stockPriceOf(kind, code) { const it = _stockItem(kind, code); return it ? (Number(it.price) || 0) : 0; } // 售价 (Forecast % 模式用)
+function _stockPctOf(kind, code) { const it = _stockItem(kind, code); return (it && it.pct != null && it.pct !== '') ? Number(it.pct) : null; } // 每产品 cost %
+function _stockSetPrice(kind, code, v) { _stockUpsert(kind, code, { price: parseFloat(v) || 0 }); renderPnL(); }
+function _stockSetPct(kind, code, v) { _stockUpsert(kind, code, { pct: (v === '' ? null : parseFloat(v) || 0) }); renderPnL(); }
 function _pnlSetStockMode(m) { _pnlStockMode = m; renderPnL(); }
 // 排序: 有手拖 sort 的排前(按 sort), 其余按用量高→低
 function _stockOrdered(kind, store, year) {
@@ -13687,20 +13691,21 @@ function renderPnlStock(root, kind) {
   if (isPct) rows.forEach(r => { const c2 = _stockCostOf(ck, r.code); idx.forEach(i => colT[i] += r.m[i] * c2); colTY += r.ytd * c2; });
   let bodyRows = '';
   rows.forEach(r => {
-    const cost = _stockCostOf(ck, r.code); let ytd = 0, cells = ''; const c = ee(r.code);
+    const cost = _stockCostOf(ck, r.code); const price = _stockPriceOf(ck, r.code); let ytd = 0, cells = ''; const c = ee(r.code);
     idx.forEach(i => { const q = r.m[i], val = mode === 'qty' ? q : q * cost; cells += `<td>${isPct ? pctc(val, colT[i]) : cell(val)}</td>`; tot[i] += val; ytd += val; });
     costY += r.ytd * cost;
     bodyRows += `<tr ondragover="_stockDragOver(event)" ondragleave="_stockDragLeave(event)" ondrop="_stockDrop(event,'${c}','${ck}')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_stockDragStart(event,'${c}')" title="Drag to reorder">⠿</span> <span class="nm">${ee(r.name)}</span><div style="font-size:9px;color:#aeb0bd">${c}</div></td>`
       + `<td><span class="cinwrap"><input class="cin" type="number" step="any" value="${cost || 0}" onchange="_stockSetCost('${ck}','${c}',this.value)"><button class="cinbtn" onclick="_stockCalc('${ck}','${c}')" title="Calculator">🧮</button></span></td>`
+      + `<td><input class="cin" type="number" step="any" value="${price || 0}" onchange="_stockSetPrice('${ck}','${c}',this.value)"></td>` // v7.85: 售价(Forecast % 模式用)
       + cells + `<td class="sub">${isPct ? pctc(ytd, colTY) : cell(ytd)}</td></tr>`;
   });
   idx.forEach(i => totY += tot[i]);
-  if (!rows.length) bodyRows = `<tr><td class="l" colspan="15" style="color:var(--gray);padding:16px;font-size:13px">No ${isSvc ? 'service' : 'product'} collection for this outlet / year.</td></tr>`;
-  let head = '<thead><tr><th class="l">' + (isSvc ? 'Service' : 'Product') + ' · ' + ee(year) + '</th><th>' + (isSvc ? 'Cost/session' : 'Unit cost') + '</th>';
+  if (!rows.length) bodyRows = `<tr><td class="l" colspan="16" style="color:var(--gray);padding:16px;font-size:13px">No ${isSvc ? 'service' : 'product'} collection for this outlet / year.</td></tr>`;
+  let head = '<thead><tr><th class="l">' + (isSvc ? 'Service' : 'Product') + ' · ' + ee(year) + '</th><th>' + (isSvc ? 'Cost/session' : 'Unit cost') + '</th><th>Sell price</th>';
   for (let i = 0; i < 12; i++) head += '<th>' + _PNL_MONTHS[i] + '</th>';
   head += '<th class="sub">YTD</th></tr></thead>';
   let sub = ''; idx.forEach(i => sub += `<td>${mode === 'qty' ? Math.round(tot[i]) : _pnlFmt(tot[i])}</td>`);
-  const totRow = `<tr class="big"><td class="l">Total ${isSvc ? 'service' : 'product'} ${mode === 'qty' ? 'qty' : 'cost'}</td><td></td>${sub}<td class="sub">${mode === 'qty' ? Math.round(totY) : _pnlFmt(totY)}</td></tr>`;
+  const totRow = `<tr class="big"><td class="l">Total ${isSvc ? 'service' : 'product'} ${mode === 'qty' ? 'qty' : 'cost'}</td><td></td><td></td>${sub}<td class="sub">${mode === 'qty' ? Math.round(totY) : _pnlFmt(totY)}</td></tr>`;
   const salesY = pnlAutoRows(store, year).sales.reduce((a, b) => a + b, 0);           // 该店该年 YTD 营业额
   const combinedY = _stockMonthlyCost(store, year).reduce((a, b) => a + b, 0);         // product + service 总成本
   const pctSalesS = salesY ? (costY / salesY * 100).toFixed(1) + '%' : '—';            // 本 tab 占营业额%
@@ -13723,7 +13728,7 @@ function renderPnlStock(root, kind) {
 
 // ── Forecast (Product only) ───────────────────────────────────────────
 // 逻辑: 选 base period → 算每个产品 per RM1,000 比率 + 月均用量; 顶部 Months 或 Revenue 驱动全表.
-let _fcState = { by: 'months', months: 3, revenue: 0, from: 0, to: null, period: 'month', tab: 'fc' }; // tab: 'fc'(Forecast, 默认) | 'usage'(比率表)
+let _fcState = { by: 'months', months: 3, revenue: 0, from: 0, to: null, period: 'month', tab: 'fc', costBy: 'crm' }; // tab: fc|usage; costBy: crm(单位成本) | pct(售价×每产品%)
 try { const _s = JSON.parse(localStorage.getItem('fcState')); if (_s) Object.assign(_fcState, _s); } catch (e) {} // 记住上次的选择
 function _fcSave() { try { localStorage.setItem('fcState', JSON.stringify(_fcState)); } catch (e) {} }
 function _fcSetBy(v) { _fcState.by = v; _fcSave(); renderPnL(); }
@@ -13734,6 +13739,7 @@ function _fcSetFrom(v) { _fcState.from = Number(v); if (_fcState.to != null && _
 function _fcSetTo(v) { _fcState.to = Number(v); if (_fcState.to < _fcState.from) _fcState.from = _fcState.to; _fcSave(); renderPnL(); } // To 选早过 From → From 自动跳同月
 function _fcSetPeriod(v) { _fcState.period = v; _fcSave(); renderPnL(); }
 function _fcSetTab(v) { _fcState.tab = v; _fcSave(); renderPnL(); }
+function _fcSetCostBy(v) { _fcState.costBy = v; _fcSave(); renderPnL(); } // crm(单位成本) | pct(售价×每产品%)
 function _fcCols(period) { // 比率表列分组
   if (period === 'quarter') return [{ n: 'Q1', mi: [0, 1, 2] }, { n: 'Q2', mi: [3, 4, 5] }, { n: 'Q3', mi: [6, 7, 8] }, { n: 'Q4', mi: [9, 10, 11] }];
   if (period === 'half') return [{ n: 'H1', mi: [0, 1, 2, 3, 4, 5] }, { n: 'H2', mi: [6, 7, 8, 9, 10, 11] }];
@@ -13753,9 +13759,7 @@ function renderForecast(root) {
   const rangeRev = sales.slice(from, to + 1).reduce((a, b) => a + b, 0);
   const byMonths = _fcState.by === 'months';
   const N = Number(_fcState.months) || 0, V = Number(_fcState.revenue) || 0;
-  // Forecast cost 跟 P&L cost 行同一套: CRM(单价) → qty×单价; % → 预测营业额×cost% (cost/commission 全局同步, 任一店的行都行)
-  const _costRow = _pnlFindRow('cost'); const costPct = !!(_costRow && _costRow.type === 'pct'); const costRate = _costRow ? (Number(_costRow.rate) || 0) : 0;
-  const fcRev = byMonths ? (nMonths ? (N / nMonths) * rangeRev : 0) : V; // 预测营业额
+  const costByPct = _fcState.costBy === 'pct'; // Forecast cost 独立于 P&L: crm=数量×单位成本; pct=数量×售价×每产品%
   const isAll = (store === 'all');
   const balMap = {}; (state.InvBalance || []).forEach(b => { balMap[b.locationId + '|' + b.itemCode] = Number(b.qty) || 0; }); // 最新库存 loc|code → qty
   const _balOf = code => isAll
@@ -13766,12 +13770,14 @@ function renderForecast(root) {
     const avg = nMonths ? rangeQty / nMonths : 0;
     const ratio = rangeRev ? rangeQty * 1000 / rangeRev : 0;
     const uc = _stockCostOf('inv', r.code);
+    const price = _stockPriceOf('inv', r.code), pct = _stockPctOf('inv', r.code); // 售价 + 每产品 cost%
     const fcQty = byMonths ? avg * N : ratio * V / 1000;
+    const fcCost = costByPct ? (fcQty * price * (pct || 0) / 100) : (fcQty * uc); // % 模式: 数量×售价×%
     const stock = _balOf(r.code), hq = isAll ? (balMap['hq|' + r.code] || 0) : 0;
     const avail = stock + hq;                                        // 单店 hq=0 → avail=本店; all → 3店+HQ
     const lasts = avg > 0 ? avail / avg : null;                      // 能撑几个月
     const toOrder = Math.max(0, Math.ceil(fcQty - avail));           // 需要订购
-    return { code: r.code, name: r.name, rangeQty, avg, ratio, uc, fcQty, fcCost: fcQty * uc, stock, hq, lasts, toOrder };
+    return { code: r.code, name: r.name, rangeQty, avg, ratio, uc, price, pct, fcQty, fcCost, stock, hq, lasts, toOrder };
   }); // 不过滤: 跟上面 Section A 完全同行同序(默认 = Product tab 排序)
 
   // ---- Section A: 只读 per RM1,000 比率表 ----
@@ -13793,33 +13799,33 @@ function renderForecast(root) {
 
   // ---- Section B: forecast 计算 ----
   const _mOpt = sel => _PNL_MONTHS.map((m, i) => '<option value="' + i + '"' + (i === sel ? ' selected' : '') + '>' + m + '</option>').join('');
-  // % 模式: 总成本 = 预测营业额×cost%, 按各产品成本占比分摊到每格(加起来 = 总额); 单价全 0 就按数量分摊
-  const crmTot = items.reduce((a, it) => a + it.fcCost, 0);
-  const qtyTot = items.reduce((a, it) => a + it.fcQty, 0);
-  const pctTot = fcRev * costRate / 100;
-  const _costOf = it => !costPct ? it.fcCost : (crmTot > 0 ? it.fcCost * pctTot / crmTot : (qtyTot > 0 ? pctTot * it.fcQty / qtyTot : 0));
+  const pinp = 'width:44px;text-align:center;border:1px solid var(--purple);border-radius:6px;padding:3px;font-family:inherit;font-size:12px;font-weight:600;background:#fff;color:var(--black)';
   let bBody = '';
   items.forEach(it => {
-    const c = _costOf(it);
-    bBody += '<tr><td class="l"><span class="nm">' + ee(it.name) + '</span><div style="font-size:9px;color:#aeb0bd">' + ee(it.code) + '</div></td>'
+    const cc = ee(it.code);
+    bBody += '<tr><td class="l"><span class="nm">' + ee(it.name) + '</span><div style="font-size:9px;color:#aeb0bd">' + cc + '</div></td>'
       + '<td>' + Math.round(it.rangeQty) + '</td>'
       + '<td>' + (it.avg ? it.avg.toFixed(1) : '—') + '</td>'
       + '<td>' + (it.ratio ? it.ratio.toFixed(2) : '—') + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + Math.round(it.fcQty) + '</td>'
-      + '<td style="color:var(--purple);font-weight:600">' + (c ? 'RM ' + _pnlFmt(c) : '—') + '</td>'
+      + (costByPct ? '<td>' + (it.price ? _pnlFmt(it.price) : '—') + '</td>' : '')
+      + (costByPct ? '<td><input type="number" step="any" value="' + (it.pct == null ? '' : it.pct) + '" placeholder="%" onchange="_stockSetPct(\'inv\',\'' + cc + '\',this.value)" style="' + pinp + '"></td>' : '')
+      + '<td style="color:var(--purple);font-weight:600">' + (it.fcCost ? 'RM ' + _pnlFmt(it.fcCost) : '—') + '</td>'
       + '<td>' + Math.round(it.stock) + '</td>'
       + (isAll ? '<td>' + Math.round(it.hq) + '</td>' : '')
       + '<td>' + (it.lasts == null ? '—' : (Math.round(it.lasts * 10) / 10)) + '</td>'
       + '<td style="color:var(--purple);font-weight:600">' + (it.toOrder || 0) + '</td></tr>';
   });
-  if (!items.length) bBody = '<tr><td class="l" colspan="' + (isAll ? 10 : 9) + '" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
+  if (!items.length) bBody = '<tr><td class="l" colspan="' + ((isAll ? 10 : 9) + (costByPct ? 2 : 0)) + '" style="color:var(--gray);padding:16px;font-size:13px">No data for this outlet / year.</td></tr>';
   const _sub = t => '<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">' + t + '</span>';
   const bHead = '<thead><tr><th class="l">Product</th>'
     + '<th>Qty used' + _sub(_PNL_MONTHS[from] + '–' + _PNL_MONTHS[to]) + '</th>'
     + '<th>Monthly' + _sub('avg') + '</th>'
     + '<th>per' + _sub('RM1,000') + '</th>'
     + '<th style="color:var(--purple)">Forecast' + _sub('qty') + '</th>'
-    + '<th style="color:var(--purple)">Forecast' + _sub(costPct ? (costRate + '% of sales') : 'cost') + '</th>'
+    + (costByPct ? '<th>Sell price</th>' : '')
+    + (costByPct ? '<th style="color:var(--purple)">Cost %</th>' : '')
+    + '<th style="color:var(--purple)">Forecast' + _sub(costByPct ? 'qty×price×%' : 'cost') + '</th>'
     + '<th>Stock now' + _sub(isAll ? '3 outlets' : 'this outlet') + '</th>'
     + (isAll ? '<th>HQ' + _sub('stock') + '</th>' : '')
     + '<th>Lasts' + _sub('months') + '</th>'
@@ -13850,6 +13856,7 @@ function renderForecast(root) {
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Base period (for the rate)</div><div style="display:flex;align-items:center;gap:6px"><select class="pnl-yr" onchange="_fcSetFrom(this.value)">' + _mOpt(_fcState.from) + '</select><span style="color:var(--gray)">→</span><select class="pnl-yr" onchange="_fcSetTo(this.value)">' + _mOpt(_fcState.to) + '</select></div></div>'
     +   '<div style="background:#eef7f0;border:1px solid #c9e6d2;border-radius:10px;padding:7px 14px"><div style="font-size:11px;color:#0f6e56;font-weight:600">Range revenue (actual)</div><div style="font-size:16px;font-weight:700;color:#0f6e56;margin-top:1px">RM ' + _pnlFmt(rangeRev) + '</div></div>'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast by</div><div style="display:flex;align-items:center;gap:10px"><div class="pnl-seg"><button class="' + (byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'months\')">Months</button><button class="' + (!byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'revenue\')">Revenue</button></div>' + byCtrl + '</div></div>'
+    +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast Cost by</div><div class="pnl-seg"><button class="' + (!costByPct ? 'on' : '') + '" onclick="_fcSetCostBy(\'crm\')">CRM real</button><button class="' + (costByPct ? 'on' : '') + '" onclick="_fcSetCostBy(\'pct\')">%</button></div></div>'
     +   equivChip
     + '</div>'
     + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + bHead + '<tbody>' + bBody + '</tbody></table></div>'
@@ -16348,7 +16355,7 @@ async function gsPullSilent() {
       if (d.data.InvUsage !== undefined || d.data.SvcColl !== undefined || d.data.InvBalance !== undefined) _stockCacheStore(d.data.stockVer);
       else _stockVer = d.data.stockVer || '';
     }
-    if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
+    if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, price: Number(r.price) || 0, pct: (r.pct === '' || r.pct == null) ? null : Number(r.pct), sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
     try { _pnlSavedSnapshot = _pnlSavableJson(); } catch (e) {} // 刚 pull 的 = 已保存基线
@@ -16521,7 +16528,7 @@ async function gsPull() {
       if (d.data.InvUsage !== undefined || d.data.SvcColl !== undefined || d.data.InvBalance !== undefined) _stockCacheStore(d.data.stockVer);
       else _stockVer = d.data.stockVer || '';
     }
-    if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
+    if (d.data && d.data.PnL_StockCost !== undefined) state.pnl.stockCost = (d.data.PnL_StockCost || []).filter(r => r && r.id).map(r => ({ id: String(r.id), kind: String(r.kind || ''), cost: Number(r.cost) || 0, price: Number(r.price) || 0, pct: (r.pct === '' || r.pct == null) ? null : Number(r.pct), sort: (r.sort === '' || r.sort == null) ? null : Number(r.sort) }));
     if (!state.pnl.stockCost) state.pnl.stockCost = [];
     state.pnl.empV = (state.pnl.employees.length ? 1 : 0); // 有员工=已迁移; 否则让 _pnlMigrateEmployees 转旧 staff
     try { _pnlSavedSnapshot = _pnlSavableJson(); } catch (e) {} // 刚 pull 的 = 已保存基线
