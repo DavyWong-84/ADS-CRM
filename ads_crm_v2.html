@@ -447,6 +447,11 @@ table.data th.num { text-align: center; }
 table.data .total-row { background: var(--purple-bg); font-weight: 600; }
 table.data .total-row td { border-bottom: none; background: var(--purple-bg); border-top: 2px solid var(--purple); }
 table.data .total-row td:first-child { color: var(--purple-deep); }
+/* v8.40: Revenue 全部表格统一 — 去掉紫色粗线(竖分隔 + 合计行顶线) + 正文数字统一字重(只有合计行加粗)。只作用在 Revenue 页, 不动其它页 */
+#revenueReportWrap table.data td, #revenueReportWrap table.data th { border-left: none !important; }
+#revenueReportWrap table.data tbody td, #revenueReportWrap table.data tbody td div { font-weight: 400 !important; }
+#revenueReportWrap table.data .total-row td, #revenueReportWrap table.data .total-row td div { font-weight: 700 !important; }
+#revenueReportWrap table.data .total-row td { border-top: none !important; }
 table.data tr.subheader td { background: var(--purple-bg); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--purple-deep); font-weight: 700; padding: 0; border-bottom: none; }
 /* v5.32: data-t (transposed Revenue/Store comparison tables) — 现在也启用 sticky 第一列,
    跟 Ads Spend 表格行为一致 (之前用 position: static 是历史遗留) */
@@ -3381,7 +3386,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.38</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.40</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3437,7 +3442,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.38</div>
+      <div class="nav-brand-version">v8.40</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3708,7 +3713,7 @@ body.contact-view-table .modal-backdrop.open {
           <button class="toggle active" data-mode="single" onclick="setSummaryMode('single')">Month</button>
           <button class="toggle" data-mode="multi" onclick="setSummaryMode('multi')">Year</button>
         </div>
-        <select id="summaryYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
+        <select id="summaryYear" class="cf-select" style="display:none"><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
         <button type="button" class="date-btn cf-select" id="summaryYearBtn" style="display:none;" onclick="openYearPicker('summaryYear', this)">
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
@@ -3735,7 +3740,7 @@ body.contact-view-table .modal-backdrop.open {
           <button class="toggle" data-mode="year" onclick="setStoreMode('year')">Year</button>
           <button class="toggle" data-mode="custom" onclick="setStoreMode('custom')">Custom</button>
         </div>
-        <select id="storeYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
+        <select id="storeYear" class="cf-select" style="display:none"><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
         <button type="button" class="date-btn cf-select" id="storeYearBtn" style="display:none;" onclick="openYearPicker('storeYear', this)">
           <span id="storeYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
@@ -3788,7 +3793,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header">
       <!-- v5.33: removed page title (Ads Spend) — toolbar only -->
       <div class="compact-filter">
-        <select id="adsYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
+        <select id="adsYear" class="cf-select" style="display:none"><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
         <button type="button" class="date-btn cf-select" id="adsYearBtn" onclick="openYearPicker('adsYear', this)">
           <span id="adsYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
@@ -3945,7 +3950,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header">
       <!-- v5.33: removed page title (Revenue Outlet) — toolbar only -->
       <div class="compact-filter">
-        <select id="revYear" class="cf-select" style="display:none"><option value="2026" selected="">2026</option></select>
+        <select id="revYear" class="cf-select" style="display:none"><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
         <button type="button" class="date-btn cf-select" id="revYearBtn" onclick="openYearPicker('revYear', this)">
           <span id="revYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
@@ -3970,10 +3975,10 @@ body.contact-view-table .modal-backdrop.open {
       </div>
       <div class="compact-filter">
         <button type="button" class="date-btn cf-select" id="entrySharedYearBtn" onclick="openYearPicker('entrySharedYear', this)" style="min-width:110px;">
-          <span id="entrySharedYearLabel">2026</span>
+          <span id="entrySharedYearLabel">2028</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <input type="hidden" id="entrySharedYear" value="2026">
+        <input type="hidden" id="entrySharedYear" value="2028">
       </div>
     </div>
     <div class="unified-header-spacer"></div>
@@ -3996,7 +4001,7 @@ body.contact-view-table .modal-backdrop.open {
     <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
-          <input type="hidden" id="rv_entryYear" value="2026">
+          <input type="hidden" id="rv_entryYear" value="2028">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
@@ -4013,7 +4018,7 @@ body.contact-view-table .modal-backdrop.open {
     <span class="pop-trigger-label"><svg class="chip-logo" viewBox="0 0 24 24" fill="var(--meta-color)" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path></svg><span>Simply 5</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="as_entryChannel" data-pop="1" data-pop-icon="channel" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_as_entryChannel"><option value="ch-simply5">Simply 5</option><option value="ch-google">Google Ads</option><option value="ch-chia">Chia FB (inactive)</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add new channel...</option></select>
-          <input type="hidden" id="as_entryYear" value="2026">
+          <input type="hidden" id="as_entryYear" value="2028">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
           <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
@@ -4031,7 +4036,7 @@ body.contact-view-table .modal-backdrop.open {
     <span class="pop-trigger-label"><span>Select fee name</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="fee_entryName" data-pop="1" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select fee name" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_fee_entryName"><option value=""></option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add fee name...</option></select>
-          <input type="hidden" id="fee_entryYear" value="2026">
+          <input type="hidden" id="fee_entryYear" value="2028">
         </div>
         <div id="fee_entryCustomRow" style="display:none;"></div>
         <input type="hidden" id="fee_entryCustomName">
@@ -7105,7 +7110,11 @@ function refreshYearSelects() {
   // Find all years in data
   const years = new Set();
   state.leads.forEach(l => { if (l.leadDate) years.add(l.leadDate.substring(0,4)); });
-  if (years.size === 0) years.add(String(new Date().getFullYear()));
+  state.adsSpend.forEach(a => { if (a.month) years.add(a.month.substring(0,4)); });
+  state.revenue.forEach(r => { if (r.month) years.add(r.month.substring(0,4)); });
+  // v8.39: 年份 option 要覆盖 openYearPicker 弹窗能点的全部范围(当前±2 年), 否则选了弹窗有、select 没有的年份 → value 设不进去 → label 显示新年却渲染旧年
+  const _cy = new Date().getFullYear();
+  for (let y = _cy - 1; y <= _cy + 2; y++) years.add(String(y));
   const yArr = [...years].sort();
   const latestYear = yArr[yArr.length - 1];
   // Regular <select> year elements + their button labels
@@ -14386,7 +14395,7 @@ function renderForecast(root) {
 function renderRevenue() {
   populateRevOutletSelect();
   _renderRevSyncStatus();
-  const year = document.getElementById('revYear').value || String(new Date().getFullYear());
+  const year = document.getElementById('revYear').value || state.revYear || String(new Date().getFullYear()); // v8.39: 补 state.revYear fallback (跟 summary 一致)
   const outletSel = document.getElementById('revOutletSelect');
   const outletId = outletSel ? outletSel.value : 'all';
   // Always show 12 months
