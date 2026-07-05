@@ -3381,7 +3381,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.35</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.36</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3437,7 +3437,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.35</div>
+      <div class="nav-brand-version">v8.36</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -14768,15 +14768,11 @@ function renderRevenueSummary(mArr) {
       return locs.reduce((s, loc) => s + getOutletTotal(m, loc.id), 0);
     };
 
-    // v5.28: cellWithPct — 数字黑色 + 进度条按表配色 + % 灰色
+    // v8.36: 去掉进度条, % 直接放营业额旁边 (color 参数保留不用, 免动 5 处调用)
     const cellWithPct = (v, base, color) => {
       if (v == null || v === 0) return '<span style="color:var(--silver);">—</span>';
-      const pctNum = base > 0 ? Math.min(100, (v/base)*100) : 0;
-      const pctStr = base > 0 ? '('+pctNum.toFixed(1)+'%)' : '—';
-      const barColor = color || 'var(--purple)';
-      return `<div>${fmt.money(v)}</div>`
-        + `<div style="background:#E5E7EB;height:3px;border-radius:2px;margin:3px 0;overflow:hidden;"><div style="background:${barColor};height:100%;width:${pctNum}%;border-radius:2px;"></div></div>`
-        + `<div style="font-size:11px;color:var(--gray);font-weight:400;">${pctStr}</div>`;
+      const pctStr = base > 0 ? ' <span style="font-size:11px;color:var(--gray);font-weight:400;">('+((v/base)*100).toFixed(1)+'%)</span>' : '';
+      return `<div>${fmt.money(v)}${pctStr}</div>`;
     };
 
     // Helper: build a comparison table given a value-fetcher + base-fetcher (for %)
@@ -14814,7 +14810,7 @@ function renderRevenueSummary(mArr) {
             rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div>`;
           } else {
             const rowPct = rowBaseTotal > 0 ? '('+((rowTotal/rowBaseTotal)*100).toFixed(1)+'%)' : '—';
-            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</div>`;
+            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</span></div>`;
           }
           body += `<tr><td>${fmt.monthShort(m)}</td>${cells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${rowCell}</td></tr>`;
         });
@@ -14829,7 +14825,7 @@ function renderRevenueSummary(mArr) {
           } else {
             pct = colBaseTotals[i] > 0 ? '('+((t/colBaseTotals[i])*100).toFixed(1)+'%)' : '—';
           }
-          return `<td class="num" style="vertical-align:top;"><div style="font-weight:700;">${fmt.money(t)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${pct}</div></td>`;
+          return `<td class="num" style="vertical-align:top;"><div style="font-weight:700;">${fmt.money(t)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pct}</span></div></td>`;
         }).join('');
         // YTD x Total: grand total. For Total Revenue, this IS the denominator — no %
         let grandCell;
@@ -14839,7 +14835,7 @@ function renderRevenueSummary(mArr) {
           grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)}</div>`;
         } else {
           const grandPct = grandBaseTotal > 0 ? '('+((grandTotal/grandBaseTotal)*100).toFixed(1)+'%)' : '—';
-          grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)}</div><div style="font-size:11px;color:var(--gray);font-weight:400;">${grandPct}</div>`;
+          grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${grandPct}</span></div>`;
         }
         tbl = `<table class="data data-t">
           <thead><tr><th>Month</th>${storeHdr}<th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
