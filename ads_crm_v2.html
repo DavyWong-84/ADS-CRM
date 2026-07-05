@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.94</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.95</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.94</div>
+      <div class="nav-brand-version">v7.95</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13591,13 +13591,19 @@ function _otSelfCheck() {
 try { _otSelfCheck(); } catch (e) {}
 
 // OT 设定 modal (齿轮): 全局门槛/倍数 + 两份假期日历. 改动即存, 关闭时重画表.
-let _otMState = { cal: 'store' };
+let _otMState = { cal: 'store', y: null, m: null };
+function _otOpenSettings() { _otMState.y = +(_pnlState.year || new Date().getFullYear()); _otMState.m = +(_pnlState.month || (new Date().getMonth() + 1)); _otSettingsModal(); }
+function _otNavMonth(delta) { let m = _otMState.m + delta, y = _otMState.y; if (m < 1) { m = 12; y--; } else if (m > 12) { m = 1; y++; } _otMState.m = m; _otMState.y = y; _otSettingsModal(); }
 function _otSettingsModal() {
-  const g = _otGlobal(), year = _pnlState.year, month = +(_pnlState.month || (new Date().getMonth() + 1));
-  const cal = _otMState.cal, hol = cal === 'mgmt' ? g.holMgmt : g.holStore;
-  const last = new Date(+year, month, 0).getDate(), first = new Date(+year, month - 1, 1).getDay(), lead = (first + 6) % 7;
+  const g = _otGlobal();
+  if (_otMState.y == null) { _otMState.y = +(_pnlState.year || new Date().getFullYear()); _otMState.m = +(_pnlState.month || (new Date().getMonth() + 1)); }
+  const year = _otMState.y, month = _otMState.m, cal = _otMState.cal, hol = cal === 'mgmt' ? g.holMgmt : g.holStore;
+  const restDow = cal === 'mgmt' ? [0, 6] : [1]; // Store 休周一, Mgmt 休周六日 (跟预设)
+  const last = new Date(year, month, 0).getDate(), first = new Date(year, month - 1, 1).getDay(), lead = (first + 6) % 7;
   let cells = ''; for (let i = 0; i < lead; i++) cells += '<div></div>';
   for (let d = 1; d <= last; d++) {
+    const wd = new Date(year, month - 1, d).getDay();
+    if (restDow.includes(wd)) { cells += `<div style="padding:6px 0;text-align:center;font-size:12px;color:var(--silver)" title="Rest day (already off)">${d}</div>`; continue; }
     const on = hol[year + '-' + month + '-' + d];
     cells += `<div onclick="_otHolToggle(${d})" style="padding:6px 0;text-align:center;font-size:12px;border-radius:6px;cursor:pointer;background:${on ? 'var(--red)' : 'var(--surface-2)'};color:${on ? '#fff' : 'var(--black)'}">${d}</div>`;
   }
@@ -13608,9 +13614,10 @@ function _otSettingsModal() {
     + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>OT rate (× hourly)</label><input id="otRate" type="number" step="any" value="${g.rate}" onchange="_otSetRate(this.value)"></div></div>`
     + `<div style="font-size:11px;color:var(--gray);margin-top:6px">Hourly = basic ÷ 26 ÷ 8. EPF/SOCSO apply to basic + OT.</div>`
     + `<div style="height:1px;background:var(--border);margin:16px 0"></div>`
-    + `<div class="settings-modal-section-title">Holiday calendar · ${_PNL_MONTHS[month - 1]} ${year}</div>`
+    + `<div class="settings-modal-section-title">Holiday calendar</div>`
     + `<div class="toggle-group" style="display:flex;margin-bottom:10px"><div class="toggle${cal === 'store' ? ' active' : ''}" style="flex:1;text-align:center" onclick="_otMCal('store')">Store</div><div class="toggle${cal === 'mgmt' ? ' active' : ''}" style="flex:1;text-align:center" onclick="_otMCal('mgmt')">Management</div></div>`
-    + `<div style="font-size:11px;color:var(--gray);margin-bottom:8px">Tap a day = public holiday for ${cal === 'mgmt' ? 'management' : 'store'} staff (drops out of the weekly hours). Change month from the Employees page.</div>`
+    + `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><button class="btn btn-outline" style="padding:2px 12px" onclick="_otNavMonth(-1)">‹</button><span style="font-size:13px;font-weight:600">${_PNL_MONTHS[month - 1]} ${year}</span><button class="btn btn-outline" style="padding:2px 12px" onclick="_otNavMonth(1)">›</button></div>`
+    + `<div style="font-size:11px;color:var(--gray);margin-bottom:8px">Tap a day = public holiday for ${cal === 'mgmt' ? 'management' : 'store'} staff (drops out of the week). Grey = ${cal === 'mgmt' ? 'Sat/Sun' : 'Monday'} rest day (already off). Use ‹ › for any month.</div>`
     + `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${dh}${cells}</div>`
     + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="closeModal();renderPnL()">Done</button>`;
   showModal(html);
@@ -13619,8 +13626,8 @@ function _otSetThr(v) { const g = _otGlobal(); g.thr = parseFloat(v) || 45; _otG
 function _otSetRate(v) { const g = _otGlobal(); g.rate = parseFloat(v) || 1.5; _otGlobalSet(g); }
 function _otMCal(c) { _otMState.cal = c; _otSettingsModal(); }
 function _otHolToggle(day) {
-  const g = _otGlobal(), year = _pnlState.year, month = +(_pnlState.month || (new Date().getMonth() + 1));
-  const hol = _otMState.cal === 'mgmt' ? g.holMgmt : g.holStore, key = year + '-' + month + '-' + day;
+  const g = _otGlobal();
+  const hol = _otMState.cal === 'mgmt' ? g.holMgmt : g.holStore, key = _otMState.y + '-' + _otMState.m + '-' + day;
   if (hol[key]) delete hol[key]; else hol[key] = 1;
   _otGlobalSet(g); _otSettingsModal();
 }
@@ -13678,7 +13685,7 @@ function renderPnlEmployees(root) {
   const subtabs = `<div class="pnl-toptabs" style="margin:0;align-items:center">`
     + `<div class="pnl-toptab${tab === 'salary' ? ' on' : ''}" onclick="_pnlSetEmpTab('salary')">Salary &amp; OT</div>`
     + `<div class="pnl-toptab${tab === 'branch' ? ' on' : ''}" onclick="_pnlSetEmpTab('branch')">Branch</div>`
-    + `<button onclick="_otSettingsModal()" title="OT rules &amp; holidays" aria-label="OT setup" style="margin-left:8px;background:none;border:none;cursor:pointer;color:var(--gray);display:inline-flex;align-items:center;padding:4px">${_PNL_GEAR}</button></div>`;
+    + `<button onclick="_otOpenSettings()" title="OT rules &amp; holidays" aria-label="OT setup" style="margin-left:8px;background:none;border:none;cursor:pointer;color:var(--gray);display:inline-flex;align-items:center;padding:4px">${_PNL_GEAR}</button></div>`;
   const bar = `<div class="pnl-bar"><button class="btn btn-primary pnl-savebtn" onclick="_pnlEmpModal(null)">＋ Add employee</button>` + subtabs
     + `<div class="pnl-right">`
     + `<select class="pnl-yr" onchange="_pnlSetMonth(this.value)">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}"${(i + 1) === month ? ' selected' : ''}>${m}</option>`).join('') + `</select>`
