@@ -3376,7 +3376,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.29</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.30</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3432,7 +3432,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.29</div>
+      <div class="nav-brand-version">v8.30</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13002,11 +13002,11 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t.stk tbody td{border-bottom:1px solid #dcdce4;}  /* Product/Service 行分割线加深 */
 #pnlRoot .pnl-t.stk .stkin{padding-left:5px;padding-right:5px;}  /* Cost/RRP 横向凑紧 */
 #pnlRoot .pnl-t.stk .stkin .cinwrap{gap:3px;}
-#pnlRoot .pnl-t.stk .dvr{border-right:2px solid #c4c4cf;}  /* Cost/RRP 跟月份的分割线 */
-/* v8.16: 冻结 名字 + RRP + Cost 三列 (固定宽 + sticky), 切 RM/Qty/% 不再跳、横滚也留住 */
-#pnlRoot .pnl-t.stk th.l,#pnlRoot .pnl-t.stk td.l{width:260px;min-width:260px;max-width:260px;}
-#pnlRoot .pnl-t.stk .c-rrp{position:sticky;left:260px;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
-#pnlRoot .pnl-t.stk .c-cost{position:sticky;left:344px;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
+#pnlRoot .pnl-t.stk .dvr{}  /* v8.30: 移除 Cost/月份 分割线（Davy 要求） */
+/* v8.16→v8.30: 冻结三列，顺序改成 RRP | Cost | 名字 (rrp left:0 / cost left:84 / name left:168) */
+#pnlRoot .pnl-t.stk th.l,#pnlRoot .pnl-t.stk td.l{width:260px;min-width:260px;max-width:260px;left:168px;}
+#pnlRoot .pnl-t.stk .c-rrp{position:sticky;left:0;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
+#pnlRoot .pnl-t.stk .c-cost{position:sticky;left:84px;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
 #pnlRoot .pnl-t.stk thead th.c-rrp,#pnlRoot .pnl-t.stk thead th.c-cost{z-index:7;background:var(--surface);}
 #pnlRoot .pnl-t.stk tr.big td.c-rrp,#pnlRoot .pnl-t.stk tr.big td.c-cost{background:#fff;}
 #pnlRoot .pnl-t.stk .stkin input.cin{text-align:center;}  /* v8.20: RRP/Cost 数字居中 */
@@ -14118,20 +14118,21 @@ function renderPnlStock(root, kind) {
     idx.forEach(i => { const q = r.m[i], val = mmode === 'qty' ? q : q * uc; cells += `<td>${cell(val)}</td>`; tot[i] += val; ytd += val; });
     costY += r.ytd * uc;
     const costCell = isPctCost
-      ? `<td class="stkin dvr c-cost"><span class="cinwrap"><input class="cin cins" type="number" step="any" value="${pct == null ? '' : pct}" placeholder="%" onchange="_stockSetPct('${ck}','${c}',this.value)"><button class="cinbtn" onclick="_stockCalc('${ck}','${c}','pct')" title="Calculator">${_CALC_SVG}</button></span></td>`
+      ? `<td class="stkin dvr c-cost"><input class="cin cins" type="number" step="any" value="${pct == null ? '' : pct}" placeholder="%" onchange="_stockSetPct('${ck}','${c}',this.value)"></td>` // v8.30: Cost·% 去掉计算机，只留输入框
       : `<td class="stkin dvr c-cost"><span class="cinwrap"><input class="cin cins" type="number" step="any" value="${rawCost || 0}" onchange="_stockSetCost('${ck}','${c}',this.value)"><button class="cinbtn" onclick="_stockCalc('${ck}','${c}')" title="Calculator">${_CALC_SVG}</button></span></td>`;
-    bodyRows += `<tr ondragover="_stockDragOver(event)" ondragleave="_stockDragLeave(event)" ondrop="_stockDrop(event,'${c}','${ck}')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_stockDragStart(event,'${c}')" title="Drag to reorder">⠿</span> <span class="nm">${ee(r.name)}</span><div style="font-size:9px;color:#aeb0bd">${c}</div></td>`
+    bodyRows += `<tr ondragover="_stockDragOver(event)" ondragleave="_stockDragLeave(event)" ondrop="_stockDrop(event,'${c}','${ck}')">` // v8.30: RRP+Cost 移到名字前
       + `<td class="stkin c-rrp"><input class="cin cins" type="number" step="any" value="${price || 0}" onchange="_stockSetPrice('${ck}','${c}',this.value)"></td>`
       + costCell
+      + `<td class="l"><span class="rdrag" draggable="true" ondragstart="_stockDragStart(event,'${c}')" title="Drag to reorder">⠿</span> <span class="nm">${ee(r.name)}</span><div style="font-size:9px;color:#aeb0bd">${c}</div></td>`
       + cells + `<td class="sub">${cell(ytd)}</td></tr>`;
   });
   idx.forEach(i => totY += tot[i]);
   if (!rows.length) bodyRows = `<tr><td class="l" colspan="16" style="color:var(--gray);padding:16px;font-size:13px">No ${isSvc ? 'service' : 'product'} collection for this outlet / year.</td></tr>`;
-  let head = '<thead><tr><th class="l">' + (isSvc ? 'Service' : 'Product') + ' · ' + ee(year) + '</th><th class="stkin c-rrp">RRP</th><th class="stkin dvr c-cost">' + (isPctCost ? 'Cost %' : 'Cost') + '</th>';
+  let head = '<thead><tr><th class="stkin c-rrp">RRP</th><th class="stkin dvr c-cost">' + (isPctCost ? 'Cost %' : 'Cost') + '</th><th class="l">' + (isSvc ? 'Service' : 'Product') + ' · ' + ee(year) + '</th>'; // v8.30: RRP+Cost 移到名字前
   for (let i = 0; i < 12; i++) head += '<th>' + _PNL_MONTHS[i] + '</th>';
   head += '<th class="sub">YTD</th></tr></thead>';
   let sub = ''; idx.forEach(i => sub += `<td>${mmode === 'qty' ? Math.round(tot[i]) : _pnlFmt(tot[i])}</td>`);
-  const totRow = `<tr class="big"><td class="l">Total ${isSvc ? 'service' : 'product'} ${mmode === 'qty' ? 'qty' : 'cost'}</td><td class="c-rrp"></td><td class="dvr c-cost"></td>${sub}<td class="sub">${mmode === 'qty' ? Math.round(totY) : _pnlFmt(totY)}</td></tr>`;
+  const totRow = `<tr class="big"><td class="c-rrp"></td><td class="dvr c-cost"></td><td class="l">Total ${isSvc ? 'service' : 'product'} ${mmode === 'qty' ? 'qty' : 'cost'}</td>${sub}<td class="sub">${mmode === 'qty' ? Math.round(totY) : _pnlFmt(totY)}</td></tr>`;
   const salesY = pnlAutoRows(store, year).sales.reduce((a, b) => a + b, 0);           // 该店该年 YTD 营业额
   // v8.22: 产品 / 服务 各自 YTD 成本 (跟当前框架 basis); 两 tab 显示同一套卡片
   const prodY = _stockAgg(state.InvUsage || [], 'itemCode', 'itemName', store, year).reduce((a, r) => a + (r.ytd || 0) * _stockUnitCost('inv', r.code), 0);
