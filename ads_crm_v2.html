@@ -3376,7 +3376,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.15</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.19</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3432,7 +3432,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.15</div>
+      <div class="nav-brand-version">v8.19</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3974,7 +3974,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3984,11 +3984,11 @@ body.contact-view-table .modal-backdrop.open {
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -3997,11 +3997,56 @@ body.contact-view-table .modal-backdrop.open {
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+      <th class="num">New (RM)</th>
+      <th class="num">Total (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2026</td>
+    <td class="num">—</td>
+    <td class="num" style="font-weight:700;">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4011,15 +4056,52 @@ body.contact-view-table .modal-backdrop.open {
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
+          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2026</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4036,7 +4118,7 @@ body.contact-view-table .modal-backdrop.open {
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -12637,7 +12719,7 @@ function pnlComputeRows(store, year) {
   };
   const arr = row => Array.from({ length: 12 }, (_, i) => val(row, i + 1));
   const costRow = userRows.find(r => r.lineId === 'cost');
-  const cost = costRow ? (costRow.type === 'crm' ? _stockMonthlyCost(store, year) : arr(costRow)) : auto.sales.map(() => 0);
+  const cost = costRow ? ((costRow.type === 'crm' || costRow.type === 'crmpct') ? _stockMonthlyCost(store, year, costRow.type === 'crmpct' ? 'pct' : 'crm') : arr(costRow)) : auto.sales.map(() => 0); // crm=真实单位成本; crmpct=售价×%
   const gross = auto.sales.map((s, i) => s - cost[i]);
   const targetRow = userRows.find(r => r.lineId === 'target');
   const expUserRows = userRows.filter(r => r !== costRow && r !== targetRow); // 费用 = 除 cost/target 外的用户行
@@ -12677,11 +12759,12 @@ try { __pnlSelfCheck(); } catch (e) { console.warn('PnL self-check error', e); }
 // ============================================================
 let _pnlState = { store: null, year: String(new Date().getFullYear()), month: String(new Date().getMonth() + 1), empTab: 'salary', period: 'full', mode: 'showAmt' };
 let _pnlView = 'pnl'; // 'pnl' | 'employees' | 'stock'
-let _pnlStockMode = 'qty'; // 'rm' | 'qty' | 'pct'(占当列总成本%) — Product/Service 表的切换 (默认 Qty, 免得成本没填以为空)
+let _pnlStockMode = 'qty'; // 'rm' | 'qty' — Product/Service 显示切换
+let _pnlFramework = 'crm'; // v8.19: 'crm'(CRM Real=真实单位成本) | 'pct'(Percentage=售价×%) — Product/Service/Forecast 分两个框架
 const _CALC_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="8" y2="11.01"/><line x1="12" y1="11" x2="12" y2="11.01"/><line x1="16" y1="11" x2="16" y2="11.01"/><line x1="8" y1="15" x2="8" y2="15.01"/><line x1="12" y1="15" x2="12" y2="15.01"/><line x1="16" y1="15" x2="16" y2="15.01"/></svg>'; // 计算器图标(取代 🧮)
 // v7.78: 记住上次的选择 (tab/branch/年份/period/RM-%/Qty模式), 下次打开自动带上
-try { const _pp = JSON.parse(localStorage.getItem('pnlPrefs')); if (_pp) { Object.assign(_pnlState, _pp.state || {}); if (_pp.view) _pnlView = _pp.view; if (_pp.stockMode) _pnlStockMode = _pp.stockMode; } } catch (e) {}
-function _pnlPrefsSave() { try { localStorage.setItem('pnlPrefs', JSON.stringify({ state: _pnlState, view: _pnlView, stockMode: _pnlStockMode })); } catch (e) {} }
+try { const _pp = JSON.parse(localStorage.getItem('pnlPrefs')); if (_pp) { Object.assign(_pnlState, _pp.state || {}); if (_pp.view) _pnlView = _pp.view; if (_pp.stockMode) _pnlStockMode = _pp.stockMode; if (_pp.fw) _pnlFramework = _pp.fw; } } catch (e) {}
+function _pnlPrefsSave() { try { localStorage.setItem('pnlPrefs', JSON.stringify({ state: _pnlState, view: _pnlView, stockMode: _pnlStockMode, fw: _pnlFramework })); } catch (e) {} }
 let _pnlExporting = false; // 导出 PDF 时: 格子渲染成纯文本(不带 input)
 // 未保存提示: 比对当前 P&L 数据 vs 上次保存的快照 (自动覆盖所有改动, 不用逐个 hook)
 let _pnlSavedSnapshot = null;
@@ -12692,9 +12775,15 @@ function _pnlSaveBtnHtml() {
     ? `<button class="btn btn-primary pnl-savebtn pnl-dirty" id="pnlSaveBtn" onclick="_savePnL()"><span class="pnl-dot"></span>Save changes</button>`
     : `<button class="btn btn-outline pnl-savebtn" id="pnlSaveBtn" onclick="_savePnL()">Saved</button>`;
 }
-function _pnlSetView(v) { _pnlView = v; renderPnL(); }
+function _pnlSetView(v) { _pnlView = v; _pnlPrefsSave(); renderPnL(); }
+function _pnlSetFramework(f) { _pnlFramework = f; if (['product', 'service', 'forecast'].indexOf(_pnlView) < 0) _pnlView = 'product'; _pnlPrefsSave(); renderPnL(); }
 function _pnlTopTabs() {
-  return `<div class="pnl-toptabs"><div class="pnl-toptab${_pnlView === 'pnl' ? ' on' : ''}" onclick="_pnlSetView('pnl')">Profit &amp; Loss</div><div class="pnl-toptab${_pnlView === 'employees' ? ' on' : ''}" onclick="_pnlSetView('employees')">Employees</div><div class="pnl-toptab${_pnlView === 'product' ? ' on' : ''}" onclick="_pnlSetView('product')">Product</div><div class="pnl-toptab${_pnlView === 'service' ? ' on' : ''}" onclick="_pnlSetView('service')">Service</div><div class="pnl-toptab${_pnlView === 'forecast' ? ' on' : ''}" onclick="_pnlSetView('forecast')">Forecast</div></div>`;
+  const inFw = ['product', 'service', 'forecast'].indexOf(_pnlView) >= 0;
+  const tab = (v, label) => `<div class="pnl-toptab${_pnlView === v ? ' on' : ''}" onclick="_pnlSetView('${v}')">${label}</div>`;
+  const fwt = (f, label) => `<div class="pnl-toptab${(inFw && _pnlFramework === f) ? ' on' : ''}" onclick="_pnlSetFramework('${f}')">${label}</div>`;
+  let h = `<div class="pnl-toptabs">` + tab('pnl', 'Profit &amp; Loss') + tab('employees', 'Employees') + fwt('crm', 'CRM Real') + fwt('pct', 'Percentage') + `</div>`;
+  if (inFw) h += `<div class="pnl-toptabs" style="margin-top:6px">` + tab('product', 'Product') + tab('service', 'Service') + tab('forecast', 'Forecast') + `</div>`;
+  return h;
 }
 const _PNL_PERIODS = { full: { nm: 'Full year', idx: [0,1,2,3,4,5,6,7,8,9,10,11], sub: 'YTD' },
   Q1: { nm: 'Q1', idx: [0,1,2], sub: 'Q1' }, Q2: { nm: 'Q2', idx: [3,4,5], sub: 'Q2' },
@@ -12992,6 +13081,12 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t.stk .stkin{padding-left:5px;padding-right:5px;}  /* Cost/RRP 横向凑紧 */
 #pnlRoot .pnl-t.stk .stkin .cinwrap{gap:3px;}
 #pnlRoot .pnl-t.stk .dvr{border-right:2px solid #c4c4cf;}  /* Cost/RRP 跟月份的分割线 */
+/* v8.16: 冻结 名字 + RRP + Cost 三列 (固定宽 + sticky), 切 RM/Qty/% 不再跳、横滚也留住 */
+#pnlRoot .pnl-t.stk th.l,#pnlRoot .pnl-t.stk td.l{width:260px;min-width:260px;max-width:260px;}
+#pnlRoot .pnl-t.stk .c-rrp{position:sticky;left:260px;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
+#pnlRoot .pnl-t.stk .c-cost{position:sticky;left:344px;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
+#pnlRoot .pnl-t.stk thead th.c-rrp,#pnlRoot .pnl-t.stk thead th.c-cost{z-index:7;background:var(--surface);}
+#pnlRoot .pnl-t.stk tr.big td.c-rrp,#pnlRoot .pnl-t.stk tr.big td.c-cost{background:#fff;}
 #pnlRoot .pnl-t .cinwrap{display:inline-flex;align-items:center;gap:4px;}
 #pnlRoot .pnl-t .cinbtn{flex:none;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #e3e3ea;border-radius:6px;background:#fff;color:var(--gray);cursor:pointer;}
 #pnlRoot .pnl-t .cinbtn svg{width:13px;height:13px;}
@@ -13200,16 +13295,20 @@ function _pnlTypeModal(lineId) {
   const isPct = r.type === 'pct', isCrm = r.type === 'crm', showCrm = (lineId === 'cost');
   const hintNum = "Type a fixed amount in each month's cell.";
   const hintPct = "Enter one %; every month is auto-calculated from that month's sales.";
-  const hintCrm = "Auto — uses the Product & Service tab total (33CRM collection × your unit costs). Nothing to type.";
+  const hintCrm = "Auto — Product & Service tabs × your real unit costs (33CRM collection). Nothing to type.";
+  const hintCrmPct = "Auto — Product & Service tabs on the % basis (qty × RRP × cost%). Nothing to type.";
   const html = `<div class="modal-header"><div class="modal-title">Row settings</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
     + `<div class="settings-modal-input-row"><label>Name</label><input id="pnlRowName" type="text" value="${ee(r.name)}"></div>`
     + `<div class="settings-modal-section-title" style="margin-top:18px">Source</div>`
     + `<div class="toggle-group" id="pnlTypeToggle" style="display:flex;width:100%">`
-    +   (showCrm ? '' : `<div class="toggle${(!isPct && !isCrm) ? ' active' : ''}" data-t="number" style="flex:1;text-align:center" onclick="_pnlTypePick('number')">Number</div>`) // cost 行不给 Number(有 CRM 真实了); 其他费用行照留
-    +   `<div class="toggle${isPct ? ' active' : ''}" data-t="pct" style="flex:1;text-align:center" onclick="_pnlTypePick('pct')">% of sales</div>`
-    +   (showCrm ? `<div class="toggle${isCrm ? ' active' : ''}" data-t="crm" style="flex:1;text-align:center" onclick="_pnlTypePick('crm')">CRM (real)</div>` : '')
+    +   (showCrm
+        ? `<div class="toggle${isCrm ? ' active' : ''}" data-t="crm" style="flex:1;text-align:center" onclick="_pnlTypePick('crm')">CRM real</div>`
+          + `<div class="toggle${r.type === 'crmpct' ? ' active' : ''}" data-t="crmpct" style="flex:1;text-align:center" onclick="_pnlTypePick('crmpct')">Percentage</div>`
+          + `<div class="toggle${isPct ? ' active' : ''}" data-t="pct" style="flex:1;text-align:center" onclick="_pnlTypePick('pct')">% of sales</div>`
+        : `<div class="toggle${(!isPct) ? ' active' : ''}" data-t="number" style="flex:1;text-align:center" onclick="_pnlTypePick('number')">Number</div>`
+          + `<div class="toggle${isPct ? ' active' : ''}" data-t="pct" style="flex:1;text-align:center" onclick="_pnlTypePick('pct')">% of sales</div>`)
     + `</div>`
-    + `<div id="pnlTypeHint" style="font-size:12px;color:var(--gray);margin-top:9px">${isCrm ? hintCrm : (isPct ? hintPct : hintNum)}</div>`
+    + `<div id="pnlTypeHint" style="font-size:12px;color:var(--gray);margin-top:9px">${isCrm ? hintCrm : (r.type === 'crmpct' ? hintCrmPct : (isPct ? hintPct : hintNum))}</div>`
     + `<div class="settings-modal-input-row" id="pnlRateWrap" style="display:${isPct ? 'block' : 'none'};margin-top:16px"><label>Percentage of sales</label>`
     +   `<div style="position:relative"><input id="pnlRate" type="number" step="any" value="${r.rate || 0}"><span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:15px;pointer-events:none">%</span></div></div>`
     + `<button class="btn btn-primary btn-full" style="margin-top:20px" onclick="_pnlTypeModalSave('${ee(lineId)}')">Save</button>`;
@@ -13219,7 +13318,8 @@ function _pnlTypePick(t) {
   document.querySelectorAll('#pnlTypeToggle .toggle').forEach(el => el.classList.toggle('active', el.dataset.t === t));
   const w = document.getElementById('pnlRateWrap'); if (w) w.style.display = (t === 'pct') ? 'block' : 'none';
   const h = document.getElementById('pnlTypeHint');
-  if (h) h.textContent = (t === 'crm') ? "Auto — uses the Product & Service tab total (33CRM collection × your unit costs). Nothing to type." : (t === 'pct') ? "Enter one %; every month is auto-calculated from that month's sales." : "Type a fixed amount in each month's cell.";
+  if (h) h.textContent = (t === 'crm') ? "Auto — Product & Service tabs × your real unit costs. Nothing to type." : (t === 'crmpct') ? "Auto — Product & Service tabs on the % basis (qty × RRP × cost%). Nothing to type." : (t === 'pct') ? "Enter one %; every month is auto-calculated from that month's sales." : "Type a fixed amount in each month's cell.";
+  const w2 = document.getElementById('pnlRateWrap'); if (w2) w2.style.display = (t === 'pct') ? 'block' : 'none';
 }
 function _pnlTypeModalSave(lineId) {
   const r = _pnlFindRow(lineId); if (!r) { closeModal(); return; }
@@ -13962,6 +14062,10 @@ function _stockUpsert(kind, code, patch) {
 function _stockSetCost(kind, code, v) { _stockUpsert(kind, code, { cost: parseFloat(v) || 0 }); renderPnL(); } // onchange(blur) 重画: 更新总计 + Save dirty
 function _stockPriceOf(kind, code) { const it = _stockItem(kind, code); return it ? (Number(it.price) || 0) : 0; } // 售价 (Forecast % 模式用)
 function _stockPctOf(kind, code) { const it = _stockItem(kind, code); return (it && it.pct != null && it.pct !== '') ? Number(it.pct) : null; } // 每产品 cost %
+// v8.17: Product/Service 成本基准切换 (CRM real=单价 / % =售价×每产品%). 存 PnL_Config 一行 __stockmode__.val(随同步), 每 kind 独立. 会喂进 P&L.
+function _stockCostBy(ck) { const row = (state.pnl.config || []).find(c => c.id === '__stockmode__'); let v = {}; try { v = row && row.val ? JSON.parse(row.val) : {}; } catch (e) {} return ((ck === 'svc' ? v.svc : v.inv) === 'pct') ? 'pct' : 'crm'; }
+function _stockSetCostBy(ck, m) { if (!state.pnl.config) state.pnl.config = []; let row = state.pnl.config.find(c => c.id === '__stockmode__'); if (!row) { row = { id: '__stockmode__' }; state.pnl.config.push(row); } let v = {}; try { v = row.val ? JSON.parse(row.val) : {}; } catch (e) {} if (ck === 'svc') v.svc = m; else v.inv = m; row.val = JSON.stringify(v); saveState(); renderPnL(); }
+function _stockUnitCost(ck, code, basis) { const b = basis || _pnlFramework; return b === 'pct' ? (_stockPriceOf(ck, code) * (_stockPctOf(ck, code) || 0) / 100) : _stockCostOf(ck, code); } // basis 显式覆盖(P&L 用); 不传则跟当前框架
 function _stockSetPrice(kind, code, v) { _stockUpsert(kind, code, { price: parseFloat(v) || 0 }); renderPnL(); }
 function _stockSetPct(kind, code, v) { _stockUpsert(kind, code, { pct: (v === '' ? null : parseFloat(v) || 0) }); renderPnL(); }
 function _pnlSetStockMode(m) { _pnlStockMode = m; renderPnL(); }
@@ -14060,9 +14164,9 @@ function _calcKeydown(e) { // 计算器 modal 开着时接管键盘
 }
 document.addEventListener('keydown', _calcKeydown);
 // P&L cost 行用: 某店某年 每月「产品+服务」成本 RM (= 用量 × 单位成本). store='all' 汇总3店, 'mgmt'=0.
-function _stockMonthlyCost(store, year) {
+function _stockMonthlyCost(store, year, basis) {
   const out = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  const add = (rows, ck) => rows.forEach(r => { const c = _stockCostOf(ck, r.code); for (let i = 0; i < 12; i++) out[i] += (r.m[i] || 0) * c; });
+  const add = (rows, ck) => rows.forEach(r => { const c = _stockUnitCost(ck, r.code, basis); for (let i = 0; i < 12; i++) out[i] += (r.m[i] || 0) * c; }); // basis: P&L 传 'crm'/'pct'; tab 不传
   add(_stockAgg(state.SvcColl || [], 'svcCode', 'svcName', store, year), 'svc');
   add(_stockAgg(state.InvUsage || [], 'itemCode', 'itemName', store, year), 'inv');
   return out;
@@ -14074,29 +14178,32 @@ function renderPnlStock(root, kind) {
   const isSvc = (kind === 'service'), ck = isSvc ? 'svc' : 'inv';
   const rows = _stockOrdered(ck, store, year);
   const idx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-  const isPct = mode === 'pct';
-  const cell = v => v ? (mode === 'qty' ? Math.round(v) : _pnlFmt(v)) : '—';
-  const pctc = (v, t) => (v && t) ? (v / t * 100).toFixed(1) + '%' : '—'; // 占当列总成本 %
+  const mmode = mode === 'qty' ? 'qty' : 'rm'; // 显示只 RM/Qty (旧的成分% 移除)
+  const isPctCost = _pnlFramework === 'pct'; // 框架决定成本基准
+  const cell = v => v ? (mmode === 'qty' ? Math.round(v) : _pnlFmt(v)) : '—';
   const tot = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; let totY = 0, costY = 0;
-  const colT = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; let colTY = 0; // pct 分母: 每月/YTD 总成本 RM
-  if (isPct) rows.forEach(r => { const c2 = _stockCostOf(ck, r.code); idx.forEach(i => colT[i] += r.m[i] * c2); colTY += r.ytd * c2; });
   let bodyRows = '';
   rows.forEach(r => {
-    const cost = _stockCostOf(ck, r.code); const price = _stockPriceOf(ck, r.code); let ytd = 0, cells = ''; const c = ee(r.code);
-    idx.forEach(i => { const q = r.m[i], val = mode === 'qty' ? q : q * cost; cells += `<td>${isPct ? pctc(val, colT[i]) : cell(val)}</td>`; tot[i] += val; ytd += val; });
-    costY += r.ytd * cost;
+    const price = _stockPriceOf(ck, r.code), rawCost = _stockCostOf(ck, r.code), pct = _stockPctOf(ck, r.code);
+    const uc = isPctCost ? (price * (pct || 0) / 100) : rawCost; // 有效单位成本 (real=单价, %=售价×%)
+    let ytd = 0, cells = ''; const c = ee(r.code);
+    idx.forEach(i => { const q = r.m[i], val = mmode === 'qty' ? q : q * uc; cells += `<td>${cell(val)}</td>`; tot[i] += val; ytd += val; });
+    costY += r.ytd * uc;
+    const costCell = isPctCost
+      ? `<td class="stkin dvr c-cost"><input class="cin cins" type="number" step="any" value="${pct == null ? '' : pct}" placeholder="%" onchange="_stockSetPct('${ck}','${c}',this.value)"></td>`
+      : `<td class="stkin dvr c-cost"><span class="cinwrap"><input class="cin cins" type="number" step="any" value="${rawCost || 0}" onchange="_stockSetCost('${ck}','${c}',this.value)"><button class="cinbtn" onclick="_stockCalc('${ck}','${c}')" title="Calculator">${_CALC_SVG}</button></span></td>`;
     bodyRows += `<tr ondragover="_stockDragOver(event)" ondragleave="_stockDragLeave(event)" ondrop="_stockDrop(event,'${c}','${ck}')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_stockDragStart(event,'${c}')" title="Drag to reorder">⠿</span> <span class="nm">${ee(r.name)}</span><div style="font-size:9px;color:#aeb0bd">${c}</div></td>`
-      + `<td class="stkin"><span class="cinwrap"><input class="cin cins" type="number" step="any" value="${cost || 0}" onchange="_stockSetCost('${ck}','${c}',this.value)"><button class="cinbtn" onclick="_stockCalc('${ck}','${c}')" title="Calculator">${_CALC_SVG}</button></span></td>`
-      + `<td class="stkin dvr"><input class="cin cins" type="number" step="any" value="${price || 0}" onchange="_stockSetPrice('${ck}','${c}',this.value)"></td>` // RRP 售价
-      + cells + `<td class="sub">${isPct ? pctc(ytd, colTY) : cell(ytd)}</td></tr>`;
+      + `<td class="stkin c-rrp"><input class="cin cins" type="number" step="any" value="${price || 0}" onchange="_stockSetPrice('${ck}','${c}',this.value)"></td>`
+      + costCell
+      + cells + `<td class="sub">${cell(ytd)}</td></tr>`;
   });
   idx.forEach(i => totY += tot[i]);
   if (!rows.length) bodyRows = `<tr><td class="l" colspan="16" style="color:var(--gray);padding:16px;font-size:13px">No ${isSvc ? 'service' : 'product'} collection for this outlet / year.</td></tr>`;
-  let head = '<thead><tr><th class="l">' + (isSvc ? 'Service' : 'Product') + ' · ' + ee(year) + '</th><th class="stkin">Cost</th><th class="stkin dvr">RRP</th>';
+  let head = '<thead><tr><th class="l">' + (isSvc ? 'Service' : 'Product') + ' · ' + ee(year) + '</th><th class="stkin c-rrp">RRP</th><th class="stkin dvr c-cost">' + (isPctCost ? 'Cost %' : 'Cost') + '</th>';
   for (let i = 0; i < 12; i++) head += '<th>' + _PNL_MONTHS[i] + '</th>';
   head += '<th class="sub">YTD</th></tr></thead>';
-  let sub = ''; idx.forEach(i => sub += `<td>${mode === 'qty' ? Math.round(tot[i]) : _pnlFmt(tot[i])}</td>`);
-  const totRow = `<tr class="big"><td class="l">Total ${isSvc ? 'service' : 'product'} ${mode === 'qty' ? 'qty' : 'cost'}</td><td></td><td class="dvr"></td>${sub}<td class="sub">${mode === 'qty' ? Math.round(totY) : _pnlFmt(totY)}</td></tr>`;
+  let sub = ''; idx.forEach(i => sub += `<td>${mmode === 'qty' ? Math.round(tot[i]) : _pnlFmt(tot[i])}</td>`);
+  const totRow = `<tr class="big"><td class="l">Total ${isSvc ? 'service' : 'product'} ${mmode === 'qty' ? 'qty' : 'cost'}</td><td class="c-rrp"></td><td class="dvr c-cost"></td>${sub}<td class="sub">${mmode === 'qty' ? Math.round(totY) : _pnlFmt(totY)}</td></tr>`;
   const salesY = pnlAutoRows(store, year).sales.reduce((a, b) => a + b, 0);           // 该店该年 YTD 营业额
   const combinedY = _stockMonthlyCost(store, year).reduce((a, b) => a + b, 0);         // product + service 总成本
   const pctSalesS = salesY ? (costY / salesY * 100).toFixed(1) + '%' : '—';            // 本 tab 占营业额%
@@ -14109,11 +14216,11 @@ function renderPnlStock(root, kind) {
   root.innerHTML = _pnlTopTabs()
     + `<div class="pnl-bar2"><div class="pnl-tabs">` + stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${ee(s.id)}')">${ee(s.name)}</div>`).join('') + `</div>`
     + `<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
-    + `<div class="pnl-seg"><button class="${mode === 'rm' ? 'on' : ''}" onclick="_pnlSetStockMode('rm')">RM</button><button class="${mode === 'qty' ? 'on' : ''}" onclick="_pnlSetStockMode('qty')">Qty</button><button class="${mode === 'pct' ? 'on' : ''}" onclick="_pnlSetStockMode('pct')">%</button></div>`
+    + `<div class="pnl-seg"><button class="${mmode === 'rm' ? 'on' : ''}" onclick="_pnlSetStockMode('rm')">RM</button><button class="${mmode === 'qty' ? 'on' : ''}" onclick="_pnlSetStockMode('qty')">Qty</button></div>`
     + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>` + _pnlSaveBtnHtml() + `</div></div>`
     + `<div class="pnl-cards" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">` + cards + `</div>`
     + `<div class="pnl-scroll"><table class="pnl-t stk">` + head + '<tbody>' + bodyRows + totRow + '</tbody></table></div>'
-    + `<div class="pnl-foot-note">RM = qty × ${isSvc ? 'cost/session' : 'unit cost'}. Qty = collection count. ${isSvc ? '' : 'Leave 0 for consumables the service cost already covers. '}Total Product &amp; Service Cost (Product + Service) feeds the P&amp;L. Data = 33CRM collection, ${store === 'all' ? 'all outlets summed' : (store === 'mgmt' ? 'Mgmt has none' : 'this outlet')}.</div>`;
+    + `<div class="pnl-foot-note">You're in the <b>${isPctCost ? 'Percentage' : 'CRM Real'}</b> framework — ${isPctCost ? 'cost = qty × RRP × cost%' : 'cost = qty × unit cost'}. Switch framework in the top tabs. The P&amp;L cost line picks its own source. Data = 33CRM collection, ${store === 'all' ? 'all outlets summed' : (store === 'mgmt' ? 'Mgmt has none' : 'this outlet')}.</div>`;
   const _ns = root.querySelector('.pnl-scroll'); if (_ns) { _ns.scrollTop = _sT; _ns.scrollLeft = _sL; } window.scrollTo(0, _wY); // 还原滚动
 }
 
@@ -14150,7 +14257,7 @@ function renderForecast(root) {
   const rangeRev = sales.slice(from, to + 1).reduce((a, b) => a + b, 0);
   const byMonths = _fcState.by === 'months';
   const N = Number(_fcState.months) || 0, V = Number(_fcState.revenue) || 0;
-  const costByPct = _fcState.costBy === 'pct'; // Forecast cost 独立于 P&L: crm=数量×单位成本; pct=数量×售价×每产品%
+  const costByPct = _pnlFramework === 'pct'; // v8.19: 跟框架 (crm=数量×单位成本; pct=数量×售价×每产品%)
   const isAll = (store === 'all');
   const balMap = {}; (state.InvBalance || []).forEach(b => { balMap[b.locationId + '|' + b.itemCode] = Number(b.qty) || 0; }); // 最新库存 loc|code → qty
   const _balOf = code => isAll
@@ -14249,7 +14356,6 @@ function renderForecast(root) {
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Base period (for the rate)</div><div style="display:flex;align-items:center;gap:6px"><select class="pnl-yr" onchange="_fcSetFrom(this.value)">' + _mOpt(_fcState.from) + '</select><span style="color:var(--gray)">→</span><select class="pnl-yr" onchange="_fcSetTo(this.value)">' + _mOpt(_fcState.to) + '</select></div></div>'
     +   '<div style="background:#eef7f0;border:1px solid #c9e6d2;border-radius:10px;padding:7px 14px"><div style="font-size:11px;color:#0f6e56;font-weight:600">Range revenue (actual)</div><div style="font-size:16px;font-weight:700;color:#0f6e56;margin-top:1px">RM ' + _pnlFmt(rangeRev) + '</div></div>'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast by</div><div style="display:flex;align-items:center;gap:10px"><div class="pnl-seg"><button class="' + (byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'months\')">Months</button><button class="' + (!byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'revenue\')">Revenue</button></div>' + byCtrl + '</div></div>'
-    +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast Cost by</div><div class="pnl-seg"><button class="' + (!costByPct ? 'on' : '') + '" onclick="_fcSetCostBy(\'crm\')">CRM real</button><button class="' + (costByPct ? 'on' : '') + '" onclick="_fcSetCostBy(\'pct\')">%</button></div></div>'
     +   equivChip
     + '</div>'
     + '<div class="pnl-scroll"><table class="pnl-t fc-t">' + bHead + '<tbody>' + bBody + '</tbody></table></div>'
