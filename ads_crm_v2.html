@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.90</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.91</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.90</div>
+      <div class="nav-brand-version">v7.91</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3582,10 +3582,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-07-04</span>
+                      <span id="f_leadDate_label">2026-07-05</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-07-04">
+                    <input type="hidden" id="f_leadDate" value="2026-07-05">
                   </div>
                 </div>
               </div>
@@ -16277,7 +16277,14 @@ async function checkAuthStatusForSettings() {
 
 // Silent auto-pull on app open. No confirm, no page reload, no toast on failure.
 let _lastPullText = '';  // ponytail: fingerprint of last clean pull — skip redundant re-process when nothing changed
+let _pullInFlight = false;   // v7.91 (codex #1): in-flight 防重 — 同一时间只跑一条 pull
+let _pullRetryQueued = false; // v7.91 (codex #4): 防重复排 retry
 async function gsPullSilent(isRetry) {
+  if (_pullInFlight) return; // v7.91: 已有 pull 在跑 (启动/手动/restore 回拉/retry 可能撞车), 不开第二条
+  _pullInFlight = true;
+  try { await _gsPullSilentInner(isRetry); } finally { _pullInFlight = false; }
+}
+async function _gsPullSilentInner(isRetry) {
   const url = getGsUrl();
   if (!url) return; // No URL configured — skip silently
   // v7.90: 同步开口讲话 — 开始/失败都有 toast, 失败自动重试 1 次.
@@ -16286,8 +16293,12 @@ async function gsPullSilent(isRetry) {
   const failSync = (reason) => {
     console.warn('[Auto-pull] failed:', reason);
     if (!isRetry) {
-      if (typeof toast === 'function') toast('⚠️ Sync failed (' + reason + ') — retrying in 5s…');
-      setTimeout(() => gsPullSilent(true), 5000);
+      // v7.91 (codex #4): 5s→30s 退避 — Google 已在限流/挂起时, 急 retry 只会加压; 且不重复排
+      if (typeof toast === 'function') toast('⚠️ Sync failed (' + reason + ') — retrying in 30s…');
+      if (!_pullRetryQueued) {
+        _pullRetryQueued = true;
+        setTimeout(() => { _pullRetryQueued = false; gsPullSilent(true); }, 30000);
+      }
     } else {
       if (typeof toast === 'function') toast('⚠️ Sync failed: ' + reason + ' — tap Sync to retry');
     }
@@ -19636,6 +19647,7 @@ let pendingData = [];
 
 // v4.55: Badge updater — checks pending count every 60s, updates red dot on topbar button
 async function pendingBadgeUpdate() {
+  if (document.hidden) return; // v7.91 (codex #3): 页面不可见就不打 — 后台 tab 别浪费请求额度
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
   if (!url) return;
   try {
@@ -19657,12 +19669,12 @@ async function pendingBadgeUpdate() {
   } catch (e) { /* silent */ }
 }
 
-// v5.07: Run badge check immediately + every 45 seconds.
-// 45s interval doubles as a keep-alive ping to Apps Script — preventing the
-// 5-minute idle cold-start. This makes page-open feel instant since Apps
-// Script is always "warm" when you actually need it.
-pendingBadgeUpdate();
-setInterval(pendingBadgeUpdate, 45000);
+// v5.07 原设计: 立即跑 + 45s keep-alive 保温 Apps Script.
+// v7.91 (codex #2/#3): 改 15s 延迟首跑 + 3 分钟间隔 —
+//   启动时让主 pull 先跑, 别并发轰后端; 45s×多设备的火力
+//   反而可能触发 Google 对 /exec 的限流 (2026-07-04 排查).
+setTimeout(pendingBadgeUpdate, 15000);
+setInterval(pendingBadgeUpdate, 180000);
 
 
 // v4.88: Cache key for localStorage
