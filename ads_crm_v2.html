@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.91</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.92</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.91</div>
+      <div class="nav-brand-version">v7.92</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12665,7 +12665,7 @@ try { __pnlSelfCheck(); } catch (e) { console.warn('PnL self-check error', e); }
 // ============================================================
 // v7.25: P&L — 渲染层 (卡片 + 分层表 + 编辑)
 // ============================================================
-let _pnlState = { store: null, year: String(new Date().getFullYear()), period: 'full', mode: 'showAmt' };
+let _pnlState = { store: null, year: String(new Date().getFullYear()), month: String(new Date().getMonth() + 1), empTab: 'salary', period: 'full', mode: 'showAmt' };
 let _pnlView = 'pnl'; // 'pnl' | 'employees' | 'stock'
 let _pnlStockMode = 'qty'; // 'rm' | 'qty' | 'pct'(占当列总成本%) — Product/Service 表的切换 (默认 Qty, 免得成本没填以为空)
 const _CALC_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="8" y2="11.01"/><line x1="12" y1="11" x2="12" y2="11.01"/><line x1="16" y1="11" x2="16" y2="11.01"/><line x1="8" y1="15" x2="8" y2="15.01"/><line x1="12" y1="15" x2="12" y2="15.01"/><line x1="16" y1="15" x2="16" y2="15.01"/></svg>'; // 计算器图标(取代 🧮)
@@ -13488,6 +13488,7 @@ function _pnlEmpModal(empId, retLineId, retMonth) {
     + `<select id="pnlEmpEffM" style="flex:1">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}"${(i + 1) === startM ? ' selected' : ''}>${m}</option>`).join('') + `</select>`
     + `<select id="pnlEmpEffY" style="width:110px">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select></div></div>`
     + `<div style="font-size:11px;color:#b3631a;background:#fdf6ee;border-radius:8px;padding:8px 12px;margin-top:10px">Salary applies from this month onward. Months before it are set to RM 0 (not employed yet).</div>`
+    + _otEmpFormHtml(e)
     + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="_pnlEmpSave('${empId ? ee(empId) : ''}')">Save</button>`
     + (e ? `<button class="btn btn-danger btn-full" style="margin-top:8px" onclick="_pnlEmpDelete('${ee(empId)}')">Delete employee</button>` : '');
   showModal(html);
@@ -13514,6 +13515,7 @@ function _pnlEmpSave(empId) {
   let e = empId ? _pnlEmp(empId) : null;
   if (!e) { empId = 'emp-' + Date.now(); e = { id: empId, name, position: pos, epfPct: epf, socsoPct: socso, active: isActive }; state.pnl.employees.push(e); }
   else { e.name = name; e.position = pos; e.epfPct = epf; e.socsoPct = socso; e.active = isActive; }
+  _empOtSet(e, _otReadForm()); // v7.92: 存 OT 开关 + 时间表 + 日历
   let sal = (state.pnl.empSalary || []).find(s => s.empId === empId && String(s.year) === String(effY));
   if (!sal) { sal = { id: empId + '|' + effY, empId, year: String(effY) }; for (let m = 1; m <= 12; m++) sal['m' + m] = 0; state.pnl.empSalary.push(sal); }
   for (let m = 1; m < effM; m++) sal['m' + m] = 0;        // 入职月之前 = 没在职 (0)
@@ -13523,47 +13525,214 @@ function _pnlEmpSave(empId) {
   else { closeModal(); renderPnL(); }
 }
 
+// ==== v7.92: OT (加班) — 全局规则 + 两份假期日历 + 每人时间表 ====
+// 存储: 每人 e.otcfg (JSON string) = {elig,cal,brk,sch[7]}; 全局塞 PnL_Config 一行 __ot__.val (JSON).
+//   sch 按 JS getDay 索引 (0=Sun..6=Sat). 只扩 normalize 白名单两处即可同步.
+function _otHm(t) { if (!t) return 0; const p = String(t).split(':'); return (+p[0]) + (+p[1] || 0) / 60; }
+function _otStoreSch() { return [{w:1,a:'09:00',b:'19:00'},{w:0,a:'',b:''},{w:1,a:'10:00',b:'19:00'},{w:1,a:'10:00',b:'19:00'},{w:1,a:'10:00',b:'19:00'},{w:1,a:'10:00',b:'19:00'},{w:1,a:'09:00',b:'19:00'}]; }
+function _otOfficeSch() { return [{w:0,a:'',b:''},{w:1,a:'09:00',b:'18:00'},{w:1,a:'09:00',b:'18:00'},{w:1,a:'09:00',b:'18:00'},{w:1,a:'09:00',b:'18:00'},{w:1,a:'09:00',b:'18:00'},{w:0,a:'',b:''}]; }
+function _otGlobal() {
+  const row = (state.pnl.config || []).find(c => c.id === '__ot__');
+  let v = {}; try { v = row && row.val ? JSON.parse(row.val) : {}; } catch (e) {}
+  return { thr: (v.thr != null ? v.thr : 45), rate: (v.rate != null ? v.rate : 1.5), holStore: v.holStore || {}, holMgmt: v.holMgmt || {} };
+}
+function _otGlobalSet(g) {
+  if (!state.pnl.config) state.pnl.config = [];
+  let row = state.pnl.config.find(c => c.id === '__ot__');
+  if (!row) { row = { id: '__ot__' }; state.pnl.config.push(row); }
+  row.val = JSON.stringify({ thr: g.thr, rate: g.rate, holStore: g.holStore, holMgmt: g.holMgmt });
+  saveState();
+}
+function _empOt(e) {
+  let v = {}; try { v = e && e.otcfg ? JSON.parse(e.otcfg) : {}; } catch (er) {}
+  const sch = (Array.isArray(v.sch) && v.sch.length === 7) ? v.sch : _otStoreSch();
+  return { elig: !!v.elig, cal: v.cal === 'mgmt' ? 'mgmt' : 'store', brk: (v.brk != null ? v.brk : 1), sch };
+}
+function _empOtSet(e, o) { e.otcfg = JSON.stringify({ elig: !!o.elig, cal: o.cal, brk: o.brk, sch: o.sch }); }
+function _otNet(sch, dow, brk) { const d = sch[dow]; return (d && d.w) ? Math.max(0, _otHm(d.b) - _otHm(d.a) - (brk || 0)) : 0; }
+function _otWeekFull(o) { let t = 0; for (let d = 0; d < 7; d++) t += _otNet(o.sch, d, o.brk); return t; }
+// 月 OT 小时: 每周(周一~日)超门槛的部分; 跨月的周算进「周日」落在的月 (做法A). 假期扣该员工那份日历.
+function _empMonthOT(e, year, month) {
+  const o = _empOt(e); if (!o.elig) return 0;
+  const g = _otGlobal(), hol = o.cal === 'mgmt' ? g.holMgmt : g.holStore;
+  const y = +year, m = +month, lastDay = new Date(y, m, 0).getDate();
+  const first = new Date(y, m - 1, 1), dsm = (first.getDay() + 6) % 7;
+  const ws = new Date(y, m - 1, 1 - dsm), lastDate = new Date(y, m - 1, lastDay);
+  let ot = 0;
+  while (ws <= lastDate) {
+    let wh = 0;
+    for (let i = 0; i < 7; i++) {
+      const dd = new Date(ws); dd.setDate(ws.getDate() + i);
+      let h = _otNet(o.sch, dd.getDay(), o.brk);
+      if (hol[dd.getFullYear() + '-' + (dd.getMonth() + 1) + '-' + dd.getDate()]) h = 0;
+      wh += h;
+    }
+    const sun = new Date(ws); sun.setDate(ws.getDate() + 6);
+    if (sun.getMonth() === m - 1 && sun.getFullYear() === y) ot += Math.max(0, wh - g.thr);
+    ws.setDate(ws.getDate() + 7);
+  }
+  return ot;
+}
+function _empOtPay(e, year, month) {
+  const h = _empMonthOT(e, year, month); if (!h) return 0;
+  const basic = _pnlEmpBasic(e.id, year, month);
+  return h * (basic / 26 / 8) * _otGlobal().rate;
+}
+// 月成本 = (底薪 + OT) × (1 + EPF% + SOCSO%)  ← EPF/SOCSO 算在底薪+OT 上
+function _empMonthCost(e, year, month) {
+  return (_pnlEmpBasic(e.id, year, month) + _empOtPay(e, year, month)) * _pnlEmpRate(e);
+}
+function _otSelfCheck() {
+  let wk = 0, s = _otStoreSch(); for (let d = 0; d < 7; d++) wk += _otNet(s, d, 1);
+  console.assert(wk === 50, '[OT] store week should be 50h, got ' + wk);
+  let of = 0, o = _otOfficeSch(); for (let d = 0; d < 7; d++) of += _otNet(o, d, 1);
+  console.assert(of === 40, '[OT] office week should be 40h, got ' + of);
+}
+try { _otSelfCheck(); } catch (e) {}
+
+// OT 设定 modal (齿轮): 全局门槛/倍数 + 两份假期日历. 改动即存, 关闭时重画表.
+let _otMState = { cal: 'store' };
+function _otSettingsModal() {
+  const g = _otGlobal(), year = _pnlState.year, month = +(_pnlState.month || (new Date().getMonth() + 1));
+  const cal = _otMState.cal, hol = cal === 'mgmt' ? g.holMgmt : g.holStore;
+  const last = new Date(+year, month, 0).getDate(), first = new Date(+year, month - 1, 1).getDay(), lead = (first + 6) % 7;
+  let cells = ''; for (let i = 0; i < lead; i++) cells += '<div></div>';
+  for (let d = 1; d <= last; d++) {
+    const on = hol[year + '-' + month + '-' + d];
+    cells += `<div onclick="_otHolToggle(${d})" style="padding:6px 0;text-align:center;font-size:12px;border-radius:6px;cursor:pointer;background:${on ? 'var(--red)' : 'var(--surface-2)'};color:${on ? '#fff' : 'var(--black)'}">${d}</div>`;
+  }
+  const dh = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x => `<div style="text-align:center;font-size:10px;color:var(--gray)">${x}</div>`).join('');
+  const html = `<div class="modal-header"><div class="modal-title">OT rules &amp; holidays</div><button class="modal-close" onclick="closeModal();renderPnL()">✕</button></div>`
+    + `<div class="settings-modal-section-title">Company-wide</div>`
+    + `<div style="display:flex;gap:10px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>Overtime after (h/week)</label><input id="otThr" type="number" step="any" value="${g.thr}" onchange="_otSetThr(this.value)"></div>`
+    + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>OT rate (× hourly)</label><input id="otRate" type="number" step="any" value="${g.rate}" onchange="_otSetRate(this.value)"></div></div>`
+    + `<div style="font-size:11px;color:var(--gray);margin-top:6px">Hourly = basic ÷ 26 ÷ 8. EPF/SOCSO apply to basic + OT.</div>`
+    + `<div style="height:1px;background:var(--border);margin:16px 0"></div>`
+    + `<div class="settings-modal-section-title">Holiday calendar · ${_PNL_MONTHS[month - 1]} ${year}</div>`
+    + `<div class="toggle-group" style="display:flex;margin-bottom:10px"><div class="toggle${cal === 'store' ? ' active' : ''}" style="flex:1;text-align:center" onclick="_otMCal('store')">Store</div><div class="toggle${cal === 'mgmt' ? ' active' : ''}" style="flex:1;text-align:center" onclick="_otMCal('mgmt')">Management</div></div>`
+    + `<div style="font-size:11px;color:var(--gray);margin-bottom:8px">Tap a day = public holiday for ${cal === 'mgmt' ? 'management' : 'store'} staff (drops out of the weekly hours). Change month from the Employees page.</div>`
+    + `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${dh}${cells}</div>`
+    + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="closeModal();renderPnL()">Done</button>`;
+  showModal(html);
+}
+function _otSetThr(v) { const g = _otGlobal(); g.thr = parseFloat(v) || 45; _otGlobalSet(g); }
+function _otSetRate(v) { const g = _otGlobal(); g.rate = parseFloat(v) || 1.5; _otGlobalSet(g); }
+function _otMCal(c) { _otMState.cal = c; _otSettingsModal(); }
+function _otHolToggle(day) {
+  const g = _otGlobal(), year = _pnlState.year, month = +(_pnlState.month || (new Date().getMonth() + 1));
+  const hol = _otMState.cal === 'mgmt' ? g.holMgmt : g.holStore, key = year + '-' + month + '-' + day;
+  if (hol[key]) delete hol[key]; else hol[key] = 1;
+  _otGlobalSet(g); _otSettingsModal();
+}
+// 员工 modal 里的 OT 区块 (时间表可点 edit + 预设)
+function _otEmpFormHtml(e) {
+  const o = e ? _empOt(e) : { elig: false, cal: 'store', brk: 1, sch: _otStoreSch() };
+  const order = [1, 2, 3, 4, 5, 6, 0], nm = { 0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat' };
+  let rows = '';
+  order.forEach(dw => { const d = o.sch[dw] || { w: 0, a: '', b: '' };
+    rows += `<tr><td style="padding:3px 4px;color:var(--gray)">${nm[dw]}</td>`
+      + `<td style="text-align:center"><input type="checkbox" id="otW${dw}"${d.w ? ' checked' : ''}></td>`
+      + `<td><input type="time" id="otA${dw}" value="${d.a || ''}" style="width:100%"></td>`
+      + `<td><input type="time" id="otB${dw}" value="${d.b || ''}" style="width:100%"></td></tr>`;
+  });
+  return `<div style="height:1px;background:var(--border);margin:16px 0"></div>`
+    + `<div class="settings-modal-section-title">Overtime</div>`
+    + `<div style="display:flex;gap:10px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>Eligible for OT</label><div class="toggle-group" id="otElig" style="display:flex"><div class="toggle${o.elig ? ' active' : ''}" data-v="1" style="flex:1;text-align:center" onclick="_otPick('otElig',1)">Yes</div><div class="toggle${o.elig ? '' : ' active'}" data-v="0" style="flex:1;text-align:center" onclick="_otPick('otElig',0)">No</div></div></div>`
+    + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>Holiday calendar</label><div class="toggle-group" id="otCal" style="display:flex"><div class="toggle${o.cal === 'store' ? ' active' : ''}" data-v="store" style="flex:1;text-align:center" onclick="_otPick('otCal','store')">Store</div><div class="toggle${o.cal === 'mgmt' ? ' active' : ''}" data-v="mgmt" style="flex:1;text-align:center" onclick="_otPick('otCal','mgmt')">Mgmt</div></div></div></div>`
+    + `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px"><label style="font-size:12px;color:var(--gray)">Weekly schedule</label><span><button type="button" class="btn btn-outline" style="padding:3px 9px;font-size:11px" onclick="_otPreset('store')">Store hours</button> <button type="button" class="btn btn-outline" style="padding:3px 9px;font-size:11px" onclick="_otPreset('office')">Office</button></span></div>`
+    + `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:var(--gray)"><th style="text-align:left;font-weight:500">Day</th><th style="font-weight:500">Work?</th><th style="font-weight:500">Start</th><th style="font-weight:500">End</th></tr></thead><tbody>${rows}</tbody></table>`
+    + `<div class="settings-modal-input-row" style="margin-top:8px"><label>Break / day (h)</label><input id="otBrk" type="number" step="any" value="${o.brk}"></div>`;
+}
+function _otPick(grp, v) { document.querySelectorAll('#' + grp + ' .toggle').forEach(el => el.classList.toggle('active', el.dataset.v === String(v))); }
+function _otPreset(kind) {
+  const sch = kind === 'store' ? _otStoreSch() : _otOfficeSch();
+  for (let dw = 0; dw < 7; dw++) {
+    const w = document.getElementById('otW' + dw), a = document.getElementById('otA' + dw), b = document.getElementById('otB' + dw);
+    if (w) w.checked = !!sch[dw].w; if (a) a.value = sch[dw].a; if (b) b.value = sch[dw].b;
+  }
+}
+function _otReadForm() {
+  const elig = (document.querySelector('#otElig .toggle.active') || {}).dataset ? document.querySelector('#otElig .toggle.active').dataset.v === '1' : false;
+  const cal = (document.querySelector('#otCal .toggle.active') || { dataset: {} }).dataset.v || 'store';
+  const brk = parseFloat((document.getElementById('otBrk') || {}).value) || 0;
+  const sch = [];
+  for (let dw = 0; dw < 7; dw++) {
+    const w = document.getElementById('otW' + dw), a = document.getElementById('otA' + dw), b = document.getElementById('otB' + dw);
+    sch[dw] = { w: w && w.checked ? 1 : 0, a: a ? a.value : '', b: b ? b.value : '' };
+  }
+  return { elig, cal, brk, sch };
+}
+
 // ---- Employees 花名册 ----
+function _pnlSetMonth(m) { _pnlState.month = String(m); _pnlPrefsSave(); renderPnL(); }
+function _pnlSetEmpTab(t) { _pnlState.empTab = t; _pnlPrefsSave(); renderPnL(); }
 function renderPnlEmployees(root) {
   const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
   const year = _pnlState.year, BR = _pnlBranchMeta();
+  const month = +(_pnlState.month || (new Date().getMonth() + 1));
+  const tab = _pnlState.empTab === 'branch' ? 'branch' : 'salary';
   const emps = (state.pnl.employees || []).slice().sort((a, b) => ((a.active === false ? 1 : 0) - (b.active === false ? 1 : 0)) || (_pnlEmpLatestBasic(b.id, year) - _pnlEmpLatestBasic(a.id, year))); // 离职的沉到最底
-  let repM = 1; for (let m = 12; m >= 1; m--) { if ((state.pnl.staff || []).some(s => String(s.year) === String(year) && s.month === m)) { repM = m; break; } }
   const activeIn = (e, m) => !!_pnlEmpBranch(e.id, year, m);
-  const actEmps = emps.filter(e => activeIn(e, repM));
-  const monthlyCost = actEmps.reduce((a, e) => a + _pnlEmpBasic(e.id, year, repM) * _pnlEmpRate(e), 0);
-  const avgBasic = actEmps.length ? actEmps.reduce((a, e) => a + _pnlEmpBasic(e.id, year, repM), 0) / actEmps.length : 0;
-  const card = (lbl, val, sub) => `<div class="pnl-card"><div class="lbl">${lbl}</div><div class="val">${val}</div><div class="sub">${sub}</div></div>`;
-  const cards = card('Headcount · ' + _PNL_MONTHS[repM - 1], actEmps.length, 'active employees')
-    + card('Monthly manpower', 'RM ' + _pnlFmt(monthlyCost), 'basic + EPF + SOCSO')
-    + card('Avg basic', 'RM ' + _pnlFmt(avgBasic), 'per active staff');
-  const legend = '<div class="emp-legend">' + Object.keys(BR).map(id => `<span><i class="bdot" style="background:${BR[id].color}"></i>${ee(BR[id].name)}</span>`).join('') + '<span><i class="bdot" style="background:#e8e8ee"></i>Not employed</span></div>';
-  let head = '<thead><tr><th class="l">Employee · ' + ee(year) + '</th><th class="r">Basic</th><th class="r">EPF</th><th class="r">SOCSO</th>';
-  for (let i = 0; i < 12; i++) head += '<th>' + _PNL_MONTHS[i] + '</th>';
-  head += '<th class="r">Monthly cost</th></tr></thead>';
-  let body = '<tbody>';
-  if (!emps.length) body += '<tr><td class="l" colspan="17" style="color:var(--gray);padding:18px;font-size:13px">No employees yet. Click “＋ Add employee”.</td></tr>';
-  emps.forEach(e => {
-    const basic = _pnlEmpLatestBasic(e.id, year);
-    const inactive = e.active === false;
-    body += `<tr class="${inactive ? 'emp-inactive' : ''}"><td class="l"><div class="nmrow"><span class="nm">${ee(e.name)}</span>${inactive ? '<span class="emp-resigned">Resigned</span>' : ''}<button class="rgear" onclick="_pnlEmpModal('${ee(e.id)}')" title="Edit employee">${_PNL_GEAR}</button></div>${e.position ? `<div class="erole">${ee(e.position)}</div>` : ''}</td>`;
-    body += `<td class="r">${_pnlFmt(basic)}</td><td class="r">${(e.epfPct || 0)}%</td><td class="r">${(e.socsoPct || 0)}%</td>`;
-    for (let i = 0; i < 12; i++) { const st = _pnlEmpBranch(e.id, year, i + 1); if (st && BR[st]) body += `<td><span class="bchip" style="background:${BR[st].color}1f;color:${BR[st].color}">${BR[st].abbr}</span></td>`; else body += '<td><span class="bnone">—</span></td>'; }
-    body += `<td class="r">${_pnlFmt(basic * _pnlEmpRate(e))}</td></tr>`;
-  });
-  body += '</tbody>';
-  let foot = '<tfoot><tr><td class="l">Monthly manpower</td><td class="r"></td><td></td><td></td>';
-  for (let i = 0; i < 12; i++) { const t = emps.reduce((a, e) => a + (activeIn(e, i + 1) ? _pnlEmpBasic(e.id, year, i + 1) * _pnlEmpRate(e) : 0), 0); foot += '<td class="r" style="font-size:10px">' + _pnlFmt(t) + '</td>'; }
-  foot += '<td></td></tr></tfoot>';
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
-  root.innerHTML = _pnlTopTabs()
-    + `<div class="pnl-bar"><button class="btn btn-primary pnl-savebtn" onclick="_pnlEmpModal(null)">＋ Add employee</button>`
-    + `<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
+
+  const bar = `<div class="pnl-bar"><button class="btn btn-primary pnl-savebtn" onclick="_pnlEmpModal(null)">＋ Add employee</button>`
+    + `<div class="pnl-right"><button class="btn btn-outline pnl-savebtn" onclick="_otSettingsModal()" title="OT rules & holidays">⚙ OT setup</button>`
+    + `<select class="pnl-yr" onchange="_pnlSetMonth(this.value)">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}"${(i + 1) === month ? ' selected' : ''}>${m}</option>`).join('') + `</select>`
+    + `<select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
     + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>`
-    + _pnlSaveBtnHtml() + `</div></div>`
-    + `<div class="pnl-cards" style="grid-template-columns:repeat(3,minmax(0,1fr))">` + cards + `</div>`
-    + legend
-    + `<div class="pnl-scroll"><table class="pnl-t emp-t">` + head + body + foot + `</table></div>`;
+    + _pnlSaveBtnHtml() + `</div></div>`;
+  const subtabs = `<div class="pnl-toptabs" style="margin-top:2px">`
+    + `<div class="pnl-toptab${tab === 'salary' ? ' on' : ''}" onclick="_pnlSetEmpTab('salary')">Salary &amp; OT</div>`
+    + `<div class="pnl-toptab${tab === 'branch' ? ' on' : ''}" onclick="_pnlSetEmpTab('branch')">Branch</div></div>`;
+
+  let content;
+  if (tab === 'salary') {
+    const actEmps = emps.filter(e => activeIn(e, month));
+    const manpower = actEmps.reduce((a, e) => a + _empMonthCost(e, year, month), 0);
+    const otTotal = actEmps.reduce((a, e) => a + _empOtPay(e, year, month), 0);
+    const otN = actEmps.filter(e => _empOt(e).elig).length;
+    const card = (lbl, val, sub) => `<div class="pnl-card"><div class="lbl">${lbl}</div><div class="val">${val}</div><div class="sub">${sub}</div></div>`;
+    const cards = card('Headcount · ' + _PNL_MONTHS[month - 1], actEmps.length, 'employed this month')
+      + card('Monthly manpower', 'RM ' + _pnlFmt(manpower), 'basic + OT + EPF + SOCSO')
+      + card('OT this month', 'RM ' + _pnlFmt(otTotal), otN + ' staff on OT');
+    let head = '<thead><tr><th class="l">Employee · ' + _PNL_MONTHS[month - 1] + ' ' + ee(year) + '</th><th class="r">Basic</th><th class="r">EPF</th><th class="r">SOCSO</th><th class="r">OT?</th><th class="r">OT hrs</th><th class="r">OT pay</th><th class="r">Monthly cost</th></tr></thead>';
+    let body = '<tbody>';
+    if (!emps.length) body += '<tr><td class="l" colspan="8" style="color:var(--gray);padding:18px;font-size:13px">No employees yet. Click “＋ Add employee”.</td></tr>';
+    emps.forEach(e => {
+      const inactive = e.active === false, empd = activeIn(e, month);
+      const basic = _pnlEmpBasic(e.id, year, month);
+      const o = _empOt(e), oth = empd ? _empMonthOT(e, year, month) : 0, op = empd ? _empOtPay(e, year, month) : 0;
+      body += `<tr class="${inactive ? 'emp-inactive' : ''}"><td class="l"><div class="nmrow"><span class="nm">${ee(e.name)}</span>${inactive ? '<span class="emp-resigned">Resigned</span>' : ''}<button class="rgear" onclick="_pnlEmpModal('${ee(e.id)}')" title="Edit employee">${_PNL_GEAR}</button></div>${e.position ? `<div class="erole">${ee(e.position)}</div>` : ''}</td>`;
+      body += `<td class="r">${_pnlFmt(basic)}</td><td class="r">${(e.epfPct || 0)}%</td><td class="r">${(e.socsoPct || 0)}%</td>`;
+      body += `<td class="r">${o.elig ? '<span class="bchip" style="background:#1ea6721f;color:#1ea672">On</span>' : '<span class="bnone">—</span>'}</td>`;
+      body += `<td class="r">${(o.elig && empd && oth) ? oth.toFixed(1) : '<span class="bnone">—</span>'}</td>`;
+      body += `<td class="r">${(o.elig && op) ? _pnlFmt(op) : '<span class="bnone">—</span>'}</td>`;
+      body += `<td class="r">${empd ? _pnlFmt(_empMonthCost(e, year, month)) : '<span class="bnone">—</span>'}</td></tr>`;
+    });
+    body += '</tbody>';
+    const foot = '<tfoot><tr><td class="l">Monthly manpower</td><td class="r"></td><td></td><td></td><td></td><td></td><td class="r">' + _pnlFmt(otTotal) + '</td><td class="r">' + _pnlFmt(manpower) + '</td></tr></tfoot>';
+    content = `<div class="pnl-cards" style="grid-template-columns:repeat(3,minmax(0,1fr))">` + cards + `</div>`
+      + `<div class="pnl-scroll"><table class="pnl-t emp-t">` + head + body + foot + `</table></div>`;
+  } else {
+    const legend = '<div class="emp-legend">' + Object.keys(BR).map(id => `<span><i class="bdot" style="background:${BR[id].color}"></i>${ee(BR[id].name)}</span>`).join('') + '<span><i class="bdot" style="background:#e8e8ee"></i>Not employed</span></div>';
+    let head = '<thead><tr><th class="l">Employee · ' + ee(year) + '</th>';
+    for (let i = 0; i < 12; i++) head += '<th>' + _PNL_MONTHS[i] + '</th>';
+    head += '</tr></thead>';
+    let body = '<tbody>';
+    if (!emps.length) body += '<tr><td class="l" colspan="13" style="color:var(--gray);padding:18px;font-size:13px">No employees yet.</td></tr>';
+    emps.forEach(e => {
+      const inactive = e.active === false;
+      body += `<tr class="${inactive ? 'emp-inactive' : ''}"><td class="l"><div class="nmrow"><span class="nm">${ee(e.name)}</span>${inactive ? '<span class="emp-resigned">Resigned</span>' : ''}<button class="rgear" onclick="_pnlEmpModal('${ee(e.id)}')" title="Edit employee">${_PNL_GEAR}</button></div>${e.position ? `<div class="erole">${ee(e.position)}</div>` : ''}</td>`;
+      for (let i = 0; i < 12; i++) { const st = _pnlEmpBranch(e.id, year, i + 1); if (st && BR[st]) body += `<td><span class="bchip" style="background:${BR[st].color}1f;color:${BR[st].color}">${BR[st].abbr}</span></td>`; else body += '<td><span class="bnone">—</span></td>'; }
+      body += `</tr>`;
+    });
+    body += '</tbody>';
+    let foot = '<tfoot><tr><td class="l">Monthly manpower</td>';
+    for (let i = 0; i < 12; i++) { const t = emps.reduce((a, e) => a + (activeIn(e, i + 1) ? _empMonthCost(e, year, i + 1) : 0), 0); foot += '<td class="r" style="font-size:10px">' + _pnlFmt(t) + '</td>'; }
+    foot += '</tr></tfoot>';
+    content = legend + `<div class="pnl-scroll"><table class="pnl-t emp-t">` + head + body + foot + `</table></div>`;
+  }
+  root.innerHTML = _pnlTopTabs() + bar + subtabs + content;
 }
 
 // ===== v7.49: Inventory & Service (库存出库 + service 领取, 33CRM collection) =====
@@ -16010,10 +16179,11 @@ function _normalizeSheetPullData(d) {
     return o;
   });
   const pnlConfig = (d.PnL_Config === undefined) ? null : (d.PnL_Config || []).filter(r => r && r.id).map(r => ({
-    id: r.id, store: r.store, epfPct: _toN(r.epfPct), socsoPct: _toN(r.socsoPct) }));
+    id: r.id, store: r.store, epfPct: _toN(r.epfPct), socsoPct: _toN(r.socsoPct), val: (r.val != null ? String(r.val) : '') })); // v7.92: val = __ot__ 全局OT规则+假期日历 JSON
   const pnlEmployees = (d.PnL_Employees === undefined) ? null : (d.PnL_Employees || []).filter(r => r && r.id).map(r => ({
     id: r.id, name: r.name || '', position: r.position || '', epfPct: _toN(r.epfPct), socsoPct: _toN(r.socsoPct),
-    active: (r.active === false || String(r.active).toLowerCase() === 'false' || r.active === 0 || String(r.active) === '0') ? false : true }));
+    active: (r.active === false || String(r.active).toLowerCase() === 'false' || r.active === 0 || String(r.active) === '0') ? false : true,
+    otcfg: (r.otcfg != null ? String(r.otcfg) : '') })); // v7.92: OT 开关+时间表+日历 JSON
   const pnlEmpSalary = (d.PnL_EmpSalary === undefined) ? null : (d.PnL_EmpSalary || []).filter(r => r && r.id).map(r => {
     const o = { id: r.id, empId: r.empId, year: String(r.year || '') };
     for (let m = 1; m <= 12; m++) o['m' + m] = _toN(r['m' + m]);
