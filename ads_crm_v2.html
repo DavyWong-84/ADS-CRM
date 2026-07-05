@@ -3376,7 +3376,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.25</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.26</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3432,7 +3432,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.25</div>
+      <div class="nav-brand-version">v8.26</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12698,8 +12698,12 @@ function _pnlSetFramework(f) { _pnlFramework = f; if (['product', 'service', 'fo
 function _pnlTopTabs() {
   const inFw = ['product', 'service', 'forecast'].indexOf(_pnlView) >= 0;
   const tab = (v, label) => `<div class="pnl-toptab${_pnlView === v ? ' on' : ''}" onclick="_pnlSetView('${v}')">${label}</div>`;
-  const fwt = (f, label) => `<div class="pnl-toptab${(inFw && _pnlFramework === f) ? ' on' : ''}" onclick="_pnlSetFramework('${f}')">${label}</div>`;
-  let h = `<div class="pnl-toptabs">` + tab('pnl', 'Profit &amp; Loss') + tab('employees', 'Employees') + fwt('crm', 'Cost · CRM') + fwt('pct', 'Cost · %') + `</div>`;
+  // v8.26: 两个 Cost 框架收进一个 Inventory 胶囊（label + 内嵌 toggle）
+  const seg = (f, label) => `<div onclick="_pnlSetFramework('${f}')" style="padding:6px 13px;border-radius:7px;font-size:12.5px;font-weight:500;cursor:pointer;${(inFw && _pnlFramework === f) ? 'background:var(--purple);color:#fff;' : 'color:var(--gray);'}">${label}</div>`;
+  const inv = `<div style="display:inline-flex;align-items:center;gap:9px;padding:5px 7px 5px 14px;border-radius:12px;border:1px solid ${inFw ? 'var(--purple)' : 'var(--border)'};background:${inFw ? 'rgba(113,50,245,0.07)' : 'transparent'}">`
+    + `<span style="font-size:12px;font-weight:600;letter-spacing:.3px;color:${inFw ? 'var(--purple-deep)' : 'var(--gray)'}">Inventory</span>`
+    + `<div style="display:inline-flex;background:var(--surface-2);border-radius:9px;padding:3px;gap:2px">` + seg('crm', 'Cost · CRM') + seg('pct', 'Cost · %') + `</div></div>`;
+  let h = `<div class="pnl-toptabs">` + tab('pnl', 'Profit &amp; Loss') + tab('employees', 'Employees') + inv + `</div>`;
   if (inFw) h += `<div class="pnl-toptabs" style="margin-top:6px">` + tab('product', 'Product') + tab('service', 'Service') + tab('forecast', 'Forecast') + `</div>`;
   return h;
 }
