@@ -3368,7 +3368,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.04</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.09</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3424,7 +3424,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.04</div>
+      <div class="nav-brand-version">v8.09</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13488,6 +13488,8 @@ function _pnlEmpModal(empId, retLineId, retMonth) {
   const year = _pnlState.year;
   const basic = e ? _pnlEmpLatestBasic(e.id, year) : 0;
   const epf = e ? (e.epfPct || 0) : 13, socso = e ? (e.socsoPct || 0) : 1.75;
+  const epfEmp = e ? (e.epfEmpPct != null && e.epfEmpPct !== '' ? e.epfEmpPct : 11) : 11; // 员工自付 EPF (扣实收用)
+  const socsoEmp = e ? (e.socsoEmpPct != null && e.socsoEmpPct !== '' ? e.socsoEmpPct : 0.5) : 0.5; // 员工自付 SOCSO (扣实收用)
   let startM = 1; // 入职月 = 当年第一个有薪的月 (modal 默认显示这个, 不再每次回 Jan)
   if (e) { const sal = (state.pnl.empSalary || []).find(s => s.empId === e.id && String(s.year) === String(year)); if (sal) { for (let m = 1; m <= 12; m++) { if (sal['m' + m] > 0) { startM = m; break; } } } }
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
@@ -13496,8 +13498,11 @@ function _pnlEmpModal(empId, retLineId, retMonth) {
     + `<div class="settings-modal-input-row"><label>Name</label><input id="pnlEmpName" type="text" value="${e ? ee(e.name) : ''}" placeholder="Employee name"></div>`
     + `<div class="settings-modal-input-row" style="margin-top:12px"><label>Position</label><input id="pnlEmpPos" type="text" value="${e ? ee(e.position || '') : ''}" placeholder="e.g. Therapist"></div>`
     + `<div class="settings-modal-input-row" style="margin-top:12px"><label>Status</label><div class="toggle-group" id="pnlEmpStatus" style="display:flex;width:100%"><div class="toggle${(e ? e.active !== false : true) ? ' active' : ''}" data-v="1" style="flex:1;text-align:center" onclick="_pnlEmpStatusPick(1)">Active</div><div class="toggle${(e ? e.active !== false : true) ? '' : ' active'}" data-v="0" style="flex:1;text-align:center" onclick="_pnlEmpStatusPick(0)">Resigned</div></div></div>`
-    + `<div style="display:flex;gap:10px;margin-top:12px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>EPF %</label><input id="pnlEmpEpf" type="number" step="any" value="${epf}"></div>`
-    + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>SOCSO %</label><input id="pnlEmpSocso" type="number" step="any" value="${socso}"></div></div>`
+    + `<div style="display:flex;gap:10px;margin-top:12px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>EPF % (co)</label><input id="pnlEmpEpf" type="number" step="any" value="${epf}"></div>`
+    + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>EPF % (staff)</label><input id="pnlEmpEpfEmp" type="number" step="any" value="${epfEmp}"></div></div>`
+    + `<div style="display:flex;gap:10px;margin-top:12px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>SOCSO % (co)</label><input id="pnlEmpSocso" type="number" step="any" value="${socso}"></div>`
+    + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>SOCSO % (staff)</label><input id="pnlEmpSocsoEmp" type="number" step="any" value="${socsoEmp}"></div></div>`
+    + `<div style="font-size:11px;color:var(--gray);margin-top:4px">(co) 公司出、进 EPF/SOCSO；(staff) 员工自付、从实收扣。</div>`
     + `<div style="height:1px;background:var(--border);margin:16px 0"></div>`
     + `<div class="settings-modal-section-title">Salary</div>`
     + `<div class="settings-modal-input-row"><label>Basic salary (RM)</label><input id="pnlEmpBasic" type="number" step="any" value="${basic}"></div>`
@@ -13526,12 +13531,13 @@ function _pnlEmpSave(empId) {
   if (!name) { toast('Enter a name'); return; }
   const pos = (_pnlV('pnlEmpPos') || '').trim();
   const epf = parseFloat(_pnlV('pnlEmpEpf')) || 0, socso = parseFloat(_pnlV('pnlEmpSocso')) || 0;
+  const epfEmp = parseFloat(_pnlV('pnlEmpEpfEmp')) || 0, socsoEmp = parseFloat(_pnlV('pnlEmpSocsoEmp')) || 0;
   const basic = parseFloat(_pnlV('pnlEmpBasic')) || 0;
   const effM = parseInt(_pnlV('pnlEmpEffM'), 10) || 1, effY = _pnlV('pnlEmpEffY') || _pnlState.year;
   const _act = document.querySelector('#pnlEmpStatus .toggle.active'); const isActive = _act ? _act.dataset.v === '1' : true;
   let e = empId ? _pnlEmp(empId) : null;
-  if (!e) { empId = 'emp-' + Date.now(); e = { id: empId, name, position: pos, epfPct: epf, socsoPct: socso, active: isActive }; state.pnl.employees.push(e); }
-  else { e.name = name; e.position = pos; e.epfPct = epf; e.socsoPct = socso; e.active = isActive; }
+  if (!e) { empId = 'emp-' + Date.now(); e = { id: empId, name, position: pos, epfPct: epf, socsoPct: socso, epfEmpPct: epfEmp, socsoEmpPct: socsoEmp, active: isActive }; state.pnl.employees.push(e); }
+  else { e.name = name; e.position = pos; e.epfPct = epf; e.socsoPct = socso; e.epfEmpPct = epfEmp; e.socsoEmpPct = socsoEmp; e.active = isActive; }
   _empOtSet(e, _otReadForm()); // v7.92: 存 OT 开关 + 时间表 + 日历
   let sal = (state.pnl.empSalary || []).find(s => s.empId === empId && String(s.year) === String(effY));
   if (!sal) { sal = { id: empId + '|' + effY, empId, year: String(effY) }; for (let m = 1; m <= 12; m++) sal['m' + m] = 0; state.pnl.empSalary.push(sal); }
@@ -13601,6 +13607,10 @@ function _empOtPay(e, year, month) {
 function _empMonthCost(e, year, month) {
   return (_pnlEmpBasic(e.id, year, month) + _empOtPay(e, year, month)) * _pnlEmpRate(e);
 }
+function _empEpfEmp(e) { return (e.epfEmpPct != null && e.epfEmpPct !== '') ? Number(e.epfEmpPct) : 11; } // 员工自付 EPF %, 默认 11
+function _empSocsoEmp(e) { return (e.socsoEmpPct != null && e.socsoEmpPct !== '') ? Number(e.socsoEmpPct) : 0.5; } // 员工自付 SOCSO %, 默认 0.5
+// 实收 = (底薪+OT) − 员工自付 EPF. 不含公司 13%(那是公司交去 EPF, 不进员工口袋)
+function _empPayable(e, year, month) { const gross = _pnlEmpBasic(e.id, year, month) + _empOtPay(e, year, month); return gross * (1 - _empEpfEmp(e) / 100 - _empSocsoEmp(e) / 100); }
 function _otSelfCheck() {
   let wk = 0, s = _otStoreSch(); for (let d = 0; d < 7; d++) wk += _otNet(s, d, 1);
   console.assert(wk === 50, '[OT] store week should be 50h, got ' + wk);
@@ -13669,8 +13679,7 @@ function _otPopShow(el) {
     + `<div class="opb"><div class="opr"><span>OT hours</span><b>${d.oth} h</b></div>`
     + `<div class="opr"><span>Hourly rate<i>basic ÷ 26 ÷ 8</i></span><b>RM ${d.hr}</b></div>`
     + `<div class="opr"><span>Multiplier</span><b>× ${d.rate}</b></div>`
-    + `<div class="opr optot"><span>OT pay</span><b>RM ${d.pay}</b></div></div>`
-    + `<div class="opf">EPF / SOCSO apply to basic + OT</div>`;
+    + `<div class="opr optot"><span>OT pay</span><b>RM ${d.pay}</b></div></div>`;
   _otPopAt(el);
 }
 function _otHrsPop(el) {
@@ -13678,8 +13687,30 @@ function _otHrsPop(el) {
   let weeks = []; try { weeks = JSON.parse(d.weeks || '[]'); } catch (e) {}
   const rows = weeks.length ? weeks.map(w => `<div class="opr"><span>${w.from}–${w.to}<i>${w.wh}h worked</i></span><b>+${w.ot}h</b></div>`).join('') : `<div class="opr"><span style="color:var(--silver)">No week over ${d.thr}h</span><b>0h</b></div>`;
   p.innerHTML = `<div class="oph"><b>Overtime hours</b><span>${d.nm} · over ${d.thr}h / week</span></div>`
-    + `<div class="opb">${rows}<div class="opr optot"><span>Total OT</span><b>${d.oth} h</b></div></div>`
-    + `<div class="opf">A week counts to the month its Sunday falls in</div>`;
+    + `<div class="opb">${rows}<div class="opr optot"><span>Total OT</span><b>${d.oth} h</b></div></div>`;
+  _otPopAt(el);
+}
+function _otCostPop(el) {
+  const p = _otPopEnsure(), d = el.dataset;
+  const basic = +d.basic, ot = +d.ot, epf = +d.epf, socso = +d.socso;
+  const sub = basic + ot, epfAmt = sub * epf / 100, socsoAmt = sub * socso / 100, total = sub + epfAmt + socsoAmt;
+  p.innerHTML = `<div class="oph"><b>Monthly cost</b><span>${d.nm} · monthly</span></div>`
+    + `<div class="opb"><div class="opr"><span>Basic</span><b>RM ${_pnlFmt(basic)}</b></div>`
+    + (ot ? `<div class="opr"><span>OT pay</span><b>RM ${_pnlFmt(ot)}</b></div>` : '')
+    + `<div class="opr"><span>EPF ${epf}%<i>on basic + OT</i></span><b>RM ${_pnlFmt(epfAmt)}</b></div>`
+    + `<div class="opr"><span>SOCSO ${socso}%</span><b>RM ${_pnlFmt(socsoAmt)}</b></div>`
+    + `<div class="opr optot"><span>Monthly cost</span><b>RM ${_pnlFmt(total)}</b></div></div>`;
+  _otPopAt(el);
+}
+function _otPayablePop(el) {
+  const p = _otPopEnsure(), d = el.dataset;
+  const gross = +d.basic + +d.ot, epfEmp = +d.epfemp, socsoEmp = +d.socsoemp;
+  const epfDed = gross * epfEmp / 100, socsoDed = gross * socsoEmp / 100, pay = gross - epfDed - socsoDed;
+  p.innerHTML = `<div class="oph"><b>Net salary · take-home</b><span>${d.nm} · monthly</span></div>`
+    + `<div class="opb"><div class="opr"><span>Gross<i>basic + OT</i></span><b>RM ${_pnlFmt(gross)}</b></div>`
+    + `<div class="opr"><span>EPF staff ${epfEmp}%</span><b>− RM ${_pnlFmt(epfDed)}</b></div>`
+    + `<div class="opr"><span>SOCSO staff ${socsoEmp}%</span><b>− RM ${_pnlFmt(socsoDed)}</b></div>`
+    + `<div class="opr optot"><span>Payable</span><b>RM ${_pnlFmt(pay)}</b></div></div>`;
   _otPopAt(el);
 }
 function _otPopHide() { const p = document.getElementById('otPop'); if (p) p.style.display = 'none'; }
@@ -13694,22 +13725,26 @@ function _otHolToggle(day) {
 // 员工 modal 里的 OT 区块 (时间表可点 edit + 预设)
 function _otEmpFormHtml(e) {
   const o = e ? _empOt(e) : { elig: false, cal: 'store', brk: 1, sch: _otStoreSch() };
+  const hlc = _otSchLabel(o).toLowerCase(); // store / office / custom
   const order = [1, 2, 3, 4, 5, 6, 0], nm = { 0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 4: 'Thu', 5: 'Fri', 6: 'Sat' };
   let rows = '';
   order.forEach(dw => { const d = o.sch[dw] || { w: 0, a: '', b: '' };
     rows += `<tr><td style="padding:3px 4px;color:var(--gray)">${nm[dw]}</td>`
-      + `<td style="text-align:center"><input type="checkbox" id="otW${dw}"${d.w ? ' checked' : ''}></td>`
-      + `<td><input type="time" id="otA${dw}" value="${d.a || ''}" style="width:100%"></td>`
-      + `<td><input type="time" id="otB${dw}" value="${d.b || ''}" style="width:100%"></td></tr>`;
+      + `<td style="text-align:center"><input type="checkbox" id="otW${dw}"${d.w ? ' checked' : ''} onchange="_otSchCustom()"></td>`
+      + `<td><input type="time" id="otA${dw}" value="${d.a || ''}" style="width:100%" onchange="_otSchCustom()"></td>`
+      + `<td><input type="time" id="otB${dw}" value="${d.b || ''}" style="width:100%" onchange="_otSchCustom()"></td></tr>`;
   });
   return `<div class="settings-modal-section-title" style="margin-top:0">Overtime</div>`
     + `<div style="display:flex;gap:10px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>Eligible for OT</label><div class="toggle-group" id="otElig" style="display:flex"><div class="toggle${o.elig ? ' active' : ''}" data-v="1" style="flex:1;text-align:center" onclick="_otPick('otElig',1)">Yes</div><div class="toggle${o.elig ? '' : ' active'}" data-v="0" style="flex:1;text-align:center" onclick="_otPick('otElig',0)">No</div></div></div>`
     + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>Holiday calendar</label><div class="toggle-group" id="otCal" style="display:flex"><div class="toggle${o.cal === 'store' ? ' active' : ''}" data-v="store" style="flex:1;text-align:center" onclick="_otPick('otCal','store')">Store</div><div class="toggle${o.cal === 'mgmt' ? ' active' : ''}" data-v="mgmt" style="flex:1;text-align:center" onclick="_otPick('otCal','mgmt')">Mgmt</div></div></div></div>`
-    + `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px"><label style="font-size:12px;color:var(--gray)">Weekly schedule</label><span><button type="button" class="btn btn-outline" style="padding:3px 9px;font-size:11px" onclick="_otPreset('store')">Store hours</button> <button type="button" class="btn btn-outline" style="padding:3px 9px;font-size:11px" onclick="_otPreset('office')">Office</button></span></div>`
-    + `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:var(--gray)"><th style="text-align:left;font-weight:500">Day</th><th style="font-weight:500">Work?</th><th style="font-weight:500">Start</th><th style="font-weight:500">End</th></tr></thead><tbody>${rows}</tbody></table>`
-    + `<div class="settings-modal-input-row" style="margin-top:8px"><label>Break / day (h)</label><input id="otBrk" type="number" step="any" value="${o.brk}"></div>`;
+    + `<div style="display:flex;gap:10px;margin-top:12px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>Work hours</label><div class="toggle-group" id="otSch" style="display:flex"><div class="toggle${hlc === 'store' ? ' active' : ''}" data-v="store" style="flex:1;text-align:center" onclick="_otPresetPick('store')">Store</div><div class="toggle${hlc === 'office' ? ' active' : ''}" data-v="office" style="flex:1;text-align:center" onclick="_otPresetPick('office')">Office</div></div></div>`
+    + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>Break / day (h)</label><input id="otBrk" type="number" step="any" value="${o.brk}"></div></div>`
+    + `<div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px"><label style="font-size:12px;color:var(--gray)">Weekly schedule</label><span style="font-size:11px;color:var(--silver)">Edit times = Custom hours</span></div>`
+    + `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:6px"><thead><tr style="color:var(--gray)"><th style="text-align:left;font-weight:500">Day</th><th style="font-weight:500">Work?</th><th style="font-weight:500">Start</th><th style="font-weight:500">End</th></tr></thead><tbody>${rows}</tbody></table>`;
 }
 function _otPick(grp, v) { document.querySelectorAll('#' + grp + ' .toggle').forEach(el => el.classList.toggle('active', el.dataset.v === String(v))); }
+function _otPresetPick(kind) { _otPreset(kind); _otPick('otSch', kind); } // 套预设 + 高亮该 toggle
+function _otSchCustom() { document.querySelectorAll('#otSch .toggle').forEach(el => el.classList.remove('active')); } // 手改时间 → Work hours 变 Custom (两个都不亮)
 function _otPreset(kind) {
   const sch = kind === 'store' ? _otStoreSch() : _otOfficeSch();
   for (let dw = 0; dw < 7; dw++) {
@@ -13757,14 +13792,15 @@ function renderPnlEmployees(root) {
     const actEmps = emps.filter(e => activeIn(e, month));
     const manpower = actEmps.reduce((a, e) => a + _empMonthCost(e, year, month), 0);
     const otTotal = actEmps.reduce((a, e) => a + _empOtPay(e, year, month), 0);
+    const payableTotal = actEmps.reduce((a, e) => a + _empPayable(e, year, month), 0);
     const otN = actEmps.filter(e => _empOt(e).elig).length;
     const card = (lbl, val, sub) => `<div class="pnl-card"><div class="lbl">${lbl}</div><div class="val">${val}</div><div class="sub">${sub}</div></div>`;
     const cards = card('Headcount · ' + _PNL_MONTHS[month - 1], actEmps.length, 'employed this month')
       + card('Monthly manpower', 'RM ' + _pnlFmt(manpower), 'basic + OT + EPF + SOCSO')
       + card('OT this month', 'RM ' + _pnlFmt(otTotal), otN + ' staff on OT');
-    let head = '<thead><tr><th class="l">Employee · ' + _PNL_MONTHS[month - 1] + ' ' + ee(year) + '</th><th class="r">Basic</th><th class="r">EPF</th><th class="r">SOCSO</th><th class="r">Hours</th><th class="r">Calendar</th><th class="r">OT?</th><th class="r">OT hrs</th><th class="r">OT pay</th><th class="r">Monthly cost</th></tr></thead>';
+    let head = '<thead><tr><th class="l">Employee · ' + _PNL_MONTHS[month - 1] + ' ' + ee(year) + '</th><th class="r">Basic</th><th class="r">EPF</th><th class="r">SOCSO</th><th class="r">Hours</th><th class="r">Calendar</th><th class="r">OT?</th><th class="r">OT hrs</th><th class="r">OT pay</th><th class="r">Monthly cost</th><th class="r">Net salary</th></tr></thead>';
     let body = '<tbody>';
-    if (!emps.length) body += '<tr><td class="l" colspan="10" style="color:var(--gray);padding:18px;font-size:13px">No employees yet. Click “＋ Add employee”.</td></tr>';
+    if (!emps.length) body += '<tr><td class="l" colspan="11" style="color:var(--gray);padding:18px;font-size:13px">No employees yet. Click “＋ Add employee”.</td></tr>';
     emps.forEach(e => {
       const inactive = e.active === false, empd = activeIn(e, month);
       const basic = _pnlEmpBasic(e.id, year, month);
@@ -13774,10 +13810,11 @@ function renderPnlEmployees(root) {
       body += `<td class="r">${o.elig ? '<span class="bchip" style="background:#1ea6721f;color:#1ea672">On</span>' : '<span class="bnone">—</span>'}</td>`;
       body += `<td class="r">${(o.elig && empd && oth) ? oth.toFixed(1) + ` <span class="ot-info" data-nm="${ee(e.name)}" data-oth="${oth.toFixed(1)}" data-thr="${_otGlobal().thr}" data-weeks='${JSON.stringify(_empOtWeeks(e, year, month))}' onmouseenter="_otHrsPop(this)" onmouseleave="_otPopHide()">${_OT_I}</span>` : '<span class="bnone">—</span>'}</td>`;
       body += `<td class="r">${(o.elig && op) ? _pnlFmt(op) + ` <span class="ot-info" data-nm="${ee(e.name)}" data-oth="${oth.toFixed(1)}" data-hr="${(basic / 26 / 8).toFixed(2)}" data-rate="${_otGlobal().rate}" data-pay="${_pnlFmt(op)}" onmouseenter="_otPopShow(this)" onmouseleave="_otPopHide()">${_OT_I}</span>` : '<span class="bnone">—</span>'}</td>`;
-      body += `<td class="r">${empd ? _pnlFmt(_empMonthCost(e, year, month)) : '<span class="bnone">—</span>'}</td></tr>`;
+      body += `<td class="r">${empd ? _pnlFmt(_empMonthCost(e, year, month)) + ` <span class="ot-info" data-nm="${ee(e.name)}" data-basic="${basic}" data-ot="${op}" data-epf="${e.epfPct || 0}" data-socso="${e.socsoPct || 0}" onmouseenter="_otCostPop(this)" onmouseleave="_otPopHide()">${_OT_I}</span>` : '<span class="bnone">—</span>'}</td>`;
+      body += `<td class="r">${empd ? _pnlFmt(_empPayable(e, year, month)) + ` <span class="ot-info" data-nm="${ee(e.name)}" data-basic="${basic}" data-ot="${op}" data-epfemp="${_empEpfEmp(e)}" data-socsoemp="${_empSocsoEmp(e)}" onmouseenter="_otPayablePop(this)" onmouseleave="_otPopHide()">${_OT_I}</span>` : '<span class="bnone">—</span>'}</td></tr>`;
     });
     body += '</tbody>';
-    const foot = '<tfoot><tr><td class="l">Monthly manpower</td><td class="r"></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="r">' + _pnlFmt(otTotal) + '</td><td class="r">' + _pnlFmt(manpower) + '</td></tr></tfoot>';
+    const foot = '<tfoot><tr><td class="l">Monthly manpower</td><td class="r"></td><td></td><td></td><td></td><td></td><td></td><td></td><td class="r">' + _pnlFmt(otTotal) + '</td><td class="r">' + _pnlFmt(manpower) + '</td><td class="r">' + _pnlFmt(payableTotal) + '</td></tr></tfoot>';
     content = `<div class="pnl-cards" style="grid-template-columns:repeat(3,minmax(0,1fr))">` + cards + `</div>`
       + `<div class="pnl-scroll"><table class="pnl-t emp-t">` + head + body + foot + `</table></div>`;
   } else {
@@ -16249,6 +16286,8 @@ function _normalizeSheetPullData(d) {
     id: r.id, store: r.store, epfPct: _toN(r.epfPct), socsoPct: _toN(r.socsoPct), val: (r.val != null ? String(r.val) : '') })); // v7.92: val = __ot__ 全局OT规则+假期日历 JSON
   const pnlEmployees = (d.PnL_Employees === undefined) ? null : (d.PnL_Employees || []).filter(r => r && r.id).map(r => ({
     id: r.id, name: r.name || '', position: r.position || '', epfPct: _toN(r.epfPct), socsoPct: _toN(r.socsoPct),
+    epfEmpPct: (r.epfEmpPct != null && r.epfEmpPct !== '') ? _toN(r.epfEmpPct) : 11, // v8.07: 员工自付 EPF, 缺省 11
+    socsoEmpPct: (r.socsoEmpPct != null && r.socsoEmpPct !== '') ? _toN(r.socsoEmpPct) : 0.5, // v8.08: 员工自付 SOCSO, 缺省 0.5
     active: (r.active === false || String(r.active).toLowerCase() === 'false' || r.active === 0 || String(r.active) === '0') ? false : true,
     otcfg: (r.otcfg != null ? String(r.otcfg) : '') })); // v7.92: OT 开关+时间表+日历 JSON
   const pnlEmpSalary = (d.PnL_EmpSalary === undefined) ? null : (d.PnL_EmpSalary || []).filter(r => r && r.id).map(r => {
