@@ -176,6 +176,11 @@ input[type="number"] { -moz-appearance: textfield; }
 .bottom-nav-item svg { width: 22px; height: 22px; }
 .bottom-nav-item span { font-size: 10.5px; font-weight: 500; }
 
+/* v8.35: P&L 手机版还没适配界面 → 手机端隐藏入口（底栏 + 侧栏），桌面版不动 */
+@media (max-width: 767px) {
+  .bottom-nav-item[data-page="pnl"], .nav-item[data-page="pnl"] { display: none !important; }
+}
+
 /* v5.10: Center Contact button — raised circular badge with double pulse animation
    Standard middle-button pattern (like Instagram/TikTok create button) */
 .bottom-nav-item.contact-center {
@@ -3376,7 +3381,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.34</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.35</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3432,7 +3437,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.34</div>
+      <div class="nav-brand-version">v8.35</div>
     </div>
   </div>
   <div class="nav-divider"></div>
