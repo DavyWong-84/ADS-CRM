@@ -3368,7 +3368,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.09</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.10</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3424,7 +3424,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.09</div>
+      <div class="nav-brand-version">v8.10</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13505,10 +13505,9 @@ function _pnlEmpModal(empId, retLineId, retMonth) {
     + `<div style="font-size:11px;color:var(--gray);margin-top:4px">(co) 公司出、进 EPF/SOCSO；(staff) 员工自付、从实收扣。</div>`
     + `<div style="height:1px;background:var(--border);margin:16px 0"></div>`
     + `<div class="settings-modal-section-title">Salary</div>`
-    + `<div class="settings-modal-input-row"><label>Basic salary (RM)</label><input id="pnlEmpBasic" type="number" step="any" value="${basic}"></div>`
-    + `<div class="settings-modal-input-row" style="margin-top:12px"><label>Effective from</label><div style="display:flex;gap:10px">`
-    + `<select id="pnlEmpEffM" style="flex:1">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}"${(i + 1) === startM ? ' selected' : ''}>${m}</option>`).join('') + `</select>`
-    + `<select id="pnlEmpEffY" style="width:110px">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select></div></div>`
+    + `<div style="display:flex;gap:10px"><div class="settings-modal-input-row" style="flex:1.3;margin:0"><label>Basic salary (RM)</label><input id="pnlEmpBasic" type="number" step="any" value="${basic}"></div>`
+    + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>Effective from</label><select id="pnlEmpEffM" style="width:100%">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}"${(i + 1) === startM ? ' selected' : ''}>${m}</option>`).join('') + `</select></div>`
+    + `<div class="settings-modal-input-row" style="flex:0.9;margin:0"><label>Year</label><select id="pnlEmpEffY" style="width:100%">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select></div></div>`
     + `<div style="font-size:11px;color:#b3631a;background:#fdf6ee;border-radius:8px;padding:8px 12px;margin-top:10px">Salary applies from this month onward. Months before it are set to RM 0 (not employed yet).</div></div>`
     + `<div style="flex:1;min-width:0">` + _otEmpFormHtml(e) + `</div></div>`
     + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="_pnlEmpSave('${empId ? ee(empId) : ''}')">Save</button>`
