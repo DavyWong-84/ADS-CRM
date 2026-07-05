@@ -3376,7 +3376,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.21</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.23</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3432,7 +3432,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.21</div>
+      <div class="nav-brand-version">v8.23</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3974,7 +3974,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3984,11 +3984,11 @@ body.contact-view-table .modal-backdrop.open {
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -3997,11 +3997,56 @@ body.contact-view-table .modal-backdrop.open {
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+      <th class="num">New (RM)</th>
+      <th class="num">Total (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2026</td>
+    <td class="num">—</td>
+    <td class="num" style="font-weight:700;">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4011,15 +4056,52 @@ body.contact-view-table .modal-backdrop.open {
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
+          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2026</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4036,7 +4118,7 @@ body.contact-view-table .modal-backdrop.open {
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -14050,10 +14132,11 @@ function _calcKey(k) {
   else _calcExpr += k;
   _calcRender();
 }
-function _stockCalc(ck, code) {
-  const cur = _stockCostOf(ck, code);
-  _calcExpr = cur ? String(cur) : '';
-  _calcTarget = { ck: ck, code: code }; // 键盘 Enter 保存要用
+function _stockCalc(ck, code, field) {
+  field = field === 'pct' ? 'pct' : 'cost';
+  const cur = field === 'pct' ? _stockPctOf(ck, code) : _stockCostOf(ck, code);
+  _calcExpr = (cur != null && cur !== '') ? String(cur) : '';
+  _calcTarget = { ck: ck, code: code, field: field }; // 键盘 Enter 保存要用
   const key = k => `<button class="${'+−×÷%'.includes(k) ? 'op' : ''}" onclick="_calcKey('${k}')">${k}</button>`;
   const pad = ['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','%','+'].map(key).join('')
     + `<button style="grid-column:span 2" onclick="_calcKey('⌫')">⌫</button>`
@@ -14061,14 +14144,15 @@ function _stockCalc(ck, code) {
   const html = `<div class="modal-header"><div class="modal-title">Calculator</div><button class="modal-close" onclick="closeModal()">✕</button></div>`
     + `<div class="calc-disp"><div class="ex" id="calcEx">0</div><div class="rs" id="calcRs">0</div></div>`
     + `<div class="calc-pad">${pad}</div>`
-    + `<button class="btn btn-primary btn-full" style="margin-top:14px" onclick="_stockCalcSave('${ck}','${code}')">Save to cost</button>`
+    + `<button class="btn btn-primary btn-full" style="margin-top:14px" onclick="_stockCalcSave('${ck}','${code}','${field}')">Save to ${field === 'pct' ? '%' : 'cost'}</button>`
     + `<div style="font-size:12px;color:var(--gray);text-align:center;margin-top:10px">Keyboard works too · Enter = save · Esc = close</div>`;
   showModal(html); _calcRender();
 }
-function _stockCalcSave(ck, code) {
+function _stockCalcSave(ck, code, field) {
   const v = _calcEval(_calcExpr);
   if (v === null) return; // 算式无效不写
-  _stockSetCost(ck, code, Math.round(v * 100) / 100); // _stockSetCost 内部会 renderPnL
+  const val = Math.round(v * 100) / 100;
+  if (field === 'pct') _stockSetPct(ck, code, val); else _stockSetCost(ck, code, val); // 内部会 renderPnL
   closeModal();
 }
 function _calcKeydown(e) { // 计算器 modal 开着时接管键盘
@@ -14079,7 +14163,7 @@ function _calcKeydown(e) { // 计算器 modal 开着时接管键盘
   else if (k === '*') { _calcKey('×'); e.preventDefault(); }
   else if (k === '/') { _calcKey('÷'); e.preventDefault(); }
   else if (k === 'Backspace') { _calcKey('⌫'); e.preventDefault(); }
-  else if (k === 'Enter' || k === '=') { if (_calcTarget) _stockCalcSave(_calcTarget.ck, _calcTarget.code); e.preventDefault(); }
+  else if (k === 'Enter' || k === '=') { if (_calcTarget) _stockCalcSave(_calcTarget.ck, _calcTarget.code, _calcTarget.field); e.preventDefault(); }
   else if (k === 'Escape') { closeModal(); }
 }
 document.addEventListener('keydown', _calcKeydown);
@@ -14110,7 +14194,7 @@ function renderPnlStock(root, kind) {
     idx.forEach(i => { const q = r.m[i], val = mmode === 'qty' ? q : q * uc; cells += `<td>${cell(val)}</td>`; tot[i] += val; ytd += val; });
     costY += r.ytd * uc;
     const costCell = isPctCost
-      ? `<td class="stkin dvr c-cost"><input class="cin cins" type="number" step="any" value="${pct == null ? '' : pct}" placeholder="%" onchange="_stockSetPct('${ck}','${c}',this.value)"></td>`
+      ? `<td class="stkin dvr c-cost"><span class="cinwrap"><input class="cin cins" type="number" step="any" value="${pct == null ? '' : pct}" placeholder="%" onchange="_stockSetPct('${ck}','${c}',this.value)"><button class="cinbtn" onclick="_stockCalc('${ck}','${c}','pct')" title="Calculator">${_CALC_SVG}</button></span></td>`
       : `<td class="stkin dvr c-cost"><span class="cinwrap"><input class="cin cins" type="number" step="any" value="${rawCost || 0}" onchange="_stockSetCost('${ck}','${c}',this.value)"><button class="cinbtn" onclick="_stockCalc('${ck}','${c}')" title="Calculator">${_CALC_SVG}</button></span></td>`;
     bodyRows += `<tr ondragover="_stockDragOver(event)" ondragleave="_stockDragLeave(event)" ondrop="_stockDrop(event,'${c}','${ck}')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_stockDragStart(event,'${c}')" title="Drag to reorder">⠿</span> <span class="nm">${ee(r.name)}</span><div style="font-size:9px;color:#aeb0bd">${c}</div></td>`
       + `<td class="stkin c-rrp"><input class="cin cins" type="number" step="any" value="${price || 0}" onchange="_stockSetPrice('${ck}','${c}',this.value)"></td>`
@@ -14125,13 +14209,17 @@ function renderPnlStock(root, kind) {
   let sub = ''; idx.forEach(i => sub += `<td>${mmode === 'qty' ? Math.round(tot[i]) : _pnlFmt(tot[i])}</td>`);
   const totRow = `<tr class="big"><td class="l">Total ${isSvc ? 'service' : 'product'} ${mmode === 'qty' ? 'qty' : 'cost'}</td><td class="c-rrp"></td><td class="dvr c-cost"></td>${sub}<td class="sub">${mmode === 'qty' ? Math.round(totY) : _pnlFmt(totY)}</td></tr>`;
   const salesY = pnlAutoRows(store, year).sales.reduce((a, b) => a + b, 0);           // 该店该年 YTD 营业额
-  const combinedY = _stockMonthlyCost(store, year).reduce((a, b) => a + b, 0);         // product + service 总成本
-  const pctSalesS = salesY ? (costY / salesY * 100).toFixed(1) + '%' : '—';            // 本 tab 占营业额%
-  const pctCostS = combinedY ? Math.round(costY / combinedY * 100) + '% of Product + Service cost' : '—'; // 占总成本%
-  const cards = `<div class="pnl-card"><div class="lbl">${isSvc ? 'Service' : 'Product'} cost · ${ee(year)} YTD</div><div class="val">RM ${_pnlFmt(costY)}</div><div class="sub">${isSvc ? 'count × cost/session' : 'stock-out × unit cost'}</div></div>`
-    + `<div class="pnl-card"><div class="lbl">Items</div><div class="val">${rows.length}</div><div class="sub">with collection this year</div></div>`
-    + `<div class="pnl-card"><div class="lbl">Cost share</div><div class="val">${pctSalesS}${salesY ? ' <span style="font-size:12px;font-weight:500;color:var(--gray)">of sales</span>' : ''}</div><div class="sub" style="color:var(--purple)">${pctCostS}</div></div>`
-    + `<div class="pnl-card"><div class="lbl">Total cost · Product + Service</div><div class="val">RM ${_pnlFmt(combinedY)}</div><div class="sub">both, ${isPctCost ? 'RRP × %' : 'unit cost'} basis</div></div>`; // v8.21: 合计卡片(两 tab、两框架都有)
+  // v8.22: 产品 / 服务 各自 YTD 成本 (跟当前框架 basis); 两 tab 显示同一套卡片
+  const prodY = _stockAgg(state.InvUsage || [], 'itemCode', 'itemName', store, year).reduce((a, r) => a + (r.ytd || 0) * _stockUnitCost('inv', r.code), 0);
+  const svcY = _stockAgg(state.SvcColl || [], 'svcCode', 'svcName', store, year).reduce((a, r) => a + (r.ytd || 0) * _stockUnitCost('svc', r.code), 0);
+  const combinedY = prodY + svcY;                                                     // product + service 总成本
+  const ofSales = v => salesY ? (v / salesY * 100).toFixed(1) + '%' : '—';            // 占营业额%
+  const ofCost = v => combinedY ? Math.round(v / combinedY * 100) + '%' : '—';        // 占总成本%
+  const cardBig = (lbl, big, sub) => `<div class="pnl-card"><div class="lbl">${lbl}</div><div class="val">${big}</div><div class="sub">${sub}</div></div>`;
+  const cards = cardBig('Total cost', ofSales(combinedY), `RM ${_pnlFmt(combinedY)} · of sales`)
+    + cardBig('Product cost', ofSales(prodY), `RM ${_pnlFmt(prodY)} · of sales`)
+    + cardBig('Service cost', ofSales(svcY), `RM ${_pnlFmt(svcY)} · of sales`)
+    + cardBig('Cost split', `${ofCost(prodY)} / ${ofCost(svcY)}`, 'Product / Service of total cost');
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
   const _os = root.querySelector('.pnl-scroll'); const _sT = _os ? _os.scrollTop : 0, _sL = _os ? _os.scrollLeft : 0, _wY = window.scrollY; // 记住滚动, 画完还原(免得填成本后跳顶)
   root.innerHTML = _pnlTopTabs()
@@ -14229,7 +14317,7 @@ function renderForecast(root) {
       + '<td style="color:var(--purple);font-weight:600">' + Math.round(it.fcQty) + '</td>'
       + '<td>' + (it.price ? _pnlFmt(it.price) : '—') + '</td>' // Sell price 两模式都显示(只读, 来自 Product tab)
       + (costByPct
-        ? '<td><input type="number" step="any" value="' + (it.pct == null ? '' : it.pct) + '" placeholder="%" onchange="_stockSetPct(\'inv\',\'' + cc + '\',this.value)" style="' + pinp + '"></td>'
+        ? '<td>' + (it.pct == null ? '—' : it.pct + '%') + '</td>' // v8.22: Forecast COST% 只读, 来自 Product tab(不用两边填)
         : '<td>' + (it.uc ? _pnlFmt(it.uc) : '—') + '</td>') // CRM real: 显示实际单位成本(只读)
       + '<td style="color:var(--purple);font-weight:600">' + (it.fcCost ? 'RM ' + _pnlFmt(it.fcCost) : '—') + '</td>'
       + '<td>' + Math.round(it.stock) + '</td>'
