@@ -3376,7 +3376,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.33</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.34</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3432,7 +3432,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.33</div>
+      <div class="nav-brand-version">v8.34</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13423,6 +13423,13 @@ function _pnlExportPdf() {
       }
     });
     _pnlState.store = saved;
+  } else if (_pnlView === 'topcost') {
+    // v8.34: Top Cost 固定一页横板 — 只取 ts-grid + 标题 + 脚注, 用满横板宽度, 高度不够自动缩放到一页
+    renderPnL();
+    const sName = (_pnlStoreList().find(s => s.id === _pnlState.store) || {}).name || '';
+    const grid = root.querySelector('.ts-grid'), foot = root.querySelector('.ts-foot');
+    const ttl = '<div style="font-size:14px;font-weight:700;margin:0 0 10px">' + sName + ' · Top Cost · ' + _pnlState.year + '</div>';
+    pages = '<div class="printpage tc"><div class="printwrap tcwrap">' + ttl + (grid ? grid.outerHTML : '') + (foot ? foot.outerHTML : '') + '</div></div>';
   } else {
     renderPnL(); pages = _pg(root.innerHTML);
   }
@@ -13456,10 +13463,14 @@ function _pnlExportPdf() {
     #pnlRoot .pnl-card .sub{font-size:8.5px!important;margin-top:1px!important;}
     .printpage{page-break-after:always;}
     .printpage:last-child{page-break-after:auto;}
-    .printwrap{transform-origin:top left;width:max-content;}`;
+    .printwrap{transform-origin:top left;width:max-content;}
+    /* v8.34: Top Cost 一页横板 — 用满宽度 2 栏并排, 行压紧, 卡片不跨页 */
+    .tcwrap{width:1040px!important;}
+    #pnlRoot .tc .ts-card{page-break-inside:avoid;}
+    #pnlRoot .tc .ts-row{padding:5px 0!important;}`;
   const w = window.open('', '_blank');
   if (!w) { toast('Allow pop-ups to export PDF'); return; }
-  const _wTtl = { pnl: 'Profit &amp; Loss', employees: 'Employees', product: 'Product', service: 'Service', forecast: 'Forecast' }[_pnlView] || 'Profit &amp; Loss';
+  const _wTtl = { pnl: 'Profit &amp; Loss', employees: 'Employees', product: 'Product', service: 'Service', forecast: 'Forecast', topcost: 'Top Cost' }[_pnlView] || 'Profit &amp; Loss';
   w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + _wTtl + '</title><style>' + printCss + '</style></head><body><div id="pnlRoot">' + pages + '</div></body></html>');
   w.document.close();
   const go = () => {
