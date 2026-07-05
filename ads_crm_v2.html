@@ -2005,6 +2005,14 @@ body.contact-view-table .modal-backdrop.open {
 @keyframes slideup { from { transform: translateY(30px); opacity: 0.8; } to { transform: translateY(0); opacity: 1; } }
 .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
 .modal.emp-modal { max-width: 920px; }
+.modal.ot-modal { max-width: 900px; }
+.ot-modal .modal-header { position: sticky; top: 0; background: var(--white); z-index: 3; padding: 20px 20px 12px; margin: -20px -20px 8px; }
+.ot-hol-t { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 12px; }
+.ot-hol-t td { padding: 6px 6px; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+.ot-hol-t tr:last-child td { border-bottom: 0; }
+.ot-hol-t .hn { text-align: left; line-height: 1.35; }
+.ot-hol-t .hx { background: none; border: none; color: var(--gray); cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
+.ot-hol-t .hx:hover { color: var(--red); }
 .emp-modal .modal-header { position: sticky; top: 0; background: var(--white); z-index: 3; padding: 20px 20px 12px; margin: -20px -20px 8px; }
 .modal-title { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
 .modal-close { padding: 6px; color: var(--gray); border-radius: 8px; }
@@ -3368,7 +3376,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.12</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.13</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3424,7 +3432,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.12</div>
+      <div class="nav-brand-version">v8.13</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13638,18 +13646,19 @@ function _otSettingsModal() {
   // 右栏: 可编辑假期清单 (按显示年份 + 州属), 勾了自动点红当前那份日历
   const holRows = (g.hols || []).filter(h => h.year === year).map(h => {
     const marked = h.date && hol[_dkey(h.date)] === 1;
-    return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:12px;border-bottom:0.5px solid var(--border)">`
-      + `<input type="checkbox" ${marked ? 'checked' : ''} ${!h.date ? 'disabled' : ''} onchange="_otHolTick('${h.id}')" title="Tick = close that day">`
-      + `<span style="flex:1;${!h.date ? 'color:var(--gray)' : ''}">${ee(h.name)}</span>`
-      + `<input type="date" value="${h.date || ''}" onchange="_otHolSetDate('${h.id}',this.value)" style="width:140px;height:28px;font-size:11px">`
-      + `<button style="background:none;border:none;color:var(--gray);cursor:pointer;font-size:16px;line-height:1;padding:0 2px" onclick="_otHolDel('${h.id}')" title="Delete">×</button></div>`;
+    return `<tr>`
+      + `<td style="text-align:center"><input type="checkbox" ${marked ? 'checked' : ''} ${!h.date ? 'disabled' : ''} onchange="_otHolTick('${h.id}')" title="Tick = close that day"></td>`
+      + `<td class="hn" style="${!h.date ? 'color:var(--gray)' : ''}">${ee(h.name)}</td>`
+      + `<td><input type="date" value="${h.date || ''}" onchange="_otHolSetDate('${h.id}',this.value)" style="width:100%;height:28px;font-size:11px"></td>`
+      + `<td style="text-align:center"><button class="hx" onclick="_otHolDel('${h.id}')" title="Delete">×</button></td></tr>`;
   }).join('');
   const holPanel = `<div class="settings-modal-section-title">Holidays · ${year} · Selangor</div>`
-    + `<button class="btn btn-outline btn-full" style="margin-bottom:8px" onclick="_otHolFill()">Fill Selangor holidays</button>`
-    + `<div style="font-size:11px;color:var(--gray);margin-bottom:6px">Fixed dates are filled; floating ones (CNY, Raya, Deepavali…) are left blank — fill from the gazette. Tick = close that day on the <b>${cal === 'mgmt' ? 'Management' : 'Store'}</b> calendar.</div>`
-    + `<div style="max-height:250px;overflow-y:auto">${holRows || '<div style="font-size:12px;color:var(--gray);padding:10px 0">No holidays yet — click “Fill Selangor holidays”, or add one below.</div>'}</div>`
-    + `<div style="display:flex;gap:6px;margin-top:10px;align-items:center"><input id="otHolName" placeholder="Holiday name" style="flex:1;height:30px;font-size:12px"><input id="otHolDate" type="date" style="width:140px;height:30px;font-size:11px"><button class="btn btn-outline" style="padding:3px 10px;font-size:12px" onclick="_otHolAdd()">Add</button></div>`
-    + `<label style="font-size:11px;color:var(--gray);display:flex;align-items:center;gap:6px;margin-top:6px"><input type="checkbox" id="otHol2day"> 2 days (adds Day 1 + Day 2)</label>`;
+    + `<div style="font-size:11px;color:var(--gray);margin-bottom:8px">Fixed dates filled; floating ones (CNY, Raya, Deepavali…) left blank — fill from the gazette. Tick = close that day on the <b>${cal === 'mgmt' ? 'Management' : 'Store'}</b> calendar.</div>`
+    + `<div style="border:0.5px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px"><div style="max-height:252px;overflow-y:auto"><table class="ot-hol-t"><colgroup><col style="width:34px"><col><col style="width:132px"><col style="width:32px"></colgroup><tbody>${holRows || '<tr><td colspan="4" style="color:var(--gray);text-align:center;padding:14px;border:0">No holidays yet — click “Fill Selangor holidays”, or add one below.</td></tr>'}</tbody></table></div></div>`
+    + `<button class="btn btn-outline btn-full" style="margin-bottom:12px" onclick="_otHolFill()">Fill Selangor holidays</button>`
+    + `<div class="settings-modal-section-title" style="font-size:11px">Add holiday</div>`
+    + `<div style="display:flex;gap:6px;align-items:center"><input id="otHolName" placeholder="Holiday name" style="flex:1;height:32px;font-size:12px"><input id="otHolDate" type="date" style="width:132px;height:32px;font-size:11px"><button class="btn btn-outline" onclick="_otHolAdd()">Add</button></div>`
+    + `<label style="font-size:11px;color:var(--gray);display:flex;align-items:center;gap:6px;margin-top:7px"><input type="checkbox" id="otHol2day"> 2 days (adds Day 1 + Day 2)</label>`;
   const leftCol = `<div class="settings-modal-section-title">Company-wide</div>`
     + `<div style="display:flex;gap:10px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>Overtime after (h/week)</label><input id="otThr" type="number" step="any" value="${g.thr}" onchange="_otSetThr(this.value)"></div>`
     + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>OT rate (× hourly)</label><input id="otRate" type="number" step="any" value="${g.rate}" onchange="_otSetRate(this.value)"></div></div>`
@@ -13663,7 +13672,7 @@ function _otSettingsModal() {
   const html = `<div class="modal-header"><div class="modal-title">OT rules &amp; holidays</div><button class="modal-close" onclick="closeModal();renderPnL()">✕</button></div>`
     + `<div style="display:flex;gap:24px;align-items:flex-start"><div style="flex:1;min-width:0">${leftCol}</div><div style="flex:1;min-width:0">${holPanel}</div></div>`
     + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="closeModal();renderPnL()">Done</button>`;
-  showModal(html, { className: 'emp-modal' });
+  showModal(html, { className: 'ot-modal' });
 }
 // YYYY-MM-DD → 'Y-M-D' 无前导零 (对齐 hol 键格式)
 function _dkey(ds) { if (!ds) return ''; const p = String(ds).split('-'); return (+p[0]) + '-' + (+p[1]) + '-' + (+p[2]); }
