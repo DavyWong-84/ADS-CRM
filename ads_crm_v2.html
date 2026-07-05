@@ -3381,7 +3381,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.36</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.38</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3437,7 +3437,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.36</div>
+      <div class="nav-brand-version">v8.38</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -14542,46 +14542,9 @@ function renderRevenueOutlet(mArr, locId) {
     </table></div>`;
   }
 
-  html += `<div id="chart_rev_outlet" style="margin-top:16px;"></div>
-  </div>`;
+  html += `</div>`; // v8.38: chart_rev_outlet 折线图已移除（保留 wrapper 闭合）
   wrap.innerHTML = html;
-
-  // Draw outlet revenue chart
-  setTimeout(() => {
-    const labels = mArr.map(m => fmt.monthShort(m));
-    const yFmt = v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0);
-    const totalVals = mArr.map(m => {
-      const r = state.revenue.find(x => x.month === m && x.locationId === locId);
-      return r && r.total ? r.total : null;
-    });
-
-    const adsVals = mArr.map(m => {
-      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.locationId === locId && (l.status==='done') && (Number(l.spend) || 0) > 0).reduce((s,l)=>s+(l.spend||0),0);
-      return v > 0 ? v : null;
-    });
-    const newVals2 = mArr.map(m => {
-      const r = state.revenue.find(x => x.month === m && x.locationId === locId);
-      return r && r.newCustomer ? r.newCustomer : null;
-    });
-    const oldVals2 = mArr.map(m => {
-      const r = state.revenue.find(x => x.month === m && x.locationId === locId);
-      return r && r.total ? Math.max(0, r.total - (r.newCustomer||0)) : null;
-    });
-    // v3.67: Combined chart — 4 lines matching table column colors
-    const revOutletCfg = {
-      title: locName + ' — Revenue Breakdown',
-      labels,
-      series: [
-        { label: 'New Customer', color: AdsChart.C.green, type: 'line', data: newVals2 },
-        { label: 'Old Customer', color: AdsChart.C.gray, type: 'line', data: oldVals2 },
-        { label: 'Ads New Sales', color: AdsChart.C.meta, type: 'line', data: adsVals },
-        { label: 'Total Sales', color: '#000000', type: 'line', data: totalVals },
-      ],
-      yFmt
-    };
-    if (USE_CHARTJS) ChartJS.render('chart_rev_outlet', revOutletCfg);
-    else AdsChart.render('chart_rev_outlet', revOutletCfg);
-  }, 30);
+  // v8.38: 单一门店折线图已移除（原 setTimeout 绘制块删除）
 }
 
 function renderRevenueSummary(mArr) {
@@ -14658,6 +14621,7 @@ function renderRevenueSummary(mArr) {
   const allOldPct = allYearTotal > 0 ? (allYearOld/allYearTotal*100).toFixed(1) : '0.0';
   const allAdsPct = allYearTotal > 0 ? (allYearAds/allYearTotal*100).toFixed(1) : '—';
 
+  let monthlyPaneHTML = ''; // v8.38: Monthly Breakdown 表捕获成 tab pane, 不再单独成卡
   if (!isMobile) {
     // v6.67: Desktop — 合并 Revenue + New Source 两张表 → 单表月份在左
     //   列顺序: Month | Ads Sales | Walk-in | ┃ Total New | Total Existing | ┃ Total Revenue
@@ -14687,9 +14651,7 @@ function renderRevenueSummary(mArr) {
       <td class="num" style="font-weight:700;">${cell(allYearOld, pctOf(allYearOld, allYearTotal))}</td>
       <td class="num" style="font-weight:700;${dividerStyle}">${cellNoPct(allYearTotal)}</td>
     </tr>`;
-    html += `<div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data">
+    monthlyPaneHTML = `<div class="table-wrap"><table class="data">
         <thead><tr>
           <th>Month</th>
           <th class="num">Ads Sales</th>
@@ -14699,8 +14661,7 @@ function renderRevenueSummary(mArr) {
           <th class="num" style="${dividerStyle}">Total Revenue</th>
         </tr></thead>
         <tbody>${monthRows}${totalRow}</tbody>
-      </table></div>
-    </div>`;
+      </table></div>`;
   } else {
     // v6.67: Mobile — same merged table layout (months as rows, 5 metric columns)
     const allWalkInYr = allYearNew - allYearAds;
@@ -14722,9 +14683,7 @@ function renderRevenueSummary(mArr) {
         <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellPlain(d.mTotal)}</td>
       </tr>`;
     });
-    html += `<div class="card" style="margin-top:14px;">
-      <div class="section-title"><h3>All Outlets — Monthly Breakdown</h3></div>
-      <div class="table-wrap"><table class="data">
+    monthlyPaneHTML = `<div class="table-wrap"><table class="data">
         <thead><tr>
           <th style="width:60px;min-width:60px;">Month</th>
           <th class="num">Ads Sales</th>
@@ -14742,11 +14701,10 @@ function renderRevenueSummary(mArr) {
           <td class="num" style="font-weight:700;">${fmt.money(allYearOld)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearOld, allYearTotal)}</span></td>
           <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(allYearTotal)}</td>
         </tr></tfoot>
-      </table></div>
-    </div>`;
+      </table></div>`;
   }
 
-  html += `<div id="chart_rev_all" style="margin-top:14px;"></div></div>`;
+  // v8.38: chart_rev_all 折线图已移除
 
   // v5.13/14/15: Multi-outlet × month comparison tables
   // 4 tables: Total Revenue / New Customer / Existing Customer / Ads Sales
@@ -14812,7 +14770,7 @@ function renderRevenueSummary(mArr) {
             const rowPct = rowBaseTotal > 0 ? '('+((rowTotal/rowBaseTotal)*100).toFixed(1)+'%)' : '—';
             rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</span></div>`;
           }
-          body += `<tr><td>${fmt.monthShort(m)}</td>${cells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${rowCell}</td></tr>`;
+          body += `<tr><td>${fmt.monthShort(m)}</td>${cells}<td class="num" style="vertical-align:top;">${rowCell}</td></tr>`;
         });
         // YTD row: column totals
         // For Total Revenue: % = each store's share of grand total (yearly outlet share)
@@ -14837,10 +14795,14 @@ function renderRevenueSummary(mArr) {
           const grandPct = grandBaseTotal > 0 ? '('+((grandTotal/grandBaseTotal)*100).toFixed(1)+'%)' : '—';
           grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${grandPct}</span></div>`;
         }
-        tbl = `<table class="data data-t">
-          <thead><tr><th>Month</th>${storeHdr}<th class="num" style="border-left:2px solid var(--purple);">Total</th></tr></thead>
+        // v8.37: 固定列宽 (table-layout:fixed + colgroup) → 5 表列对齐; 去掉 Total 前紫色竖线
+        const cmpMinW = 90 + locs.length * 200 + 160;
+        const cmpColg = `<colgroup><col style="width:90px;">${locs.map(() => '<col>').join('')}<col style="width:160px;"></colgroup>`;
+        tbl = `<table class="data data-t" style="table-layout:fixed;width:100%;min-width:${cmpMinW}px;">
+          ${cmpColg}
+          <thead><tr><th>Month</th>${storeHdr}<th class="num">Total</th></tr></thead>
           <tbody>${body}</tbody>
-          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="vertical-align:top;border-left:2px solid var(--purple);">${grandCell}</td></tr></tfoot>
+          <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="vertical-align:top;">${grandCell}</td></tr></tfoot>
         </table>`;
       return `<div style="margin-top:18px;">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
@@ -14873,55 +14835,33 @@ function renderRevenueSummary(mArr) {
     // Base for other 4 tables = outlet's monthly total (so % = metric's share of outlet revenue)
     const getOutletBase = (m, locId) => getOutletTotal(m, locId);
 
+    // v8.38: 6 张表 → 6 个 tab (全站 pill-tab 样式), graph 已移除; 默认 Total Revenue
+    const revPanes = [
+      { label: 'Monthly Breakdown', html: monthlyPaneHTML },
+      { label: 'Total Revenue',     html: buildCmpTable('Total Revenue',             '% = outlet share of monthly total', 'var(--purple)', getTotal,  getMonthBase,  true) },
+      { label: 'New Customer',      html: buildCmpTable('New Customer Revenue',      '% = share of that outlet revenue',  '#22C55E',       getNew,    getOutletBase, false) },
+      { label: 'Walk-in',           html: buildCmpTable('Walk-in Revenue',           '% = share of that outlet revenue',  '#FB923C',       getWalkin, getOutletBase, false) },
+      { label: 'Existing',          html: buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  '#D97706',       getOld,    getOutletBase, false) },
+      { label: 'Ads Sales',         html: buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  '#3B82F6',       getAds,    getOutletBase, false) },
+    ];
+    const revDef = 1; // 默认 Total Revenue
+    const revTabsH = revPanes.map((p, i) => `<button class="pill-tab${i === revDef ? ' active' : ''}" onclick="revSwitchTab(${i})">${esc(p.label)}</button>`).join('');
+    const revPanesH = revPanes.map((p, i) => `<div class="rev-tabpane" data-rev-pane="${i}"${i === revDef ? '' : ' style="display:none;"'}>${p.html}</div>`).join('');
     html += `<div class="card" style="margin-top:14px;">
       <div class="section-title"><h3>Outlet Comparison ${yearLabel}</h3></div>
-      ${buildCmpTable('Total Revenue',              '% = outlet share of monthly total', 'var(--purple)',  getTotal,   getMonthBase,  true)}
-      ${buildCmpTable('New Customer Revenue',       '% = share of that outlet revenue',  '#22C55E',   getNew,     getOutletBase, false)}
-      ${buildCmpTable('Walk-in Revenue',            '% = share of that outlet revenue',  '#FB923C',   getWalkin,  getOutletBase, false)}
-      ${buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  '#D97706',   getOld,     getOutletBase, false)}
-      ${buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  '#3B82F6',   getAds,     getOutletBase, false)}
+      <div class="pill-tabs-inheader" style="margin-top:0;margin-bottom:12px;">${revTabsH}</div>
+      ${revPanesH}
     </div>`;
   }
 
   wrap.innerHTML = html;
-
-  // Draw all-outlets charts
-  setTimeout(() => {
-    const labels = mArr.map(m => fmt.monthShort(m));
-    const yFmt = v => v >= 1000 ? 'RM' + (v/1000).toFixed(1) + 'k' : 'RM' + v.toFixed(0);
-
-    const totalData = mArr.map(m => {
-      const t = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s+(r?.total||0); }, 0);
-      return t > 0 ? t : null;
-    });
-
-    const adsData = mArr.map(m => {
-      const v = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (l.status==='done') && (Number(l.spend) || 0) > 0).reduce((s,l)=>s+(l.spend||0),0);
-      return v > 0 ? v : null;
-    });
-    const newData = mArr.map(m => {
-      const v = locs.reduce((s, loc) => { const r = state.revenue.find(x => x.month===m && x.locationId===loc.id); return s+(r?.newCustomer||0); }, 0);
-      return v > 0 ? v : null;
-    });
-    const oldData = mArr.map((m, i) => {
-      const t = totalData[i]; const n = newData[i];
-      return t != null ? Math.max(0, (t||0) - (n||0)) : null;
-    });
-    // v3.67: Combined chart — 4 lines matching table column colors
-    const revAllCfg = {
-      title: 'All Outlets — Revenue Breakdown',
-      labels,
-      series: [
-        { label: 'New Customer', color: AdsChart.C.green, type: 'line', data: newData },
-        { label: 'Old Customer', color: AdsChart.C.gray, type: 'line', data: oldData },
-        { label: 'Ads New Sales', color: AdsChart.C.meta, type: 'line', data: adsData },
-        { label: 'Total Sales', color: '#000000', type: 'line', data: totalData },
-      ],
-      yFmt
-    };
-    if (USE_CHARTJS) ChartJS.render('chart_rev_all', revAllCfg);
-    else AdsChart.render('chart_rev_all', revAllCfg);
-  }, 30);
+  // v8.38: All Outlets 折线图已移除（原 setTimeout 绘制块删除）
+}
+// v8.38: Revenue 6 表切 tab（全站 pill-tab 样式）
+function revSwitchTab(idx) {
+  const wrap = document.getElementById('revenueReportWrap'); if (!wrap) return;
+  wrap.querySelectorAll('.rev-tabpane').forEach(p => { p.style.display = (Number(p.dataset.revPane) === idx) ? 'block' : 'none'; });
+  wrap.querySelectorAll('.pill-tabs-inheader .pill-tab').forEach((b, i) => b.classList.toggle('active', i === idx));
 }
 
 
