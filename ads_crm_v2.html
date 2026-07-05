@@ -3376,7 +3376,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.13</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.14</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3432,7 +3432,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.13</div>
+      <div class="nav-brand-version">v8.14</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3974,7 +3974,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -3984,11 +3984,11 @@ body.contact-view-table .modal-backdrop.open {
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -3997,11 +3997,56 @@ body.contact-view-table .modal-backdrop.open {
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+      <th class="num">New (RM)</th>
+      <th class="num">Total (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2026</td>
+    <td class="num">—</td>
+    <td class="num" style="font-weight:700;">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4011,15 +4056,52 @@ body.contact-view-table .modal-backdrop.open {
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
+          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2026</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4036,7 +4118,7 @@ body.contact-view-table .modal-backdrop.open {
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -4285,7 +4367,7 @@ body.contact-view-table .modal-backdrop.open {
           <button class="btn btn-primary" onclick="modalGitHubPush()">Push to GitHub</button>
           <button class="btn btn-ghost" onclick="modalGitHubSave()">Save config</button>
         </div>
-        <div id="modal_gh_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"><span style="color:var(--green-dark);">✓ Pushed 1092.1 KB successfully!</span><br><span style="color:var(--gray);font-size:11px;">⏰ 等 1-2 分钟 GitHub Pages 重建 → Ctrl+Shift+R 强制刷新</span></div>
+        <div id="modal_gh_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"></div>
       </div>
     </div>
 
@@ -12945,8 +13027,6 @@ function _pnlInjectCss() {
 #pnlRoot .emp-t th,#pnlRoot .emp-t td{text-align:center;}
 #pnlRoot .emp-t th.l,#pnlRoot .emp-t td.l{text-align:left;width:200px;max-width:200px;}
 #pnlRoot .emp-t th.r,#pnlRoot .emp-t td.r{text-align:center;font-variant-numeric:tabular-nums;}
-#pnlRoot .emp-t th,#pnlRoot .emp-t td{font-size:14px;}
-#pnlRoot .emp-t thead th{font-size:11px;}
 #pnlRoot .emp-t .ot-info{display:inline-flex;align-items:center;color:var(--silver);cursor:help;vertical-align:middle;margin-left:4px;}
 #pnlRoot .emp-t .ot-info:hover{color:var(--purple);}
 #otPop{position:fixed;z-index:200;display:none;width:238px;background:var(--white);border-radius:12px;box-shadow:0 8px 30px rgba(16,17,20,.2);overflow:hidden;font-size:12px;}
@@ -12961,7 +13041,7 @@ function _pnlInjectCss() {
 #otPop .optot b{color:var(--purple-deep);font-size:15px;}
 #otPop .opf{padding:8px 14px;background:var(--surface-2);color:var(--gray);font-size:10.5px;}
 #pnlRoot .emp-t td.l .nmrow{display:flex;align-items:center;gap:6px;}
-#pnlRoot .emp-t td.l .nm{font-weight:600;font-size:15px;}
+#pnlRoot .emp-t td.l .nm{font-weight:600;font-size:13px;}
 #pnlRoot .emp-t td.l .erole{font-size:10.5px;color:var(--gray);margin-top:1px;}
 #pnlRoot .emp-t td.l .rgear{background:transparent;border:0;color:#c4c4cf;cursor:pointer;padding:2px;display:inline-flex;}
 #pnlRoot .emp-t td.l .rgear:hover{color:var(--purple);}
@@ -13653,12 +13733,11 @@ function _otSettingsModal() {
       + `<td style="text-align:center"><button class="hx" onclick="_otHolDel('${h.id}')" title="Delete">×</button></td></tr>`;
   }).join('');
   const holPanel = `<div class="settings-modal-section-title">Holidays · ${year} · Selangor</div>`
-    + `<div style="font-size:11px;color:var(--gray);margin-bottom:8px">Fixed dates filled; floating ones (CNY, Raya, Deepavali…) left blank — fill from the gazette. Tick = close that day on the <b>${cal === 'mgmt' ? 'Management' : 'Store'}</b> calendar.</div>`
-    + `<div style="border:0.5px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px"><div style="max-height:252px;overflow-y:auto"><table class="ot-hol-t"><colgroup><col style="width:34px"><col><col style="width:132px"><col style="width:32px"></colgroup><tbody>${holRows || '<tr><td colspan="4" style="color:var(--gray);text-align:center;padding:14px;border:0">No holidays yet — click “Fill Selangor holidays”, or add one below.</td></tr>'}</tbody></table></div></div>`
-    + `<button class="btn btn-outline btn-full" style="margin-bottom:12px" onclick="_otHolFill()">Fill Selangor holidays</button>`
+    + `<div style="font-size:11px;color:var(--gray);margin-bottom:8px">Fill auto-calculates every year (CNY, Raya, etc.). Verify Islamic/Chinese dates — they can be ±1 day vs the gazette. Thaipusam, Wesak, Deepavali are blank (fill manually). Tick = close that day on the <b>${cal === 'mgmt' ? 'Management' : 'Store'}</b> calendar.</div>`
+    + `<div style="border:0.5px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px"><div style="max-height:252px;overflow-y:auto"><table class="ot-hol-t"><colgroup><col style="width:34px"><col><col style="width:132px"><col style="width:32px"></colgroup><tbody>${holRows || '<tr><td colspan="4" style="color:var(--gray);text-align:center;padding:14px;border:0">No holidays yet — click “Fill Selangor ' + year + '”, or add one below.</td></tr>'}</tbody></table></div></div>`
+    + `<div style="display:flex;gap:8px;margin-bottom:12px"><button class="btn btn-outline" style="flex:1" onclick="_otHolFill()">Fill Selangor ${year}</button><button class="btn btn-outline" style="flex:1" onclick="_otHolCopy()" title="Copy ${year - 1} list into ${year}">Copy from ${year - 1}</button></div>`
     + `<div class="settings-modal-section-title" style="font-size:11px">Add holiday</div>`
-    + `<div style="display:flex;gap:6px;align-items:center"><input id="otHolName" placeholder="Holiday name" style="flex:1;height:32px;font-size:12px"><input id="otHolDate" type="date" style="width:132px;height:32px;font-size:11px"><button class="btn btn-outline" onclick="_otHolAdd()">Add</button></div>`
-    + `<label style="font-size:11px;color:var(--gray);display:flex;align-items:center;gap:6px;margin-top:7px"><input type="checkbox" id="otHol2day"> 2 days (adds Day 1 + Day 2)</label>`;
+    + `<div style="display:flex;gap:6px;align-items:center"><input id="otHolName" placeholder="Holiday name" style="flex:1;height:32px;font-size:12px"><input id="otHolDate" type="date" style="width:132px;height:32px;font-size:11px"><button class="btn btn-outline" onclick="_otHolAdd()">Add</button></div>`;
   const leftCol = `<div class="settings-modal-section-title">Company-wide</div>`
     + `<div style="display:flex;gap:10px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>Overtime after (h/week)</label><input id="otThr" type="number" step="any" value="${g.thr}" onchange="_otSetThr(this.value)"></div>`
     + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>OT rate (× hourly)</label><input id="otRate" type="number" step="any" value="${g.rate}" onchange="_otSetRate(this.value)"></div></div>`
@@ -13676,13 +13755,57 @@ function _otSettingsModal() {
 }
 // YYYY-MM-DD → 'Y-M-D' 无前导零 (对齐 hol 键格式)
 function _dkey(ds) { if (!ds) return ''; const p = String(ds).split('-'); return (+p[0]) + '-' + (+p[1]) + '-' + (+p[2]); }
-// 雪兰莪 + 全国假期: 固定日期用公式(永远准); 浮动假期名字列出、日期留空给 Davy 填(每年不同, 从官方 gazette)
+// 雪兰莪 + 全国假期. 固定=公式(永远准); 农历/回历假期用 Intl 历法自动算(每年自动更新, 回历可能±1天要核对); 印度历/卫塞留空手填.
+function _greg(dt) { return dt.getFullYear() + '-' + ('0' + (dt.getMonth() + 1)).slice(-2) + '-' + ('0' + dt.getDate()).slice(-2); }
+function _findCalDate(year, cal, tMonth, tDay) { // 某公历年里找 指定历法 月/日 → 公历 Date (当年第一次出现)
+  try {
+    const fmt = new Intl.DateTimeFormat('en-u-ca-' + cal, { day: 'numeric', month: 'numeric' });
+    for (let doy = 0; doy < 366; doy++) {
+      const dt = new Date(year, 0, 1 + doy); if (dt.getFullYear() !== year) break;
+      const parts = fmt.formatToParts(dt), mo = parts.find(p => p.type === 'month'), da = parts.find(p => p.type === 'day');
+      if (mo && da && parseInt(mo.value, 10) === tMonth && parseInt(da.value, 10) === tDay) return dt;
+    }
+  } catch (e) {}
+  return null;
+}
+function _firstMonday(y, month) { const d = new Date(y, month - 1, 1); d.setDate(1 + ((8 - d.getDay()) % 7)); return d; }
+function _nextDay(dt) { return new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() + 1); }
 function _myHolidays(y) {
-  const fixed = [['New Year', 1, 1], ['Labour Day', 5, 1], ['National Day', 8, 31], ['Malaysia Day', 9, 16], ['Sultan of Selangor Birthday', 12, 11], ['Christmas', 12, 25]]
-    .map(f => ({ name: f[0], date: y + '-' + ('0' + f[1]).slice(-2) + '-' + ('0' + f[2]).slice(-2) }));
-  const floating = ['Thaipusam', 'Chinese New Year (Day 1)', 'Chinese New Year (Day 2)', 'Nuzul Al-Quran', 'Hari Raya Aidilfitri (Day 1)', 'Hari Raya Aidilfitri (Day 2)', 'Wesak Day', 'Agong Birthday', 'Hari Raya Haji', 'Awal Muharram', 'Maulidur Rasul', 'Deepavali']
-    .map(n => ({ name: n, date: '' }));
-  return fixed.concat(floating);
+  const fx = (mo, da) => y + '-' + ('0' + mo).slice(-2) + '-' + ('0' + da).slice(-2);
+  const isl = (m, d) => { const dt = _findCalDate(y, 'islamic-umalqura', m, d); return dt ? _greg(dt) : ''; };
+  const cny = _findCalDate(y, 'chinese', 1, 1);
+  const raya = _findCalDate(y, 'islamic-umalqura', 10, 1); // 1 Syawal
+  return [
+    { name: 'New Year', date: fx(1, 1) },
+    { name: 'Thaipusam', date: '' },
+    { name: 'Chinese New Year (Day 1)', date: cny ? _greg(cny) : '' },
+    { name: 'Chinese New Year (Day 2)', date: cny ? _greg(_nextDay(cny)) : '' },
+    { name: 'Nuzul Al-Quran', date: isl(9, 17) },
+    { name: 'Hari Raya Aidilfitri (Day 1)', date: raya ? _greg(raya) : '' },
+    { name: 'Hari Raya Aidilfitri (Day 2)', date: raya ? _greg(_nextDay(raya)) : '' },
+    { name: 'Labour Day', date: fx(5, 1) },
+    { name: 'Wesak Day', date: '' },
+    { name: 'Agong Birthday', date: _greg(_firstMonday(y, 6)) },
+    { name: 'Hari Raya Haji', date: isl(12, 10) },
+    { name: 'Awal Muharram', date: isl(1, 1) },
+    { name: 'National Day', date: fx(8, 31) },
+    { name: 'Maulidur Rasul', date: isl(3, 12) },
+    { name: 'Malaysia Day', date: fx(9, 16) },
+    { name: 'Deepavali', date: '' },
+    { name: 'Sultan of Selangor Birthday', date: fx(12, 11) },
+    { name: 'Christmas', date: fx(12, 25) }
+  ];
+}
+// 把上一年整份假期带过去当前年 (名字没重复的才带; 日期把年份换成当前年 → 固定假期照对, 浮动的当起点自己调)
+function _otHolCopy() {
+  const g = _otGlobal(), y = _otMState.y, prev = y - 1; if (!g.hols) g.hols = [];
+  let i = 0;
+  g.hols.filter(h => h.year === prev).forEach(h => {
+    if (g.hols.some(x => x.year === y && x.name === h.name)) return;
+    let nd = ''; if (h.date) { const p = h.date.split('-'); nd = y + '-' + p[1] + '-' + p[2]; }
+    g.hols.push({ id: 'hol-' + Date.now() + '-c' + (i++), name: h.name, date: nd, year: y, state: h.state || 'selangor' });
+  });
+  _otGlobalSet(g); _otSettingsModal();
 }
 function _otHolFill() {
   const g = _otGlobal(), y = _otMState.y; if (!g.hols) g.hols = [];
@@ -13693,14 +13816,9 @@ function _otHolFill() {
 function _otHolAdd() {
   const nm = ((document.getElementById('otHolName') || {}).value || '').trim();
   const dt = (document.getElementById('otHolDate') || {}).value || '';
-  const two = (document.getElementById('otHol2day') || {}).checked;
   if (!nm) { if (typeof toast === 'function') toast('Enter holiday name'); return; }
   const g = _otGlobal(), y = _otMState.y; if (!g.hols) g.hols = [];
-  const mk = (n, d) => ({ id: 'hol-' + Date.now() + '-' + Math.floor(Math.random() * 100000), name: n, date: d, year: y, state: 'selangor' });
-  if (two) {
-    let d2 = ''; if (dt) { const dd = new Date(dt); dd.setDate(dd.getDate() + 1); d2 = dd.getFullYear() + '-' + ('0' + (dd.getMonth() + 1)).slice(-2) + '-' + ('0' + dd.getDate()).slice(-2); }
-    g.hols.push(mk(nm + ' (Day 1)', dt)); g.hols.push(mk(nm + ' (Day 2)', d2));
-  } else g.hols.push(mk(nm, dt));
+  g.hols.push({ id: 'hol-' + Date.now() + '-' + Math.floor(Math.random() * 100000), name: nm, date: dt, year: y, state: 'selangor' });
   _otGlobalSet(g); _otSettingsModal();
 }
 function _otHolDel(id) { const g = _otGlobal(); g.hols = (g.hols || []).filter(h => h.id !== id); _otGlobalSet(g); _otSettingsModal(); }
