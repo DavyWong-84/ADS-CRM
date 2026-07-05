@@ -3366,7 +3366,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.92</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v7.93</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3422,7 +3422,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v7.92</div>
+      <div class="nav-brand-version">v7.93</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13675,15 +13675,15 @@ function renderPnlEmployees(root) {
   const activeIn = (e, m) => !!_pnlEmpBranch(e.id, year, m);
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
 
-  const bar = `<div class="pnl-bar"><button class="btn btn-primary pnl-savebtn" onclick="_pnlEmpModal(null)">＋ Add employee</button>`
+  const subtabs = `<div class="pnl-toptabs" style="margin:0">`
+    + `<div class="pnl-toptab${tab === 'salary' ? ' on' : ''}" onclick="_pnlSetEmpTab('salary')">Salary &amp; OT</div>`
+    + `<div class="pnl-toptab${tab === 'branch' ? ' on' : ''}" onclick="_pnlSetEmpTab('branch')">Branch</div></div>`;
+  const bar = `<div class="pnl-bar"><button class="btn btn-primary pnl-savebtn" onclick="_pnlEmpModal(null)">＋ Add employee</button>` + subtabs
     + `<div class="pnl-right"><button class="btn btn-outline pnl-savebtn" onclick="_otSettingsModal()" title="OT rules & holidays">⚙ OT setup</button>`
     + `<select class="pnl-yr" onchange="_pnlSetMonth(this.value)">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}"${(i + 1) === month ? ' selected' : ''}>${m}</option>`).join('') + `</select>`
     + `<select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
     + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>`
     + _pnlSaveBtnHtml() + `</div></div>`;
-  const subtabs = `<div class="pnl-toptabs" style="margin-top:2px">`
-    + `<div class="pnl-toptab${tab === 'salary' ? ' on' : ''}" onclick="_pnlSetEmpTab('salary')">Salary &amp; OT</div>`
-    + `<div class="pnl-toptab${tab === 'branch' ? ' on' : ''}" onclick="_pnlSetEmpTab('branch')">Branch</div></div>`;
 
   let content;
   if (tab === 'salary') {
@@ -13732,7 +13732,7 @@ function renderPnlEmployees(root) {
     foot += '</tr></tfoot>';
     content = legend + `<div class="pnl-scroll"><table class="pnl-t emp-t">` + head + body + foot + `</table></div>`;
   }
-  root.innerHTML = _pnlTopTabs() + bar + subtabs + content;
+  root.innerHTML = _pnlTopTabs() + bar + content;
 }
 
 // ===== v7.49: Inventory & Service (库存出库 + service 领取, 33CRM collection) =====
