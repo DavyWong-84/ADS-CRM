@@ -3368,7 +3368,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.11</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.12</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3424,7 +3424,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.11</div>
+      <div class="nav-brand-version">v8.12</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13555,13 +13555,13 @@ function _otOfficeSch() { return [{w:0,a:'',b:''},{w:1,a:'09:00',b:'18:00'},{w:1
 function _otGlobal() {
   const row = (state.pnl.config || []).find(c => c.id === '__ot__');
   let v = {}; try { v = row && row.val ? JSON.parse(row.val) : {}; } catch (e) {}
-  return { thr: (v.thr != null ? v.thr : 45), rate: (v.rate != null ? v.rate : 1.5), holStore: v.holStore || {}, holMgmt: v.holMgmt || {} };
+  return { thr: (v.thr != null ? v.thr : 45), rate: (v.rate != null ? v.rate : 1.5), holStore: v.holStore || {}, holMgmt: v.holMgmt || {}, hols: v.hols || [] };
 }
 function _otGlobalSet(g) {
   if (!state.pnl.config) state.pnl.config = [];
   let row = state.pnl.config.find(c => c.id === '__ot__');
   if (!row) { row = { id: '__ot__' }; state.pnl.config.push(row); }
-  row.val = JSON.stringify({ thr: g.thr, rate: g.rate, holStore: g.holStore, holMgmt: g.holMgmt });
+  row.val = JSON.stringify({ thr: g.thr, rate: g.rate, holStore: g.holStore, holMgmt: g.holMgmt, hols: g.hols || [] });
   saveState();
 }
 function _empOt(e) {
@@ -13626,17 +13626,31 @@ function _otSettingsModal() {
   if (_otMState.y == null) { _otMState.y = +(_pnlState.year || new Date().getFullYear()); _otMState.m = +(_pnlState.month || (new Date().getMonth() + 1)); }
   const year = _otMState.y, month = _otMState.m, cal = _otMState.cal, hol = cal === 'mgmt' ? g.holMgmt : g.holStore;
   const restDow = cal === 'mgmt' ? [0, 6] : [1]; // Store 休周一, Mgmt 休周六日 (跟预设)
+  const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
   const last = new Date(year, month, 0).getDate(), first = new Date(year, month - 1, 1).getDay(), lead = (first + 6) % 7;
   let cells = ''; for (let i = 0; i < lead; i++) cells += '<div></div>';
   for (let d = 1; d <= last; d++) {
     const wd = new Date(year, month - 1, d).getDay(), key = year + '-' + month + '-' + d;
-    // 红=休 (公假或每周固定休). 固定休默认红, 可点开成上班; 其他日点了变公假. 引擎只扣值=1 的.
     const off = Object.prototype.hasOwnProperty.call(hol, key) ? hol[key] === 1 : restDow.includes(wd);
     cells += `<div onclick="_otHolToggle(${d})" title="${off ? (restDow.includes(wd) ? 'Off · rest day (tap = open)' : 'Public holiday (tap = clear)') : 'Working day (tap = holiday)'}" style="padding:6px 0;text-align:center;font-size:12px;border-radius:6px;cursor:pointer;background:${off ? 'var(--red)' : 'var(--surface-2)'};color:${off ? '#fff' : 'var(--black)'}">${d}</div>`;
   }
   const dh = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(x => `<div style="text-align:center;font-size:10px;color:var(--gray)">${x}</div>`).join('');
-  const html = `<div class="modal-header"><div class="modal-title">OT rules &amp; holidays</div><button class="modal-close" onclick="closeModal();renderPnL()">✕</button></div>`
-    + `<div class="settings-modal-section-title">Company-wide</div>`
+  // 右栏: 可编辑假期清单 (按显示年份 + 州属), 勾了自动点红当前那份日历
+  const holRows = (g.hols || []).filter(h => h.year === year).map(h => {
+    const marked = h.date && hol[_dkey(h.date)] === 1;
+    return `<div style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:12px;border-bottom:0.5px solid var(--border)">`
+      + `<input type="checkbox" ${marked ? 'checked' : ''} ${!h.date ? 'disabled' : ''} onchange="_otHolTick('${h.id}')" title="Tick = close that day">`
+      + `<span style="flex:1;${!h.date ? 'color:var(--gray)' : ''}">${ee(h.name)}</span>`
+      + `<input type="date" value="${h.date || ''}" onchange="_otHolSetDate('${h.id}',this.value)" style="width:140px;height:28px;font-size:11px">`
+      + `<button style="background:none;border:none;color:var(--gray);cursor:pointer;font-size:16px;line-height:1;padding:0 2px" onclick="_otHolDel('${h.id}')" title="Delete">×</button></div>`;
+  }).join('');
+  const holPanel = `<div class="settings-modal-section-title">Holidays · ${year} · Selangor</div>`
+    + `<button class="btn btn-outline btn-full" style="margin-bottom:8px" onclick="_otHolFill()">Fill Selangor holidays</button>`
+    + `<div style="font-size:11px;color:var(--gray);margin-bottom:6px">Fixed dates are filled; floating ones (CNY, Raya, Deepavali…) are left blank — fill from the gazette. Tick = close that day on the <b>${cal === 'mgmt' ? 'Management' : 'Store'}</b> calendar.</div>`
+    + `<div style="max-height:250px;overflow-y:auto">${holRows || '<div style="font-size:12px;color:var(--gray);padding:10px 0">No holidays yet — click “Fill Selangor holidays”, or add one below.</div>'}</div>`
+    + `<div style="display:flex;gap:6px;margin-top:10px;align-items:center"><input id="otHolName" placeholder="Holiday name" style="flex:1;height:30px;font-size:12px"><input id="otHolDate" type="date" style="width:140px;height:30px;font-size:11px"><button class="btn btn-outline" style="padding:3px 10px;font-size:12px" onclick="_otHolAdd()">Add</button></div>`
+    + `<label style="font-size:11px;color:var(--gray);display:flex;align-items:center;gap:6px;margin-top:6px"><input type="checkbox" id="otHol2day"> 2 days (adds Day 1 + Day 2)</label>`;
+  const leftCol = `<div class="settings-modal-section-title">Company-wide</div>`
     + `<div style="display:flex;gap:10px"><div class="settings-modal-input-row" style="flex:1;margin:0"><label>Overtime after (h/week)</label><input id="otThr" type="number" step="any" value="${g.thr}" onchange="_otSetThr(this.value)"></div>`
     + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>OT rate (× hourly)</label><input id="otRate" type="number" step="any" value="${g.rate}" onchange="_otSetRate(this.value)"></div></div>`
     + `<div style="font-size:11px;color:var(--gray);margin-top:6px">Hourly = basic ÷ 26 ÷ 8. EPF/SOCSO apply to basic + OT.</div>`
@@ -13644,10 +13658,49 @@ function _otSettingsModal() {
     + `<div class="settings-modal-section-title">Holiday calendar</div>`
     + `<div class="toggle-group" style="display:flex;margin-bottom:10px"><div class="toggle${cal === 'store' ? ' active' : ''}" style="flex:1;text-align:center" onclick="_otMCal('store')">Store</div><div class="toggle${cal === 'mgmt' ? ' active' : ''}" style="flex:1;text-align:center" onclick="_otMCal('mgmt')">Management</div></div>`
     + `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><button class="btn btn-outline" style="padding:2px 12px" onclick="_otNavMonth(-1)">‹</button><span style="font-size:13px;font-weight:600">${_PNL_MONTHS[month - 1]} ${year}</span><button class="btn btn-outline" style="padding:2px 12px" onclick="_otNavMonth(1)">›</button></div>`
-    + `<div style="font-size:11px;color:var(--gray);margin-bottom:8px">Tap any day to toggle. Red = off (rest day or public holiday), drops out of the week. ${cal === 'mgmt' ? 'Sat/Sun' : 'Monday'} start red (weekly rest) — tap to open if working. Use ‹ › for any month.</div>`
-    + `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${dh}${cells}</div>`
+    + `<div style="font-size:11px;color:var(--gray);margin-bottom:8px">Tap any day to toggle. Red = off. ${cal === 'mgmt' ? 'Sat/Sun' : 'Monday'} start red (rest) — tap to open. Use ‹ › for any month.</div>`
+    + `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${dh}${cells}</div>`;
+  const html = `<div class="modal-header"><div class="modal-title">OT rules &amp; holidays</div><button class="modal-close" onclick="closeModal();renderPnL()">✕</button></div>`
+    + `<div style="display:flex;gap:24px;align-items:flex-start"><div style="flex:1;min-width:0">${leftCol}</div><div style="flex:1;min-width:0">${holPanel}</div></div>`
     + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="closeModal();renderPnL()">Done</button>`;
-  showModal(html);
+  showModal(html, { className: 'emp-modal' });
+}
+// YYYY-MM-DD → 'Y-M-D' 无前导零 (对齐 hol 键格式)
+function _dkey(ds) { if (!ds) return ''; const p = String(ds).split('-'); return (+p[0]) + '-' + (+p[1]) + '-' + (+p[2]); }
+// 雪兰莪 + 全国假期: 固定日期用公式(永远准); 浮动假期名字列出、日期留空给 Davy 填(每年不同, 从官方 gazette)
+function _myHolidays(y) {
+  const fixed = [['New Year', 1, 1], ['Labour Day', 5, 1], ['National Day', 8, 31], ['Malaysia Day', 9, 16], ['Sultan of Selangor Birthday', 12, 11], ['Christmas', 12, 25]]
+    .map(f => ({ name: f[0], date: y + '-' + ('0' + f[1]).slice(-2) + '-' + ('0' + f[2]).slice(-2) }));
+  const floating = ['Thaipusam', 'Chinese New Year (Day 1)', 'Chinese New Year (Day 2)', 'Nuzul Al-Quran', 'Hari Raya Aidilfitri (Day 1)', 'Hari Raya Aidilfitri (Day 2)', 'Wesak Day', 'Agong Birthday', 'Hari Raya Haji', 'Awal Muharram', 'Maulidur Rasul', 'Deepavali']
+    .map(n => ({ name: n, date: '' }));
+  return fixed.concat(floating);
+}
+function _otHolFill() {
+  const g = _otGlobal(), y = _otMState.y; if (!g.hols) g.hols = [];
+  let i = 0;
+  _myHolidays(y).forEach(h => { if (!g.hols.some(x => x.year === y && x.name === h.name)) g.hols.push({ id: 'hol-' + Date.now() + '-' + (i++), name: h.name, date: h.date, year: y, state: 'selangor' }); });
+  _otGlobalSet(g); _otSettingsModal();
+}
+function _otHolAdd() {
+  const nm = ((document.getElementById('otHolName') || {}).value || '').trim();
+  const dt = (document.getElementById('otHolDate') || {}).value || '';
+  const two = (document.getElementById('otHol2day') || {}).checked;
+  if (!nm) { if (typeof toast === 'function') toast('Enter holiday name'); return; }
+  const g = _otGlobal(), y = _otMState.y; if (!g.hols) g.hols = [];
+  const mk = (n, d) => ({ id: 'hol-' + Date.now() + '-' + Math.floor(Math.random() * 100000), name: n, date: d, year: y, state: 'selangor' });
+  if (two) {
+    let d2 = ''; if (dt) { const dd = new Date(dt); dd.setDate(dd.getDate() + 1); d2 = dd.getFullYear() + '-' + ('0' + (dd.getMonth() + 1)).slice(-2) + '-' + ('0' + dd.getDate()).slice(-2); }
+    g.hols.push(mk(nm + ' (Day 1)', dt)); g.hols.push(mk(nm + ' (Day 2)', d2));
+  } else g.hols.push(mk(nm, dt));
+  _otGlobalSet(g); _otSettingsModal();
+}
+function _otHolDel(id) { const g = _otGlobal(); g.hols = (g.hols || []).filter(h => h.id !== id); _otGlobalSet(g); _otSettingsModal(); }
+function _otHolSetDate(id, val) { const g = _otGlobal(), h = (g.hols || []).find(x => x.id === id); if (h) { h.date = val; _otGlobalSet(g); _otSettingsModal(); } }
+function _otHolTick(id) {
+  const g = _otGlobal(), h = (g.hols || []).find(x => x.id === id); if (!h || !h.date) return;
+  const hol = _otMState.cal === 'mgmt' ? g.holMgmt : g.holStore, key = _dkey(h.date);
+  if (hol[key] === 1) delete hol[key]; else hol[key] = 1;
+  _otGlobalSet(g); _otSettingsModal();
 }
 function _otSetThr(v) { const g = _otGlobal(); g.thr = parseFloat(v) || 45; _otGlobalSet(g); }
 function _otSetRate(v) { const g = _otGlobal(); g.rate = parseFloat(v) || 1.5; _otGlobalSet(g); }
