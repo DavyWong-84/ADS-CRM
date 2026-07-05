@@ -3376,7 +3376,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.32</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.33</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3432,7 +3432,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.32</div>
+      <div class="nav-brand-version">v8.33</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -12694,9 +12694,9 @@ function _pnlSaveBtnHtml() {
     : `<button class="btn btn-outline pnl-savebtn" id="pnlSaveBtn" onclick="_savePnL()">Saved</button>`;
 }
 function _pnlSetView(v) { _pnlView = v; _pnlPrefsSave(); renderPnL(); }
-function _pnlSetFramework(f) { _pnlFramework = f; if (['product', 'service', 'forecast', 'topsales'].indexOf(_pnlView) < 0) _pnlView = 'product'; _pnlPrefsSave(); renderPnL(); }
+function _pnlSetFramework(f) { _pnlFramework = f; if (['product', 'service', 'forecast', 'topcost'].indexOf(_pnlView) < 0) _pnlView = 'product'; _pnlPrefsSave(); renderPnL(); }
 function _pnlTopTabs() {
-  const inFw = ['product', 'service', 'forecast', 'topsales'].indexOf(_pnlView) >= 0;
+  const inFw = ['product', 'service', 'forecast', 'topcost'].indexOf(_pnlView) >= 0;
   const tab = (v, label) => `<div class="pnl-toptab${_pnlView === v ? ' on' : ''}" onclick="_pnlSetView('${v}')">${label}</div>`;
   // v8.27: Inventory 胶囊跟旁边 pill 同款（白底/灰框/同高），只有选中那段填紫做指示
   const seg = (f, label) => `<div onclick="_pnlSetFramework('${f}')" style="padding:3px 11px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;${(inFw && _pnlFramework === f) ? 'background:var(--purple);color:#fff;' : 'color:var(--gray);'}">${label}</div>`;
@@ -12704,7 +12704,7 @@ function _pnlTopTabs() {
     + `<span style="font-size:14px;font-weight:600;color:var(--gray)">Inventory</span>`
     + `<div style="display:inline-flex;gap:2px">` + seg('crm', 'Cost · CRM') + seg('pct', 'Cost · %') + `</div></div>`;
   let h = `<div class="pnl-toptabs">` + tab('pnl', 'Profit &amp; Loss') + tab('employees', 'Employees') + inv + `</div>`;
-  if (inFw) h += `<div class="pnl-toptabs" style="margin-top:6px">` + tab('product', 'Product') + tab('service', 'Service') + tab('forecast', 'Forecast') + tab('topsales', 'Top Sales') + `</div>`;
+  if (inFw) h += `<div class="pnl-toptabs" style="margin-top:6px">` + tab('product', 'Product') + tab('service', 'Service') + tab('forecast', 'Forecast') + tab('topcost', 'Top Cost') + `</div>`;
   return h;
 }
 const _PNL_PERIODS = { full: { nm: 'Full year', idx: [0,1,2,3,4,5,6,7,8,9,10,11], sub: 'YTD' },
@@ -13013,7 +13013,7 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t.stk td.l,#pnlRoot .pnl-t.stk td.l .nm{white-space:normal;overflow-wrap:anywhere;}  /* v8.20: 长名字换行不被遮 */
 #pnlRoot .pnl-t.stk th,#pnlRoot .pnl-t.stk td{text-align:center;}  /* v8.24: 月份数字居中 */
 #pnlRoot .pnl-t.stk th.l,#pnlRoot .pnl-t.stk td.l{text-align:left;}  /* 名字列保持靠左 */
-/* v8.31: Top Sales 营业额排名（左 Product / 右 Service） */
+/* v8.32: Top Cost 成本排名（左 Product / 右 Service） */
 #pnlRoot .ts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:768px){#pnlRoot .ts-grid{grid-template-columns:1fr;}}
 #pnlRoot .ts-card{border:1px solid #ececf1;border-radius:14px;padding:14px 14px 6px;background:#fff;}
@@ -13077,7 +13077,7 @@ function renderPnL() {
   if (_pnlView === 'product') { renderPnlStock(root, 'product'); _pnlStick(root); return; } // v7.49: Product(库存出库)
   if (_pnlView === 'service') { renderPnlStock(root, 'service'); _pnlStick(root); return; } // v7.49: Service(领取次数)
   if (_pnlView === 'forecast') { renderForecast(root); _pnlStick(root); return; } // Forecast(用量预测)
-  if (_pnlView === 'topsales') { renderPnlTopSales(root); _pnlStick(root); return; } // v8.31: Top Sales 营业额排名
+  if (_pnlView === 'topcost') { renderPnlTopCost(root); _pnlStick(root); return; } // v8.32: Top Cost 成本排名
   const stores = _pnlStoreList();
   if (!_pnlState.store || !stores.some(s => s.id === _pnlState.store)) _pnlState.store = (stores.find(s => s.id !== 'all' && s.id !== 'mgmt') || stores[0]).id; // v8.32: 默认仍是第一间实体门店（all 排第一只是显示）
   const store = _pnlState.store, year = _pnlState.year;
@@ -14198,39 +14198,39 @@ function _fcCols(period) { // 比率表列分组
   if (period === 'half') return [{ n: 'H1', mi: [0, 1, 2, 3, 4, 5] }, { n: 'H2', mi: [6, 7, 8, 9, 10, 11] }];
   return _PNL_MONTHS.map((m, i) => ({ n: m, mi: [i] }));
 }
-// v8.31: Top Sales — 一页两栏(左 Product / 右 Service), 按营业额(qty × RRP) 排名 + 占比
-function renderPnlTopSales(root) {
+// v8.32: Top Cost — 一页两栏(左 Product / 右 Service), 按成本(qty × 单位成本) 排名 + 占比; 成本随框架(CRM=真实单价 / %=RRP×%)
+function renderPnlTopCost(root) {
   const ee = (typeof esc === 'function') ? esc : (s => String(s == null ? '' : s));
   const year = _pnlState.year, store = _pnlState.store;
   const stores = _pnlStoreList();
   const build = (ck) => {
     const items = _stockOrdered(ck, store, year).map(r => {
-      const price = _stockPriceOf(ck, r.code);
-      const q = r.m.reduce((a, b) => a + (b || 0), 0);   // 全年出货量
-      return { name: r.name, sales: q * price };          // 营业额 = qty × RRP
-    }).filter(it => it.sales > 0).sort((a, b) => b.sales - a.sales);
-    return { items, total: items.reduce((a, b) => a + b.sales, 0) };
+      const uc = _stockUnitCost(ck, r.code);              // 单位成本(跟当前框架: CRM 真实单价 / % = RRP×%)
+      const q = r.m.reduce((a, b) => a + (b || 0), 0);    // 全年出货量
+      return { name: r.name, cost: q * uc };              // 成本 = qty × 单位成本
+    }).filter(it => it.cost > 0).sort((a, b) => b.cost - a.cost);
+    return { items, total: items.reduce((a, b) => a + b.cost, 0) };
   };
   const prod = build('inv'), svc = build('svc');
   const grand = prod.total + svc.total;
   const col = (data, label, isSvc) => {
     const fill = isSvc ? '#16a5b8' : 'var(--purple)';
-    const max = data.items.length ? data.items[0].sales : 0;
+    const max = data.items.length ? data.items[0].cost : 0;
     let body = data.items.map((it, i) => {
-      const share = data.total ? (it.sales / data.total * 100) : 0;
-      const w = max ? (it.sales / max * 100) : 0;
+      const share = data.total ? (it.cost / data.total * 100) : 0;
+      const w = max ? (it.cost / max * 100) : 0;
       const top = i < 3;
       return `<div class="ts-row"><div class="ts-rk${top ? ' top' : ''}"${top && isSvc ? ' style="background:#16a5b8"' : ''}>${i + 1}</div>`
         + `<div class="ts-mid"><div class="ts-nm">${ee(it.name)}</div><div class="ts-track"><div class="ts-fill" style="width:${w.toFixed(1)}%;background:${fill}"></div></div></div>`
-        + `<div class="ts-r"><div class="ts-rm">RM ${_pnlFmt(it.sales)}</div><div class="ts-pct">${share.toFixed(1)}%</div></div></div>`;
+        + `<div class="ts-r"><div class="ts-rm">RM ${_pnlFmt(it.cost)}</div><div class="ts-pct">${share.toFixed(1)}%</div></div></div>`;
     }).join('');
-    if (!data.items.length) body = `<div class="ts-empty">No ${isSvc ? 'service' : 'product'} sales for this outlet / year.</div>`;
-    return `<div class="ts-card"><div class="ts-chd"><span class="ts-lbl"${isSvc ? ' style="color:#0e8ea0"' : ''}>${label} · Top sales</span>`
+    if (!data.items.length) body = `<div class="ts-empty">No ${isSvc ? 'service' : 'product'} cost for this outlet / year.</div>`;
+    return `<div class="ts-card"><div class="ts-chd"><span class="ts-lbl"${isSvc ? ' style="color:#0e8ea0"' : ''}>${label} · Top cost</span>`
       + `<span class="ts-tot">Total <b>RM ${_pnlFmt(data.total)}</b></span></div>${body}</div>`;
   };
   const storeTabs = stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${ee(s.id)}')">${ee(s.name)}</div>`).join('');
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
-  const foot = grand ? `Product ${(prod.total / grand * 100).toFixed(0)}% · Service ${(svc.total / grand * 100).toFixed(0)}% of combined sales · Grand total RM ${_pnlFmt(grand)}` : '';
+  const foot = grand ? `Product ${(prod.total / grand * 100).toFixed(0)}% · Service ${(svc.total / grand * 100).toFixed(0)}% of combined cost · Grand total RM ${_pnlFmt(grand)}` : '';
   root.innerHTML = _pnlTopTabs()
     + `<div class="pnl-bar2"><div class="pnl-tabs">` + storeTabs + `</div>`
     + `<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === String(year) ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
