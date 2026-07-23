@@ -3388,7 +3388,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.55</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.56</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3439,7 +3439,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.55</div>
+      <div class="nav-brand-version">v8.56</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -20232,8 +20232,10 @@ function _apptReceivedAt(l) {
     if (!m) return;
     if (String(m[1]).padStart(2, '0') !== dd || m[2] !== mon) return;   // 不是今天
     const rest = m[4];
-    // 收到预约 = Appt received / Appt merged / Lead received 那行带 "Appt "
+    // 建立预约 = 自动来的 (Appt received / merged / Lead received 带 Appt)
+    //   + 手动填的 (Appt set: → …) — v8.56: 手动建立也要算
     const isAppt = /^Appt received/i.test(rest) || /^Appt merged/i.test(rest)
+      || /^Appt set\s*:/i.test(rest)
       || (/^Lead received/i.test(rest) && /·\s*Appt\s/i.test(rest));
     if (isAppt) hit = m[3].padStart(5, '0');   // 取最后一笔当天的
   });
