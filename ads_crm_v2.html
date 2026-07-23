@@ -3912,9 +3912,9 @@ body.contact-view-table .modal-backdrop.open {
       <!-- v5.48: 加双色柱状图 (人数 + 收入双轴) -->
       <!-- v5.49: 加 2 张趋势折线图 (Lower 0-500 蓝色系 / Higher 500+ 紫色系) -->
       <div id="adsPanel_spend" style="display:none;">
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">● Customer Count by Spending Power</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;"><div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;">● Customer Count by Spending Power</div><span id="spendPctToggle"></span></div>
         <div class="table-wrap"><table class="data" id="spendCountTable"></table></div>
-        <div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:24px 0 8px;">● Total Ads Sales by Spending Power</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin:24px 0 8px;"><div style="font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;">● Total Ads Sales by Spending Power</div><span id="spendPctToggle2"></span></div>
         <div class="table-wrap"><table class="data" id="spendRevenueTable"></table></div>
 
         <div style="display:flex;align-items:center;justify-content:space-between;margin:32px 0 8px;flex-wrap:wrap;gap:8px;">
@@ -4847,6 +4847,11 @@ function tblPctToggle(key, rerender) {
   try { localStorage.setItem('adscrm_tblpct', JSON.stringify(_tblPct)); } catch (e) {}
   if (rerender === 'revenue' && typeof renderRevenue === 'function') renderRevenue();
   else if (rerender === 'store' && typeof renderStore === 'function') renderStore();
+  else if (rerender === 'adsspend') {
+    // Spending Power 有独立入口, 其余走 section 重画
+    if (key === 'spendpower' && typeof renderSpendingPower === 'function') renderSpendingPower();
+    else if (typeof renderAdsSpendSection === 'function') renderAdsSpendSection(_adsTab || 'funnel');
+  }
 }
 // 表头右上的「123 / %」小开关 (沿用 Dashboard 现成的 .pct-toggle 样式)
 function tblPctSeg(key, rerender) {
@@ -11334,10 +11339,11 @@ function renderAdsSpendSection(key) {
     // v6.67: 月份在左, Davy 列结构: Ads Cost | 3rd Party Fees | ┃ Total Mkt Cost | ┃ Revenue
     //   所有 % 分母 = Revenue, Cost % of Rev 列移除 (Total Mkt Cost 已带 %)
     const dividerStyle = 'border-left:2px solid var(--purple-deep);';
+    const _mkShowP = tblPctOn('mktcost'); // v8.44: 每表 % 开关
     const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
     const cellWithPct = (v, base) => {
       if (!v || v === 0) return '—';
-      return `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pctOf(v, base)}</span>`;
+      return `${fmt.money(v)}${_mkShowP ? ` <span style="font-size:11px;color:var(--gray);">${pctOf(v, base)}</span>` : ''}`;
     };
     if (!isMobile) {
       const monthRows = rows.map(r => `<tr>
@@ -11354,7 +11360,7 @@ function renderAdsSpendSection(key) {
         <td class="num" style="font-weight:700;${dividerStyle}">${cellWithPct(gTotal, gRev)}</td>
         <td class="num" style="font-weight:700;${dividerStyle}">${gRev>0?fmt.money(gRev):'—'}</td>
       </tr>`;
-      html = `<div class="table-wrap"><table class="data">
+      html = `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('mktcost', 'adsspend')}</div><div class="table-wrap"><table class="data">
         <thead><tr>
           <th>Month</th>
           <th class="num">Ads Cost</th>
@@ -11368,7 +11374,7 @@ function renderAdsSpendSection(key) {
       // Mobile: same column structure
       const cellMobile = (v, base) => {
         if (!v || v === 0) return '—';
-        return `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pctOf(v, base)}</span>`;
+        return `${fmt.money(v)}${_mkShowP ? ` <span style="font-size:11px;color:var(--gray);">${pctOf(v, base)}</span>` : ''}`;
       };
       let mRows = '';
       rows.forEach(r => {
@@ -11380,7 +11386,7 @@ function renderAdsSpendSection(key) {
           <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${r.revenue>0?fmt.money(r.revenue):'—'}</td>
         </tr>`;
       });
-      html = `<div class="table-wrap"><table class="data">
+      html = `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('mktcost', 'adsspend')}</div><div class="table-wrap"><table class="data">
         <thead><tr>
           <th style="width:40px;min-width:40px;">Month</th>
           <th class="num">Ads Cost</th>
@@ -11426,6 +11432,7 @@ function renderAdsSpendSection(key) {
 function renderFunnelComboTable() {
   const wrap = document.getElementById('funnelComboTableWrap');
   if (!wrap) return;
+  const _fShowP = tblPctOn('funnel'); // v8.44: 每表 % 开关
 
   const year = document.getElementById('adsYear').value || String(new Date().getFullYear());
   const tab = state.adsTab || 'all';
@@ -11538,12 +11545,12 @@ function renderFunnelComboTable() {
     rows += `<tr>
       <td>${fmt.monthShort(m)}</td>
       <td class="num">${hideLead ? '—' : fmtNum(total)}</td>
-      <td class="num">${fmtNum(booked)}${bookedPct != null && !hideLead ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(bookedPct)})</span>` : ''}</td>
-      <td class="num">${fmtNum(showUp)}${showPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(showPct)})</span>` : ''}</td>
-      <td class="num">${fmtNum(noShow)}${noShowPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(noShowPct)})</span>` : ''}</td>
-      <td class="num">${useOutletFilter ? '—' : fmtMoney(adsCost)}${(!useOutletFilter && adsCost != null && totalRev > 0) ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(adsCost / totalRev)})</span>` : ''}</td>
+      <td class="num">${fmtNum(booked)}${_fShowP && bookedPct != null && !hideLead ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(bookedPct)})</span>` : ''}</td>
+      <td class="num">${fmtNum(showUp)}${_fShowP && showPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(showPct)})</span>` : ''}</td>
+      <td class="num">${fmtNum(noShow)}${_fShowP && noShowPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(noShowPct)})</span>` : ''}</td>
+      <td class="num">${useOutletFilter ? '—' : fmtMoney(adsCost)}${(_fShowP && !useOutletFilter && adsCost != null && totalRev > 0) ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(adsCost / totalRev)})</span>` : ''}</td>
       <td class="num">${showUp > 0 ? fmtMoney(adsSales / showUp) : '—'}</td>
-      <td class="num">${fmtMoney(adsSales)}${salesPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(salesPct)})</span>` : ''}</td>
+      <td class="num">${fmtMoney(adsSales)}${_fShowP && salesPct != null ? ` <span style="color:var(--gray);font-size:11px;">(${fmtPct(salesPct)})</span>` : ''}</td>
       <td class="num">${totalRev > 0 ? fmtMoney(totalRev) : '—'}</td>
       <td class="num">${fmtRoas(roasShown)}</td>
     </tr>`;
@@ -11560,6 +11567,7 @@ function renderFunnelComboTable() {
 
   wrap.innerHTML = `
   ${useOutletFilter ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ Ads Cost / ROAS hidden when outlet filter is on (ads cost not split by outlet)</div>' : ''}
+  <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('funnel', 'adsspend')}</div>
   <div class="table-wrap"><table class="data">
     <thead><tr>
       <th style="width:44px;">Month</th>
@@ -11576,12 +11584,12 @@ function renderFunnelComboTable() {
     <tfoot><tr class="total-row">
       <td>TOTAL</td>
       <td class="num">${hideLead ? '—' : fmtNum(tTotal)}</td>
-      <td class="num">${fmtNum(tBooked)}${totalBookedPct != null && !hideLead ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalBookedPct)})</span>` : ''}</td>
-      <td class="num">${fmtNum(tShow)}${totalShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalShowPct)})</span>` : ''}</td>
-      <td class="num">${fmtNum(tNoShow)}${totalNoShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalNoShowPct)})</span>` : ''}</td>
-      <td class="num">${useOutletFilter ? '—' : fmtMoney(totalCostShow)}${(!useOutletFilter && totalCostShow != null && tRev > 0) ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalCostShow / tRev)})</span>` : ''}</td>
+      <td class="num">${fmtNum(tBooked)}${_fShowP && totalBookedPct != null && !hideLead ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalBookedPct)})</span>` : ''}</td>
+      <td class="num">${fmtNum(tShow)}${_fShowP && totalShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalShowPct)})</span>` : ''}</td>
+      <td class="num">${fmtNum(tNoShow)}${_fShowP && totalNoShowPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalNoShowPct)})</span>` : ''}</td>
+      <td class="num">${useOutletFilter ? '—' : fmtMoney(totalCostShow)}${(_fShowP && !useOutletFilter && totalCostShow != null && tRev > 0) ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalCostShow / tRev)})</span>` : ''}</td>
       <td class="num">${tShow > 0 ? fmtMoney(tSales / tShow) : '—'}</td>
-      <td class="num">${fmtMoney(tSales)}${totalSalesPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalSalesPct)})</span>` : ''}</td>
+      <td class="num">${fmtMoney(tSales)}${_fShowP && totalSalesPct != null ? ` <span style="color:var(--gray);font-size:11px;font-weight:500;">(${fmtPct(totalSalesPct)})</span>` : ''}</td>
       <td class="num">${tRev > 0 ? fmtMoney(tRev) : '—'}</td>
       <td class="num">${useOutletFilter ? '—' : fmtRoas(totalRoas)}</td>
     </tr></tfoot>
@@ -11702,6 +11710,10 @@ function renderSpendingPower() {
   const isMobile = window.innerWidth < 767;
   document.getElementById('spendCountTable').innerHTML   = _buildSpendTable(mArr, counts, 'count', isMobile);
   document.getElementById('spendRevenueTable').innerHTML = _buildSpendTable(mArr, revs,   'rev',   isMobile);
+  // v8.44: 两张表共用一个 % 开关 (点哪个都同步)
+  const _spSeg = tblPctSeg('spendpower', 'adsspend');
+  const _sp1 = document.getElementById('spendPctToggle'); if (_sp1) _sp1.innerHTML = _spSeg;
+  const _sp2 = document.getElementById('spendPctToggle2'); if (_sp2) _sp2.innerHTML = _spSeg;
 
   // v5.50: 4. 双轴图 — 紫柱=Revenue (左轴), 橙折线=Head Count (右轴)
   // 支持月份 select: "Full year" 用 12 月加总, 选某月用单月数据
@@ -11849,7 +11861,8 @@ function _buildSpendTable(mArr, data, type, isMobile) {
 
   // v5.43: 金额用 fmt.money (RM xxx.xx 带小数点),不用 moneyK (整数+千分位)
   const fmtVal = (v) => type === 'count' ? (v>0 ? v : '—') : (v>0 ? fmt.money(v) : '—');
-  const fmtPct = (v, total) => total>0 && v>0 ? '(' + ((v/total)*100).toFixed(1)+'%)' : '';
+  const _spShowP = tblPctOn('spendpower'); // v8.44: 每表 % 开关 (关掉就整表不出 %)
+  const fmtPct = (v, total) => (_spShowP && total>0 && v>0) ? '(' + ((v/total)*100).toFixed(1)+'%)' : '';
 
   // 行总(每个月该行总和) = 用于算占比分母
   const monthTotals = activeMonthIdxs.map(mi => data[mi].reduce((s,v)=>s+v,0));
