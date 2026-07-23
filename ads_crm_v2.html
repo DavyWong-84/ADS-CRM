@@ -3388,7 +3388,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.56</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.58</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3439,7 +3439,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.56</div>
+      <div class="nav-brand-version">v8.58</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4866,15 +4866,32 @@ function autoBadgeHTML(l) {
 
 // v8.46: 从 apptDate 取出预约时间 → "2:00 PM"。
 //   GHL 推来的是 "2026-07-24 14:00"(带时间); 手动填的只有 "2026-07-24"(没时间)→ 回传 '' 不显示。
-function apptTimeOf(raw) {
-  if (!raw) return '';
-  const m = String(raw).trim().match(/^\d{4}-\d{2}-\d{2}[ T](\d{2}):(\d{2})/);
-  if (!m) return '';
-  let hr = parseInt(m[1], 10);
-  if (isNaN(hr)) return '';
-  const ampm = hr >= 12 ? 'PM' : 'AM';
-  hr = hr % 12 || 12;
-  return `${hr}:${m[2]} ${ampm}`;
+// v8.58: 后端 formatValue 会把 apptDate 输出成 yyyy-MM-dd (时间被切掉),
+//   但 remark 的活动记录写入时还带着完整时间 → apptDate 没时间就回头从 remark 捞。
+function _apptTimeFromRemark(l) {
+  if (!l || !l.remark) return '';
+  let hit = '';
+  String(l.remark).split(/\r?\n/).forEach(line => {
+    const m = line.match(/^\[Auto\]\s+\d{1,2}\s+\w{3}\s+\d{1,2}:\d{2}\s+(.+)$/);
+    if (!m) return;
+    const rest = m[1];
+    if (!/appt/i.test(rest)) return;                       // 只看跟预约有关的行
+    const t = rest.match(/(\d{1,2}:\d{2})\s*([AP]M)/i);    // 行首时间戳没有 AM/PM, 不会误抓
+    if (t) hit = `${t[1]} ${t[2].toUpperCase()}`;
+  });
+  return hit;
+}
+function apptTimeOf(raw, lead) {
+  const m = raw ? String(raw).trim().match(/^\d{4}-\d{2}-\d{2}[ T](\d{2}):(\d{2})/) : null;
+  if (m) {
+    let hr = parseInt(m[1], 10);
+    if (!isNaN(hr)) {
+      const ampm = hr >= 12 ? 'PM' : 'AM';
+      hr = hr % 12 || 12;
+      return `${hr}:${m[2]} ${ampm}`;
+    }
+  }
+  return lead ? _apptTimeFromRemark(lead) : '';
 }
 
 function remarkIconHTML(l) {
@@ -8804,7 +8821,7 @@ function renderListAsTableHTML(slice) {
     // dates
     const leadDt = l.leadDate ? fmt.monthDay(l.leadDate) : '—';
     const apptDt = l.apptDate ? fmt.monthDay(l.apptDate) : '—';
-    const apptTm = apptTimeOf(l.apptDate); // v8.46: GHL 推来的预约时间 (没有就空字串)
+    const apptTm = apptTimeOf(l.apptDate, l); // v8.46: GHL 推来的预约时间 (没有就空字串)
     const displayName = l.name || l.contact || '(no data)';
     // v6.85 codex P1: Spend 列 — Show Up 显示金额 (允许 0). 其他 status 显示 —.
     //   修前: Number(spend) > 0 → 0 显示成 — 跟 lead 一样, 用户分不清.
@@ -9044,8 +9061,9 @@ function renderList() {
   try {
     const _td = todayStr();
     const _nLead = (state.leads || []).filter(l => String(l.leadDate || '') === _td).length;
-    const _nAppt = (state.leads || []).filter(l => String(l.apptDate || '').slice(0, 10) === _td
-      && (l.status === 'booked' || l.status === 'done' || l.status === 'noshow')).length;
+    // v8.58: 跟 Inbox 同一口径 = 今天「建立」的预约 (不是今天到店的)
+    const _nAppt = (state.leads || []).filter(l => l.apptDate
+      && (typeof _apptReceivedAt === 'function' ? _apptReceivedAt(l) : false)).length;
     const _ah = document.getElementById('autoTodayHint');
     if (_ah) {
       _ah.innerHTML = `<b style="color:var(--black);font-weight:600;">Today</b>`
@@ -9123,7 +9141,7 @@ function renderList() {
         </div>
         <div class="lc-foot">
           <span class="lc-contact">${esc(l.contact || '')}</span>
-          ${l.apptDate ? `<span class="lc-sep">·</span><span class="lc-when${whenCls}">${fmt.monthDay(l.apptDate)}${apptTimeOf(l.apptDate) ? ` ${apptTimeOf(l.apptDate)}` : ''}</span>` : ''}
+          ${l.apptDate ? `<span class="lc-sep">·</span><span class="lc-when${whenCls}">${fmt.monthDay(l.apptDate)}${apptTimeOf(l.apptDate, l) ? ` ${apptTimeOf(l.apptDate, l)}` : ''}</span>` : ''}
           ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : ''}
           ${l.location ? `<span class="lc-location">${esc(l.location)}</span>` : ''}
           ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
@@ -20220,7 +20238,8 @@ function _inboxShortCh(name) {           // Google Ads → Google (右栏窄, �
 // v8.55: 「今天收到的预约」— Leads 表没有「预约建立时间」栏位, 只能从 remark 的活动记录解析。
 //   后端写入格式: "[Auto] 23 Jul 15:31 Appt received · …" / "Appt merged" / "Lead received · … · Appt …"
 //   回传当天那笔的 HH:MM (没有就 null)。
-function _apptReceivedAt(l) {
+//   v8.58: 抽成通用 — updatedAt 会被 Google Sheet 转成纯日期(时间被吃掉), 所以时间一律优先从 remark 取。
+function _remarkTimeToday(l, test) {
   if (!l || !l.remark) return null;
   const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const now = new Date();
@@ -20231,15 +20250,19 @@ function _apptReceivedAt(l) {
     const m = line.match(/^\[Auto\]\s+(\d{1,2})\s+(\w{3})\s+(\d{1,2}:\d{2})\s+(.+)$/);
     if (!m) return;
     if (String(m[1]).padStart(2, '0') !== dd || m[2] !== mon) return;   // 不是今天
-    const rest = m[4];
-    // 建立预约 = 自动来的 (Appt received / merged / Lead received 带 Appt)
-    //   + 手动填的 (Appt set: → …) — v8.56: 手动建立也要算
-    const isAppt = /^Appt received/i.test(rest) || /^Appt merged/i.test(rest)
-      || /^Appt set\s*:/i.test(rest)
-      || (/^Lead received/i.test(rest) && /·\s*Appt\s/i.test(rest));
-    if (isAppt) hit = m[3].padStart(5, '0');   // 取最后一笔当天的
+    if (test(m[4])) hit = m[3].padStart(5, '0');                        // 取最后一笔当天的
   });
   return hit;
+}
+// 今天「建立预约」: 自动来的 (Appt received / merged / Lead received 带 Appt) + 手动填的 (Appt set:)
+function _apptReceivedAt(l) {
+  return _remarkTimeToday(l, rest =>
+    /^Appt received/i.test(rest) || /^Appt merged/i.test(rest) || /^Appt set\s*:/i.test(rest)
+    || (/^Lead received/i.test(rest) && /·\s*Appt\s/i.test(rest)));
+}
+// 今天「lead 进来」的时刻
+function _leadAddedAt(l) {
+  return _remarkTimeToday(l, rest => /^Lead received/i.test(rest));
 }
 function _inboxApptStr(raw) {            // 2026-07-24 14:00 → 24 Jul 2:00PM (没时间就只给日期)
   if (!raw) return '';
@@ -20273,8 +20296,8 @@ function renderInboxActivity() {
   const row = (a) => {
     const l = a.l;
     const nm = (l.name && l.name.trim()) ? l.name : (l.contact || '—');
-    // 入库两组 = 几点进来的; 预约组 = 几点到店 (都是今天, 不用再显示日期)
-    let tm = String(l.updatedAt || '').slice(11, 16);
+    // 入库两组 = 几点进来的 (v8.58: remark 优先 — updatedAt 的时间常被 Sheet 吃掉)
+    let tm = _leadAddedAt(l) || String(l.updatedAt || '').slice(11, 16) || '';
     // v8.52: channel 带回 logo (跟 Contact 卡片一致)
     const _chObj = (state.channels || []).find(x => x.id === l.channelId);
     const _logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(l.channelName, _chObj && _chObj.color) : '';
@@ -20285,7 +20308,10 @@ function renderInboxActivity() {
       const loc = (state.locations || []).find(x => x.id === l.locationId);
       const on = (loc && loc.name) || l.location || '';
       tm = _apptReceivedAt(l) || tm;                 // v8.55: 几点收到这笔预约
-      const at = _inboxApptStr(l.apptDate);          // 约在哪天几点
+      // v8.58: 约在哪天几点 — apptDate 的时间被后端切掉了, 时间从 remark 捞
+      const _atTm = apptTimeOf(l.apptDate, l);
+      const at = (_inboxApptStr(l.apptDate) || '').replace(/\s+\d{1,2}:\d{2}(AM|PM)$/i, '')
+               + (_atTm ? ` ${_atTm}` : '');
       extra = (on ? `<span class="sl-out">${E(on)}</span>` : '') + chHtml
             + (at ? `<span class="sl-at" title="Appointment date">${E(at)}</span>` : '');
     }
@@ -20351,8 +20377,10 @@ function pendingRender() {
     const _todayAppt = _all.filter(l => String(l.apptDate || '').slice(0, 10) === _td
       && (l.status === 'booked' || l.status === 'done' || l.status === 'noshow')).length;
     // 今天自动入库的 (后端 flags.auto), 最新在前
+    // v8.58: 排序用「进来的时刻」(remark 优先), 跟画面显示的时间一致
+    const _leadTm = (l) => _leadAddedAt(l) || String(l.updatedAt || '').slice(11, 16) || '';
     const _auto = _all.filter(l => l.flags && l.flags.auto && String(l.leadDate || '') === _td)
-      .slice().sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+      .slice().sort((a, b) => _leadTm(b).localeCompare(_leadTm(a)));
     const _waiting = pendingData.filter(p => String(p.type || '').toLowerCase() !== 'reschedule_notice').length;
     // v8.46: 三类今日动态 — 自动入库 / 手动入库 / 新预约
     const _manual = _all.filter(l => !(l.flags && l.flags.auto) && String(l.leadDate || '') === _td);
@@ -20363,7 +20391,7 @@ function pendingRender() {
     const _st = document.getElementById('pendingStats');
     if (_st) _st.innerHTML =
         `<div class="ib-s"><div class="l">Today Lead</div><div class="v p">${_todayLead}</div></div>`
-      + `<div class="ib-s"><div class="l">Appt booked</div><div class="v g">${_apptToday.length}</div><div class="ib-s-sub">${_todayAppt} coming today</div></div>`
+      + `<div class="ib-s"><div class="l">Today Appt</div><div class="v g">${_apptToday.length}</div></div>`
       + `<div class="ib-s"><div class="l">Auto added</div><div class="v">${_auto.length}</div></div>`
       + `<div class="ib-s"><div class="l">Waiting</div><div class="v${_waiting ? '' : ' m'}">${_waiting}</div></div>`;
 
