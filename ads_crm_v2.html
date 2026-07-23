@@ -783,6 +783,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 /* v8.45: 表格里的 APPT / AUTO 徽章尺寸对齐右边的 Countdown chip */
 .tbl-view .badge { padding: 2px 8px; border-radius: 4px; font-weight: 500; letter-spacing: 0.2px; }
+/* v8.46: Ads Spend 顶行 — sync 状态 + % 开关同一行, 跟下面表格拉开距离 */
+.ads-topline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 26px; margin: 4px 2px 16px; }
 /* v8.46: GHL 推来的预约时间 (只有带时间的才显示) */
 .tbl-view .appt-time { font-size: 11px; color: var(--purple-deep); font-weight: 600; margin-top: 2px; }
 .appt-time-inline { color: var(--purple-deep); font-weight: 600; }
@@ -1024,93 +1026,6 @@ body.contact-view-table .modal-backdrop.open {
 .filter-tab { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; }
 .filter-tab.active { background: var(--purple); color: white; border-color: var(--purple); }
 
-/* v3.32: AI Guide Tooltip — page-aware contextual hint bubble */
-.ai-guide-tooltip {
-  position: fixed;
-  z-index: 9500;
-  max-width: 280px;
-  animation: aiGuideIn 0.25s ease-out;
-}
-.ai-guide-tooltip.fading {
-  animation: aiGuideOut 0.3s ease-in forwards;
-}
-.ai-guide-arrow {
-  position: absolute;
-  top: -6px;
-  right: 18px;
-  width: 12px;
-  height: 12px;
-  background: #fff;
-  border-left: 1px solid rgba(113,50,245,0.2);
-  border-top: 1px solid rgba(113,50,245,0.2);
-  transform: rotate(45deg);
-}
-.ai-guide-content {
-  background: #fff;
-  border: 1px solid rgba(113,50,245,0.2);
-  border-radius: 12px;
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 8px 28px rgba(113,50,245,0.15), 0 2px 6px rgba(0,0,0,0.06);
-  cursor: pointer;
-  transition: transform 0.15s;
-}
-.ai-guide-content:hover { transform: translateY(-1px); }
-.ai-guide-text {
-  font-size: 12.5px;
-  color: #333;
-  line-height: 1.5;
-  flex: 1;
-  font-weight: 500;
-}
-.ai-guide-close {
-  width: 20px;
-  height: 20px;
-  border: none;
-  background: transparent;
-  color: #999;
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-  border-radius: 50%;
-  flex-shrink: 0;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.ai-guide-close:hover { background: #f3f3f3; color: #555; }
-@keyframes aiGuideIn {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes aiGuideOut {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(-6px); }
-}
-/* Pulse ring on AI button when tooltip active */
-#aiTopbarBtn.ai-guide-pulse {
-  position: relative;
-}
-#aiTopbarBtn.ai-guide-pulse::after {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 2px solid var(--purple);
-  animation: aiGuidePulseRing 1.6s infinite;
-  pointer-events: none;
-}
-@keyframes aiGuidePulseRing {
-  0% { transform: scale(1); opacity: 0.7; }
-  100% { transform: scale(1.5); opacity: 0; }
-}
-@media (max-width: 767px) {
-  .ai-guide-tooltip { max-width: calc(100vw - 30px); }
-  .ai-guide-text { font-size: 12px; }
-}
 /* v5.31: removed orphan declaration block + dead .btn-delete-lead rules
    (DOM uses .btn-delete-lead-v38 only — see line ~515) */
 .filter-tab .count { opacity: 0.7; margin-left: 4px; font-size: 12px; }
@@ -3365,6 +3280,22 @@ body.contact-view-table .modal-backdrop.open {
 .ib-li:last-child { border-bottom: 0; }
 .ib-li .nm { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ib-li .mt { color: var(--silver); font-size: 11px; white-space: nowrap; flex: none; }
+/* v8.46: 右栏「今天的动态」— 分段 + 分组 + 单行 */
+.ib-actsub { font-size: 11px; color: var(--silver); margin-bottom: 9px; }
+.ib-actseg { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 4px; }
+.ib-actseg span { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; background: var(--surface-2); color: var(--gray); cursor: pointer; }
+.ib-actseg span.on { background: var(--purple); color: #fff; }
+.ib-actempty { font-size: 11.5px; color: var(--silver); padding: 10px 0; }
+.sl-grp { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; color: var(--silver); text-transform: uppercase; letter-spacing: 0.5px; margin: 13px 0 1px; }
+.sl-grp::after { content: ""; flex: 1; height: 1px; background: var(--border-light); }
+.sl-li { display: flex; align-items: center; gap: 7px; padding: 7px 0; border-bottom: 1px solid var(--border-light); font-size: 12.5px; white-space: nowrap; cursor: pointer; }
+.sl-li:last-child { border-bottom: 0; }
+.sl-li:hover { background: var(--surface-2); }
+.sl-tm { font-size: 11px; color: var(--silver); font-variant-numeric: tabular-nums; flex: none; width: 38px; }
+.sl-nm { font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.sl-out { font-size: 11px; font-weight: 600; color: var(--gray); flex: none; }
+.sl-ch { font-size: 10.5px; background: var(--surface-2); border-radius: 6px; padding: 1px 6px; color: var(--gray); font-weight: 500; flex: none; }
+.sl-at { font-size: 11px; color: var(--purple-deep); font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
 .ib-empty { background: var(--white); border: 1px dashed var(--border); border-radius: 10px; padding: 22px; text-align: center; }
 .ib-empty .t { font-size: 13.5px; font-weight: 600; color: var(--black); }
 .ib-empty .s { font-size: 11.5px; color: var(--silver); margin-top: 4px; }
@@ -3382,7 +3313,12 @@ body.contact-view-table .modal-backdrop.open {
 
 /* 第 2 行: 状态 chips 在左, 今日统计靠右 */
 .ct-line2 { display: flex; align-items: flex-start; gap: 12px; }
-@media (max-width: 768px) { .ct-line2 { flex-wrap: wrap; } .ct-line2 #autoTodayHint { padding-bottom: 0; margin-bottom: 8px; } }
+/* v8.47: 手机端 Today 统计改成独立一行放最上 (原本跟 chips 抢同一行, 把 chips 挤到被截断) */
+@media (max-width: 768px) {
+  .ct-line2 { flex-direction: column; gap: 0; }
+  .ct-line2 #autoTodayHint { order: -1; padding-bottom: 0; margin: 0 0 8px 2px; white-space: normal; }
+  .ct-line2 .filter-tabs-wrap { width: 100%; }
+}
 @media (max-width: 768px) {
   /* On mobile, fall back to top header button — re-show it */
   .contact-top-actions { display: flex !important; }
@@ -3434,7 +3370,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.46</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.48</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3485,7 +3421,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.46</div>
+      <div class="nav-brand-version">v8.48</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3893,7 +3829,11 @@ body.contact-view-table .modal-backdrop.open {
     </div>
     <div class="unified-header-spacer unified-header-spacer-tall"></div>
 
-    <div id="adsSyncStatus" style="display:none;font-size:12px;margin:0 0 10px 2px;"></div>
+    <!-- v8.46: sync 状态 + 每表 % 开关 并成同一行 (原本各占一行又贴太近) -->
+    <div class="ads-topline">
+      <div id="adsSyncStatus" style="display:none;font-size:12px;margin:0;"></div>
+      <span id="adsPctToggleHost" style="margin-left:auto;"></span>
+    </div>
 
     <div id="adsspend_content">
       <!-- Ads Cost panel -->
@@ -4177,18 +4117,7 @@ body.contact-view-table .modal-backdrop.open {
             </div>
           </div>
 
-          <div class="settings-group">
-            <div class="settings-group-title">Display</div>
-            <div class="settings-group-card">
-              <div class="settings-row" onclick="toggleAIGuideRow()">
-                <div>
-                  <div class="settings-row-label">AI guide hints</div>
-                  <div class="settings-row-sublabel">Show usage tips on each page</div>
-                </div>
-                <div id="settingsAIToggle_m" class="settings-toggle on"></div>
-              </div>
-            </div>
-          </div>
+          <!-- v8.46: Display 分组移除 (AI guide hints — AI 功能已下架) -->
 
         </div>
         <div class="settings-col-right">
@@ -4291,15 +4220,7 @@ body.contact-view-table .modal-backdrop.open {
           </div>
         </div>
 
-        <div class="settings-group">
-          <div class="settings-group-title">Display</div>
-          <div class="settings-group-card">
-            <div class="settings-md-nav-row" onclick="event.stopPropagation();toggleAIGuideRow()">
-              <span>AI guide hints</span>
-              <div id="settingsAIToggle" class="settings-toggle on"></div>
-            </div>
-          </div>
-        </div>
+        <!-- v8.46: Display 分组移除 (AI guide hints — AI 功能已下架) -->
 
         <div class="settings-group">
           <div class="settings-group-title">Data</div>
@@ -4467,7 +4388,6 @@ body.contact-view-table .modal-backdrop.open {
       <input type="text" id="gs_url">
       <input type="text" id="gs_token">
       <div id="gs_log"></div>
-      <input type="checkbox" id="aiGuideToggle">
       <div id="backupListContainer"></div>
     </div>
   </section>
@@ -11253,6 +11173,9 @@ function renderAdsSpend() {
 
 function renderAdsSpendSection(key) {
   // key = 'cost' | 'roas' | 'funnel' | 'cpl' | 'fees' | 'tmkt'
+  // v8.46: 顶行的 % 开关先清掉, 只有 funnel 会重新填 (免得别的 tab 看到别人的开关)
+  const _ptHost = document.getElementById('adsPctToggleHost');
+  if (_ptHost) _ptHost.innerHTML = '';
   // Each section renders into its panel div
   const year = document.getElementById('adsYear').value || String(new Date().getFullYear());
   const tab = state.adsTab || 'all';
@@ -11651,7 +11574,6 @@ function renderFunnelComboTable() {
 
   wrap.innerHTML = `
   ${useOutletFilter ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ Ads Cost / ROAS hidden when outlet filter is on (ads cost not split by outlet)</div>' : ''}
-  <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('funnel', 'adsspend')}</div>
   <div class="table-wrap"><table class="data">
     <thead><tr>
       <th style="width:44px;">Month</th>
@@ -11678,6 +11600,10 @@ function renderFunnelComboTable() {
       <td class="num">${useOutletFilter ? '—' : fmtRoas(totalRoas)}</td>
     </tr></tfoot>
   </table></div>`;
+
+  // v8.46: % 开关填到顶部那行 (跟 sync 状态同一行)
+  const _pt = document.getElementById('adsPctToggleHost');
+  if (_pt) _pt.innerHTML = tblPctSeg('funnel', 'adsspend');
 
   // v6.62: 漏斗图同步画 (老 renderFunnelChart 在 funnel tab 时已被 renderFunnelTab 跳过, 不再竞争)
   if (typeof _renderFunnelHorizontal === 'function') {
@@ -15132,9 +15058,7 @@ function editRevRow(month, locationId) {
 // ---------- Settings ----------
 function renderSettings() {
   loadGitHubConfig();
-  // v3.32: sync AI guide toggle state
-  const tgl = document.getElementById('aiGuideToggle');
-  if (tgl) tgl.checked = isAIGuideEnabled();
+  // v8.46: AI guide 已移除
   document.getElementById('channelsList').innerHTML = state.channels.map(c => {
     const isActive = c.active !== false;
     const statusColor = isActive ? 'var(--green-dark)' : 'var(--gray)';
@@ -15217,20 +15141,7 @@ function updateSettingsRowStatuses() {
   const ghToken = document.getElementById('gh_token')?.value;
   setBoth('settingsGitHubStatus', (ghOwner && ghRepo && ghToken) ? 'Configured' : 'Not configured');
 
-  // AI Toggle (both desktop and mobile have toggle elements)
-  const enabled = (typeof isAIGuideEnabled === 'function') ? isAIGuideEnabled() : false;
-  ['settingsAIToggle', 'settingsAIToggle_m'].forEach(id => {
-    const t = document.getElementById(id);
-    if (t) t.classList.toggle('on', enabled);
-  });
-}
-
-// v5.75: Toggle AI guide hints from settings row
-function toggleAIGuideRow() {
-  if (typeof isAIGuideEnabled !== 'function' || typeof setAIGuideEnabled !== 'function') return;
-  const cur = isAIGuideEnabled();
-  setAIGuideEnabled(!cur);
-  updateSettingsRowStatuses();
+  // v8.46: AI guide toggle 已移除
 }
 
 // v5.75: Confirm before clearing cache (was direct btn click before)
@@ -15488,10 +15399,9 @@ function _renderModalStoresList() {
   if (!target) return;
   target.innerHTML = (state.locations || []).map(l => {
     const isActive = l.active !== false;
-    const color = l.color || (typeof hashColor === 'function' ? hashColor(l.name) : '#888');
     return `<div class="cl-row cfg-row ${isActive ? '' : 'inactive'}">
       <div class="cl-row-left">
-        <span class="cl-color-dot" style="background:${color};cursor:default;" title="自动生成 (Locations 不支持自定义颜色)"></span>
+        <!-- v8.46: 门店颜色圆点移除 (Davy: 太多颜色) -->
         <div class="cl-row-info">
           <div class="cl-row-name">${esc(l.name)}</div>
           <div class="cfg-fields">
@@ -18383,9 +18293,7 @@ function openAIChat() {
   const bd = document.getElementById('aiChatBackdrop');
   if (!bd) return;
   bd.classList.add('open');
-  // v3.32: Mark "used AI today" → no more guide tooltips today
-  if (typeof aiGuideMarkOpened === 'function') aiGuideMarkOpened();
-  if (typeof hideAIGuideTooltip === 'function') hideAIGuideTooltip();
+  // v8.46: AI guide 已移除
   bd.classList.add('open');
   setAIModel(getAIModel()); // Sync label
   loadAIHistory(); // Restore history from localStorage
@@ -19978,172 +19886,6 @@ let _backExitTimer = null;
   // So we ONLY resize the modal, we DO NOT scroll messages.
 })();
 
-// ====== v3.32: AI Guide Tooltip — page-aware contextual hints ======
-// Shows a tiny bubble near the 🤖 button after 10s dwell time, auto-fades after 3s.
-// Max 3 global shows per day. Never shows on New Lead page or forms.
-// Never shows if user already opened AI today. Respects master toggle in Settings.
-
-window.AI_GUIDE_TIPS = {
-  'summary':   { icon: '🤖', text: '想快速解读？问我「本月 ROAS 怎么样」' },
-  'store':     { icon: '🤖', text: '3 店对比？问我「哪家店新客最多」' },
-  'adsspend':  { icon: '🤖', text: '想找浪费钱？问我「哪个渠道 ROI 最低」' },
-  'revenue':   { icon: '🤖', text: '看趋势？问我「Cheras 这 6 个月走势」' },
-  'entry':     { icon: '🤖', text: '填完数据？问我「这个月有什么变化」' },
-};
-
-window.AI_GUIDE_STORAGE = {
-  ENABLED: 'ads_crm_ai_guide_enabled',
-  LAST_SHOWN_DATE: 'ads_crm_ai_guide_date',
-  SHOWN_COUNT: 'ads_crm_ai_guide_count',
-  AI_OPENED_DATE: 'ads_crm_ai_opened_date',
-  DISMISSED_TIPS: 'ads_crm_ai_guide_dismissed',
-};
-
-window.AI_GUIDE_DAILY_MAX = 3;
-window.AI_GUIDE_DWELL_MS = 10000;
-window.AI_GUIDE_FADE_MS = 8000;    // v3.35: 8s visible (was 3s — too fast to read)
-
-// v3.33 hotfix: use window property to avoid TDZ (Temporal Dead Zone)
-// because nav() can fire at app startup before this script block's let declarations init
-if (typeof window._aiGuideTimer === 'undefined') window._aiGuideTimer = null;
-
-function isAIGuideEnabled() {
-  if (!window.AI_GUIDE_STORAGE) return false;
-  const v = localStorage.getItem(window.AI_GUIDE_STORAGE.ENABLED);
-  return v === null ? true : v === '1';
-}
-function setAIGuideEnabled(on) {
-  if (!window.AI_GUIDE_STORAGE) return;
-  localStorage.setItem(window.AI_GUIDE_STORAGE.ENABLED, on ? '1' : '0');
-}
-
-function aiGuideTodayStr() {
-  const d = new Date();
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-}
-
-function aiGuideShownToday() {
-  if (!window.AI_GUIDE_STORAGE) return 0;
-  const date = localStorage.getItem(window.AI_GUIDE_STORAGE.LAST_SHOWN_DATE);
-  if (date !== aiGuideTodayStr()) {
-    // Reset count for new day
-    localStorage.setItem(window.AI_GUIDE_STORAGE.LAST_SHOWN_DATE, aiGuideTodayStr());
-    localStorage.setItem(window.AI_GUIDE_STORAGE.SHOWN_COUNT, '0');
-    return 0;
-  }
-  return parseInt(localStorage.getItem(window.AI_GUIDE_STORAGE.SHOWN_COUNT) || '0', 10);
-}
-
-function aiGuideIncrementCount() {
-  if (!window.AI_GUIDE_STORAGE) return;
-  const n = aiGuideShownToday() + 1;
-  localStorage.setItem(window.AI_GUIDE_STORAGE.SHOWN_COUNT, String(n));
-}
-
-function aiGuideMarkOpened() {
-  if (!window.AI_GUIDE_STORAGE) return;
-  localStorage.setItem(window.AI_GUIDE_STORAGE.AI_OPENED_DATE, aiGuideTodayStr());
-}
-
-function aiGuideWasOpenedToday() {
-  if (!window.AI_GUIDE_STORAGE) return false;
-  return localStorage.getItem(window.AI_GUIDE_STORAGE.AI_OPENED_DATE) === aiGuideTodayStr();
-}
-
-function aiGuideIsDismissed(pageKey) {
-  if (!window.AI_GUIDE_STORAGE) return false;
-  try {
-    const arr = JSON.parse(localStorage.getItem(window.AI_GUIDE_STORAGE.DISMISSED_TIPS) || '[]');
-    return arr.includes(pageKey);
-  } catch(e) { return false; }
-}
-
-function aiGuideDismiss(pageKey) {
-  if (!window.AI_GUIDE_STORAGE) return;
-  try {
-    const arr = JSON.parse(localStorage.getItem(window.AI_GUIDE_STORAGE.DISMISSED_TIPS) || '[]');
-    if (!arr.includes(pageKey)) {
-      arr.push(pageKey);
-      localStorage.setItem(window.AI_GUIDE_STORAGE.DISMISSED_TIPS, JSON.stringify(arr));
-    }
-  } catch(e) {}
-}
-
-function hideAIGuideTooltip() {
-  const el = document.getElementById('aiGuideTooltip');
-  if (el) {
-    el.classList.add('fading');
-    setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
-  }
-  const btn = document.getElementById('aiTopbarBtn');
-  if (btn) btn.classList.remove('ai-guide-pulse');
-}
-
-function showAIGuideTooltip(pageKey) {
-  const tip = window.AI_GUIDE_TIPS[pageKey];
-  if (!tip) return;
-  hideAIGuideTooltip(); // clean any previous
-  const btn = document.getElementById('aiTopbarBtn');
-  if (!btn) return;
-  const rect = btn.getBoundingClientRect();
-  const tooltip = document.createElement('div');
-  tooltip.id = 'aiGuideTooltip';
-  tooltip.className = 'ai-guide-tooltip';
-  tooltip.innerHTML = `
-    <div class="ai-guide-arrow"></div>
-    <div class="ai-guide-content">
-      <span class="ai-guide-text">${tip.icon} ${tip.text}</span>
-      <button type="button" class="ai-guide-close" aria-label="Dismiss">×</button>
-    </div>
-  `;
-  // Position below the button, right-aligned
-  const top = rect.bottom + 10;
-  const right = Math.max(10, window.innerWidth - rect.right - 4);
-  tooltip.style.top = top + 'px';
-  tooltip.style.right = right + 'px';
-  document.body.appendChild(tooltip);
-  btn.classList.add('ai-guide-pulse');
-  // Click tooltip body (not close) → open AI
-  tooltip.querySelector('.ai-guide-content').addEventListener('click', (e) => {
-    if (e.target.classList.contains('ai-guide-close')) {
-      aiGuideDismiss(pageKey);
-      hideAIGuideTooltip();
-      return;
-    }
-    hideAIGuideTooltip();
-    openAIChat();
-  });
-  aiGuideIncrementCount();
-  // Auto-fade after 3s
-  setTimeout(() => hideAIGuideTooltip(), window.AI_GUIDE_FADE_MS);
-}
-
-function maybeTriggerAIGuide(pageKey) {
-  try {
-    if (window._aiGuideTimer) { clearTimeout(window._aiGuideTimer); window._aiGuideTimer = null; }
-    hideAIGuideTooltip();
-    // v3.34: defensive — tips might not be loaded yet on first nav() call
-    if (!window.AI_GUIDE_TIPS || !window.AI_GUIDE_STORAGE) return;
-    if (!isAIGuideEnabled()) return;
-    if (!window.AI_GUIDE_TIPS[pageKey]) return;
-    if (aiGuideIsDismissed(pageKey)) return;
-    if (aiGuideWasOpenedToday()) return;
-    if (aiGuideShownToday() >= (window.AI_GUIDE_DAILY_MAX || 3)) return;
-    window._aiGuideTimer = setTimeout(() => showAIGuideTooltip(pageKey), window.AI_GUIDE_DWELL_MS || 10000);
-  } catch(err) {
-    console.warn('[AI Guide] skipped:', err.message);
-  }
-}
-
-// v3.32: Reset dismissed tips (Settings button)
-function resetAIGuideDismissals() {
-  if (!window.AI_GUIDE_STORAGE) return;
-  localStorage.removeItem(window.AI_GUIDE_STORAGE.DISMISSED_TIPS);
-  localStorage.removeItem(window.AI_GUIDE_STORAGE.AI_OPENED_DATE);
-  localStorage.setItem(window.AI_GUIDE_STORAGE.SHOWN_COUNT, '0');
-  if (typeof toast === 'function') toast('已重置 ✓ 现在可以重新看到提示');
-}
-
 window.addEventListener('beforeunload', () => { saveAIHistory(); });
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') saveAIHistory();
@@ -20458,6 +20200,73 @@ let _pendingActiveTab = (() => {
   } catch (e) { return 'lead'; }
 })();
 
+// ── v8.46: Inbox 右栏「今天的动态」— 自动入库 / 手动入库 / 新预约, 分段 + 分组, 每笔一行 ──
+let _inboxActs = [], _inboxCounts = { auto: 0, manual: 0, appt: 0 }, _inboxActSeg = 'all';
+function inboxSetActSeg(seg) { _inboxActSeg = seg; renderInboxActivity(); }
+function _inboxShortCh(name) {           // Google Ads → Google (右栏窄, 用短名)
+  return String(name || '').trim().replace(/\s*Ads$/i, '');
+}
+function _inboxApptStr(raw) {            // 2026-07-24 14:00 → 24 Jul 2:00PM (没时间就只给日期)
+  if (!raw) return '';
+  const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const m = String(raw).trim().match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+  if (!m) return '';
+  const day = parseInt(m[3], 10), mon = MO[parseInt(m[2], 10) - 1] || '?';
+  if (!m[4]) return `${day} ${mon}`;
+  let hr = parseInt(m[4], 10);
+  const ap = hr >= 12 ? 'PM' : 'AM';
+  hr = hr % 12 || 12;
+  return `${day} ${mon} ${hr}:${m[5]}${ap}`;
+}
+function renderInboxActivity() {
+  const box = document.getElementById('pendingAutoList');
+  const ttl = document.getElementById('pendingAutoTitle');
+  if (!box) return;
+  const E = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s == null ? '' : s));
+  const c = _inboxCounts, total = c.auto + c.manual + c.appt;
+  if (ttl) ttl.textContent = '今天的动态';
+
+  let h = `<div class="ib-actsub">自动 ${c.auto} · 手动 ${c.manual} · 新预约 ${c.appt}</div>`;
+  h += `<div class="ib-actseg">` + [['all', '全部', total], ['auto', '自动', c.auto], ['manual', '手动', c.manual], ['appt', '预约', c.appt]]
+    .map(([k, lb, n]) => `<span class="${_inboxActSeg === k ? 'on' : ''}" onclick="inboxSetActSeg('${k}')">${lb} ${n}</span>`).join('') + `</div>`;
+
+  if (!total) {
+    box.innerHTML = h + `<div class="ib-actempty">今天还没有动态</div>`;
+    return;
+  }
+
+  const row = (a) => {
+    const l = a.l;
+    const nm = (l.name && l.name.trim()) ? l.name : (l.contact || '—');
+    const tm = String(l.updatedAt || '').slice(11, 16);
+    const ch = _inboxShortCh(l.channelName);
+    let extra = ch ? `<span class="sl-ch">${E(ch)}</span>` : '';
+    if (a.k === 'appt') {
+      const loc = (state.locations || []).find(x => x.id === l.locationId);
+      const on = (loc && loc.name) || l.location || '';
+      const at = _inboxApptStr(l.apptDate);
+      extra = (on ? `<span class="sl-out">${E(on)}</span>` : '')
+            + (ch ? `<span class="sl-ch">${E(ch)}</span>` : '')
+            + (at ? `<span class="sl-at">${E(at)}</span>` : '');
+    }
+    return `<div class="sl-li" onclick="nav('contact');setTimeout(function(){ if(typeof editLead==='function') editLead('${E(l.id)}'); },60);" title="打开这笔资料">`
+      + `<span class="sl-tm">${E(tm)}</span><span class="sl-nm">${E(nm)}</span>${extra}</div>`;
+  };
+
+  if (_inboxActSeg === 'all') {
+    [['appt', '新预约', c.appt], ['auto', '自动入库', c.auto], ['manual', '手动入库', c.manual]].forEach(([k, lb, n]) => {
+      if (!n) return;
+      const items = _inboxActs.filter(a => a.k === k);
+      h += `<div class="sl-grp">${lb} · ${n}</div>` + items.slice(0, 6).map(row).join('');
+      if (items.length > 6) h += `<div class="sl-li" style="color:var(--silver);"><span class="sl-tm"></span>还有 ${items.length - 6} 笔…</div>`;
+    });
+  } else {
+    const items = _inboxActs.filter(a => a.k === _inboxActSeg);
+    h += items.length ? items.map(row).join('') : `<div class="ib-actempty">这一类今天没有记录</div>`;
+  }
+  box.innerHTML = h;
+}
+
 function pendingSetTab(tab) {
   _pendingActiveTab = tab;
   try { localStorage.setItem('pendingActiveTab', tab); } catch (e) {}
@@ -20511,18 +20320,18 @@ function pendingRender() {
       + `<div class="ib-s"><div class="l">Auto added</div><div class="v">${_auto.length}</div></div>`
       + `<div class="ib-s"><div class="l">Waiting</div><div class="v${_waiting ? '' : ' m'}">${_waiting}</div></div>`;
 
-    const _al = document.getElementById('pendingAutoList');
-    const _at = document.getElementById('pendingAutoTitle');
-    if (_at) _at.textContent = `今天自动入库 · ${_auto.length}`;
-    if (_al) {
-      _al.innerHTML = _auto.length
-        ? _auto.slice(0, 8).map(l => {
-            const _nm = (l.name && l.name.trim()) ? l.name : (l.contact || '—');
-            const _tm = String(l.updatedAt || '').slice(11, 16);
-            return `<div class="ib-li"><span class="nm">${esc(_nm)}</span><span class="mt">${esc(l.channelName || '')}${_tm ? ' · ' + _tm : ''}</span></div>`;
-          }).join('') + (_auto.length > 8 ? `<div class="ib-li" style="color:var(--silver);">还有 ${_auto.length - 8} 笔…</div>` : '')
-        : `<div style="font-size:12px;color:var(--silver);padding:6px 0;">今天还没有自动入库的记录</div>`;
-    }
+    // v8.46: 三类今日动态 — 自动入库 / 手动入库 / 新预约
+    const _manual = _all.filter(l => !(l.flags && l.flags.auto) && String(l.leadDate || '') === _td);
+    const _apptToday = _all.filter(l => String(l.updatedAt || '').slice(0, 10) === _td
+      && l.apptDate && (l.status === 'booked' || l.status === 'done' || l.status === 'noshow'));
+    _inboxActs = []
+      .concat(_auto.map(l => ({ k: 'auto', l })))
+      .concat(_manual.map(l => ({ k: 'manual', l })))
+      .concat(_apptToday.map(l => ({ k: 'appt', l })));
+    _inboxActs.sort((a, b) => String(b.l.updatedAt || '').localeCompare(String(a.l.updatedAt || '')));
+    _inboxCounts = { auto: _auto.length, manual: _manual.length, appt: _apptToday.length };
+    renderInboxActivity();
+
     const _es = document.getElementById('pendingEmptySub');
     if (_es) _es.textContent = _auto.length
       ? `自动化正常运作中 · 今天 ${_auto.length} 笔自动入库，没有需要手动确认的`
