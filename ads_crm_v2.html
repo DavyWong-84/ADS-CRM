@@ -483,20 +483,6 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
 .badge-lead { background: var(--surface-2); color: var(--gray); }
 .badge-booked { background: rgba(113,50,245,0.12); color: var(--purple-deep); }
-/* v3.40: Appointment day chip — shows Today / in X days / overdue */
-.appt-day-chip {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 8px;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
-  line-height: 1.5;
-}
-.appt-day-chip.appt-today { background: #FEF3C7; color: #B45309; border: 0.5px solid #FCD34D; }
-.appt-day-chip.appt-upcoming { background: #E6F1FB; color: #185FA5; }
-.appt-day-chip.appt-overdue { background: #FEE2E2; color: #B91C1C; }
 .badge-pending { background: var(--amber-subtle); color: var(--amber); }
 .badge-done { background: var(--green-subtle); color: var(--green-dark); }
 .badge-noshow { background: var(--red-subtle); color: var(--red); }
@@ -615,6 +601,28 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .lead-item .lc-foot { display: flex; gap: 12px; font-size: 11px; color: var(--gray); padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.04); flex-wrap: wrap; }
 .lead-item .lc-foot strong { color: #374151; font-weight: 500; }
 .lead-item .lc-foot .muted { opacity: 0.45; }
+/* ── v8.51: 卡片改两行紧凑 (方案 A) ───────────────────────────────
+   行1 = 名字 + AUTO + status；行2 = 电话 · 预约时间 + 门店 + channel   */
+.lead-item.lead-compact-v2 .lc-foot,
+.lead-item .lc-foot { align-items: center; gap: 7px; border-top: none; padding-top: 0; }
+.lead-item .lc-head { margin-bottom: 5px; }
+.lead-item .lc-foot .lc-contact { font-size: 12px; color: #374151; font-variant-numeric: tabular-nums; font-weight: 500; }
+.lead-item .lc-foot .lc-sep { color: var(--border); }
+.lead-item .lc-foot .lc-when { font-size: 12px; font-weight: 700; color: var(--purple-deep); font-variant-numeric: tabular-nums; }
+.lead-item .lc-foot .lc-when.muted-when { color: var(--gray); font-weight: 500; }
+/* 今天要来 = 琥珀色；已过期没处理 = 红色 (取代原本的倒数 pill) */
+.lead-item .lc-foot .lc-when.when-today { color: var(--amber); }
+.lead-item .lc-foot .lc-when.when-overdue { color: var(--red); }
+.lead-item .lc-foot .lc-amt { font-size: 12.5px; color: var(--purple); font-weight: 700; }
+.lead-item .lc-foot .lc-location { margin-left: auto; }
+.lead-item .lc-foot .lc-channel { margin-left: 0; }
+/* v8.51: AUTO 和 status 两个 pill 尺寸完全一致, 只用颜色区分主次 */
+.lead-item .lc-head .badge {
+  padding: 2px 7px; border-radius: 4px; font-size: 9.5px;
+  font-weight: 700; letter-spacing: 0.3px; line-height: 1.5;
+}
+.lead-item .lc-head .badge-auto { margin-left: 6px; }
+
 /* v8.48 修回归: channel 必须 inline-flex + align-items:center, 否则 logo 跟文字对不齐
    (v8.45 误把它跟 lc-location 共用同一条规则, 一起被改成 inline-block) */
 .lead-item .lc-foot .lc-channel {
@@ -3305,7 +3313,7 @@ body.contact-view-table .modal-backdrop.open {
 .sl-tm { font-size: 11px; color: var(--silver); font-variant-numeric: tabular-nums; flex: none; width: 38px; }
 .sl-nm { font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .sl-out { font-size: 11px; font-weight: 600; color: var(--gray); flex: none; }
-.sl-ch { font-size: 10.5px; background: var(--surface-2); border-radius: 6px; padding: 1px 6px; color: var(--gray); font-weight: 500; flex: none; }
+.sl-ch { font-size: 10.5px; background: var(--surface-2); border-radius: 6px; padding: 2px 6px; color: var(--gray); font-weight: 500; flex: none; display: inline-flex; align-items: center; gap: 4px; line-height: 1; }
 .sl-at { font-size: 11px; color: var(--purple-deep); font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
 .ib-empty { background: var(--white); border: 1px dashed var(--border); border-radius: 10px; padding: 22px; text-align: center; }
 .ib-empty .t { font-size: 13.5px; font-weight: 600; color: var(--black); }
@@ -3324,10 +3332,11 @@ body.contact-view-table .modal-backdrop.open {
 
 /* 第 2 行: 状态 chips 在左, 今日统计靠右 */
 .ct-line2 { display: flex; align-items: flex-start; gap: 12px; }
-/* v8.47: 手机端 Today 统计改成独立一行放最上 (原本跟 chips 抢同一行, 把 chips 挤到被截断) */
+/* v8.47: 手机端 Today 统计独立一行 (原本跟 chips 抢同一行, 把 chips 挤到被截断)
+   v8.50: 顺序改成 chips 在上、Today 在下 → 紧贴卡片列表上方 */
 @media (max-width: 768px) {
   .ct-line2 { flex-direction: column; gap: 0; }
-  .ct-line2 #autoTodayHint { order: -1; padding-bottom: 0; margin: 0 0 8px 2px; white-space: normal; }
+  .ct-line2 #autoTodayHint { padding-bottom: 0; margin: 2px 0 10px 2px; white-space: normal; }
   .ct-line2 .filter-tabs-wrap { width: 100%; }
 }
 @media (max-width: 768px) {
@@ -3381,7 +3390,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.49</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.52</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3432,7 +3441,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.49</div>
+      <div class="nav-brand-version">v8.52</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4075,14 +4084,14 @@ body.contact-view-table .modal-backdrop.open {
         <div id="pendingTabBarHost" style="margin-bottom:12px;"></div>
         <div id="pendingEmpty" style="display:none;">
           <div class="ib-empty">
-            <div class="t">✓ 全部处理完了</div>
-            <div class="s" id="pendingEmptySub">自动化正常运作中，没有需要手动确认的记录</div>
+            <div class="t">✓ All caught up</div>
+            <div class="s" id="pendingEmptySub">Automation is running — nothing to confirm</div>
           </div>
         </div>
         <div id="pendingList"></div>
       </div>
       <div class="ib-panel">
-        <h4 id="pendingAutoTitle">今天自动入库</h4>
+        <h4 id="pendingAutoTitle">Today's activity</h4>
         <div id="pendingAutoList"></div>
       </div>
     </div>
@@ -9088,24 +9097,24 @@ function renderList() {
             </div>
           </div>
           <div class="lc-foot">
-            <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong>${timeStr ? ` <span style="color:var(--silver);font-weight:400;">${timeStr}</span>` : ''}</span>
+            <span class="lc-contact">${esc(l.contact || '')}</span>
+            <span class="lc-sep">·</span>
+            <span class="lc-when muted-when">Lead ${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}${timeStr ? ` ${timeStr.replace(/[()]/g, '')}` : ''}</span>
             ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
           </div>
         </div></div>`;
       }
       // Booked / Done / No show — same standard layout
       const showAmt = l.status === 'done' && l.spend;
-      // v3.40: Appt day badge — only for Booked status with apptDate
-      let apptDayBadge = '';
+      // v8.51: 倒数 pill 移除 (方案 A — 预约时间已经讲清楚)。
+      //   但「今天 / 已过期」仍要看得出来 → 用预约时间本身的颜色表示。
+      let whenCls = '';
       if (l.status === 'booked' && l.apptDate) {
-        const today0 = new Date(); today0.setHours(0,0,0,0);
-        const appt0 = new Date(l.apptDate + 'T00:00:00');
+        const today0 = new Date(); today0.setHours(0, 0, 0, 0);
+        const appt0 = new Date(String(l.apptDate).slice(0, 10) + 'T00:00:00');
         const diff = Math.round((appt0 - today0) / 86400000);
-        let text, cls2;
-        if (diff === 0) { text = 'Today'; cls2 = 'appt-today'; }
-        else if (diff > 0) { text = `in ${diff} day${diff > 1 ? 's' : ''}`; cls2 = 'appt-upcoming'; }
-        else { const ov = -diff; text = `${ov} day${ov > 1 ? 's' : ''} overdue`; cls2 = 'appt-overdue'; }
-        apptDayBadge = `<span class="appt-day-chip ${cls2}">${text}</span>`;
+        if (diff === 0) whenCls = ' when-today';
+        else if (diff < 0) whenCls = ' when-overdue';
       }
       return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${esc(l.id)}')">
         <div class="lc-head">
@@ -9115,16 +9124,12 @@ function renderList() {
             <span class="badge badge-${l.status}">${statusLabelText}</span>
           </div>
         </div>
-        <div class="lc-body">
-          <span class="lc-contact">${esc(l.contact || '')}</span>
-          ${apptDayBadge}
-          ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : ''}
-        </div>
         <div class="lc-foot">
-          <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
-          <span class="${l.apptDate ? '' : 'muted'}">Appt: <strong>${l.apptDate ? fmt.monthDay(l.apptDate) : '—'}</strong>${apptTimeOf(l.apptDate) ? ` <span class="appt-time-inline">${apptTimeOf(l.apptDate)}</span>` : ''}</span>
-          ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
+          <span class="lc-contact">${esc(l.contact || '')}</span>
+          ${l.apptDate ? `<span class="lc-sep">·</span><span class="lc-when${whenCls}">${fmt.monthDay(l.apptDate)}${apptTimeOf(l.apptDate) ? ` ${apptTimeOf(l.apptDate)}` : ''}</span>` : ''}
+          ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : ''}
           ${l.location ? `<span class="lc-location">${esc(l.location)}</span>` : ''}
+          ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
         </div>
       </div></div>`;
     }).join('');
@@ -20233,14 +20238,14 @@ function renderInboxActivity() {
   if (!box) return;
   const E = (typeof escapeHTML === 'function') ? escapeHTML : (s => String(s == null ? '' : s));
   const c = _inboxCounts, total = c.auto + c.manual + c.appt;
-  if (ttl) ttl.textContent = '今天的动态';
+  if (ttl) ttl.textContent = "Today's activity";
 
-  let h = `<div class="ib-actsub">自动 ${c.auto} · 手动 ${c.manual} · 新预约 ${c.appt}</div>`;
-  h += `<div class="ib-actseg">` + [['all', '全部', total], ['auto', '自动', c.auto], ['manual', '手动', c.manual], ['appt', '预约', c.appt]]
+  let h = `<div class="ib-actsub">Auto ${c.auto} · Manual ${c.manual} · Appt received ${c.appt}</div>`;
+  h += `<div class="ib-actseg">` + [['all', 'All', total], ['auto', 'Auto', c.auto], ['manual', 'Manual', c.manual], ['appt', 'Appt', c.appt]]
     .map(([k, lb, n]) => `<span class="${_inboxActSeg === k ? 'on' : ''}" onclick="inboxSetActSeg('${k}')">${lb} ${n}</span>`).join('') + `</div>`;
 
   if (!total) {
-    box.innerHTML = h + `<div class="ib-actempty">今天还没有动态</div>`;
+    box.innerHTML = h + `<div class="ib-actempty">No activity today</div>`;
     return;
   }
 
@@ -20248,30 +20253,33 @@ function renderInboxActivity() {
     const l = a.l;
     const nm = (l.name && l.name.trim()) ? l.name : (l.contact || '—');
     const tm = String(l.updatedAt || '').slice(11, 16);
+    // v8.52: channel 带回 logo (跟 Contact 卡片一致)
+    const _chObj = (state.channels || []).find(x => x.id === l.channelId);
+    const _logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(l.channelName, _chObj && _chObj.color) : '';
     const ch = _inboxShortCh(l.channelName);
-    let extra = ch ? `<span class="sl-ch">${E(ch)}</span>` : '';
+    const chHtml = ch ? `<span class="sl-ch">${_logo}${E(ch)}</span>` : '';
+    let extra = chHtml;
     if (a.k === 'appt') {
       const loc = (state.locations || []).find(x => x.id === l.locationId);
       const on = (loc && loc.name) || l.location || '';
-      const at = _inboxApptStr(l.apptDate);
-      extra = (on ? `<span class="sl-out">${E(on)}</span>` : '')
-            + (ch ? `<span class="sl-ch">${E(ch)}</span>` : '')
-            + (at ? `<span class="sl-at">${E(at)}</span>` : '');
+      const at = _inboxApptStr(l.apptDate);   // 这是「约在哪天」, 不是今天
+      extra = (on ? `<span class="sl-out">${E(on)}</span>` : '') + chHtml
+            + (at ? `<span class="sl-at" title="Appointment date">${E(at)}</span>` : '');
     }
     return `<div class="sl-li" onclick="nav('contact');setTimeout(function(){ if(typeof editLead==='function') editLead('${E(l.id)}'); },60);" title="打开这笔资料">`
       + `<span class="sl-tm">${E(tm)}</span><span class="sl-nm">${E(nm)}</span>${extra}</div>`;
   };
 
   if (_inboxActSeg === 'all') {
-    [['appt', '新预约', c.appt], ['auto', '自动入库', c.auto], ['manual', '手动入库', c.manual]].forEach(([k, lb, n]) => {
+    [['appt', 'Appointments received', c.appt], ['auto', 'Auto added', c.auto], ['manual', 'Added manually', c.manual]].forEach(([k, lb, n]) => {
       if (!n) return;
       const items = _inboxActs.filter(a => a.k === k);
       h += `<div class="sl-grp">${lb} · ${n}</div>` + items.slice(0, 6).map(row).join('');
-      if (items.length > 6) h += `<div class="sl-li" style="color:var(--silver);"><span class="sl-tm"></span>还有 ${items.length - 6} 笔…</div>`;
+      if (items.length > 6) h += `<div class="sl-li" style="color:var(--silver);"><span class="sl-tm"></span>+${items.length - 6} more</div>`;
     });
   } else {
     const items = _inboxActs.filter(a => a.k === _inboxActSeg);
-    h += items.length ? items.map(row).join('') : `<div class="ib-actempty">这一类今天没有记录</div>`;
+    h += items.length ? items.map(row).join('') : `<div class="ib-actempty">Nothing in this group today</div>`;
   }
   box.innerHTML = h;
 }
@@ -20343,8 +20351,8 @@ function pendingRender() {
 
     const _es = document.getElementById('pendingEmptySub');
     if (_es) _es.textContent = _auto.length
-      ? `自动化正常运作中 · 今天 ${_auto.length} 笔自动入库，没有需要手动确认的`
-      : '自动化正常运作中，没有需要手动确认的记录';
+      ? `Automation is running · ${_auto.length} added today, nothing to confirm`
+      : 'Automation is running — nothing to confirm';
   } catch (e) { console.warn('[Inbox stats] skipped:', e.message); }
 
   // v4.89: Build tab bar — render INTO STATIC HOST (not inside list).
