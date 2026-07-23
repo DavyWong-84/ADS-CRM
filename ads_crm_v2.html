@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 735.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3389,7 +3389,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.43</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.44</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3440,7 +3440,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.43</div>
+      <div class="nav-brand-version">v8.44</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3498,7 +3498,7 @@ body.contact-view-table .modal-backdrop.open {
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 735px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 791px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <!-- v4.93: + New Lead button on left of search (desktop only) -->
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
@@ -3558,7 +3558,7 @@ body.contact-view-table .modal-backdrop.open {
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 735px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 791px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -4836,6 +4836,24 @@ body.contact-view-table .modal-backdrop.open {
 /* ============================================================
    Ads CRM v2.0 — Application Logic
    ============================================================ */
+
+// v8.44: 每表百分比开关 — 每张表自己记住 (localStorage), % 算法照旧各表各算, 互不影响
+//   预设 = 只看数字 (乾净); 点 % 才显示该表自己的百分比
+let _tblPct = {};
+try { _tblPct = JSON.parse(localStorage.getItem('adscrm_tblpct') || '{}') || {}; } catch (e) { _tblPct = {}; }
+function tblPctOn(key) { return !!_tblPct[key]; }
+function tblPctToggle(key, rerender) {
+  _tblPct[key] = !_tblPct[key];
+  try { localStorage.setItem('adscrm_tblpct', JSON.stringify(_tblPct)); } catch (e) {}
+  if (rerender === 'revenue' && typeof renderRevenue === 'function') renderRevenue();
+  else if (rerender === 'store' && typeof renderStore === 'function') renderStore();
+}
+// 表头右上的「123 / %」小开关 (沿用 Dashboard 现成的 .pct-toggle 样式)
+function tblPctSeg(key, rerender) {
+  const on = tblPctOn(key);
+  const k = String(key).replace(/'/g, "\\'");
+  return `<span class="pct-toggle" style="margin-left:0;flex:none;"><button type="button" class="pct-opt${on ? '' : ' active'}" onclick="tblPctToggle('${k}','${rerender}')">123</button><button type="button" class="pct-opt${on ? ' active' : ''}" onclick="tblPctToggle('${k}','${rerender}')">%</button></span>`;
+}
 
 // v3.69: Global HTML escape — used by all render functions to prevent XSS
 // when user-entered data (name/contact/remark/location/channelName) is
@@ -10282,6 +10300,7 @@ function renderStore() {
       const ovTitle = locFilter ? `${locsToShow[0]?.name || ''} — Overview ${ovYear}` : `All Outlets — Overview ${ovYear}`;
 
       let rows = '';
+      const _ovShowP = tblPctOn('overview'); // v8.44: 每表 % 开关
       let tA=0, tS=0, tN=0, tSp=0;
       ovMonths.forEach(m => {
         const mLeadsAll = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && (!locFilter || l.locationId===locFilter));
@@ -10297,15 +10316,15 @@ function renderStore() {
         rows += `<tr>
           <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(m)}</td>
           ${!locFilter ? `<td class="num">${state.leads.filter(l=>l.leadDate&&l.leadDate.startsWith(m)).length||'—'}</td>` : ''}
-          <td class="num">${appts||'—'}${(() => { const tL=!locFilter?state.leads.filter(l=>l.leadDate&&l.leadDate.startsWith(m)).length:0; return tL>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(appts/tL)})</span>`:''; })()}</td>
+          <td class="num">${appts||'—'}${(() => { if(!_ovShowP) return ''; const tL=!locFilter?state.leads.filter(l=>l.leadDate&&l.leadDate.startsWith(m)).length:0; return tL>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(appts/tL)})</span>`:''; })()}</td>
           <td class="num">${shows||'—'}</td>
-          <td class="num">${noshows||'—'}${appts>0&&noshows>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(noshows/appts)})</span>`:''}</td>
+          <td class="num">${noshows||'—'}${_ovShowP&&appts>0&&noshows>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(noshows/appts)})</span>`:''}</td>
           <td class="num">${spend>0?fmt.money(spend):'—'}</td>
           <td class="num">${shows>0?fmt.money(spend/shows):'—'}</td>
         </tr>`;
       });
 
-      html += `<div class="section-title"><h3>${ovTitle}</h3></div>
+      html += `<div class="section-title"><h3>${ovTitle}</h3><div class="right">${tblPctSeg('overview', 'store')}</div></div>
         <div class="table-wrap"><table class="data">
           <thead><tr>
             <th style="width:44px;">Month</th>
@@ -10656,7 +10675,8 @@ function renderStore() {
         if (!isMobile) {
           // v6.67: Desktop transposed — months as rows, races as cols (matches mobile layout)
           const activeRD = mRaceData.filter(d => d.s > 0);
-          const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')} <span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
+          const _rShowP = tblPctOn('race'); // v8.44: 每表 % 开关
+          const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')}${_rShowP ? ` <span style="font-size:11px;color:var(--gray);">(${pct})</span>` : ''}`;
           const monthRows = activeRD.map(d => `<tr>
             <td style="font-weight:600;">${fmt.monthShort(d.m)}</td>
             ${races.map(r => `<td class="num">${d.byRace[r].length>0?pb(d.byRace[r].length,fmt.pct(d.byRace[r].length/d.s)):'—'}</td>`).join('')}
@@ -10667,7 +10687,7 @@ function renderStore() {
             ${races.map(r => `<td class="num" style="font-weight:700;">${totals.show>0&&totals[r]>0?pb(totals[r],fmt.pct(totals[r]/totals.show)):(totals[r]||'—')}</td>`).join('')}
             <td class="num" style="font-weight:700;">${tc(totals.show)}</td>
           </tr>`;
-          tbl = `<div class="section-title"><h3>${title}</h3></div>
+          tbl = `<div class="section-title"><h3>${title}</h3><div class="right">${tblPctSeg('race', 'store')}</div></div>
             <div class="table-wrap"><table class="data race-t">
               <thead><tr>
                 <th>Month</th>
@@ -10681,22 +10701,23 @@ function renderStore() {
             </table></div>
             <div id="${chartId}" style="margin-top:14px;margin-bottom:8px;"></div>`;
         } else {
+          const _rShowP = tblPctOn('race'); // v8.44: 每表 % 开关
           let rows = '';
           mRaceData.filter(d => d.s > 0).forEach(d => {
             rows+=`<tr>
               <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
-              ${races.map(r=>`<td class="num">${d.byRace[r].length||'—'}${d.s>0&&d.byRace[r].length>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.byRace[r].length/d.s)})</span>`:''}</td>`).join('')}
+              ${races.map(r=>`<td class="num">${d.byRace[r].length||'—'}${_rShowP&&d.s>0&&d.byRace[r].length>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.byRace[r].length/d.s)})</span>`:''}</td>`).join('')}
               <td class="num" style="font-weight:600;">${d.s}</td>
             </tr>`;
           });
-          tbl = `<div class="section-title"><h3>${title}</h3></div>
+          tbl = `<div class="section-title"><h3>${title}</h3><div class="right">${tblPctSeg('race', 'store')}</div></div>
             <div class="table-wrap"><table class="data race-t">
               <thead><tr><th>Month</th>
                 <th class="num">Chinese</th><th class="num">Malay</th><th class="num">Indian</th><th class="num">Foreigner</th><th class="num">Total Show</th>
               </tr></thead>
               <tbody>${rows||'<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>'}</tbody>
               <tfoot><tr class="total-row"><td>TOTAL</td>
-                ${races.map(r=>`<td class="num">${totals[r]}${totals.show>0&&totals[r]>0?` <span style="font-size:11px;">(${fmt.pct(totals[r]/totals.show)})</span>`:''}</td>`).join('')}
+                ${races.map(r=>`<td class="num">${totals[r]}${_rShowP&&totals.show>0&&totals[r]>0?` <span style="font-size:11px;">(${fmt.pct(totals[r]/totals.show)})</span>`:''}</td>`).join('')}
                 <td class="num">${totals.show}</td>
               </tr></tfoot>
             </table></div>
@@ -10771,7 +10792,8 @@ function renderStore() {
       const buildNoShowRaceTable = (title, filterFn) => {
         const R = ['Chinese', 'Malay', 'Indian', 'Foreigner'];
         const tot = { Chinese: 0, Malay: 0, Indian: 0, Foreigner: 0, n: 0 };
-        const pcell = (v, base) => v ? `${v.toLocaleString('en-MY')} <span style="font-size:11px;color:var(--gray);">(${fmt.pct(v / base)})</span>` : '—';
+        const _nShowP = tblPctOn('noshow'); // v8.44: 每表 % 开关
+        const pcell = (v, base) => v ? `${v.toLocaleString('en-MY')}${_nShowP ? ` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(v / base)})</span>` : ''}` : '—';
         const rows = raceMonths.map(m => {
           const mL = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.status === 'noshow' && filterFn(l));
           if (!mL.length) return '';
@@ -10784,7 +10806,7 @@ function renderStore() {
         const foot = `<tr class="total-row"><td style="font-weight:700;">TOTAL</td>`
           + R.map(r => `<td class="num" style="font-weight:700;">${pcell(tot[r], tot.n)}</td>`).join('')
           + `<td class="num" style="font-weight:700;">${tot.n.toLocaleString('en-MY')}</td></tr>`;
-        return `<div class="section-title"><h3>${title}</h3></div>
+        return `<div class="section-title"><h3>${title}</h3><div class="right">${tblPctSeg('noshow', 'store')}</div></div>
           <div class="table-wrap"><table class="data race-t">
             <thead><tr><th>Month</th>${R.map(r => `<th class="num">${r}</th>`).join('')}<th class="num">Total No Show</th></tr></thead>
             <tbody>${rows || '<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--gray);">No no-show data</td></tr>'}</tbody>
@@ -14498,8 +14520,9 @@ function renderRevenueOutlet(mArr, locId) {
     //   列顺序: Month | Ads Sales | Walk-in | ┃ Total New | Total Existing | ┃ Total Revenue
     //   所有 % 分母统一为 Total Revenue (该月 outlet 营业额)
     const walkInYr = yearNew - adsNewYr;
+    const _oShowP = tblPctOn('outlet'); // v8.44: 每表 % 开关
     const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
-    const cell = (v, pct) => v>0 ? `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
+    const cell = (v, pct) => v>0 ? `${fmt.money(v)}${_oShowP ? ` <span style="font-size:11px;color:var(--gray);">${pct}</span>` : ''}` : '—';
     const cellNoPct = (v) => v>0 ? fmt.money(v) : '—';
     const dividerStyle = 'border-left:2px solid var(--purple-deep);';
 
@@ -14522,7 +14545,7 @@ function renderRevenueOutlet(mArr, locId) {
       <td class="num" style="font-weight:700;">${cell(yearOld, pctOf(yearOld, yearTotal))}</td>
       <td class="num" style="font-weight:700;${dividerStyle}">${cellNoPct(yearTotal)}</td>
     </tr>`;
-    html += `<div class="table-wrap"><table class="data">
+    html += `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('outlet', 'revenue')}</div><div class="table-wrap"><table class="data">
       <thead><tr>
         <th>Month</th>
         <th class="num">Ads Sales</th>
@@ -14536,8 +14559,9 @@ function renderRevenueOutlet(mArr, locId) {
   } else {
     // v6.67: Mobile — same merged table layout
     const walkInYr = yearNew - adsNewYr;
+    const _oShowP = tblPctOn('outlet'); // v8.44: 每表 % 开关
     const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
-    const cellHTML = (v, pct) => v>0 ? `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
+    const cellHTML = (v, pct) => v>0 ? `${fmt.money(v)}${_oShowP ? ` <span style="font-size:11px;color:var(--gray);">${pct}</span>` : ''}` : '—';
     const cellPlain = (v) => v>0 ? fmt.money(v) : '—';
     const dividerStyle = 'border-left:2px solid var(--purple-deep);';
 
@@ -14554,7 +14578,7 @@ function renderRevenueOutlet(mArr, locId) {
         <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellPlain(d.t)}</td>
       </tr>`;
     });
-    html += `<div class="table-wrap"><table class="data">
+    html += `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('outlet', 'revenue')}</div><div class="table-wrap"><table class="data">
       <thead><tr>
         <th style="width:60px;min-width:60px;">Month</th>
         <th class="num">Ads Sales</th>
@@ -14566,10 +14590,10 @@ function renderRevenueOutlet(mArr, locId) {
       <tbody>${mRows}</tbody>
       <tfoot><tr class="total-row">
         <td>TOTAL</td>
-        <td class="num">${fmt.money(adsNewYr)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(adsNewYr, yearTotal)}</span></td>
-        <td class="num">${fmt.money(walkInYr)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(walkInYr, yearTotal)}</span></td>
-        <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(yearNew)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(yearNew, yearTotal)}</span></td>
-        <td class="num" style="font-weight:700;">${fmt.money(yearOld)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(yearOld, yearTotal)}</span></td>
+        <td class="num">${cellHTML(adsNewYr, pctOf(adsNewYr, yearTotal))}</td>
+        <td class="num">${cellHTML(walkInYr, pctOf(walkInYr, yearTotal))}</td>
+        <td class="num" style="font-weight:700;${dividerStyle}">${cellHTML(yearNew, pctOf(yearNew, yearTotal))}</td>
+        <td class="num" style="font-weight:700;">${cellHTML(yearOld, pctOf(yearOld, yearTotal))}</td>
         <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(yearTotal)}</td>
       </tr></tfoot>
     </table></div>`;
@@ -14660,8 +14684,9 @@ function renderRevenueSummary(mArr) {
     //   列顺序: Month | Ads Sales | Walk-in | ┃ Total New | Total Existing | ┃ Total Revenue
     //   所有 % 分母统一为 Total Revenue (4 列加起来 = 100%)
     const allWalkInYr = allYearNew - allYearAds;
+    const _mShowP = tblPctOn('monthly'); // v8.44: 每表 % 开关
     const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
-    const cell = (v, pct) => v>0 ? `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
+    const cell = (v, pct) => v>0 ? `${fmt.money(v)}${_mShowP ? ` <span style="font-size:11px;color:var(--gray);">${pct}</span>` : ''}` : '—';
     const cellNoPct = (v) => v>0 ? fmt.money(v) : '—';
     const dividerStyle = 'border-left:2px solid var(--purple-deep);';
 
@@ -14684,7 +14709,7 @@ function renderRevenueSummary(mArr) {
       <td class="num" style="font-weight:700;">${cell(allYearOld, pctOf(allYearOld, allYearTotal))}</td>
       <td class="num" style="font-weight:700;${dividerStyle}">${cellNoPct(allYearTotal)}</td>
     </tr>`;
-    monthlyPaneHTML = `<div class="table-wrap"><table class="data">
+    monthlyPaneHTML = `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('monthly', 'revenue')}</div><div class="table-wrap"><table class="data">
         <thead><tr>
           <th>Month</th>
           <th class="num">Ads Sales</th>
@@ -14698,8 +14723,10 @@ function renderRevenueSummary(mArr) {
   } else {
     // v6.67: Mobile — same merged table layout (months as rows, 5 metric columns)
     const allWalkInYr = allYearNew - allYearAds;
+    const _mShowP = tblPctOn('monthly'); // v8.44: 每表 % 开关
+    const _pspan = (s) => _mShowP ? ` <span style="font-size:11px;color:var(--gray);font-weight:400;">${s}</span>` : '';
     const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
-    const cellHTML = (v, pct) => v>0 ? `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
+    const cellHTML = (v, pct) => v>0 ? `${fmt.money(v)}${_pspan(pct)}` : '—';
     const cellPlain = (v) => v>0 ? fmt.money(v) : '—';
     const dividerStyle = 'border-left:2px solid var(--purple-deep);';
 
@@ -14716,7 +14743,7 @@ function renderRevenueSummary(mArr) {
         <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellPlain(d.mTotal)}</td>
       </tr>`;
     });
-    monthlyPaneHTML = `<div class="table-wrap"><table class="data">
+    monthlyPaneHTML = `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('monthly', 'revenue')}</div><div class="table-wrap"><table class="data">
         <thead><tr>
           <th style="width:60px;min-width:60px;">Month</th>
           <th class="num">Ads Sales</th>
@@ -14728,10 +14755,10 @@ function renderRevenueSummary(mArr) {
         <tbody>${mRows}</tbody>
         <tfoot><tr class="total-row">
           <td>TOTAL</td>
-          <td class="num">${fmt.money(allYearAds)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearAds, allYearTotal)}</span></td>
-          <td class="num">${fmt.money(allWalkInYr)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allWalkInYr, allYearTotal)}</span></td>
-          <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(allYearNew)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearNew, allYearTotal)}</span></td>
-          <td class="num" style="font-weight:700;">${fmt.money(allYearOld)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearOld, allYearTotal)}</span></td>
+          <td class="num">${fmt.money(allYearAds)}${_pspan(pctOf(allYearAds, allYearTotal))}</td>
+          <td class="num">${fmt.money(allWalkInYr)}${_pspan(pctOf(allWalkInYr, allYearTotal))}</td>
+          <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(allYearNew)}${_pspan(pctOf(allYearNew, allYearTotal))}</td>
+          <td class="num" style="font-weight:700;">${fmt.money(allYearOld)}${_pspan(pctOf(allYearOld, allYearTotal))}</td>
           <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(allYearTotal)}</td>
         </tr></tfoot>
       </table></div>`;
@@ -14759,10 +14786,10 @@ function renderRevenueSummary(mArr) {
       return locs.reduce((s, loc) => s + getOutletTotal(m, loc.id), 0);
     };
 
-    // v8.36: 去掉进度条, % 直接放营业额旁边 (color 参数保留不用, 免动 5 处调用)
-    const cellWithPct = (v, base, color) => {
+    // v8.36: 去掉进度条, % 直接放营业额旁边; v8.44: % 由每表开关控制 (show 参数)
+    const cellWithPct = (v, base, color, show) => {
       if (v == null || v === 0) return '<span style="color:var(--silver);">—</span>';
-      const pctStr = base > 0 ? ' <span style="font-size:11px;color:var(--gray);font-weight:400;">('+((v/base)*100).toFixed(1)+'%)</span>' : '';
+      const pctStr = (show && base > 0) ? ' <span style="font-size:11px;color:var(--gray);font-weight:400;">('+((v/base)*100).toFixed(1)+'%)</span>' : '';
       return `<div>${fmt.money(v)}${pctStr}</div>`;
     };
 
@@ -14772,6 +14799,7 @@ function renderRevenueSummary(mArr) {
     // (For Total Revenue table, where each cell's base = monthly all-outlet total)
     const buildCmpTable = (label, hint, color, getVal, getBase, isShareTable) => {
       let tbl = '';
+        const showP = tblPctOn('cmp:' + label); // v8.44: 每表 % 开关
         const storeHdr = locs.map(l => `<th class="num">${esc(l.name)}</th>`).join('');
         let body = '';
         let colTotals = locs.map(() => 0);
@@ -14785,7 +14813,7 @@ function renderRevenueSummary(mArr) {
           locs.forEach((loc, i) => {
             const v = getVal(m, loc.id);
             const base = getBase(m, loc.id);
-            cells += `<td class="num" style="vertical-align:top;">${cellWithPct(v, base, color)}</td>`;
+            cells += `<td class="num" style="vertical-align:top;">${cellWithPct(v, base, color, showP)}</td>`;
             colTotals[i] += v || 0;
             colBaseTotals[i] += base || 0;
             rowTotal += v || 0;
@@ -14801,7 +14829,7 @@ function renderRevenueSummary(mArr) {
             rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div>`;
           } else {
             const rowPct = rowBaseTotal > 0 ? '('+((rowTotal/rowBaseTotal)*100).toFixed(1)+'%)' : '—';
-            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</span></div>`;
+            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}${showP ? ` <span style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</span>` : ''}</div>`;
           }
           body += `<tr><td>${fmt.monthShort(m)}</td>${cells}<td class="num" style="vertical-align:top;">${rowCell}</td></tr>`;
         });
@@ -14816,7 +14844,7 @@ function renderRevenueSummary(mArr) {
           } else {
             pct = colBaseTotals[i] > 0 ? '('+((t/colBaseTotals[i])*100).toFixed(1)+'%)' : '—';
           }
-          return `<td class="num" style="vertical-align:top;"><div style="font-weight:700;">${fmt.money(t)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pct}</span></div></td>`;
+          return `<td class="num" style="vertical-align:top;"><div style="font-weight:700;">${fmt.money(t)}${showP ? ` <span style="font-size:11px;color:var(--gray);font-weight:400;">${pct}</span>` : ''}</div></td>`;
         }).join('');
         // YTD x Total: grand total. For Total Revenue, this IS the denominator — no %
         let grandCell;
@@ -14826,7 +14854,7 @@ function renderRevenueSummary(mArr) {
           grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)}</div>`;
         } else {
           const grandPct = grandBaseTotal > 0 ? '('+((grandTotal/grandBaseTotal)*100).toFixed(1)+'%)' : '—';
-          grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${grandPct}</span></div>`;
+          grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)}${showP ? ` <span style="font-size:11px;color:var(--gray);font-weight:400;">${grandPct}</span>` : ''}</div>`;
         }
         // v8.37: 固定列宽 (table-layout:fixed + colgroup) → 5 表列对齐; 去掉 Total 前紫色竖线
         const cmpMinW = 90 + locs.length * 200 + 160;
@@ -14838,9 +14866,9 @@ function renderRevenueSummary(mArr) {
           <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="vertical-align:top;">${grandCell}</td></tr></tfoot>
         </table>`;
       return `<div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
           <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:${color};">●</span> ${label.toUpperCase()}</div>
-          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">${hint}</div>
+          <div style="display:flex;align-items:center;gap:10px;">${showP ? `<span style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">${hint}</span>` : ''}${tblPctSeg('cmp:' + label, 'revenue')}</div>
         </div>
         <div class="table-wrap">${tbl}</div>
       </div>`;
