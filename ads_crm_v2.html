@@ -784,7 +784,6 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 .tbl-view .dt { font-size: 12px; color: var(--gray); white-space: nowrap; }
 .tbl-view .dt strong { color: var(--text); font-weight: 500; }
-.tbl-view .dt .arrow { color: var(--silver); margin: 0 4px; }
 .tbl-view .muted { color: var(--silver); }
 
 /* 频道 chip 保留胶囊 + logo */
@@ -3308,6 +3307,9 @@ body.contact-view-table .modal-backdrop.open {
 .ib-actempty { font-size: 11.5px; color: var(--silver); padding: 10px 0; }
 .sl-grp { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; color: var(--silver); text-transform: uppercase; letter-spacing: 0.5px; margin: 13px 0 1px; }
 .sl-grp::after { content: ""; flex: 1; height: 1px; background: var(--border-light); }
+/* v8.65: "+N more" / "Show less" */
+.sl-more { padding: 6px 8px; font-size: 11px; font-weight: 600; color: var(--purple); cursor: pointer; border-radius: 6px; }
+.sl-more:hover { background: var(--purple-bg); }
 /* v8.59: 两行 — 跟手机版 Contact 卡片同构 */
 .sl-li { display: block; padding: 8px 0; border-bottom: 1px solid var(--border-light); cursor: pointer; }
 .sl-li:last-child { border-bottom: 0; }
@@ -3393,7 +3395,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.63</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.65</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3444,7 +3446,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.63</div>
+      <div class="nav-brand-version">v8.65</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -8858,7 +8860,8 @@ function renderListAsTableHTML(slice) {
       <td>${stBadge}</td>
       <td>${channelChip}</td>
       <td>${locationChip}</td>
-      <td class="dt">${esc(leadDt)} <span class="arrow">→</span> <strong>${esc(apptDt)}</strong></td>
+      <td class="dt">${esc(leadDt)}</td><!-- v8.64: Lead / Appt 拆成两栏 -->
+      <td class="dt"><strong>${esc(apptDt)}</strong></td>
       <td class="appt-time">${apptTm ? esc(apptTm) : '<span class="dash">—</span>'}</td><!-- v8.63: 预约时间独立一栏 -->
       <td>${countdownCell}</td>
       <td class="num">${spendCell}</td>
@@ -8882,7 +8885,8 @@ function renderListAsTableHTML(slice) {
         <th class="sortable${sortCls('status')}" onclick="setTableSort('status')">Status ${sortIco('status')}</th>
         <th class="sortable${sortCls('channel')}" onclick="setTableSort('channel')">Channel ${sortIco('channel')}</th>
         <th class="sortable${sortCls('outlet')}" onclick="setTableSort('outlet')">Outlet ${sortIco('outlet')}</th>
-        <th class="sortable${sortCls('leadDate')}" onclick="setTableSort('leadDate')">Lead → Appt ${sortIco('leadDate')}</th>
+        <th class="sortable${sortCls('leadDate')}" onclick="setTableSort('leadDate')">Lead ${sortIco('leadDate')}</th><!-- v8.64: Lead / Appt 拆成两栏 -->
+        <th class="sortable${sortCls('apptDate')}" onclick="setTableSort('apptDate')">Appt ${sortIco('apptDate')}</th>
         <th>Appt Time</th><!-- v8.63: 独立一栏 -->
         <th class="sortable${sortCls('apptDate')}" onclick="setTableSort('apptDate')">Countdown ${sortIco('apptDate')}</th>
         <th class="num sortable${sortCls('spend')}" onclick="setTableSort('spend')">Spend ${sortIco('spend')}</th>
@@ -20253,7 +20257,10 @@ let _pendingActiveTab = (() => {
 
 // ── v8.46: Inbox 右栏「今天的动态」— 自动入库 / 手动入库 / 新预约, 分段 + 分组, 每笔一行 ──
 let _inboxActs = [], _inboxCounts = { auto: 0, manual: 0, appt: 0 }, _inboxActSeg = 'all';
-function inboxSetActSeg(seg) { _inboxActSeg = seg; renderInboxActivity(); }
+function inboxSetActSeg(seg) { _inboxActSeg = seg; _inboxActMore = {}; renderInboxActivity(); }
+// v8.65: "+N more" 可点开 — 每组各自记住展开状态
+let _inboxActMore = {};
+function inboxActMore(k) { _inboxActMore[k] = !_inboxActMore[k]; renderInboxActivity(); }
 function _inboxShortCh(name) {           // Google Ads → Google (右栏窄, 用短名)
   return String(name || '').trim().replace(/\s*Ads$/i, '');
 }
@@ -20349,8 +20356,9 @@ function renderInboxActivity() {
       if (!n) return;
       const items = _inboxActs.filter(a => a.k === k);
       if (k === 'appt') items.sort((x, y) => String(_apptReceivedAt(y.l) || '').localeCompare(String(_apptReceivedAt(x.l) || ''))); // 收到时刻 新→旧
-      h += `<div class="sl-grp">${lb} · ${n}</div>` + items.slice(0, 6).map(row).join('');
-      if (items.length > 6) h += `<div class="sl-li" style="color:var(--silver);"><span class="sl-tm"></span>+${items.length - 6} more</div>`;
+      const open = !!_inboxActMore[k];   // v8.65: 展开就全列
+      h += `<div class="sl-grp">${lb} · ${n}</div>` + (open ? items : items.slice(0, 6)).map(row).join('');
+      if (items.length > 6) h += `<div class="sl-more" onclick="inboxActMore('${k}')">${open ? 'Show less' : '+' + (items.length - 6) + ' more'}</div>`;
     });
   } else {
     const items = _inboxActs.filter(a => a.k === _inboxActSeg);
