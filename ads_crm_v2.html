@@ -615,8 +615,18 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .lead-item .lc-foot { display: flex; gap: 12px; font-size: 11px; color: var(--gray); padding-top: 6px; border-top: 1px solid rgba(0,0,0,0.04); flex-wrap: wrap; }
 .lead-item .lc-foot strong { color: #374151; font-weight: 500; }
 .lead-item .lc-foot .muted { opacity: 0.45; }
-.lead-item .lc-foot .lc-channel,
-/* v8.45: 卡片视图的 Outlet 也改纯文字 (跟表格视图一致) */
+/* v8.48 修回归: channel 必须 inline-flex + align-items:center, 否则 logo 跟文字对不齐
+   (v8.45 误把它跟 lc-location 共用同一条规则, 一起被改成 inline-block) */
+.lead-item .lc-foot .lc-channel {
+  color: var(--gray);
+  font-size: 11.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1;
+}
+/* v8.45: 卡片视图的 Outlet 纯文字 (无 logo, 跟表格视图一致) */
 .lead-item .lc-foot .lc-location {
   color: var(--gray);
   font-size: 11.5px;
@@ -625,6 +635,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   border-radius: 0;
   font-weight: 500;
   display: inline-block;
+  line-height: 1;
 }
 .lead-item .lc-foot .lc-channel { margin-left: auto; }
 /* v3.43: Inline logo + initial circle */
@@ -3370,7 +3381,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.48</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.49</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3421,7 +3432,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.48</div>
+      <div class="nav-brand-version">v8.49</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -14509,22 +14520,20 @@ function renderRevenueOutlet(mArr, locId) {
 
   const isMobile = window.innerWidth < 767;
 
-  let html = `<div class="card" id="revStore-${locId}" style="margin-bottom:14px;">
-    <div style="margin-bottom:12px;">
-      <button onclick="setRevOutlet('all')" style="font-size:12px;color:var(--purple);background:var(--purple-bg);border:1px solid var(--border);border-radius: 16px;padding:4px 12px;cursor:pointer;font-weight:600;">← All Outlets</button>
-    </div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
-      <div>
-        <div style="font-size:20px;font-weight:700;color:var(--black);">${locName}</div>
-        <div style="font-size:12px;color:var(--gray);">${activeMonths.length} months of data</div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
-        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">${fmt.money(yearTotal)}</div>
-        <div style="font-size:12px;color:var(--green-dark);">● New: ${fmt.money(yearNew)} · ${newPct}%</div>
-        <div style="font-size:12px;color:var(--gray);">● Old: ${fmt.money(yearOld)} · ${oldPct}%</div>
-      </div>
+  // v8.49: 版面跟 All Outlets 完全一致 (3 张 KPI 卡 + 表格卡)，只是资料换成该店。
+  //   不再有「← All Outlets」按钮和大标题卡 — 切店用顶部 Outlet 下拉，不换页面长相。
+  const _oKpi = (lab, val, sub, acc) => `<div class="rv-kpi">
+      <div class="rv-kpi-lab">${lab}</div>
+      <div class="rv-kpi-val${acc ? ' acc' : ''}">${val}</div>
+      <div class="rv-kpi-sub">${sub}</div>
     </div>`;
+  let html = `<div class="rv-kpis">`
+    + _oKpi('Year Total', fmt.money(yearTotal), `${esc(locName)} · ${activeMonths.length} months`, true)
+    + _oKpi('New', fmt.money(yearNew), `${newPct}% of outlet`)
+    + _oKpi('Old', fmt.money(yearOld), `${oldPct}% of outlet`)
+    + `</div>`
+    + `<div class="card" id="revStore-${locId}" style="margin-bottom:14px;">
+    <div class="section-title"><h3>${esc(locName)} · Monthly Breakdown ${esc(year)}</h3></div>`;
 
   // Build per-month data
   const oMData = [];
