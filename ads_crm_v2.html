@@ -3386,7 +3386,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.40</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.41</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3442,7 +3442,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.40</div>
+      <div class="nav-brand-version">v8.41</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3602,10 +3602,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-07-05</span>
+                      <span id="f_leadDate_label">2026-07-23</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-07-05">
+                    <input type="hidden" id="f_leadDate" value="2026-07-23">
                   </div>
                 </div>
               </div>
@@ -4295,7 +4295,7 @@ body.contact-view-table .modal-backdrop.open {
           <button class="btn btn-primary" onclick="modalGitHubPush()">Push to GitHub</button>
           <button class="btn btn-ghost" onclick="modalGitHubSave()">Save config</button>
         </div>
-        <div id="modal_gh_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"></div>
+        <div id="modal_gh_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"><span style="color:var(--red);">✗ Push failed: Resource not accessible by personal access token</span></div>
       </div>
     </div>
 
@@ -10632,7 +10632,7 @@ function renderStore() {
       const raceLocs = storeId === 'all' ? state.locations : state.locations.filter(l => l.id === storeId);
 
       // Build one race table for selected outlet(s)
-      const buildRaceTable = (title, filterFn, chartId) => {
+      const buildRaceTable = (title, filterFn, chartId, midHtml) => { // v8.41: midHtml = 插在 Race 表与 AVG Spend 表之间
         const isMobile = window.innerWidth < 767;
         const races = ['Chinese','Malay','Indian','Foreigner'];
         let totals = {Chinese:0,Malay:0,Indian:0,Foreigner:0,show:0,spend:0};
@@ -10766,14 +10766,41 @@ function renderStore() {
             yFmt: v => v!=null ? 'RM'+v.toFixed(0) : '',
           });
         }, 30);
-        return tbl + avgTbl;
+        return tbl + (midHtml || '') + avgTbl;
+      };
+
+      // v8.41: No Show by Race — 月份在左, 种族当列, % = 该月 no-show 的种族占比 (跟上面 Show up 表算法一致)
+      //   联动: branch 走 filterFn; channel 靠 renderStore 已先过滤 state.leads。不配图。
+      const buildNoShowRaceTable = (title, filterFn) => {
+        const R = ['Chinese', 'Malay', 'Indian', 'Foreigner'];
+        const tot = { Chinese: 0, Malay: 0, Indian: 0, Foreigner: 0, n: 0 };
+        const pcell = (v, base) => v ? `${v} <span style="font-size:11px;color:var(--gray);">(${fmt.pct(v / base)})</span>` : '—';
+        const rows = raceMonths.map(m => {
+          const mL = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.status === 'noshow' && filterFn(l));
+          if (!mL.length) return '';
+          const by = {}; R.forEach(r => { by[r] = mL.filter(l => l.race === r).length; tot[r] += by[r]; });
+          tot.n += mL.length;
+          return `<tr><td style="font-weight:600;">${fmt.monthShort(m)}</td>`
+            + R.map(r => `<td class="num">${pcell(by[r], mL.length)}</td>`).join('')
+            + `<td class="num" style="font-weight:600;">${mL.length}</td></tr>`;
+        }).join('');
+        const foot = `<tr class="total-row"><td style="font-weight:700;">TOTAL</td>`
+          + R.map(r => `<td class="num" style="font-weight:700;">${pcell(tot[r], tot.n)}</td>`).join('')
+          + `<td class="num" style="font-weight:700;">${tot.n}</td></tr>`;
+        return `<div class="section-title"><h3>${title}</h3></div>
+          <div class="table-wrap"><table class="data">
+            <thead><tr><th style="width:74px;">Month</th>${R.map(r => `<th class="num">${r}</th>`).join('')}<th class="num">Total No Show</th></tr></thead>
+            <tbody>${rows || '<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--gray);">No no-show data</td></tr>'}</tbody>
+            <tfoot>${foot}</tfoot>
+          </table></div>`;
       };
 
       // All = all outlets, single = filter by outlet
       const raceLoc = storeId === 'all' ? null : state.locations.find(l => l.id === storeId);
       const raceTitle = raceLoc ? `${raceLoc.name} — Race Breakdown ${raceYear}` : `All Outlets — Race Breakdown ${raceYear}`;
       const raceFilter = raceLoc ? (l => l.locationId === storeId) : (l => true);
-      html += buildRaceTable(raceTitle, raceFilter, 'chart_race_main');
+      const noShowTitle = raceLoc ? `${raceLoc.name} — No Show by Race ${raceYear}` : `All Outlets — No Show by Race ${raceYear}`;
+      html += buildRaceTable(raceTitle, raceFilter, 'chart_race_main', buildNoShowRaceTable(noShowTitle, raceFilter));
     }
 
     if (tab === 'weekly') {
