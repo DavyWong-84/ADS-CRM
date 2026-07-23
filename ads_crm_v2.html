@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light" style="--app-vh: 791.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 735.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Ads CRM</title>
-<script>/* v9.0: 进页前套用主题 (默认深色), 防闪白 */try{document.documentElement.setAttribute('data-theme', localStorage.getItem('adscrm_theme') || 'dark');}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
@@ -13,65 +12,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-/* v9.0 Aurora Glass — 变数名沿用 v8 (全站自动跟随), 默认深色; html[data-theme="light"] = 浅色 */
 :root {
-  color-scheme: dark;
-  --purple: #4EA8DE;              /* accent (原紫 → Aurora 蓝) */
-  --purple-dark: #3E97CC;
-  --purple-deep: #8CC8EE;         /* 深色下做文字要亮 */
-  --purple-subtle: rgba(78,168,222,0.22);
-  --purple-bg: rgba(78,168,222,0.10);
-  --black: #DCE3EC;               /* 主文字 (ink) */
-  --gray: #8C99A8;
+  --purple: #7132f5;
+  --purple-dark: #5741d8;
+  --purple-deep: #5b1ecf;
+  --purple-subtle: rgba(133,91,251,0.16);
+  --purple-bg: rgba(133,91,251,0.08);
+  --black: #101114;
+  --gray: #686b82;
 
-  /* Semantic colors (platforms & data categories) — 深色下亮化 */
-  --meta-color: #5BA0F5;
-  --meta-bg: rgba(91,160,245,0.12);
-  --google-color: #E0B341;
-  --google-bg: rgba(224,179,65,0.12);
-  --organic-color: #35CF9C;
-  --organic-bg: rgba(53,207,156,0.12);
-  --followup-color: #F5B14E;
-  --followup-bg: rgba(245,177,78,0.12);
-  --revenue-color: #8CC8EE;
-  --revenue-bg: rgba(140,200,238,0.10);
-  --newcust-color: #35B394;
-  --newcust-bg: rgba(53,179,148,0.12);
-  --oldcust-color: #94A6BB;
-  --oldcust-bg: rgba(148,166,187,0.10);
-  --adscost-color: #E0748A;
-  --adscost-bg: rgba(224,116,138,0.12);
-  --roas-color: #E0A24E;
-  --roas-bg: rgba(224,162,78,0.12);
-  --silver: #5F6B7A;
-  --white: #151C25;               /* 卡片底 (深色) — 名字沿用 v8 */
-  --border: rgba(255,255,255,0.09);
-  --border-light: rgba(255,255,255,0.055);
-  --green: #35B394;
-  --green-subtle: rgba(53,179,148,0.14);
-  --green-dark: #6FE0C4;          /* 深色下做文字要亮 */
-  --red: #E0748A;
-  --red-subtle: rgba(224,116,138,0.14);
-  --amber: #E0A24E;
-  --amber-subtle: rgba(224,162,78,0.14);
-  --surface: #0F141B;             /* 页面底 */
-  --surface-2: rgba(255,255,255,0.045);
-  --sticky-bg: #1A2330;           /* v9: sticky 列不透明底 (原 #F5F1FE) */
-  --au1: rgba(78,168,222,0.14);   /* 极光两团柔光 */
-  --au2: rgba(53,179,148,0.11);
-  --shadow-sm: rgba(0,0,0,0.35) 0px 2px 6px, rgba(0,0,0,0.25) 0px 1px 2px;
-  --shadow-md: rgba(0,0,0,0.40) 0px 4px 16px;
-  --shadow-lg: rgba(0,0,0,0.45) 0px 8px 28px;
-}
-html[data-theme="light"] {
-  color-scheme: light;
-  --purple: #2A87C4;
-  --purple-dark: #1F6F9E;
-  --purple-deep: #1C6C9C;
-  --purple-subtle: rgba(42,135,196,0.16);
-  --purple-bg: rgba(42,135,196,0.08);
-  --black: #182430;
-  --gray: #5A6675;
+  /* Semantic colors (platforms & data categories) */
   --meta-color: #1877F2;
   --meta-bg: rgba(24, 119, 242, 0.08);
   --google-color: #CA8A04;
@@ -80,8 +30,8 @@ html[data-theme="light"] {
   --organic-bg: rgba(16, 185, 129, 0.08);
   --followup-color: #F59E0B;
   --followup-bg: rgba(245, 158, 11, 0.08);
-  --revenue-color: #1C6C9C;
-  --revenue-bg: rgba(28, 108, 156, 0.08);
+  --revenue-color: #5B1ECF;
+  --revenue-bg: rgba(91, 30, 207, 0.08);
   --newcust-color: #059669;
   --newcust-bg: rgba(5, 150, 105, 0.08);
   --oldcust-color: #64748B;
@@ -90,10 +40,10 @@ html[data-theme="light"] {
   --adscost-bg: rgba(220, 38, 38, 0.08);
   --roas-color: #D97706;
   --roas-bg: rgba(217, 119, 6, 0.08);
-  --silver: #8794A3;
+  --silver: #9497a9;
   --white: #ffffff;
-  --border: rgba(16,24,32,0.13);
-  --border-light: rgba(16,24,32,0.07);
+  --border: #dedee5;
+  --border-light: #f0f0f5;
   --green: #149e61;
   --green-subtle: rgba(20,158,97,0.12);
   --green-dark: #026b3f;
@@ -101,11 +51,8 @@ html[data-theme="light"] {
   --red-subtle: rgba(212,21,59,0.10);
   --amber: #d97706;
   --amber-subtle: rgba(217,119,6,0.12);
-  --surface: #F6F8FB;
-  --surface-2: #EEF1F6;
-  --sticky-bg: #F0F5FA;
-  --au1: rgba(78,168,222,0.10);
-  --au2: rgba(53,179,148,0.07);
+  --surface: #fafafb;
+  --surface-2: #f5f5f8;
   --shadow-sm: rgba(16,24,40,0.06) 0px 2px 6px, rgba(16,24,40,0.04) 0px 1px 2px;
   --shadow-md: rgba(0,0,0,0.05) 0px 4px 16px;
   --shadow-lg: rgba(0,0,0,0.06) 0px 8px 28px;
@@ -119,15 +66,6 @@ html, body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
 }
-/* v9.0: 极光慢漂移背景 (纯 CSS, 垫在内容底下) */
-body { background: transparent; }
-.aurora { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-.aurora::before, .aurora::after { content: ""; position: absolute; width: 62vw; height: 62vw; border-radius: 50%; will-change: transform; }
-.aurora::before { top: -24vw; right: -18vw; background: radial-gradient(closest-side, var(--au1), transparent 72%); animation: auA 38s ease-in-out infinite alternate; }
-.aurora::after { bottom: -26vw; left: -16vw; background: radial-gradient(closest-side, var(--au2), transparent 72%); animation: auB 46s ease-in-out infinite alternate; }
-@keyframes auA { from { transform: translate(0,0) scale(1); } to { transform: translate(-9vw,7vw) scale(1.18); } }
-@keyframes auB { from { transform: translate(0,0) scale(1.12); } to { transform: translate(8vw,-6vw) scale(1); } }
-@media (prefers-reduced-motion: reduce) { .aurora::before, .aurora::after { animation: none; } }
 button { font-family: inherit; cursor: pointer; border: none; background: none; font-size: inherit; color: inherit; }
 input, select, textarea { font-family: inherit; font-size: 15px; outline: none; border: 1px solid var(--border); background: var(--white); padding: 12px 13px; border-radius: 8px; width: 100%; color: var(--black); transition: border-color 0.15s, box-shadow 0.15s; }
 
@@ -345,7 +283,7 @@ input[type="number"] { -moz-appearance: textfield; }
 /* Section */
 .section-title { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; margin-bottom: 10px; }
 .section-title:first-child { margin-top: 0; }
-.section-title h3 { font-size: 14.5px; font-weight: 700; color: var(--black); text-transform: none; letter-spacing: 0.2px; } /* v9.0: 标题加强 — 黑字加粗, 去掉小紫字 uppercase (Davy: 标题不明显) */
+.section-title h3 { font-size: 13px; font-weight: 600; color: var(--purple); text-transform: uppercase; letter-spacing: 0.8px; }
 .section-title .right { font-size: 12px; color: var(--gray); }
 
 /* Grid */
@@ -491,15 +429,15 @@ table.data tbody td:first-child {
   position: sticky;
   left: 0;
   z-index: 4;
-  background: var(--white);
+  background: #fff;
   border-right: 2px solid var(--border) !important;
   white-space: nowrap;
 }
 /* v5.37: sticky 第一列必须用不透明背景才能挡住滚动过来的内容
    var(--purple-bg) 实际是 rgba(133,91,251,0.08) — 92%透明! 在白底上看着像浅紫但实际还会透
    把白底叠 8% 紫色算等价不透明色 #F5F1FE 用在所有 sticky 紫色列上 */
-table.data thead tr th:first-child { background: var(--sticky-bg); z-index: 5; }
-table.data tr.total-row td:first-child { background: var(--sticky-bg); z-index: 4; }
+table.data thead tr th:first-child { background: #F5F1FE; z-index: 5; }
+table.data tr.total-row td:first-child { background: #F5F1FE; z-index: 4; }
 table.data tr.subheader td:first-child { background: var(--surface-2); z-index: 4; }
 table.data tr.total-row td { background: var(--purple-bg); }
 table.data tr.subheader td { background: var(--surface-2); }
@@ -526,16 +464,16 @@ table.data.data-t tfoot td:first-child {
   position: sticky;
   left: 0;
   z-index: 4;
-  background: var(--white);
+  background: #fff;
   border-right: 2px solid var(--border) !important;
   white-space: nowrap;
 }
-table.data.data-t thead th:first-child { background: var(--sticky-bg); z-index: 5; }
-table.data.data-t tbody td:first-child { background: var(--white); }
-table.data.data-t tr.total-row td:first-child { background: var(--sticky-bg); }
-table.data.data-t tfoot td:first-child { background: var(--sticky-bg); }
+table.data.data-t thead th:first-child { background: #F5F1FE; z-index: 5; }
+table.data.data-t tbody td:first-child { background: #fff; }
+table.data.data-t tr.total-row td:first-child { background: #F5F1FE; }
+table.data.data-t tfoot td:first-child { background: #F5F1FE; }
 /* v5.37: subheader 也用不透明等价紫,跟其他 sticky 紫列保持一致 */
-table.data tr.subheader td:first-child { position: sticky; left: 0; z-index: 4; background: var(--sticky-bg); padding: 8px 12px; }
+table.data tr.subheader td:first-child { position: sticky; left: 0; z-index: 4; background: #F5F1FE; padding: 8px 12px; }
 table.data tr.subheader td:not(:first-child) { padding: 0; border-right: none !important; }
 table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 0; }
 /* Last column emphasis removed - use inline styles where needed */
@@ -544,7 +482,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* Status badges */
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
 .badge-lead { background: var(--surface-2); color: var(--gray); }
-.badge-booked { background: var(--purple-subtle); color: var(--purple-deep); } /* v9.04: 跟主题 accent */
+.badge-booked { background: rgba(113,50,245,0.12); color: var(--purple-deep); }
 /* v3.40: Appointment day chip — shows Today / in X days / overdue */
 .appt-day-chip {
   display: inline-block;
@@ -556,9 +494,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   white-space: nowrap;
   line-height: 1.5;
 }
-.appt-day-chip.appt-today { background: var(--amber-subtle); color: #B45309; border: 0.5px solid #FCD34D; }
-.appt-day-chip.appt-upcoming { background: var(--meta-bg); color: #185FA5; }
-.appt-day-chip.appt-overdue { background: var(--red-subtle); color: #B91C1C; }
+.appt-day-chip.appt-today { background: #FEF3C7; color: #B45309; border: 0.5px solid #FCD34D; }
+.appt-day-chip.appt-upcoming { background: #E6F1FB; color: #185FA5; }
+.appt-day-chip.appt-overdue { background: #FEE2E2; color: #B91C1C; }
 .badge-pending { background: var(--amber-subtle); color: var(--amber); }
 .badge-done { background: var(--green-subtle); color: var(--green-dark); }
 .badge-noshow { background: var(--red-subtle); color: var(--red); }
@@ -590,7 +528,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   right: 0;
   bottom: 0;
   width: 64px;
-  background: var(--red-subtle);
+  background: #FEF2F2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -616,7 +554,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .swipe-card {
   position: relative;
   z-index: 2;
-  background: var(--white) !important;
+  background: #fff !important;
   transition: transform 0.25s ease;
   touch-action: pan-y;
   margin-bottom: 0;
@@ -627,7 +565,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .swipe-card.is-swiping { transition: none; will-change: transform; }
 .swipe-card.revealed { transform: translateX(-64px); }
 /* v3.46: Selected state — opaque purple tint, never let delete bg leak through */
-.lead-item.swipe-card.selected { background: var(--surface-2) !important; border-color: var(--purple) !important; }
+.lead-item.swipe-card.selected { background: #F4F1FE !important; border-color: var(--purple) !important; }
 
 /* v3.38: Desktop-only delete button in detail panel (mobile uses swipe instead) */
 .btn-delete-lead-v38 {
@@ -756,7 +694,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .view-toggle button.active {
   background: var(--purple); color: white; font-weight: 500;
 }
-.view-toggle button:hover:not(.active) { background: var(--surface-2); }
+.view-toggle button:hover:not(.active) { background: #FAFAF8; }
 */
 
 /* Table 渲染 (放在 #leadList 内部) */
@@ -775,7 +713,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .tbl-view th.num, .tbl-view td.num { text-align: right; }
 .tbl-view .spend-cell { font-weight: 500; color: var(--text); }
 .tbl-view thead th {
-  background: var(--surface-2);
+  background: #F5F2FF;
   padding: 10px 12px;
   font-weight: 500; text-align: left;
   color: #4f1ed1;
@@ -789,8 +727,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   cursor: pointer;
   transition: background 0.1s;
 }
-.tbl-view thead th.sortable:hover { background: var(--purple-subtle); }
-.tbl-view thead th.sorted { background: var(--purple-subtle); }
+.tbl-view thead th.sortable:hover { background: #EAE3FF; }
+.tbl-view thead th.sorted { background: #E4DBFF; }
 .tbl-view thead th .sort-ico {
   display: inline-block; margin-left: 4px;
   opacity: 0.35; font-size: 11px;
@@ -805,8 +743,8 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   cursor: pointer;
   transition: background 0.1s;
 }
-.tbl-view tbody tr:hover { background: var(--surface-2); }
-.tbl-view tbody tr.selected { background: var(--surface-2); }
+.tbl-view tbody tr:hover { background: #FAFAF8; }
+.tbl-view tbody tr.selected { background: #F5F2FF; }
 
 /* v6.79: 删除左侧状态色条 (Davy 反馈太丑). status 已在 Status 列显示, 不再需要色条. */
 .tbl-view tbody tr td:first-child {
@@ -845,10 +783,10 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500;
   display: inline-block; white-space: nowrap;
 }
-.tbl-view .countdown.cd-today { background: var(--amber-subtle); color: #854F0B; }
-.tbl-view .countdown.cd-soon { background: var(--meta-bg); color: #185FA5; }
+.tbl-view .countdown.cd-today { background: #FAEEDA; color: #854F0B; }
+.tbl-view .countdown.cd-soon { background: #E6F1FB; color: #185FA5; }
 .tbl-view .countdown.cd-past { color: var(--silver); }
-.tbl-view .countdown.cd-done { background: var(--green-subtle); color: #3B6D11; }
+.tbl-view .countdown.cd-done { background: #EAF3DE; color: #3B6D11; }
 
 /* ============================================================
    body.contact-view-table — Table 模式 desktop 布局
@@ -1066,16 +1004,16 @@ body.contact-view-table .modal-backdrop.open {
 }
 .filter-tabs-wrap::before {
   left: 0;
-  background: linear-gradient(90deg, var(--white) 0%, transparent 100%); /* v9.0: 跟主题 */
+  background: linear-gradient(90deg, #fff 0%, rgba(255,255,255,0) 100%);
 }
 .filter-tabs-wrap::after {
   right: 0;
-  background: linear-gradient(270deg, var(--white) 0%, transparent 100%);
+  background: linear-gradient(270deg, #fff 0%, rgba(255,255,255,0) 100%);
 }
 .filter-tabs-wrap.at-start::before { opacity: 0; }
 .filter-tabs-wrap.at-end::after { opacity: 0; }
 .filter-tab { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); border: 1px solid var(--border); white-space: nowrap; transition: all 0.15s; }
-.filter-tab.active { background: var(--purple-subtle); color: var(--purple-deep); border-color: transparent; font-weight: 600; } /* v9.0: soft 底跟侧栏统一 */
+.filter-tab.active { background: var(--purple); color: white; border-color: var(--purple); }
 
 /* v3.32: AI Guide Tooltip — page-aware contextual hint bubble */
 .ai-guide-tooltip {
@@ -1093,13 +1031,13 @@ body.contact-view-table .modal-backdrop.open {
   right: 18px;
   width: 12px;
   height: 12px;
-  background: var(--white);
+  background: #fff;
   border-left: 1px solid rgba(113,50,245,0.2);
   border-top: 1px solid rgba(113,50,245,0.2);
   transform: rotate(45deg);
 }
 .ai-guide-content {
-  background: var(--white);
+  background: #fff;
   border: 1px solid rgba(113,50,245,0.2);
   border-radius: 12px;
   padding: 10px 12px;
@@ -1134,7 +1072,7 @@ body.contact-view-table .modal-backdrop.open {
   align-items: center;
   justify-content: center;
 }
-.ai-guide-close:hover { background: var(--surface-2); color: #555; }
+.ai-guide-close:hover { background: #f3f3f3; color: #555; }
 @keyframes aiGuideIn {
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1235,7 +1173,7 @@ body.contact-view-table .modal-backdrop.open {
   padding: 8px 14px;
   border-radius: 16px;
   border: 1.5px solid var(--border);
-  background: var(--white);
+  background: #fff;
   color: var(--gray);
   font-size: 12.5px;
   font-weight: 500;
@@ -1294,7 +1232,7 @@ body.contact-view-table .modal-backdrop.open {
   height: 82dvh; /* modern browsers — shrinks when keyboard appears */
   height: calc(var(--app-vh, 82vh) * 0.82); /* v3.29: JS-tracked visualViewport fallback for iOS */
   max-height: 780px;
-  background: var(--white);
+  background: #fff;
   border-radius: 16px;
   box-shadow: 0 24px 60px rgba(16,17,20,0.28);
   overflow: hidden;
@@ -1408,7 +1346,7 @@ body.contact-view-table .modal-backdrop.open {
 }
 /* v3.24: User message — soft tinted bubble, no border, no glow */
 .ai-msg.user .ai-msg-bubble {
-  background: var(--surface-2);
+  background: #F1EFE8;
   color: #1a1a1a;
   padding: 8px 14px;
   border-radius: 12px;
@@ -1425,8 +1363,8 @@ body.contact-view-table .modal-backdrop.open {
 }
 /* Error variant still has subtle bubble for visual distinction */
 .ai-msg.assistant.error .ai-msg-bubble {
-  background: var(--red-subtle);
-  border: 0.5px solid var(--red-subtle);
+  background: #FEF2F2;
+  border: 0.5px solid #FCA5A5;
   padding: 8px 12px;
   border-radius: 8px;
 }
@@ -1464,7 +1402,7 @@ body.contact-view-table .modal-backdrop.open {
   font-size: 12.5px;
 }
 .ai-msg.assistant .ai-msg-bubble pre.ai-pre {
-  background: var(--purple-bg);
+  background: #f6f4ff;
   border: 1px solid var(--border);
   padding: 8px 10px;
   border-radius: 8px;
@@ -1554,7 +1492,7 @@ body.contact-view-table .modal-backdrop.open {
   border-radius: 8px;
   padding: 10px;
   margin: 6px 0;
-  background: var(--white);
+  background: #fff;
   overflow-x: auto;
 }
 .ai-table-title {
@@ -1598,7 +1536,7 @@ body.contact-view-table .modal-backdrop.open {
   display: block;
   height: 6px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--purple), var(--purple-dark));
+  background: linear-gradient(90deg, var(--purple), #9b5fff);
   min-width: 2px;
 }
 .ai-table-bar.meta { background: linear-gradient(90deg, var(--meta-color), #4a9bff); }
@@ -1639,7 +1577,7 @@ body.contact-view-table .modal-backdrop.open {
 .ai-copy-btn:hover { color: var(--purple); background: var(--surface); }
 .ai-copy-btn.copied { color: #059669; opacity: 1; }
 .ai-msg.error .ai-msg-bubble {
-  background: var(--red-subtle);
+  background: #fef2f2;
   color: var(--adscost-color);
   border-color: #fecaca;
 }
@@ -1683,7 +1621,7 @@ body.contact-view-table .modal-backdrop.open {
   padding: 5px 12px;
   font-size: 12px;
   border: 0.5px solid var(--border);
-  background: var(--white);
+  background: #fff;
   border-radius: 12px;
   cursor: pointer;
   color: var(--gray);
@@ -1712,7 +1650,7 @@ body.contact-view-table .modal-backdrop.open {
 }
 .ai-input-wrap-inner:focus-within {
   border-color: var(--purple);
-  background: var(--white);
+  background: #fff;
   box-shadow: 0 0 0 3px rgba(113,50,245,0.1);
 }
 .ai-input-wrap textarea {
@@ -1773,7 +1711,7 @@ body.contact-view-table .modal-backdrop.open {
   max-width: 580px;
   max-height: 78vh;
   height: fit-content;
-  background: var(--white);
+  background: #fff;
   border-radius: 16px;
   box-shadow: 0 24px 60px rgba(16,17,20,0.28);
   overflow: hidden;
@@ -1811,7 +1749,7 @@ body.contact-view-table .modal-backdrop.open {
   border-left: 3px solid transparent;
   transition: background 0.1s;
 }
-.alert-item:hover { background: var(--purple-bg); }
+.alert-item:hover { background: #faf9ff; }
 .alert-item.sev-high { border-left-color: var(--red); }
 .alert-item.sev-med { border-left-color: var(--orange, var(--followup-color)); }
 .alert-item.sev-low { border-left-color: var(--yellow, #eab308); }
@@ -1908,7 +1846,7 @@ body.contact-view-table .modal-backdrop.open {
 .gs-search-wrap input::placeholder { color: #9ca0a8; font-weight: 400; }
 .gs-kbd {
   padding: 4px 8px;
-  background: var(--white);
+  background: #fff;
   border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 11px;
@@ -1974,7 +1912,7 @@ body.contact-view-table .modal-backdrop.open {
   border-left: 3px solid transparent;
   transition: background 0.1s;
 }
-.gs-item:hover { background: var(--purple-bg); }
+.gs-item:hover { background: #f7f5ff; }
 .gs-item.active {
   background: var(--purple-bg);
   border-left-color: var(--purple);
@@ -1992,7 +1930,7 @@ body.contact-view-table .modal-backdrop.open {
   border: 1px solid var(--border);
 }
 .gs-item.active .gs-item-icon {
-  background: var(--white);
+  background: #fff;
   border-color: var(--purple-light, #b99afa);
 }
 .gs-item-content { flex: 1; min-width: 0; }
@@ -2050,7 +1988,7 @@ body.contact-view-table .modal-backdrop.open {
   font-size: 11px;
   color: var(--gray);
   flex-shrink: 0;
-  background: var(--surface-2);
+  background: #fafafa;
 }
 .gs-footer-hint { display: flex; align-items: center; gap: 6px; }
 @media (max-width: 767px) { .gs-footer { display: none; } }
@@ -2100,11 +2038,11 @@ body.contact-view-table .modal-backdrop.open {
 .ma-chip { padding: 7px 15px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--gray); background: var(--white); transition: all 0.12s ease; }
 .ma-chip:hover { border-color: var(--silver); color: var(--black); }
 .ma-chip.on { background: var(--purple); color: #fff; border-color: var(--purple); }
-.ma-count { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--purple-bg); border: 1px solid #e9e4fb; border-radius: 10px; }
+.ma-count { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #f6f4fc; border: 1px solid #e9e4fb; border-radius: 10px; }
 .ma-count-n { font-size: 26px; font-weight: 600; color: var(--black); line-height: 1; }
 
 /* Toast */
-.toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #232B36; color: #fff; border: 1px solid rgba(255,255,255,0.12); padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; z-index: 200; box-shadow: var(--shadow-lg); animation: toastin 0.2s ease; } /* v9.0: 固定深底 (var(--black) 在深色主题是浅色文字色, 会变浅底) */
+.toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--black); color: white; padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; z-index: 200; box-shadow: var(--shadow-lg); animation: toastin 0.2s ease; }
 @keyframes toastin { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
 
 /* Stats */
@@ -2374,7 +2312,7 @@ body.contact-view-table .modal-backdrop.open {
   transition: background 0.15s;
 }
 #mobileActionBar .mab-search input:focus {
-  background: var(--white);
+  background: #fff;
 }
 #mobileActionBar #contactFab {
   flex: 0 0 auto;
@@ -2488,19 +2426,20 @@ body.contact-view-table .modal-backdrop.open {
   .bottom-nav { display: none; }
   /* v5.81: 桌面隐藏 topbar (logo 整合进左侧 nav 顶部) */
   .topbar { display: none !important; }
-  .nav { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; width: 220px; background: var(--surface); border-right: 1px solid var(--border); border-bottom: none; padding: 16px 10px; gap: 4px; overflow-y: auto; overflow-x: hidden; z-index: 10; }
-  /* v9.0 SaaS Aurora: 侧栏跟主题走 (深浅通用变数), active = 淡 accent 底 + accent 字 */
-  .nav .nav-item { color: var(--gray); }
-  .nav .nav-item:hover { background: var(--surface-2); color: var(--black); }
-  .nav .nav-item.active { background: var(--purple-subtle); color: var(--purple-deep); border-bottom: none; }
-  .nav .nav-item.active:hover { background: var(--purple-subtle); color: var(--purple-deep); }
-  .nav .nav-brand-name { color: var(--black); }
-  .nav .nav-brand-version { color: var(--silver); }
+  .nav { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; width: 220px; background: #2C2C2A; border-right: 1px solid #3a3a38; border-bottom: none; padding: 16px 10px; gap: 4px; overflow-y: auto; overflow-x: hidden; z-index: 10; }
+  /* v5.92: 黑底 sidebar — 文字 / 图标用白色, hover 浅一点, active 紫色保留
+     v5.94: 调成灰色一点 (#2C2C2A 暖灰), 不那么死黑 */
+  .nav .nav-item { color: rgba(255,255,255,0.7); }
+  .nav .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .nav .nav-item.active { background: var(--purple); color: #fff; border-bottom: none; }
+  .nav .nav-item.active:hover { background: var(--purple); color: #fff; }
+  .nav .nav-brand-name { color: #fff; }
+  .nav .nav-brand-version { color: rgba(255,255,255,0.5); }
   /* sidebar 底部 collapse 按钮也要适配 */
   .nav .sidebar-collapse-btn,
-  .nav button[onclick*="toggleSidebar"] { color: var(--gray); border-color: var(--border); background: transparent; }
+  .nav button[onclick*="toggleSidebar"] { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.15); background: transparent; }
   .nav .sidebar-collapse-btn:hover,
-  .nav button[onclick*="toggleSidebar"]:hover { background: var(--surface-2); color: var(--black); }
+  .nav button[onclick*="toggleSidebar"]:hover { background: rgba(255,255,255,0.06); color: #fff; }
   /* 红色 badge (Alerts/Inbox 数字) 在黑底上保持原样 */
   /* AI Assistant 圆形图标渐变保持 (已经有自己背景) */
   /* v5.81: Logo brand block at top of sidebar */
@@ -2526,16 +2465,16 @@ body.contact-view-table .modal-backdrop.open {
     flex-shrink: 0;
   }
   .nav-brand .nav-brand-text { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
-  .nav-brand .nav-brand-name { font-size: 20px; font-weight: 700; color: var(--black); letter-spacing: 0.5px; }
-  .nav-brand .nav-brand-version { font-size: 10px; color: var(--silver); font-weight: 500; letter-spacing: 0.3px; margin-top: 3px; }
+  .nav-brand .nav-brand-name { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+  .nav-brand .nav-brand-version { font-size: 10px; color: rgba(255,255,255,0.5); font-weight: 500; letter-spacing: 0.3px; margin-top: 3px; }
   /* When sidebar collapsed, show only logo (no text) */
   body.sidebar-collapsed .nav-brand { padding: 6px 4px; justify-content: center; }
   body.sidebar-collapsed .nav-brand .nav-brand-text { display: none; }
-  .nav-item { padding: 12px 14px; font-size: 14px; font-weight: 500; color: var(--gray); border-bottom: none; border-radius: 8px; text-align: left; transition: all 0.15s; width: 100%; display: flex; align-items: center; gap: 10px; }
-  .nav-item:hover { background: var(--surface-2); color: var(--black); }
-  .nav-item.active { color: var(--purple-deep); background: var(--purple-subtle); border-bottom: none; }
+  .nav-item { padding: 12px 14px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.7); border-bottom: none; border-radius: 8px; text-align: left; transition: all 0.15s; width: 100%; display: flex; align-items: center; gap: 10px; }
+  .nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
+  .nav-item.active { color: var(--white); background: var(--purple); border-bottom: none; }
   .nav-item .nav-icon { font-size: 16px; display: inline-flex; }
-  .nav-divider { height: 1px; background: var(--border); margin: 10px 4px; }
+  .nav-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 10px 4px; }
   .lead-list { display: grid; grid-template-columns: 1fr; gap: 10px; }
   .lead-item.selected { border-color: var(--purple); background: var(--purple-bg); }
 @media (max-width: 767px) {
@@ -2871,7 +2810,7 @@ body.contact-view-table .modal-backdrop.open {
 /* v3.58: Toggle Pill — Active/Inactive 2-way switch (replaces native select) */
 .toggle-pill {
   display: inline-flex;
-  background: var(--surface-2);
+  background: #F1EFE8;
   border-radius: 8px;
   padding: 2px;
   gap: 1px;
@@ -2890,8 +2829,8 @@ body.contact-view-table .modal-backdrop.open {
   font-family: inherit;
 }
 .toggle-pill button:hover { color: #222; }
-.toggle-pill button.active-on { background: var(--white); color: #065F46; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-.toggle-pill button.active-off { background: var(--white); color: #64748B; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.toggle-pill button.active-on { background: #fff; color: #065F46; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.toggle-pill button.active-off { background: #fff; color: #64748B; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
 @media (max-width: 767px) {
   .toggle-pill { width: 100%; }
   .toggle-pill button { flex: 1; padding: 8px 10px; font-size: 12.5px; }
@@ -2941,7 +2880,7 @@ body.contact-view-table .modal-backdrop.open {
 /* Popover menu */
 .pop-menu {
   position: fixed;
-  background: var(--white);
+  background: #fff;
   border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.12), 0 2px 6px rgba(0,0,0,0.04);
@@ -2969,7 +2908,7 @@ body.contact-view-table .modal-backdrop.open {
   white-space: nowrap;
 }
 .pop-item:hover { background: var(--surface-2); }
-.pop-item.selected { background: var(--surface-2); color: var(--purple-deep); font-weight: 500; }
+.pop-item.selected { background: #F4F1FE; color: var(--purple-deep); font-weight: 500; }
 .pop-item.selected::after {
   content: '';
   width: 6px; height: 10px;
@@ -3215,7 +3154,7 @@ body.contact-view-table .modal-backdrop.open {
 .cl-row-info .cfg-fields { display: flex; gap: 8px; margin-top: 7px; flex-wrap: wrap; }
 .cl-row-info .cfg-field { display: flex; flex-direction: column; gap: 3px; }
 .cl-row-info .cfg-field label { font-size: 10px; color: var(--silver); letter-spacing: 0.2px; }
-.cl-row-info .cfg-in { font-family: inherit; font-size: 12px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--white); color: var(--black); width: 130px; }
+.cl-row-info .cfg-in { font-family: inherit; font-size: 12px; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--black); width: 130px; }
 .cl-row-info .cfg-in.cfg-in-sm { width: 70px; }
 .cl-row-info .cfg-in:focus { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-subtle); }
 .cfg-save-bar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 14px 0 2px; flex-wrap: wrap; }
@@ -3322,14 +3261,14 @@ body.contact-view-table .modal-backdrop.open {
   padding: 12px 14px;
   white-space: normal;
   word-break: normal;
-  background: var(--white) !important;
+  background: #fff !important;
   color: var(--black) !important;
   border: 1px solid var(--border);
   box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
 }
 /* v4.99: Modal version — light theme too */
 .remark-modal-timeline {
-  background: var(--white) !important;
+  background: #fff !important;
   color: var(--black);
 }
 .remark-modal-body-timeline {
@@ -3384,8 +3323,8 @@ body.contact-view-table .modal-backdrop.open {
    v5.93: 黑底 sidebar 适配 — 文字白色 70%, hover 全白
    v5.97: 字体跟其他 nav-item 统一为 14px (之前是 13px) */
 @media (min-width: 768px) {
-  .nav-item.nav-tool { font-size: 14px; color: var(--gray); } /* v9.0: 跟主题走 (Codex 审核问题1) */
-  .nav-item.nav-tool:hover { color: var(--black); background: var(--surface-2); }
+  .nav-item.nav-tool { font-size: 14px; color: rgba(255,255,255,0.7); }
+  .nav-item.nav-tool:hover { color: #fff; background: rgba(255,255,255,0.06); }
   .nav-item.nav-tool .nav-icon { opacity: 0.85; }
   /* Hide topbar tool buttons on desktop (they live in left nav now) */
   #topbarTools { display: none !important; }
@@ -3404,77 +3343,6 @@ body.contact-view-table .modal-backdrop.open {
   .contact-top-actions { display: flex !important; }
   .contact-newlead-btn-inline { display: none !important; }
 }
-
-/* ============================================================
-   v9.0 Aurora 组件皮 — 集中覆盖层 (表格 / 卡片 / tab / 数字)
-   整段可回滚: 删掉这一段就回到 v8 组件形态
-   ============================================================ */
-:root { --mono-num: ui-monospace, "Cascadia Code", Consolas, "SF Mono", monospace; }
-
-/* 1) 数字用等宽字体, 上下对齐 (mockup 定稿) */
-table.data td.num, #pnlRoot .pnl-t td:not(.l), #pnlRoot .emp-t td:not(.l),
-.pnl-card .val, .exec-hero-value, .exec-hero-pct {
-  font-family: var(--mono-num); font-variant-numeric: tabular-nums;
-}
-table.data td.num { font-size: 12.5px; }
-
-/* 2) 表头: 卡片底 + 灰字 (sticky 需要不透明底); v9.04: 底线交回 v8 原规则, 不覆盖 */
-table.data th { background: var(--white); color: var(--silver); }
-table.data thead th:first-child, table.data.data-t thead th:first-child { background: var(--white); }
-#pnlRoot .pnl-t thead th { background: var(--white); color: var(--silver); }
-table.data tr.total-row td:first-child, table.data.data-t tr.total-row td:first-child,
-table.data.data-t tfoot td:first-child { background: var(--white); }
-
-/* 3) 行 hover */
-table.data tbody tr:hover td { background: var(--surface-2); }
-table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { background: var(--purple-bg); }
-
-/* 4) v9.04: 合计行跟回 v8 设计 (淡底 + 粗体正常字色), accent 字 Davy 说丑 — 只留首格主题色 (v8 原样) */
-
-/* 5) pill-tab 胶囊 → accent 底线式 (mockup subnav) */
-.pill-tab { background: transparent !important; border: none !important; border-radius: 0 !important;
-  border-bottom: 2px solid transparent !important; padding: 8px 6px 9px !important; color: var(--gray) !important; }
-.pill-tab:hover { color: var(--black) !important; }
-.pill-tab.active { background: transparent !important; color: var(--black) !important;
-  border-bottom-color: var(--purple) !important; font-weight: 600 !important; }
-.pill-tabs-inheader { gap: 16px; border-bottom: 1px solid var(--border-light); padding-bottom: 0; }
-#pnlRoot .pnl-toptab { background: transparent; border: none; border-radius: 0;
-  border-bottom: 2px solid transparent; padding: 8px 6px 10px; color: var(--gray); }
-#pnlRoot .pnl-toptab.on { background: transparent; color: var(--black); border-bottom-color: var(--purple); }
-#pnlRoot .pnl-toptabs { gap: 16px; }
-
-/* 6) KPI 卡右上柔光 (mockup .kpi::after) */
-#pnlRoot .pnl-card::after, .ts-card::after {
-  content: ""; position: absolute; right: -30px; top: -30px; width: 90px; height: 90px;
-  border-radius: 50%; background: var(--purple-subtle); opacity: .45; pointer-events: none;
-}
-.ts-card { position: relative; overflow: hidden; }
-#pnlRoot .pnl-card { border-color: var(--border); }
-
-/* 7) 卡片统一 hair 边框 (盖掉零散写死的 #ececf1 等) */
-.card { border-color: var(--border); }
-
-/* 8b) v9.04: Dashboard exec-card 跟 Revenue KPI 同款 (柔光) */
-.exec-card { position: relative; }
-.exec-card::after { content: ""; position: absolute; right: -30px; top: -30px; width: 90px; height: 90px; border-radius: 50%; background: var(--purple-subtle); opacity: .35; pointer-events: none; }
-
-/* 8) Revenue KPI 卡排 (mockup .kpi 定稿) */
-.rv-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(168px, 1fr)); gap: 13px; margin-bottom: 16px; }
-.rv-kpi { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 15px 17px; position: relative; overflow: hidden; }
-.rv-kpi::after { content: ""; position: absolute; right: -30px; top: -30px; width: 90px; height: 90px; border-radius: 50%; background: var(--purple-subtle); opacity: .45; pointer-events: none; }
-.rv-kpi-lab { font-size: 11.5px; color: var(--gray); font-weight: 600; }
-.rv-kpi-val { font-size: 23px; font-weight: 700; margin-top: 6px; font-family: var(--mono-num); font-variant-numeric: tabular-nums; color: var(--black); white-space: nowrap; }
-.rv-kpi-val.acc { color: var(--purple); }
-.rv-kpi-sub { font-size: 11px; color: var(--silver); margin-top: 3px; }
-@media (max-width: 500px) { .rv-kpis { grid-template-columns: 1fr 1fr; } .rv-kpi-val { font-size: 19px; } }
-
-/* 9) 筛选控件「标题 + 选择框」(mockup fr 结构; 手机不占高) */
-.cf-fr { display: flex; flex-direction: column; gap: 5px; }
-.cf-frlabel { display: none; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--silver); font-weight: 600; padding-left: 2px; }
-@media (min-width: 768px) { .cf-frlabel { display: block; } .compact-filter { align-items: flex-end; } }
-/* 控件被 JS 藏起时, 整组(含 label)一起藏。⚠️ 不能泛匹配 select — popover 升级会把原 select 永久藏起 (触发钮是 popWrap_ span) */
-.cf-fr:has(> button.cf-select[style*="none"]) { display: none; }
-.cf-fr:has(> span[id^="popWrap_"][style*="none"]) { display: none; }
 </style>
 <style>
 /* v4.63: Mobile topbar — hide Data Entry + Settings buttons (accessed via drawer/tabbar) */
@@ -3515,14 +3383,13 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQWRzIENSTSDigJQgVG9iaWIgTGVlIiwic2hvcnRfbmFtZSI6IkFkcyBDUk0iLCJkZXNjcmlwdGlvbiI6IkFkcyBkYXRhICYgbGVhZCBtYW5hZ2VtZW50Iiwic3RhcnRfdXJsIjoiYWRzX2NybV92Mi5odG1sIiwic2NvcGUiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiM3MTMyZjUiLCJ0aGVtZV9jb2xvciI6IiM3MTMyZjUiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhkcFpIUm9QU0l4T1RJaUlHaGxhV2RvZEQwaU1Ua3lJaUIyYVdWM1FtOTRQU0l3SURBZ01Ua3lJREU1TWlJK0NpQWdQSEpsWTNRZ2QybGtkR2c5SWpFNU1pSWdhR1ZwWjJoMFBTSXhPVElpSUhKNFBTSTBNaUlnY25rOUlqUXlJaUJtYVd4c1BTSWpOekV6TW1ZMUlpOCtDaUFnUEhCaGRHZ2daRDBpVFRZeExqUWdORGt1TUNCTU9UWXVNQ0F5Tmk0MUlFd3hNekF1TmlBME9TNHdJRXd4TURrdU9DQTBPUzR3SUV3eE1Ea3VPQ0EyT1M0M0lFdzRNaTR5SURZNUxqY2dURGd5TGpJZ05Ea3VNQ0JhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU9ESXVNaUlnZVQwaU5UY3VOaUlnZDJsa2RHZzlJakkzTGpZaUlHaGxhV2RvZEQwaU1pNDFPU0lnY25nOUlqRXVNRFFpSUdacGJHdzlJaU0zTVRNeVpqVWlMejRLSUNBOGNtVmpkQ0I0UFNJNE1pNHlJaUI1UFNJMk1pNDRJaUIzYVdSMGFEMGlNamN1TmlJZ2FHVnBaMmgwUFNJeUxqVTVJaUJ5ZUQwaU1TNHdOQ0lnWm1sc2JEMGlJemN4TXpKbU5TSWdiM0JoWTJsMGVUMGlNQzQxSWk4K0NpQWdQSFJsZUhRZ2VEMGlPVFl1TUNJZ2VUMGlNVEU0TGpBNElpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqTTJMamtpSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0l4TGpVMElqNUJSRk04TDNSbGVIUStDaUFnUEhSbGVIUWdlRDBpT1RZdU1DSWdlVDBpTVRZd0xqTXlJaUJtYjI1MExXWmhiV2xzZVQwaUxXRndjR3hsTFhONWMzUmxiU3dnUW14cGJtdE5ZV05UZVhOMFpXMUdiMjUwTENBblUyVm5iMlVnVlVrbkxDQlNiMkp2ZEc4c0lDZElaV3gyWlhScFkyRWdUbVYxWlNjc0lFRnlhV0ZzTENCellXNXpMWE5sY21sbUlpQm1iMjUwTFhkbGFXZG9kRDBpT0RBd0lpQm1iMjUwTFhOcGVtVTlJak0yTGpraUlHWnBiR3c5SWlObVptWm1abVlpSUhSbGVIUXRZVzVqYUc5eVBTSnRhV1JrYkdVaUlHeGxkSFJsY2kxemNHRmphVzVuUFNJeExqVTBJajVEVWswOEwzUmxlSFErQ2p3dmMzWm5QZz09Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSTFNVElpSUdobGFXZG9kRDBpTlRFeUlpQjJhV1YzUW05NFBTSXdJREFnTlRFeUlEVXhNaUkrQ2lBZ1BISmxZM1FnZDJsa2RHZzlJalV4TWlJZ2FHVnBaMmgwUFNJMU1USWlJSEo0UFNJeE1USWlJSEo1UFNJeE1USWlJR1pwYkd3OUlpTTNNVE15WmpVaUx6NEtJQ0E4Y0dGMGFDQmtQU0pOTVRZekxqZ2dNVE13TGpZZ1RESTFOaTR3SURjd0xqY2dURE0wT0M0eUlERXpNQzQySUV3eU9USXVPU0F4TXpBdU5pQk1Namt5TGprZ01UZzFMamtnVERJeE9TNHhJREU0TlM0NUlFd3lNVGt1TVNBeE16QXVOaUJhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU1qRTVMakVpSUhrOUlqRTFNeTQySWlCM2FXUjBhRDBpTnpNdU55SWdhR1ZwWjJoMFBTSTJMamt4SWlCeWVEMGlNaTQzTmlJZ1ptbHNiRDBpSXpjeE16Sm1OU0l2UGdvZ0lEeHlaV04wSUhnOUlqSXhPUzR4SWlCNVBTSXhOamN1TkNJZ2QybGtkR2c5SWpjekxqY2lJR2hsYVdkb2REMGlOaTQ1TVNJZ2NuZzlJakl1TnpZaUlHWnBiR3c5SWlNM01UTXlaalVpSUc5d1lXTnBkSGs5SWpBdU5TSXZQZ29nSUR4MFpYaDBJSGc5SWpJMU5pNHdJaUI1UFNJek1UUXVPRGdpSUdadmJuUXRabUZ0YVd4NVBTSXRZWEJ3YkdVdGMzbHpkR1Z0TENCQ2JHbHVhMDFoWTFONWMzUmxiVVp2Ym5Rc0lDZFRaV2R2WlNCVlNTY3NJRkp2WW05MGJ5d2dKMGhsYkhabGRHbGpZU0JPWlhWbEp5d2dRWEpwWVd3c0lITmhibk10YzJWeWFXWWlJR1p2Ym5RdGQyVnBaMmgwUFNJNE1EQWlJR1p2Ym5RdGMybDZaVDBpT1RndU15SWdabWxzYkQwaUkyWm1abVptWmlJZ2RHVjRkQzFoYm1Ob2IzSTlJbTFwWkdSc1pTSWdiR1YwZEdWeUxYTndZV05wYm1jOUlqUXVNVEFpUGtGRVV6d3ZkR1Y0ZEQ0S0lDQThkR1Y0ZENCNFBTSXlOVFl1TUNJZ2VUMGlOREkzTGpVeUlpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqazRMak1pSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0kwTGpFd0lqNURVazA4TDNSbGVIUStDand2YzNablBnPT0iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJhbnkifV19">
 </head>
 <body class="contact-view-table">
-<div class="aurora"></div><!-- v9.0 极光背景 -->
 
 <header class="topbar">
   <div class="brand">
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.04</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.43</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3530,32 +3397,31 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
     <span id="pendingSyncBadge" onclick="flushPendingQueueManual()" style="display:none;align-items:center;gap:4px;padding:5px 10px;background:rgba(217,119,6,0.12);color:var(--amber);border:1px solid rgba(217,119,6,0.3);border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;" title="点击立即重试同步"></span>
     <!-- v4.91: Topbar tool buttons — hidden on desktop (moved to left nav), shown on mobile only -->
     <div id="topbarTools" style="display:flex;gap:6px;align-items:center;">
-      <!-- v9.0: AI Assistant / Search 入口移除 (Davy 不需要); 原位改放手机端主题切换 -->
-      <button onclick="toggleTheme()" id="themeTopbarBtn" aria-label="Theme" title="Dark / Light" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--gray);">☀</button>
-      <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <!-- v8.43: AI Assistant / Search 入口移除 (Davy 不需要) -->
+      <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
         <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">6</span>
       </button>
-      <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
         <span id="pendingTopbarBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">0</span>
       </button>
     </div>
     <!-- v4.63: Desktop-only — Data Entry + Settings hidden on mobile via ID selector + !important -->
     <div id="topbarExtras" style="display:flex;gap:6px;align-items:center;">
-      <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button onclick="nav('entry')" aria-label="Data Entry" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
       </button>
-      <button onclick="nav('settings')" aria-label="Settings" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button onclick="nav('settings')" aria-label="Settings" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
       </button>
     </div>
     <!-- v4.65: Mobile-only menu button — opens inline popover (no modal) -->
     <div style="position:relative;display:none;" id="topbarMobileMenuWrap">
-      <button id="topbarMobileMenuBtn" onclick="toggleMobileMenuPopover(event)" aria-label="Menu" title="Menu" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <button id="topbarMobileMenuBtn" onclick="toggleMobileMenuPopover(event)" aria-label="Menu" title="Menu" style="width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1.5"></circle><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle></svg>
       </button>
-      <div id="topbarMobileMenuPopover" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1px solid var(--border);border-radius: 8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:180px;padding:6px;z-index:200;">
+      <div id="topbarMobileMenuPopover" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:#fff;border:1px solid var(--border);border-radius: 8px;box-shadow:0 6px 20px rgba(0,0,0,0.12);min-width:180px;padding:6px;z-index:200;">
         <button onclick="closeMobileMenuPopover();nav('entry');" style="display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:transparent;border:none;border-radius: 8px;cursor:pointer;font-size:14px;color:var(--black);text-align:left;" onmouseover="this.style.background='var(--surface)'" onmouseout="this.style.background='transparent'">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
           <span>Data Entry</span>
@@ -3574,11 +3440,11 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.04</div>
+      <div class="nav-brand-version">v8.43</div>
     </div>
   </div>
   <div class="nav-divider"></div>
-  <!-- v9.0: AI Assistant / Search 侧栏入口移除 (Davy 不需要) -->
+  <!-- v8.43: AI Assistant / Search 侧栏入口移除 (Davy 不需要) -->
   <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 8px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">6</span></button>
   <button class="nav-item" data-page="pending" data-tooltip="Inbox" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span><span id="pendingBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius: 8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
   <div class="nav-divider"></div>
@@ -3592,8 +3458,6 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="entry" data-tooltip="Data Entry"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></span><span class="nav-label">Data Entry</span></button>
   <button class="nav-item active" data-page="settings" data-tooltip="Settings"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></span><span class="nav-label">Settings</span></button>
-  <!-- v9.0: Dark / Light 主题切换 -->
-  <button type="button" class="nav-item nav-tool" id="themeToggleBtn" onclick="toggleTheme()" data-tooltip="Theme"><span class="nav-icon" id="themeToggleIcon">☀</span><span class="nav-label" id="themeToggleLabel">Light</span></button>
   <!-- v4.21: Sidebar collapse/expand toggle -->
   <button type="button" class="nav-toggle" id="navToggleBtn" onclick="toggleSidebar()" aria-label="Toggle sidebar">
     <svg class="nav-toggle-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
@@ -3634,7 +3498,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 791px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 735px;"><div class="contact-filters-inline">
           <!-- v4.25: Search at top, full width -->
           <!-- v4.93: + New Lead button on left of search (desktop only) -->
           <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
@@ -3694,7 +3558,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 791px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 735px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -3842,19 +3706,19 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
     <div class="unified-header">
       <!-- v5.33: removed page title (Dashboard) — toolbar only -->
       <div class="compact-filter">
-        <div class="toggle-group" style="align-self:flex-end;"><!-- v9.04: Period label 删掉 (会乱跳) -->
+        <div class="toggle-group">
           <button class="toggle active" data-mode="single" onclick="setSummaryMode('single')">Month</button>
           <button class="toggle" data-mode="multi" onclick="setSummaryMode('multi')">Year</button>
         </div>
         <select id="summaryYear" class="cf-select" style="display:none"><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
-        <div class="cf-fr"><span class="cf-frlabel">Year</span><button type="button" class="date-btn cf-select" id="summaryYearBtn" style="display:none;" onclick="openYearPicker('summaryYear', this)">
+        <button type="button" class="date-btn cf-select" id="summaryYearBtn" style="display:none;" onclick="openYearPicker('summaryYear', this)">
           <span id="summaryYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
-        </button></div>
-        <div class="cf-fr"><span class="cf-frlabel">Month</span><button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
+        </button>
+        <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
           <span id="summaryMonth_label">Jul 2026</span>
           <span class="date-btn-icon">📅</span>
-        </button></div>
+        </button>
         <input type="hidden" id="summaryMonth" value="2026-07">
       </div>
     </div>
@@ -3868,20 +3732,20 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
     <div class="unified-header">
       <!-- v5.33: removed page title (Appt Report) — toolbar only -->
       <div class="compact-filter">
-        <div class="toggle-group" style="align-self:flex-end;"><!-- v9.04: Period label 删掉 (会乱跳) -->
+        <div class="toggle-group">
           <button class="toggle active" data-mode="month" onclick="setStoreMode('month')">Month</button>
           <button class="toggle" data-mode="year" onclick="setStoreMode('year')">Year</button>
           <button class="toggle" data-mode="custom" onclick="setStoreMode('custom')">Custom</button>
         </div>
         <select id="storeYear" class="cf-select" style="display:none"><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
-        <div class="cf-fr"><span class="cf-frlabel">Year</span><button type="button" class="date-btn cf-select" id="storeYearBtn" style="display:none;" onclick="openYearPicker('storeYear', this)">
+        <button type="button" class="date-btn cf-select" id="storeYearBtn" style="display:none;" onclick="openYearPicker('storeYear', this)">
           <span id="storeYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
-        </button></div>
-        <div class="cf-fr"><span class="cf-frlabel">Month</span><button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')">
+        </button>
+        <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')">
           <span id="storeMonth_label">Jul 2026</span>
           <span class="date-btn-icon">📅</span>
-        </button></div>
+        </button>
         <input type="hidden" id="storeMonth" value="2026-07">
         <button type="button" class="date-btn cf-select" id="storeFromMonth_btn" style="display:none;" onclick="openMonthPicker('storeFromMonth')">
           <span id="storeFromMonth_label">From</span>
@@ -3894,12 +3758,12 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
           <span class="date-btn-icon">📅</span>
         </button>
         <input type="hidden" id="storeToMonth">
-        <div class="cf-fr"><span class="cf-frlabel">Outlet</span><span id="popWrap_popSel_storeSelect" data-pop-wrap-for="storeSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_storeSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_storeSelect')" aria-haspopup="listbox">
+        <span id="popWrap_popSel_storeSelect" data-pop-wrap-for="storeSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_storeSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_storeSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="storeSelect" data-pop="1" data-pop-icon="location" class="cf-select" data-pop-placeholder="All stores" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_storeSelect" style="display: none;"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select></div>
+  </button></span><select id="storeSelect" data-pop="1" data-pop-icon="location" class="cf-select" data-pop-placeholder="All stores" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_storeSelect" style="display: none;"><option value="all">All outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
         <!-- v5.66: Channel filter -->
-        <div class="cf-fr"><span class="cf-frlabel">Channel</span><span id="popWrap_popSel_storeChannelSelect" data-pop-wrap-for="storeChannelSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_storeChannelSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_storeChannelSelect')" aria-haspopup="listbox">
+        <span id="popWrap_popSel_storeChannelSelect" data-pop-wrap-for="storeChannelSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_storeChannelSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_storeChannelSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">A</span><span>All channels</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="storeChannelSelect" data-pop="1" data-pop-icon="channel" class="cf-select" data-pop-placeholder="All channels" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_storeChannelSelect" style="display: none;">
@@ -3907,7 +3771,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
           <option value="meta">Meta</option>
           <option value="google">Google</option>
           <option value="ofu">Organic+FU</option>
-        </select></div>
+        </select>
       </div>
       <!-- v3.61: Pill tabs inside header — flows with topbar white area -->
       <div class="pill-tabs-inheader">
@@ -3927,11 +3791,11 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
       <!-- v5.33: removed page title (Ads Spend) — toolbar only -->
       <div class="compact-filter">
         <select id="adsYear" class="cf-select" style="display:none"><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
-        <div class="cf-fr"><span class="cf-frlabel">Year</span><button type="button" class="date-btn cf-select" id="adsYearBtn" onclick="openYearPicker('adsYear', this)">
+        <button type="button" class="date-btn cf-select" id="adsYearBtn" onclick="openYearPicker('adsYear', this)">
           <span id="adsYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
-        </button></div>
-        <div class="cf-fr"><span class="cf-frlabel">Channel</span><span id="popWrap_popSel_adsPlatformSelect" data-pop-wrap-for="adsPlatformSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_adsPlatformSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_adsPlatformSelect')" aria-haspopup="listbox">
+        </button>
+        <span id="popWrap_popSel_adsPlatformSelect" data-pop-wrap-for="adsPlatformSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_adsPlatformSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_adsPlatformSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">A</span><span>All channels</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="adsPlatformSelect" data-pop="1" data-pop-icon="channel" class="cf-select" onchange="setAdsTab(this.value)" data-pop-placeholder="All" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_adsPlatformSelect" style="display: none;">
@@ -3939,34 +3803,34 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
           <option value="meta">Meta</option>
           <option value="google">Google</option>
           <option value="ofu">Organic+FU</option>
-        </select></div>
-        <div class="cf-fr"><span class="cf-frlabel">Account</span><span id="popWrap_popSel_adsSubSelect" data-pop-wrap-for="adsSubSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_adsSubSelect" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_adsSubSelect')" aria-haspopup="listbox">
+        </select>
+        <span id="popWrap_popSel_adsSubSelect" data-pop-wrap-for="adsSubSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_adsSubSelect" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_adsSubSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>All</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
-        </select></div>
+        </select>
         <!-- v5.44: Outlet filter (只在 Spending Power tab 显示) -->
-        <div class="cf-fr"><span class="cf-frlabel">Outlet</span><span id="popWrap_popSel_spendOutletSelect" data-pop-wrap-for="spendOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_spendOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_spendOutletSelect')" aria-haspopup="listbox">
+        <span id="popWrap_popSel_spendOutletSelect" data-pop-wrap-for="spendOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_spendOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_spendOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="spendOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderSpendingPower()" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_spendOutletSelect">
           <option value="all">All outlets</option>
-        </select></div>
+        </select>
         <!-- v5.63: Outlet filter (只在 Funnel tab 显示, v6.43: 也用于 Funnel 内 cohort 表) -->
-        <div class="cf-fr"><span class="cf-frlabel">Outlet</span><span id="popWrap_popSel_funnelOutletSelect" data-pop-wrap-for="funnelOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelOutletSelect')" aria-haspopup="listbox">
+        <span id="popWrap_popSel_funnelOutletSelect" data-pop-wrap-for="funnelOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:var(--organic-color);">A</span><span>All outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="funnelOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" style="display:none;" onchange="renderAdsSpendSection(_adsTab || 'funnel')" data-pop-placeholder="All outlets" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelOutletSelect">
           <option value="all">All outlets</option>
-        </select></div>
+        </select>
         <!-- v6.52: Funnel view select — By Outlet Count (apptDate) / By Ads Count (leadDate) -->
-        <div class="cf-fr"><span class="cf-frlabel">View</span><span id="popWrap_popSel_funnelViewSelect" data-pop-wrap-for="funnelViewSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelViewSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelViewSelect')" aria-haspopup="listbox">
+        <span id="popWrap_popSel_funnelViewSelect" data-pop-wrap-for="funnelViewSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_funnelViewSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_funnelViewSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>By Outlet Count</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="funnelViewSelect" data-pop="1" data-pop-icon="chart" class="cf-select" style="display:none;" onchange="renderAdsSpendSection(_adsTab || 'funnel')" data-pop-placeholder="By Outlet Count" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_funnelViewSelect">
           <option value="outlet">By Outlet Count</option>
           <option value="ads">By Ads Count</option>
-        </select></div>
+        </select>
       </div>
       <!-- v3.61: Pill tabs inside header -->
       <div class="pill-tabs-inheader">
@@ -4084,14 +3948,14 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
       <!-- v5.33: removed page title (Revenue Outlet) — toolbar only -->
       <div class="compact-filter">
         <select id="revYear" class="cf-select" style="display:none"><option value="2025">2025</option><option value="2026" selected="">2026</option><option value="2027">2027</option><option value="2028">2028</option></select>
-        <div class="cf-fr"><span class="cf-frlabel">Year</span><button type="button" class="date-btn cf-select" id="revYearBtn" onclick="openYearPicker('revYear', this)">
+        <button type="button" class="date-btn cf-select" id="revYearBtn" onclick="openYearPicker('revYear', this)">
           <span id="revYear_label">2026</span>
           <span class="date-btn-icon">📅</span>
-        </button></div>
-        <div class="cf-fr"><span class="cf-frlabel">Outlet</span><span id="popWrap_popSel_revOutletSelect" data-pop-wrap-for="revOutletSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_revOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_revOutletSelect')" aria-haspopup="listbox">
+        </button>
+        <span id="popWrap_popSel_revOutletSelect" data-pop-wrap-for="revOutletSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_revOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_revOutletSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:#8B5CF6;">A</span><span>All Outlets</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="revOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" onchange="renderRevenue()" data-pop-placeholder="All outlets" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_revOutletSelect" style="display: none;"><option value="all">All Outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select></div>
+  </button></span><select id="revOutletSelect" data-pop="1" data-pop-icon="location" class="cf-select" onchange="renderRevenue()" data-pop-placeholder="All outlets" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_revOutletSelect" style="display: none;"><option value="all">All Outlets</option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
       </div>
     </div>
     <div class="unified-header-spacer"></div>
@@ -4118,9 +3982,9 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
     <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
-      <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:var(--white);color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
-      <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:var(--white);color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
-      <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:var(--white);color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
+      <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
+      <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
+      <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
     </div>
 
     <!-- Desktop: 3-column grid | Mobile: single panel via tabs -->
@@ -4195,7 +4059,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff" style="flex-shrink:0;"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"></polygon></svg>
           <span id="pendingBatchAddLabel">Add all matched 0</span>
         </button>
-        <button id="pendingRefreshBtn" onclick="pendingRefresh()" title="Refresh" aria-label="Refresh" style="width:34px; height:34px; padding:0; background:var(--white); border:1px solid var(--border); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--purple); transition: transform 0.5s;">
+        <button id="pendingRefreshBtn" onclick="pendingRefresh()" title="Refresh" aria-label="Refresh" style="width:34px; height:34px; padding:0; background:#fff; border:1px solid var(--border); border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center; color:var(--purple); transition: transform 0.5s;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"></path></svg>
         </button>
       </div>
@@ -4593,7 +4457,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
       <div style="display:flex;gap:6px;align-items:center;">
         <div id="alertsLangToggle" style="display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;font-size:11px;font-weight:600;">
           <button type="button" data-lang="en" onclick="setAlertsLang('en')" style="padding:4px 10px;background:var(--purple);color:#fff;border:0;cursor:pointer;">EN</button>
-          <button type="button" data-lang="zh" onclick="setAlertsLang('zh')" style="padding:4px 10px;background:var(--white);color:var(--gray);border:0;cursor:pointer;">中</button>
+          <button type="button" data-lang="zh" onclick="setAlertsLang('zh')" style="padding:4px 10px;background:#fff;color:var(--gray);border:0;cursor:pointer;">中</button>
         </div>
         <button type="button" onclick="closeAlertsModal()" class="gs-close" aria-label="Close">✕</button>
       </div>
@@ -4651,7 +4515,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 
 <!-- v3.23: AI Settings Modal (replaces old inline panel) -->
 <div class="modal-backdrop" id="aiSettingsBackdrop" onclick="if(event.target===this)closeAISettings()" style="display:none;z-index:10002;">
-  <div style="background:var(--white);border-radius:16px;width:min(520px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+  <div style="background:#fff;border-radius:16px;width:min(520px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
@@ -4665,7 +4529,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
       <!-- Section: Model -->
       <div>
         <div style="font-size:12px;color:var(--gray);font-weight:600;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">模型</div>
-        <select id="ai_model_inline" onchange="onAIModelChangeInline(this.value)" style="width:100%;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--white);">
+        <select id="ai_model_inline" onchange="onAIModelChangeInline(this.value)" style="width:100%;font-size:13px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:#fff;">
           <option value="gemini-2.5-pro">Gemini 2.5 Pro · 最聪明</option>
           <option value="gemini-2.5-flash">Gemini 2.5 Flash · 推荐</option>
           <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite · 最快</option>
@@ -4675,7 +4539,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
       <div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
           <div style="font-size:12px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">AI 角色</div>
-          <select id="ai_role_preset_inline" onchange="applyAIRolePresetInline(this.value)" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius: 8px;background:var(--white);">
+          <select id="ai_role_preset_inline" onchange="applyAIRolePresetInline(this.value)" style="font-size:12px;padding:4px 8px;border:1px solid var(--border);border-radius: 8px;background:#fff;">
             <option value="">— 套用模板 —</option>
             <option value="executor">🎯 决策执行官（推荐）</option>
             <option value="detective">🔍 数据侦探</option>
@@ -4684,7 +4548,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
             <option value="casual">💬 日常问答</option>
           </select>
         </div>
-        <textarea id="ai_custom_role_inline" rows="6" placeholder="留空 = 默认角色（决策执行官）。可自定义 AI 语气、专注点..." style="width:100%;font-size:13px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:vertical;line-height:1.5;box-sizing:border-box;background:var(--white);min-height:120px;"></textarea>
+        <textarea id="ai_custom_role_inline" rows="6" placeholder="留空 = 默认角色（决策执行官）。可自定义 AI 语气、专注点..." style="width:100%;font-size:13px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:vertical;line-height:1.5;box-sizing:border-box;background:#fff;min-height:120px;"></textarea>
         <div style="display:flex;gap:8px;margin-top:10px;">
           <button class="btn btn-primary" style="font-size:13px;padding: 8px 16px;" onclick="saveAISettingsInline(); closeAISettings();">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-1px;margin-right: 4px;"><polyline points="20 6 9 17 4 12"></polyline></svg>保存并关闭
@@ -4698,7 +4562,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 
 <!-- v3.21: AI Notebook Modal -->
 <div class="modal-backdrop" id="aiNotebookBackdrop" onclick="if(event.target===this)closeAINotebook()" style="display:none;z-index:10002;">
-  <div style="background:var(--white);border-radius:16px;width:min(560px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+  <div style="background:#fff;border-radius:16px;width:min(560px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
@@ -4726,7 +4590,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 
 <!-- v3.26: Add/Correct Note Dialog -->
 <div class="modal-backdrop" id="aiAddNoteBackdrop" onclick="if(event.target===this)closeAddNoteDialog()" style="display:none;z-index:10004;">
-  <div style="background:var(--white);border-radius:16px;width:min(520px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+  <div style="background:#fff;border-radius:16px;width:min(520px,96vw);max-height:85vh;max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:0.5px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:linear-gradient(135deg, #faf7ff, #fff);">
       <div style="display:flex;align-items:center;gap:10px;">
         <span id="aiAddNoteIcon" style="font-size:18px;">➕</span>
@@ -4739,7 +4603,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
     <div style="padding: 16px 20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;">
       <div id="aiAddNoteWrongWrap" style="display:none;">
         <label style="font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">AI 原答（会被记录为对比）</label>
-        <div id="aiAddNoteWrong" style="margin-top:4px;font-size:12px;color:#B91C1C;background:var(--red-subtle);border:0.5px solid var(--red-subtle);border-radius:8px;padding:8px 10px;max-height:80px;overflow-y:auto;line-height:1.5;"></div>
+        <div id="aiAddNoteWrong" style="margin-top:4px;font-size:12px;color:#B91C1C;background:#FEF2F2;border:0.5px solid #FCA5A5;border-radius:8px;padding:8px 10px;max-height:80px;overflow-y:auto;line-height:1.5;"></div>
       </div>
       <div>
         <label style="font-size:11px;color:var(--gray);font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">问题 <span style="color:#888;font-weight:400;text-transform:none;letter-spacing:0;">(可选)</span></label>
@@ -4762,7 +4626,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 </div>
 
 <!-- v3.21: Important insight notification (right-side toast, kept for legacy, unused in v3.26) -->
-<div id="aiInsightToast" style="display:none;position:fixed;top:80px;right:20px;width:min(340px, 85vw);background:var(--white);border-radius:12px;box-shadow:0 8px 24px rgba(113,50,245,0.25);border:2px solid var(--purple);padding:14px 16px;z-index:10003;animation:slideInRight 0.3s ease;"></div>
+<div id="aiInsightToast" style="display:none;position:fixed;top:80px;right:20px;width:min(340px, 85vw);background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(113,50,245,0.25);border:2px solid var(--purple);padding:14px 16px;z-index:10003;animation:slideInRight 0.3s ease;"></div>
 <style>
 @keyframes slideInRight { from { transform: translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
 @keyframes slideOutRight { from { transform: translateX(0); opacity:1; } to { transform:translateX(100%); opacity:0; } }
@@ -4774,7 +4638,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 .ai-note-rec {
   margin-top: 10px;
   padding: 10px 12px;
-  background: var(--white);
+  background: #fff;
   border: 0.5px solid var(--border);
   border-radius: 8px;
   display: flex;
@@ -4789,7 +4653,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--amber-subtle);
+  background: #FAEEDA;
   color: #854F0B;
   display: flex;
   align-items: center;
@@ -4828,9 +4692,9 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
   white-space: nowrap;
   gap: 3px;
 }
-.ai-note-rec-star:hover { background: var(--amber-subtle); border-color: #f5b400; color: #854F0B; }
+.ai-note-rec-star:hover { background: #FAEEDA; border-color: #f5b400; color: #854F0B; }
 .ai-note-rec-star:active { transform: scale(0.96); }
-.ai-note-rec-star.saved { background: var(--green-subtle); border-color: #1D9E75; color: #0F6E56; cursor: default; }
+.ai-note-rec-star.saved { background: #E1F5EE; border-color: #1D9E75; color: #0F6E56; cursor: default; }
 .ai-note-rec-dismiss {
   background: transparent; border: none; color: var(--silver);
   width: 22px; height: 22px; cursor: pointer; font-size: 13px;
@@ -4845,7 +4709,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--white);
+  background: #fff;
   position: relative;
 }
 .ai-nb-item.high { border-left: 3px solid var(--adscost-color); }
@@ -4854,9 +4718,9 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 .ai-nb-item-question { font-size: 11.5px; color: var(--gray); margin-bottom: 4px; line-height: 1.4; font-style: italic; }
 .ai-nb-item-full { font-size: 12px; color: #555; line-height: 1.5; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); display: none; }
 .ai-nb-item.expanded .ai-nb-item-full { display: block; }
-.ai-nb-wrong { font-size: 11px; color: #B91C1C; background: var(--red-subtle); border: 0.5px solid var(--red-subtle); border-radius: 8px; padding: 6px 8px; margin-top: 6px; line-height: 1.5; display: none; }
+.ai-nb-wrong { font-size: 11px; color: #B91C1C; background: #FEF2F2; border: 0.5px solid #FCA5A5; border-radius: 8px; padding: 6px 8px; margin-top: 6px; line-height: 1.5; display: none; }
 .ai-nb-item.expanded .ai-nb-wrong { display: block; }
-.ai-nb-wrong-label { display: inline-block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-right: 5px; background: var(--red-subtle); color: #fff; padding: 1px 5px; border-radius: 4px; }
+.ai-nb-wrong-label { display: inline-block; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-right: 5px; background: #FCA5A5; color: #fff; padding: 1px 5px; border-radius: 4px; }
 
 /* v3.26 (A): Correct button under AI message */
 .ai-msg-footer { margin-top: 10px; display: flex; gap: 6px; }
@@ -4868,18 +4732,18 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
   transition: all 0.15s;
   font-family: inherit;
 }
-.ai-correct-btn:hover { background: var(--red-subtle); border-color: var(--red-subtle); color: #B91C1C; }
+.ai-correct-btn:hover { background: #FEF2F2; border-color: #FCA5A5; color: #B91C1C; }
 .ai-correct-btn:active { transform: scale(0.97); }
 .ai-nb-tag-chip { display:inline-block; background:var(--purple-bg); color:var(--purple); padding:2px 8px; border-radius: 8px; font-size:10px; font-weight:600; margin-right:4px; margin-bottom:2px; }
 .ai-nb-item-actions { position: absolute; top: 8px; right: 8px; display:flex; gap:4px; }
 .ai-nb-item-actions button { background:transparent; border:none; color:var(--gray); cursor:pointer; padding:2px 6px; border-radius:4px; font-size:12px; }
 .ai-nb-item-actions button:hover { background:var(--hover, var(--purple-bg)); color:#222; }
-.ai-nb-item-actions .del:hover { background:var(--red-subtle); color:var(--adscost-color); }
+.ai-nb-item-actions .del:hover { background:#fee; color:var(--adscost-color); }
 .ai-nb-tag-filter {
   padding: 4px 10px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: var(--white);
+  background: #fff;
   font-size: 11px;
   cursor: pointer;
   color: #555;
@@ -4937,7 +4801,7 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 
 <!-- Chips Editor Modal -->
 <div class="modal-backdrop" id="chipsEditorBackdrop" onclick="if(event.target===this)closeChipsEditor()" style="display:none;z-index:10001;">
-  <div style="background:var(--white);border-radius:16px;width:min(480px,96vw);max-height:80vh;max-height:80dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
+  <div style="background:#fff;border-radius:16px;width:min(480px,96vw);max-height:80vh;max-height:80dvh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden;">
     <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;">
       <span style="font-size:15px;font-weight:700;">✏️ 编辑快捷问题</span>
       <button type="button" onclick="closeChipsEditor()" class="gs-close">✕</button>
@@ -4972,51 +4836,6 @@ table.data tbody tr.total-row:hover td, table.data tfoot tr:hover td { backgroun
 /* ============================================================
    Ads CRM v2.0 — Application Logic
    ============================================================ */
-
-// v9.0: Dark / Light 主题切换 (默认深色; localStorage 记住; 图表重画跟新主题色)
-function toggleTheme() {
-  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
-  const next = cur === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  try { localStorage.setItem('adscrm_theme', next); } catch (e) {}
-  _themeBtnSync();
-  // 图表颜色是渲染时从 :root 读的 → 重画当前页 (Codex 审核问题2: 有浮窗开着就跳过, 重画后还原滚动)
-  try {
-    const anyOpen = document.querySelector('#aiChatBackdrop.open, #globalSearchBackdrop.open, #alertsBackdrop.open, .modal-backdrop.open');
-    if (!anyOpen) {
-      const cp = document.querySelector('.page.active');
-      if (cp && typeof nav === 'function') {
-        const sx = window.scrollX, sy = window.scrollY;
-        nav(cp.id.replace('page-', ''));
-        window.scrollTo(sx, sy);
-      }
-    }
-  } catch (e) {}
-}
-function _themeBtnSync() {
-  const t = document.documentElement.getAttribute('data-theme') || 'dark';
-  const ic = document.getElementById('themeToggleIcon'), lb = document.getElementById('themeToggleLabel');
-  if (ic) ic.textContent = t === 'dark' ? '☾' : '☀';
-  if (lb) lb.textContent = t === 'dark' ? 'Dark' : 'Light';
-  const tb = document.getElementById('themeTopbarBtn'); // v9.0: 手机 topbar 的切换钮同步图标
-  if (tb) tb.textContent = t === 'dark' ? '☾' : '☀';
-}
-document.addEventListener('DOMContentLoaded', _themeBtnSync);
-
-// v9.04: 每表 % 开关 (per-table 记住; % 算法照旧各表各算; 复用 exec-card 的 pct-toggle 样式)
-let _tblPct = {};
-try { _tblPct = JSON.parse(localStorage.getItem('adscrm_tblpct') || '{}') || {}; } catch (e) { _tblPct = {}; }
-function tblPctOn(key) { return !!_tblPct[key]; }
-function tblPctToggle(key, rerender) {
-  _tblPct[key] = !_tblPct[key];
-  try { localStorage.setItem('adscrm_tblpct', JSON.stringify(_tblPct)); } catch (e) {}
-  if (rerender === 'revenue' && typeof renderRevenue === 'function') renderRevenue();
-  else if (rerender === 'store' && typeof renderStore === 'function') renderStore();
-}
-function tblPctSeg(key, rerender) {
-  const on = tblPctOn(key);
-  return `<span class="pct-toggle" style="margin-left:0;flex:none;"><button type="button" class="pct-opt${on ? '' : ' active'}" onclick="tblPctToggle('${key}','${rerender}')">123</button><button type="button" class="pct-opt${on ? ' active' : ''}" onclick="tblPctToggle('${key}','${rerender}')">%</button></span>`;
-}
 
 // v3.69: Global HTML escape — used by all render functions to prevent XSS
 // when user-entered data (name/contact/remark/location/channelName) is
@@ -5816,7 +5635,7 @@ function nav(page) {
   if (page === 'pnl') renderPnL();
   if (page === 'settings') renderSettings();
   // v3.34: AI Guide tooltip — wrapped in try-catch so any failure doesn't break nav
-  // v9.0: AI 引导气泡触发移除 (AI 功能已下架)
+  // v8.43: AI 引导气泡触发移除 (AI 功能已下架)
   // v3.58: Upgrade any native selects to popover UI
   setTimeout(() => { if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects(); }, 20);
   // v3.86: After any page change, sync header height for mobile filter-tabs alignment
@@ -6022,7 +5841,7 @@ const AdsChart = {
       <rect width="${W}" height="${H}" fill="white"/>
       ${title}${grid}${yLbl}${yLblR}${bars}${linePaths}${lineDots}${xLbls}${legend}
     </svg>`;
-    el.innerHTML = `<div style="background:var(--white);border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;">${svg}</div>`;
+    el.innerHTML = `<div style="background:#fff;border-radius:12px;border:1px solid #ede9f6;overflow:hidden;padding:12px 4px 8px;">${svg}</div>`;
   }
 };
 
@@ -6103,8 +5922,8 @@ const ChartJS = {
     el.innerHTML = `
       <div style="position:relative;width:100%;height:${H}px;padding:8px 12px;">
         ${cfg.title ? `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span style="font-size:13px;font-weight:600;color:var(--black);">${cfg.title}</span><!-- v9.0: 图表标题/图例跟主题 -->
-          <div style="display:flex;gap:10px;font-size:11px;color:var(--gray);">
+          <span style="font-size:13px;font-weight:600;color:#374151;">${cfg.title}</span>
+          <div style="display:flex;gap:10px;font-size:11px;color:#6b7280;">
             ${(cfg.reverseLegend ? [...(cfg.series || [])].reverse() : (cfg.series || [])).map(s => `<span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:${this._resolveColor(s.color)};"></span>${s.label}</span>`).join('')}
           </div>
         </div>` : ''}
@@ -6268,22 +6087,22 @@ const ChartJS = {
             }
           }
         },
-        scales: { /* v9.0: 刻度/网格色跟主题变数走 (深色下不再亮线) */
+        scales: {
           y: {
             beginAtZero: true,
             stacked: !!cfg.stacked,
             ticks: {
-              color: this._resolveColor('var(--silver)'),
+              color: '#9ca3af',
               font: { size: mobile ? 9 : 10 },
               callback: (v) => cfg.yFmt ? cfg.yFmt(v) : ChartJS.fmtK(v)
             },
-            grid: { color: this._resolveColor('var(--border-light)'), drawBorder: false },
+            grid: { color: '#f3f4f6', drawBorder: false },
             border: { display: false }
           },
           x: {
             stacked: !!cfg.stacked,
             ticks: {
-              color: this._resolveColor('var(--silver)'),
+              color: '#9ca3af',
               font: { size: mobile ? 9 : 10 },
               maxRotation: 0
             },
@@ -6410,7 +6229,7 @@ function _renderFunnelHorizontal(elId, leads, appts, shows) {
   const maxValue = Math.max(...stages.map(s => s.value), 1);
 
   let html = `
-    <div style="background:var(--white);border-radius:8px;padding:18px 16px;border:1px solid #ede9f6;">
+    <div style="background:#fff;border-radius:8px;padding:18px 16px;border:1px solid #ede9f6;">
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px;">
         <div style="font-size:13px;font-weight:600;color:#475569;">Conversion Funnel</div>
         <div style="font-size:11px;color:#94a3b8;">Lead → Appt → Show Up</div>
@@ -6434,7 +6253,7 @@ function _renderFunnelHorizontal(elId, leads, appts, shows) {
             ${dropN > 0 ? `<span style="color:#dc2626;margin-left:8px;">−${dropN.toLocaleString('en-MY')} drop</span>` : ''}
           </span>
         </div>
-        <div style="height:28px;background:var(--surface-2);border-radius:4px;overflow:hidden;">
+        <div style="height:28px;background:#f1f5f9;border-radius:4px;overflow:hidden;">
           <div style="width:${widthPct}%;height:100%;background:${s.color};transition:width 0.5s ease;display:flex;align-items:center;padding:0 10px;">
             ${labelInBar ? `<span style="font-size:11px;color:rgba(255,255,255,0.95);font-weight:500;">${(widthPct).toFixed(0)}% of Lead</span>` : ''}
           </div>
@@ -7012,7 +6831,7 @@ function renderFunnelTab() {
     if (_cplCombo) {
       const _outletFiltered = funnelOutletId !== 'all';
       const warningHtml = _outletFiltered
-        ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:var(--amber-subtle);border-radius:4px;">⚠️ CPL / CPA / CPS hidden when outlet filter is on (ads cost not split by outlet)</div>'
+        ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ CPL / CPA / CPS hidden when outlet filter is on (ads cost not split by outlet)</div>'
         : '';
       const tableHtml = _outletFiltered
         ? '<div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">—</div>'
@@ -7069,7 +6888,7 @@ function renderFunnelTab() {
     if (_cplCombo2) {
       const _outletFiltered2 = funnelOutletId !== 'all';
       const warningHtml2 = _outletFiltered2
-        ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:var(--amber-subtle);border-radius:4px;">⚠️ CPL / CPA / CPS hidden when outlet filter is on (ads cost not split by outlet)</div>'
+        ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ CPL / CPA / CPS hidden when outlet filter is on (ads cost not split by outlet)</div>'
         : '';
       const tableHtml2 = _outletFiltered2
         ? '<div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">—</div>'
@@ -9754,17 +9573,17 @@ function renderDashboardMonth() {
           <div style="font-size:11px;color:var(--purple);">Leads</div>
         </div>
         <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:3;background:var(--meta-bg);padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:18px;font-weight:500;color:#0C447C;">${fmt.num(appts)||'—'}</div>
           <div style="font-size:11px;color:#185FA5;">Appt${leads>0&&appts>0?` (${(appts/leads*100).toFixed(1)}%)`:''}</div>
         </div>
         <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:3;background:var(--green-subtle);padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:18px;font-weight:500;color:#085041;">${fmt.num(shows)||'—'}</div>
           <div style="font-size:11px;color:#0F6E56;">Show${appts>0&&shows>0?` (${(shows/appts*100).toFixed(1)}%)`:''}</div>
         </div>
         <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:5;background:var(--amber-subtle);border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:18px;font-weight:500;color:#633806;">${fmt.moneyK(sales)}</div>
           <div style="font-size:11px;color:#854F0B;">Ads sales${rev>0&&sales>0?` (${(sales/rev*100).toFixed(1)}%)`:''}</div>
         </div>
@@ -9869,17 +9688,17 @@ function renderDashboardYear() {
           <div style="font-size:11px;color:var(--purple);">Leads</div>
         </div>
         <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:3;background:var(--meta-bg);padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:3;background:#E6F1FB;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:18px;font-weight:500;color:#0C447C;">${fmt.num(appts)||'—'}</div>
           <div style="font-size:11px;color:#185FA5;">Appt (${leads>0?(appts/leads*100).toFixed(1):'0'}%)</div>
         </div>
         <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:3;background:var(--green-subtle);padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:3;background:#E1F5EE;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:18px;font-weight:500;color:#085041;">${fmt.num(shows)||'—'}</div>
           <div style="font-size:11px;color:#0F6E56;">Show (${appts>0?(shows/appts*100).toFixed(1):'0'}%)</div>
         </div>
         <div style="width:1px;background:var(--border);"></div>
-        <div style="flex:5;background:var(--amber-subtle);border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
+        <div style="flex:5;background:#FAEEDA;border-radius:0 6px 6px 0;padding:10px 6px;text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <div style="font-size:18px;font-weight:500;color:#633806;">${fmt.moneyK(sales)}</div>
           <div style="font-size:11px;color:#854F0B;">Ads sales (${rev>0?(sales/rev*100).toFixed(1):'0'}%)</div>
         </div>
@@ -10837,8 +10656,7 @@ function renderStore() {
         if (!isMobile) {
           // v6.67: Desktop transposed — months as rows, races as cols (matches mobile layout)
           const activeRD = mRaceData.filter(d => d.s > 0);
-          const _rShowP = tblPctOn('race'); // v9.04: 每表 % 开关
-          const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')}${_rShowP ? ` <span style="font-size:11px;color:var(--gray);">(${pct})</span>` : ''}`;
+          const pb = (v, pct) => v === 0 ? '—' : `${v.toLocaleString('en-MY')} <span style="font-size:11px;color:var(--gray);">(${pct})</span>`;
           const monthRows = activeRD.map(d => `<tr>
             <td style="font-weight:600;">${fmt.monthShort(d.m)}</td>
             ${races.map(r => `<td class="num">${d.byRace[r].length>0?pb(d.byRace[r].length,fmt.pct(d.byRace[r].length/d.s)):'—'}</td>`).join('')}
@@ -10849,7 +10667,7 @@ function renderStore() {
             ${races.map(r => `<td class="num" style="font-weight:700;">${totals.show>0&&totals[r]>0?pb(totals[r],fmt.pct(totals[r]/totals.show)):(totals[r]||'—')}</td>`).join('')}
             <td class="num" style="font-weight:700;">${tc(totals.show)}</td>
           </tr>`;
-          tbl = `<div class="section-title"><h3>${title}</h3><div class="right">${tblPctSeg('race', 'store')}</div></div>
+          tbl = `<div class="section-title"><h3>${title}</h3></div>
             <div class="table-wrap"><table class="data race-t">
               <thead><tr>
                 <th>Month</th>
@@ -10863,23 +10681,22 @@ function renderStore() {
             </table></div>
             <div id="${chartId}" style="margin-top:14px;margin-bottom:8px;"></div>`;
         } else {
-          const _rShowP = tblPctOn('race'); // v9.04: 每表 % 开关
           let rows = '';
           mRaceData.filter(d => d.s > 0).forEach(d => {
             rows+=`<tr>
               <td style="font-weight:600;width:36px;min-width:36px;white-space:nowrap;">${fmt.monthShort(d.m)}</td>
-              ${races.map(r=>`<td class="num">${d.byRace[r].length||'—'}${_rShowP&&d.s>0&&d.byRace[r].length>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.byRace[r].length/d.s)})</span>`:''}</td>`).join('')}
+              ${races.map(r=>`<td class="num">${d.byRace[r].length||'—'}${d.s>0&&d.byRace[r].length>0?` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(d.byRace[r].length/d.s)})</span>`:''}</td>`).join('')}
               <td class="num" style="font-weight:600;">${d.s}</td>
             </tr>`;
           });
-          tbl = `<div class="section-title"><h3>${title}</h3><div class="right">${tblPctSeg('race', 'store')}</div></div>
+          tbl = `<div class="section-title"><h3>${title}</h3></div>
             <div class="table-wrap"><table class="data race-t">
               <thead><tr><th>Month</th>
                 <th class="num">Chinese</th><th class="num">Malay</th><th class="num">Indian</th><th class="num">Foreigner</th><th class="num">Total Show</th>
               </tr></thead>
               <tbody>${rows||'<tr><td colspan="7" style="text-align:center;padding:16px;color:var(--gray);">No data</td></tr>'}</tbody>
               <tfoot><tr class="total-row"><td>TOTAL</td>
-                ${races.map(r=>`<td class="num">${totals[r]}${_rShowP&&totals.show>0&&totals[r]>0?` <span style="font-size:11px;">(${fmt.pct(totals[r]/totals.show)})</span>`:''}</td>`).join('')}
+                ${races.map(r=>`<td class="num">${totals[r]}${totals.show>0&&totals[r]>0?` <span style="font-size:11px;">(${fmt.pct(totals[r]/totals.show)})</span>`:''}</td>`).join('')}
                 <td class="num">${totals.show}</td>
               </tr></tfoot>
             </table></div>
@@ -10954,8 +10771,7 @@ function renderStore() {
       const buildNoShowRaceTable = (title, filterFn) => {
         const R = ['Chinese', 'Malay', 'Indian', 'Foreigner'];
         const tot = { Chinese: 0, Malay: 0, Indian: 0, Foreigner: 0, n: 0 };
-        const _nShowP = tblPctOn('noshow'); // v9.04: 每表 % 开关
-        const pcell = (v, base) => v ? `${v.toLocaleString('en-MY')}${_nShowP ? ` <span style="font-size:11px;color:var(--gray);">(${fmt.pct(v / base)})</span>` : ''}` : '—';
+        const pcell = (v, base) => v ? `${v.toLocaleString('en-MY')} <span style="font-size:11px;color:var(--gray);">(${fmt.pct(v / base)})</span>` : '—';
         const rows = raceMonths.map(m => {
           const mL = state.leads.filter(l => l.apptDate && l.apptDate.startsWith(m) && l.status === 'noshow' && filterFn(l));
           if (!mL.length) return '';
@@ -10968,7 +10784,7 @@ function renderStore() {
         const foot = `<tr class="total-row"><td style="font-weight:700;">TOTAL</td>`
           + R.map(r => `<td class="num" style="font-weight:700;">${pcell(tot[r], tot.n)}</td>`).join('')
           + `<td class="num" style="font-weight:700;">${tot.n.toLocaleString('en-MY')}</td></tr>`;
-        return `<div class="section-title"><h3>${title}</h3><div class="right">${tblPctSeg('noshow', 'store')}</div></div>
+        return `<div class="section-title"><h3>${title}</h3></div>
           <div class="table-wrap"><table class="data race-t">
             <thead><tr><th>Month</th>${R.map(r => `<th class="num">${r}</th>`).join('')}<th class="num">Total No Show</th></tr></thead>
             <tbody>${rows || '<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--gray);">No no-show data</td></tr>'}</tbody>
@@ -11721,7 +11537,7 @@ function renderFunnelComboTable() {
   const totalSalesPct = (view === 'outlet' && tRev > 0) ? tSales / tRev : null;
 
   wrap.innerHTML = `
-  ${useOutletFilter ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:var(--amber-subtle);border-radius:4px;">⚠️ Ads Cost / ROAS hidden when outlet filter is on (ads cost not split by outlet)</div>' : ''}
+  ${useOutletFilter ? '<div style="font-size:11px;color:var(--gray);margin-bottom:8px;padding:6px 10px;background:#fef3c7;border-radius:4px;">⚠️ Ads Cost / ROAS hidden when outlet filter is on (ads cost not split by outlet)</div>' : ''}
   <div class="table-wrap"><table class="data">
     <thead><tr>
       <th style="width:44px;">Month</th>
@@ -11936,7 +11752,7 @@ function _renderSpendingPowerTable(elId, labels, counts, sales) {
   const salesColor = '#c4b5fd';
 
   let html = `
-    <div style="background:var(--white);border-radius:8px;padding:14px 12px;border:1px solid #ede9f6;">
+    <div style="background:#fff;border-radius:8px;padding:14px 12px;border:1px solid #ede9f6;">
       <div style="display:grid;grid-template-columns:64px 1fr 1fr;gap:10px;font-size:11px;color:#94a3b8;font-weight:500;letter-spacing:0.3px;text-transform:uppercase;padding:0 4px 8px;border-bottom:0.5px solid #e5e7eb;margin-bottom:6px;">
         <div>消费档</div>
         <div style="display:flex;align-items:center;gap:6px;"><span style="width:8px;height:8px;border-radius:50%;background:${countColor};"></span>客户人数</div>
@@ -11960,14 +11776,14 @@ function _renderSpendingPowerTable(elId, labels, counts, sales) {
     const cValFmt = cVal > 0 ? cVal.toString() : '—';
 
     html += `
-      <div style="display:grid;grid-template-columns:64px 1fr 1fr;gap:10px;align-items:center;padding:9px 4px;${!isLast ? 'border-bottom:0.5px solid var(--surface-2);' : ''}">
+      <div style="display:grid;grid-template-columns:64px 1fr 1fr;gap:10px;align-items:center;padding:9px 4px;${!isLast ? 'border-bottom:0.5px solid #f1f5f9;' : ''}">
         <div style="font-size:13px;font-weight:500;color:#1f2937;">${tier}</div>
         <div>
           <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
             <span style="color:#1f2937;font-weight:500;">${cValFmt}</span>
             <span style="color:#94a3b8;font-size:11px;">${cPct.toFixed(1)}%</span>
           </div>
-          <div style="height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;">
+          <div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;">
             <div style="height:100%;width:${cWidth}%;background:${countColor};transition:width 0.4s ease;"></div>
           </div>
         </div>
@@ -11976,7 +11792,7 @@ function _renderSpendingPowerTable(elId, labels, counts, sales) {
             <span style="color:#1f2937;font-weight:500;">${sValFmt}</span>
             <span style="color:#94a3b8;font-size:11px;">${sPct.toFixed(1)}%</span>
           </div>
-          <div style="height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden;">
+          <div style="height:6px;background:#f1f5f9;border-radius:3px;overflow:hidden;">
             <div style="height:100%;width:${sWidth}%;background:${salesColor};transition:width 0.4s ease;"></div>
           </div>
         </div>
@@ -12918,18 +12734,15 @@ function _pnlSaveBtnHtml() {
 function _pnlSetView(v) { _pnlView = v; _pnlPrefsSave(); renderPnL(); }
 function _pnlSetFramework(f) { _pnlFramework = f; if (['product', 'service', 'forecast', 'topcost'].indexOf(_pnlView) < 0) _pnlView = 'product'; _pnlPrefsSave(); renderPnL(); }
 function _pnlTopTabs() {
-  // v9.0: mockup 定稿 — 页标题 + VIEW / INVENTORY 分组 (label + seg), 子 tab 底线式
   const inFw = ['product', 'service', 'forecast', 'topcost'].indexOf(_pnlView) >= 0;
   const tab = (v, label) => `<div class="pnl-toptab${_pnlView === v ? ' on' : ''}" onclick="_pnlSetView('${v}')">${label}</div>`;
-  const s2 = (on, click, label) => `<span class="${on ? 'on' : ''}" onclick="${click}">${label}</span>`;
-  const viewSeg = `<div class="pnl-fr"><span class="pnl-frlabel">View</span><div class="pnl-seg2">`
-    + s2(_pnlView === 'pnl', "_pnlSetView('pnl')", 'P&amp;L')
-    + s2(_pnlView === 'employees', "_pnlSetView('employees')", 'Employees') + `</div></div>`;
-  const invSeg = `<div class="pnl-fr"><span class="pnl-frlabel">Inventory</span><div class="pnl-seg2">`
-    + s2(inFw && _pnlFramework === 'crm', "_pnlSetFramework('crm')", 'Cost · CRM')
-    + s2(inFw && _pnlFramework === 'pct', "_pnlSetFramework('pct')", 'Cost · %') + `</div></div>`;
-  let h = `<div class="pnl-toptabs" style="align-items:flex-end;gap:20px">` + viewSeg + invSeg + `</div>`;
-  if (inFw) h += `<div class="pnl-toptabs" style="margin-top:4px">` + tab('product', 'Product') + tab('service', 'Service') + tab('forecast', 'Forecast') + tab('topcost', 'Top Cost') + `</div>`;
+  // v8.27: Inventory 胶囊跟旁边 pill 同款（白底/灰框/同高），只有选中那段填紫做指示
+  const seg = (f, label) => `<div onclick="_pnlSetFramework('${f}')" style="padding:3px 11px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;${(inFw && _pnlFramework === f) ? 'background:var(--purple);color:#fff;' : 'color:var(--gray);'}">${label}</div>`;
+  const inv = `<div style="display:inline-flex;align-items:center;gap:10px;padding:7px 8px 7px 16px;border-radius:9px;border:1px solid var(--border);background:#fff">`
+    + `<span style="font-size:14px;font-weight:600;color:var(--gray)">Inventory</span>`
+    + `<div style="display:inline-flex;gap:2px">` + seg('crm', 'Cost · CRM') + seg('pct', 'Cost · %') + `</div></div>`;
+  let h = `<div class="pnl-toptabs">` + tab('pnl', 'Profit &amp; Loss') + tab('employees', 'Employees') + inv + `</div>`;
+  if (inFw) h += `<div class="pnl-toptabs" style="margin-top:6px">` + tab('product', 'Product') + tab('service', 'Service') + tab('forecast', 'Forecast') + tab('topcost', 'Top Cost') + `</div>`;
   return h;
 }
 const _PNL_PERIODS = { full: { nm: 'Full year', idx: [0,1,2,3,4,5,6,7,8,9,10,11], sub: 'YTD' },
@@ -13079,16 +12892,16 @@ function _pnlInjectCss() {
   const css = `
 #pnlRoot{font-family:'IBM Plex Sans',Helvetica,Arial,sans-serif;color:var(--black);}
 #pnlRoot .pnl-tabs{display:flex;gap:6px;margin:4px 0 14px;flex-wrap:wrap;}
-#pnlRoot .pnl-tab{font-size:13px;font-weight:600;padding:7px 14px;border-radius:9px;border:1px solid var(--border);background:var(--white);color:var(--gray);cursor:pointer;} /* v9.0 */
-#pnlRoot .pnl-tab.on{background:var(--purple-subtle);border-color:transparent;color:var(--purple-deep);} /* v9.0: soft 底跟全站统一 */
+#pnlRoot .pnl-tab{font-size:13px;font-weight:500;padding:7px 14px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-tab.on{background:var(--purple);border-color:var(--purple);color:#fff;}
 #pnlRoot .pnl-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 14px;}
 #pnlRoot .pnl-chips{display:inline-flex;gap:6px;flex-wrap:wrap;}
-#pnlRoot .pnl-chip{font-size:12.5px;font-weight:500;padding:7px 15px;border-radius:9px;border:1px solid var(--border);background:var(--white);color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-chip{font-size:12.5px;font-weight:500;padding:7px 15px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
 #pnlRoot .pnl-chip.on{background:#19143a;border-color:#19143a;color:#fff;}
 #pnlRoot .pnl-right{display:inline-flex;gap:8px;align-items:center;}
 #pnlRoot .pnl-seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:3px;}
 #pnlRoot .pnl-seg button{font-family:inherit;font-size:12px;font-weight:500;padding:6px 16px;border:0;background:transparent;color:var(--gray);border-radius:7px;cursor:pointer;}
-#pnlRoot .pnl-seg button.on{background:var(--white);color:var(--black);box-shadow:0 0 0 1px var(--border),0 1px 3px rgba(0,0,0,.14);}
+#pnlRoot .pnl-seg button.on{background:#fff;color:var(--black);box-shadow:0 0 0 1px var(--border),0 1px 3px rgba(0,0,0,.14);}
 #pnlRoot .pnl-yr{font-size:13px;width:auto;padding:7px 30px 7px 11px;border:1px solid var(--border);border-radius:9px;background-color:#fff;font-family:inherit;}
 #pnlRoot .pnl-savebtn{padding:8px 18px;font-size:13px;white-space:nowrap;}
 #pnlRoot .pnl-savebtn:disabled{opacity:.7;}
@@ -13096,13 +12909,13 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ffb800;margin-right:7px;vertical-align:middle;}
 #pnlRoot .pnl-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:18px;}
 @media(max-width:820px){#pnlRoot .pnl-cards{grid-template-columns:repeat(2,1fr);}}
-#pnlRoot .pnl-card{position:relative;background:var(--white);border:1px solid var(--border);border-radius:14px;padding:13px 14px 13px 16px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;} /* v9.0: hair 边 */
+#pnlRoot .pnl-card{position:relative;background:#fff;border:1px solid #ececf1;border-radius:14px;padding:13px 14px 13px 16px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;}
 #pnlRoot .pnl-card .acc{position:absolute;left:0;top:0;bottom:0;width:4px;}
 #pnlRoot .pnl-card .pd{font-size:9px;color:#b6b8c6;text-transform:uppercase;letter-spacing:.5px;}
 #pnlRoot .pnl-card .lbl{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
 #pnlRoot .pnl-card .val{font-size:18px;font-weight:600;line-height:1.1;margin-top:4px;letter-spacing:-.3px;white-space:nowrap;}
 #pnlRoot .pnl-card .sub{font-size:11px;color:var(--gray);margin-top:4px;}
-#pnlRoot .pnl-card .pbar{height:6px;border-radius:99px;background:var(--surface-2);margin-top:9px;overflow:hidden;}
+#pnlRoot .pnl-card .pbar{height:6px;border-radius:99px;background:#eeedf6;margin-top:9px;overflow:hidden;}
 #pnlRoot .pnl-card .pbar>i{display:block;height:100%;border-radius:99px;background:var(--purple);}
 #pnlRoot .pnl-scroll{overflow:auto;max-height:calc(100vh - 230px);min-height:300px;border:1px solid #ececf1;border-radius:12px;}
 @media(min-width:768px){
@@ -13129,11 +12942,11 @@ function _pnlInjectCss() {
 #pnlRoot table.pnl-t{border-collapse:separate;border-spacing:0;font-size:11.5px;white-space:nowrap;width:100%;}
 #pnlRoot .pnl-t th,#pnlRoot .pnl-t td{padding:7px 10px;text-align:right;border-bottom:.5px solid #f3f3f7;font-variant-numeric:tabular-nums;}
 #pnlRoot .pnl-t thead th{height:32px;box-sizing:border-box;font-size:9.5px;font-weight:500;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;background:var(--surface);border-bottom:1px solid #e6e6ee;position:sticky;top:0;z-index:6;text-align:center;}
-#pnlRoot .pnl-t th.l,#pnlRoot .pnl-t td.l{text-align:left;position:sticky;left:0;background:var(--white);z-index:2;min-width:220px;border-right:1px solid #f0f0f5;}
+#pnlRoot .pnl-t th.l,#pnlRoot .pnl-t td.l{text-align:left;position:sticky;left:0;background:#fff;z-index:2;min-width:220px;border-right:1px solid #f0f0f5;}
 #pnlRoot .pnl-t thead th.l{z-index:7;background:var(--surface);}
-#pnlRoot .pnl-t th.sub,#pnlRoot .pnl-t td.sub{background:var(--purple-bg);}
-#pnlRoot .pnl-t thead th.sub{background:var(--purple-bg);color:var(--purple-deep);}
-#pnlRoot .pnl-t tr.grp td{background:var(--purple-bg);padding:0;text-align:left;position:sticky;top:32px;z-index:4;border-top:1px solid #e7e2f7;border-bottom:1px solid #e7e2f7;}
+#pnlRoot .pnl-t th.sub,#pnlRoot .pnl-t td.sub{background:#f7f3ff;}
+#pnlRoot .pnl-t thead th.sub{background:#f0e9ff;color:var(--purple-deep);}
+#pnlRoot .pnl-t tr.grp td{background:#f0ecfa;padding:0;text-align:left;position:sticky;top:32px;z-index:4;border-top:1px solid #e7e2f7;border-bottom:1px solid #e7e2f7;}
 #pnlRoot .pnl-t .glabel{position:sticky;left:0;display:inline-block;color:var(--purple-deep);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:7px 10px;}
 #pnlRoot .pnl-t tr.big td{font-size:13.5px;font-weight:700;border-top:1px solid #e7e7ee;}
 #pnlRoot .pnl-t tr.big td.l .nm{font-size:13px;font-weight:700;}
@@ -13168,18 +12981,11 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-stick .pnl-toptabs{margin-bottom:10px;}
 #pnlRoot .pnl-stick .pnl-bar2{margin-bottom:4px;}
 #pnlRoot .pnl-toptabs{display:inline-flex;gap:6px;margin-bottom:16px;}
-#pnlRoot .pnl-toptab{font-size:13px;font-weight:600;padding:8px 6px 10px;border-radius:0;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--gray);cursor:pointer;} /* v9.0: 底线式 (Aurora) */
-#pnlRoot .pnl-toptab.on{background:transparent;border-bottom-color:var(--purple);color:var(--black);}
-#pnlRoot .pnl-toptabs{gap:16px;}
-/* v9.0: 顶部分组 (label + seg, mockup 定稿) */
-#pnlRoot .pnl-fr{display:flex;flex-direction:column;gap:5px;}
-#pnlRoot .pnl-frlabel{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--silver);font-weight:600;padding-left:2px;}
-#pnlRoot .pnl-seg2{display:inline-flex;background:var(--surface-2);border-radius:9px;padding:3px;gap:2px;}
-#pnlRoot .pnl-seg2 span{padding:6px 13px;border-radius:7px;font-size:12.5px;font-weight:600;color:var(--gray);cursor:pointer;white-space:nowrap;}
-#pnlRoot .pnl-seg2 span.on{background:var(--purple-subtle);color:var(--purple-deep);}
-#pnlRoot .pnl-bar2{display:flex;align-items:flex-end;gap:8px 18px;flex-wrap:wrap;margin-bottom:16px;} /* v9.0: label 组底对齐 */
+#pnlRoot .pnl-toptab{font-size:14px;font-weight:600;padding:8px 18px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-toptab.on{background:var(--purple);border-color:var(--purple);color:#fff;}
+#pnlRoot .pnl-bar2{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:16px;}
 #pnlRoot .pnl-bar2 .pnl-tabs,#pnlRoot .pnl-bar2 .pnl-chips{margin:0;}
-#pnlRoot .pnl-bar2 .pnl-right{margin-left:auto;display:flex;align-items:flex-end;gap:8px;}
+#pnlRoot .pnl-bar2 .pnl-right{margin-left:auto;}
 #pnlRoot .pnl-bar .btn.pnl-savebtn{padding:8px 16px;}
 /* Employees 花名册 */
 #pnlRoot .emp-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-size:11px;color:var(--gray);}
@@ -13210,8 +13016,8 @@ function _pnlInjectCss() {
 #pnlRoot .emp-t .bnone{color:#cfcfd6;}
 #pnlRoot .emp-t tr.emp-inactive td{opacity:.5;}
 #pnlRoot .emp-t .emp-resigned{font-size:8.5px;font-weight:600;color:var(--gray);background:var(--surface-2);border-radius:5px;padding:1px 5px;text-transform:uppercase;letter-spacing:.3px;}
-#pnlRoot .emp-t tfoot td{font-weight:700;background:var(--surface-2);border-top:1px solid #ececf1;position:sticky;bottom:0;}
-#pnlRoot .emp-t tfoot td.l{background:var(--surface-2);}
+#pnlRoot .emp-t tfoot td{font-weight:700;background:#fbfafe;border-top:1px solid #ececf1;position:sticky;bottom:0;}
+#pnlRoot .emp-t tfoot td.l{background:#fbfafe;}
 /* Manpower 挑人 list (modal on body) */
 .pnl-pick-list{max-height:340px;overflow-y:auto;}
 .pnl-pick{display:flex;align-items:center;gap:10px;padding:10px 4px;border-top:0.5px solid var(--border);cursor:pointer;}
@@ -13225,9 +13031,9 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t.fc-t th,#pnlRoot .pnl-t.fc-t td{text-align:center;}
 #pnlRoot .pnl-t.fc-t th.l,#pnlRoot .pnl-t.fc-t td.l{text-align:left;width:260px;min-width:260px;max-width:260px;white-space:normal;}
 #pnlRoot .pnl-t.fc-t tbody td{border-bottom:1px solid #e4e4ec;}
-#pnlRoot .pnl-t.fc-t tbody tr.big td{position:sticky;bottom:0;background:var(--white);z-index:3;border-top:1px solid #d7d7e0;}
+#pnlRoot .pnl-t.fc-t tbody tr.big td{position:sticky;bottom:0;background:#fff;z-index:3;border-top:1px solid #d7d7e0;}
 #pnlRoot .pnl-t.fc-t tbody tr.big td.l{z-index:4;}
-#pnlRoot .pnl-t .cin{width:78px;text-align:right;border:1px solid #e3e3ea;border-radius:6px;padding:4px 6px;font-family:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;background:var(--white);color:var(--black);}
+#pnlRoot .pnl-t .cin{width:78px;text-align:right;border:1px solid #e3e3ea;border-radius:6px;padding:4px 6px;font-family:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;background:#fff;color:var(--black);}
 #pnlRoot .pnl-t .cin:hover{border-color:#cdb9fb;}
 #pnlRoot .pnl-t .cin:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 2px var(--purple-bg);}
 #pnlRoot .pnl-t .cin.cins{width:52px;}  /* Product/Service 成本/售价格压窄(不动 P&L 月份格) */
@@ -13237,10 +13043,10 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-t.stk .dvr{}  /* v8.30: 移除 Cost/月份 分割线（Davy 要求） */
 /* v8.16→v8.30: 冻结三列，顺序改成 RRP | Cost | 名字 (rrp left:0 / cost left:84 / name left:168) */
 #pnlRoot .pnl-t.stk th.l,#pnlRoot .pnl-t.stk td.l{width:260px;min-width:260px;max-width:260px;left:168px;}
-#pnlRoot .pnl-t.stk .c-rrp{position:sticky;left:0;z-index:2;background:var(--white);width:84px;min-width:84px;max-width:84px;}
-#pnlRoot .pnl-t.stk .c-cost{position:sticky;left:84px;z-index:2;background:var(--white);width:84px;min-width:84px;max-width:84px;}
+#pnlRoot .pnl-t.stk .c-rrp{position:sticky;left:0;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
+#pnlRoot .pnl-t.stk .c-cost{position:sticky;left:84px;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
 #pnlRoot .pnl-t.stk thead th.c-rrp,#pnlRoot .pnl-t.stk thead th.c-cost{z-index:7;background:var(--surface);}
-#pnlRoot .pnl-t.stk tr.big td.c-rrp,#pnlRoot .pnl-t.stk tr.big td.c-cost{background:var(--white);}
+#pnlRoot .pnl-t.stk tr.big td.c-rrp,#pnlRoot .pnl-t.stk tr.big td.c-cost{background:#fff;}
 #pnlRoot .pnl-t.stk .stkin input.cin{text-align:center;}  /* v8.20: RRP/Cost 数字居中 */
 #pnlRoot .pnl-t.stk td.l,#pnlRoot .pnl-t.stk td.l .nm{white-space:normal;overflow-wrap:anywhere;}  /* v8.20: 长名字换行不被遮 */
 #pnlRoot .pnl-t.stk th,#pnlRoot .pnl-t.stk td{text-align:center;}  /* v8.24: 月份数字居中 */
@@ -13248,18 +13054,18 @@ function _pnlInjectCss() {
 /* v8.32: Top Cost 成本排名（左 Product / 右 Service） */
 #pnlRoot .ts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 @media(max-width:768px){#pnlRoot .ts-grid{grid-template-columns:1fr;}}
-#pnlRoot .ts-card{border:1px solid #ececf1;border-radius:14px;padding:14px 14px 6px;background:var(--white);}
+#pnlRoot .ts-card{border:1px solid #ececf1;border-radius:14px;padding:14px 14px 6px;background:#fff;}
 #pnlRoot .ts-chd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #f0f0f5;}
 #pnlRoot .ts-lbl{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--purple-deep);}
 #pnlRoot .ts-tot{font-size:12px;color:var(--gray);}
 #pnlRoot .ts-tot b{color:var(--black);font-size:14px;}
 #pnlRoot .ts-row{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f6f6f9;}
 #pnlRoot .ts-row:last-child{border-bottom:0;}
-#pnlRoot .ts-rk{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:var(--purple-bg);color:var(--purple);}
+#pnlRoot .ts-rk{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:#f0edfb;color:var(--purple);}
 #pnlRoot .ts-rk.top{background:var(--purple);color:#fff;}
 #pnlRoot .ts-mid{min-width:0;}
 #pnlRoot .ts-nm{font-size:13px;font-weight:500;color:#22242e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-#pnlRoot .ts-track{height:5px;border-radius:3px;background:var(--surface-2);margin-top:5px;overflow:hidden;}
+#pnlRoot .ts-track{height:5px;border-radius:3px;background:#f0f0f5;margin-top:5px;overflow:hidden;}
 #pnlRoot .ts-fill{height:100%;border-radius:3px;}
 #pnlRoot .ts-r{text-align:right;white-space:nowrap;}
 #pnlRoot .ts-rm{font-size:13px;font-weight:600;color:var(--black);}
@@ -13267,20 +13073,20 @@ function _pnlInjectCss() {
 #pnlRoot .ts-empty{color:var(--gray);font-size:13px;padding:16px 2px;}
 #pnlRoot .ts-foot{font-size:11.5px;color:var(--silver);margin-top:14px;text-align:center;}
 #pnlRoot .pnl-t .cinwrap{display:inline-flex;align-items:center;gap:4px;}
-#pnlRoot .pnl-t .cinbtn{flex:none;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #e3e3ea;border-radius:6px;background:var(--white);color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-t .cinbtn{flex:none;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #e3e3ea;border-radius:6px;background:#fff;color:var(--gray);cursor:pointer;}
 #pnlRoot .pnl-t .cinbtn svg{width:13px;height:13px;}
 #pnlRoot .pnl-t .cinbtn:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-bg);}
 .calc-disp{background:var(--surface-2);border-radius:10px;padding:12px 14px;text-align:right;margin-top:6px;}
 .calc-disp .ex{font-size:14px;color:var(--gray);min-height:18px;word-break:break-all;font-variant-numeric:tabular-nums;}
 .calc-disp .rs{font-size:26px;font-weight:700;color:var(--black);font-variant-numeric:tabular-nums;margin-top:2px;}
 .calc-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
-.calc-pad button{font-family:inherit;font-size:17px;font-weight:600;padding:14px 0;border:1px solid var(--border);border-radius:10px;background:var(--white);color:var(--black);cursor:pointer;}
+.calc-pad button{font-family:inherit;font-size:17px;font-weight:600;padding:14px 0;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--black);cursor:pointer;}
 .calc-pad button:hover{background:var(--surface-2);}
 .calc-pad button.op{color:var(--purple);}
 .calc-pad button.clr{color:var(--red,#d64545);}
 #pnlRoot .pnl-t .staffcell{cursor:pointer;color:var(--purple-deep);}
 #pnlRoot .pnl-t .delx{color:#d2d2da;margin-right:7px;cursor:pointer;}
-#pnlRoot .pnl-t tr.addrow td{color:var(--purple);font-weight:500;text-align:left;padding:9px 10px 9px 18px;cursor:pointer;position:sticky;left:0;background:var(--white);}
+#pnlRoot .pnl-t tr.addrow td{color:var(--purple);font-weight:500;text-align:left;padding:9px 10px 9px 18px;cursor:pointer;position:sticky;left:0;background:#fff;}
 #pnlRoot .pnl-save{display:flex;justify-content:flex-end;margin-top:12px;}
 #pnlRoot .pnl-empty{color:var(--gray);font-size:13px;padding:24px;text-align:center;}
 `;
@@ -13427,10 +13233,10 @@ function renderPnL() {
   root.innerHTML =
     _pnlTopTabs()
     + `<div class="pnl-bar2">`
-      + `<div class="pnl-fr"><span class="pnl-frlabel">Outlet</span><div class="pnl-tabs">` + stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${e(s.id)}')">${e(s.name)}</div>`).join('') + `</div></div>`
-      + `<div class="pnl-fr"><span class="pnl-frlabel">Period</span><div class="pnl-chips">` + Object.keys(_PNL_PERIODS).map(k => `<button class="pnl-chip${k === _pnlState.period ? ' on' : ''}" onclick="_pnlSetPeriod('${k}')">${_PNL_PERIODS[k].nm}</button>`).join('') + `</div></div>`
+      + `<div class="pnl-tabs">` + stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${e(s.id)}')">${e(s.name)}</div>`).join('') + `</div>`
+      + `<div class="pnl-chips">` + Object.keys(_PNL_PERIODS).map(k => `<button class="pnl-chip${k === _pnlState.period ? ' on' : ''}" onclick="_pnlSetPeriod('${k}')">${_PNL_PERIODS[k].nm}</button>`).join('') + `</div>`
       + `<div class="pnl-right">`
-      + `<div class="pnl-fr"><span class="pnl-frlabel">Year</span><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select></div>`
+      + `<select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
       + `<div class="pnl-seg"><button class="${_pnlState.mode === 'showAmt' ? 'on' : ''}" onclick="_pnlSetMode('showAmt')">RM</button><button class="${_pnlState.mode === 'showPct' ? 'on' : ''}" onclick="_pnlSetMode('showPct')">%</button></div>`
       + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>`
       + (editable ? _pnlSaveBtnHtml() : '')
@@ -13667,10 +13473,10 @@ function _pnlExportPdf() {
   }
   _pnlExporting = false; renderPnL(); // 还原界面(可编辑 + 原门店)
   const css = (document.getElementById('pnlCss') || {}).textContent || '';
-  const vars = ':root{--purple:#7132f5;--purple-deep:#5b1ecf;--black:#101114;--gray:#686b82;--border:#dedee5;--surface:#fafafb;--surface-2:#f5f5f8;--white:#ffffff;--red:#d4153b;--silver:#9497a9;--purple-subtle:rgba(133,91,251,.16);--purple-bg:rgba(133,91,251,.08);--sticky-bg:#F5F1FE;--green-subtle:rgba(20,158,97,.12);--amber-subtle:rgba(217,119,6,.12);--red-subtle:rgba(212,21,59,.10);--meta-bg:rgba(24,119,242,.08);--border-light:#f0f0f5;--green-dark:#026b3f;--amber:#d97706;--green:#149e61;}'; // v9.0: PDF 永远浅色 — 补齐 pnlCss 会用到的变数
+  const vars = ':root{--purple:#7132f5;--purple-deep:#5b1ecf;--black:#101114;--gray:#686b82;--border:#dedee5;--surface:#fafafb;--surface-2:#f5f5f8;--white:#ffffff;--red:#d4153b;--silver:#9497a9;--purple-subtle:rgba(133,91,251,.16);--purple-bg:rgba(133,91,251,.08);}';
   const printCss = vars + css + `
     @page{size:A4 landscape;margin:8mm;}
-    body{margin:0;font-family:'IBM Plex Sans',Helvetica,Arial,sans-serif;background:var(--white);-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    body{margin:0;font-family:'IBM Plex Sans',Helvetica,Arial,sans-serif;background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     #pnlRoot .pnl-toptabs,#pnlRoot .pnl-bar,#pnlRoot .pnl-bar2,#pnlRoot .pnl-tabs,#pnlRoot .addrow,#pnlRoot .rgear,#pnlRoot .rdrag,#pnlRoot .delx{display:none!important;}
     #pnlRoot{height:auto!important;display:block!important;}
     #pnlRoot .pnl-scroll-main{display:block!important;}
@@ -13809,7 +13615,7 @@ function _pnlEmpModal(empId, retLineId, retMonth) {
     + `<div style="display:flex;gap:10px"><div class="settings-modal-input-row" style="flex:1.3;margin:0"><label>Basic salary (RM)</label><input id="pnlEmpBasic" type="number" step="any" value="${basic}"></div>`
     + `<div class="settings-modal-input-row" style="flex:1;margin:0"><label>Effective from</label><select id="pnlEmpEffM" style="width:100%">` + _PNL_MONTHS.map((m, i) => `<option value="${i + 1}"${(i + 1) === startM ? ' selected' : ''}>${m}</option>`).join('') + `</select></div>`
     + `<div class="settings-modal-input-row" style="flex:0.9;margin:0"><label>Year</label><select id="pnlEmpEffY" style="width:100%">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select></div></div>`
-    + `<div style="font-size:11px;color:#b3631a;background:var(--amber-subtle);border-radius:8px;padding:8px 12px;margin-top:10px">Salary applies from this month onward. Months before it are set to RM 0 (not employed yet).</div></div>`
+    + `<div style="font-size:11px;color:#b3631a;background:#fdf6ee;border-radius:8px;padding:8px 12px;margin-top:10px">Salary applies from this month onward. Months before it are set to RM 0 (not employed yet).</div></div>`
     + `<div style="flex:1;min-width:0">` + _otEmpFormHtml(e) + `</div></div>`
     + `<button class="btn btn-primary btn-full" style="margin-top:16px" onclick="_pnlEmpSave('${empId ? ee(empId) : ''}')">Save</button>`
     + (e ? `<button class="btn btn-danger btn-full" style="margin-top:8px" onclick="_pnlEmpDelete('${ee(empId)}')">Delete employee</button>` : '');
@@ -14220,7 +14026,7 @@ function renderPnlEmployees(root) {
     content = `<div class="pnl-cards" style="grid-template-columns:repeat(3,minmax(0,1fr))">` + cards + `</div>`
       + `<div class="pnl-scroll"><table class="pnl-t emp-t">` + head + body + foot + `</table></div>`;
   } else {
-    const legend = '<div class="emp-legend">' + Object.keys(BR).map(id => `<span><i class="bdot" style="background:${BR[id].color}"></i>${ee(BR[id].name)}</span>`).join('') + '<span><i class="bdot" style="background:var(--surface-2)"></i>Not employed</span></div>';
+    const legend = '<div class="emp-legend">' + Object.keys(BR).map(id => `<span><i class="bdot" style="background:${BR[id].color}"></i>${ee(BR[id].name)}</span>`).join('') + '<span><i class="bdot" style="background:#e8e8ee"></i>Not employed</span></div>';
     let head = '<thead><tr><th class="l">Employee · ' + ee(year) + '</th>';
     for (let i = 0; i < 12; i++) head += '<th>' + _PNL_MONTHS[i] + '</th>';
     head += '</tr></thead>';
@@ -14413,8 +14219,8 @@ function renderPnlStock(root, kind) {
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
   const _os = root.querySelector('.pnl-scroll'); const _sT = _os ? _os.scrollTop : 0, _sL = _os ? _os.scrollLeft : 0, _wY = window.scrollY; // 记住滚动, 画完还原(免得填成本后跳顶)
   root.innerHTML = _pnlTopTabs()
-    + `<div class="pnl-bar2"><div class="pnl-fr"><span class="pnl-frlabel">Outlet</span><div class="pnl-tabs">` + stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${ee(s.id)}')">${ee(s.name)}</div>`).join('') + `</div></div>`
-    + `<div class="pnl-right"><div class="pnl-fr"><span class="pnl-frlabel">Year</span><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select></div>`
+    + `<div class="pnl-bar2"><div class="pnl-tabs">` + stores.map(s => `<div class="pnl-tab${s.id === store ? ' on' : ''}" onclick="_pnlSetStore('${ee(s.id)}')">${ee(s.name)}</div>`).join('') + `</div>`
+    + `<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === year ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
     + `<div class="pnl-seg"><button class="${mmode === 'rm' ? 'on' : ''}" onclick="_pnlSetStockMode('rm')">RM</button><button class="${mmode === 'qty' ? 'on' : ''}" onclick="_pnlSetStockMode('qty')">Qty</button></div>`
     + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>` + _pnlSaveBtnHtml() + `</div></div>`
     + `<div class="pnl-cards" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">` + cards + `</div>`
@@ -14475,8 +14281,8 @@ function renderPnlTopCost(root) {
   const yrs = []; for (let y = new Date().getFullYear() + 1; y >= 2025; y--) yrs.push(y);
   const foot = grand ? `Product ${(prod.total / grand * 100).toFixed(0)}% · Service ${(svc.total / grand * 100).toFixed(0)}% of combined cost · Grand total RM ${_pnlFmt(grand)}` : '';
   root.innerHTML = _pnlTopTabs()
-    + `<div class="pnl-bar2"><div class="pnl-fr"><span class="pnl-frlabel">Outlet</span><div class="pnl-tabs">` + storeTabs + `</div></div>`
-    + `<div class="pnl-right"><div class="pnl-fr"><span class="pnl-frlabel">Year</span><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === String(year) ? ' selected' : ''}>${y}</option>`).join('') + `</select></div>`
+    + `<div class="pnl-bar2"><div class="pnl-tabs">` + storeTabs + `</div>`
+    + `<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">` + yrs.map(y => `<option value="${y}"${String(y) === String(year) ? ' selected' : ''}>${y}</option>`).join('') + `</select>`
     + `<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button></div></div>`
     + `<div class="ts-grid">` + col(prod, 'Product', false) + col(svc, 'Service', true) + `</div>`
     + (foot ? `<div class="ts-foot">${foot}</div>` : '');
@@ -14536,7 +14342,7 @@ function renderForecast(root) {
 
   // ---- Section B: forecast 计算 ----
   const _mOpt = sel => _PNL_MONTHS.map((m, i) => '<option value="' + i + '"' + (i === sel ? ' selected' : '') + '>' + m + '</option>').join('');
-  const pinp = 'width:44px;text-align:center;border:1px solid var(--purple);border-radius:6px;padding:3px;font-family:inherit;font-size:12px;font-weight:600;background:var(--white);color:var(--black)';
+  const pinp = 'width:44px;text-align:center;border:1px solid var(--purple);border-radius:6px;padding:3px;font-family:inherit;font-size:12px;font-weight:600;background:#fff;color:var(--black)';
   let bBody = '';
   items.forEach(it => {
     const cc = ee(it.code);
@@ -14568,7 +14374,7 @@ function renderForecast(root) {
     + '<th>Lasts' + _sub('months') + '</th>'
     + '<th style="color:var(--purple)">To order' + _sub('qty') + '</th></tr></thead>';
 
-  const inpStyle = 'font-family:inherit;font-size:14px;font-weight:600;text-align:right;border:1px solid var(--purple);border-radius:7px;padding:5px 8px;background:var(--white);color:var(--black);';
+  const inpStyle = 'font-family:inherit;font-size:14px;font-weight:600;text-align:right;border:1px solid var(--purple);border-radius:7px;padding:5px 8px;background:#fff;color:var(--black);';
   const byCtrl = byMonths
     ? '<input type="number" min="0" value="' + N + '" onchange="_fcSetMonths(this.value)" style="width:56px;text-align:center;' + inpStyle + '"> <span style="font-size:13px">months ahead</span>'
     : '<span style="font-size:12px;color:var(--gray)">RM</span> <input type="text" inputmode="numeric" value="' + (V ? V.toLocaleString('en-US') : '') + '" placeholder="0" oninput="_fcFmtInput(this)" onchange="_fcSetRevenue(this.value)" style="width:130px;' + inpStyle + '">';
@@ -14591,7 +14397,7 @@ function renderForecast(root) {
   const secB = '<div class="fc-secB">'
     + '<div style="display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-end;margin:4px 0 14px">'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Base period (for the rate)</div><div style="display:flex;align-items:center;gap:6px"><select class="pnl-yr" onchange="_fcSetFrom(this.value)">' + _mOpt(_fcState.from) + '</select><span style="color:var(--gray)">→</span><select class="pnl-yr" onchange="_fcSetTo(this.value)">' + _mOpt(_fcState.to) + '</select></div></div>'
-    +   '<div style="background:var(--green-subtle);border:1px solid #c9e6d2;border-radius:10px;padding:7px 14px"><div style="font-size:11px;color:#0f6e56;font-weight:600">Range revenue (actual)</div><div style="font-size:16px;font-weight:700;color:#0f6e56;margin-top:1px">RM ' + _pnlFmt(rangeRev) + '</div></div>'
+    +   '<div style="background:#eef7f0;border:1px solid #c9e6d2;border-radius:10px;padding:7px 14px"><div style="font-size:11px;color:#0f6e56;font-weight:600">Range revenue (actual)</div><div style="font-size:16px;font-weight:700;color:#0f6e56;margin-top:1px">RM ' + _pnlFmt(rangeRev) + '</div></div>'
     +   '<div><div style="font-size:11px;color:var(--gray);font-weight:600;margin-bottom:4px">Forecast by</div><div style="display:flex;align-items:center;gap:10px"><div class="pnl-seg"><button class="' + (byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'months\')">Months</button><button class="' + (!byMonths ? 'on' : '') + '" onclick="_fcSetBy(\'revenue\')">Revenue</button></div>' + byCtrl + '</div></div>'
     +   equivChip
     + '</div>'
@@ -14599,8 +14405,8 @@ function renderForecast(root) {
     + '</div>';
   const _wY = window.scrollY;
   root.innerHTML = _pnlTopTabs()
-    + '<div class="pnl-bar2"><div class="pnl-fr"><span class="pnl-frlabel">Outlet</span><div class="pnl-tabs">' + stores.map(s => '<div class="pnl-tab' + (s.id === store ? ' on' : '') + '" onclick="_pnlSetStore(\'' + ee(s.id) + '\')">' + ee(s.name) + '</div>').join('') + '</div></div>'
-    + '<div class="pnl-right"><div class="pnl-fr"><span class="pnl-frlabel">Year</span><select class="pnl-yr" onchange="_pnlSetYear(this.value)">' + [new Date().getFullYear() + 1, new Date().getFullYear(), 2025].filter((v, i, a) => a.indexOf(v) === i).map(y => '<option value="' + y + '"' + (String(y) === year ? ' selected' : '') + '>' + y + '</option>').join('') + '</select></div>'
+    + '<div class="pnl-bar2"><div class="pnl-tabs">' + stores.map(s => '<div class="pnl-tab' + (s.id === store ? ' on' : '') + '" onclick="_pnlSetStore(\'' + ee(s.id) + '\')">' + ee(s.name) + '</div>').join('') + '</div>'
+    + '<div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)">' + [new Date().getFullYear() + 1, new Date().getFullYear(), 2025].filter((v, i, a) => a.indexOf(v) === i).map(y => '<option value="' + y + '"' + (String(y) === year ? ' selected' : '') + '>' + y + '</option>').join('') + '</select>'
     + '<div class="pnl-seg"><button class="' + (showB ? 'on' : '') + '" onclick="_fcSetTab(\'fc\')">Forecast</button><button class="' + (showA && !_pnlExporting ? 'on' : '') + '" onclick="_fcSetTab(\'usage\')">Usage / RM1,000</button></div>'
     + (showA && !_pnlExporting ? '<div class="pnl-seg"><button class="' + (_fcState.period === 'month' ? 'on' : '') + '" onclick="_fcSetPeriod(\'month\')">Month</button><button class="' + (_fcState.period === 'quarter' ? 'on' : '') + '" onclick="_fcSetPeriod(\'quarter\')">Quarter</button><button class="' + (_fcState.period === 'half' ? 'on' : '') + '" onclick="_fcSetPeriod(\'half\')">Half</button></div>' : '')
     + '<button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button>' + _pnlSaveBtnHtml() // v7.86: Forecast 也放 Save(存 Sell price/Cost% 去 Sheet)
@@ -14692,9 +14498,8 @@ function renderRevenueOutlet(mArr, locId) {
     //   列顺序: Month | Ads Sales | Walk-in | ┃ Total New | Total Existing | ┃ Total Revenue
     //   所有 % 分母统一为 Total Revenue (该月 outlet 营业额)
     const walkInYr = yearNew - adsNewYr;
-    const _oShowP = tblPctOn('outlet'); // v9.04: 每表 % 开关
     const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
-    const cell = (v, pct) => v>0 ? `${fmt.money(v)}${_oShowP ? ` <span style="font-size:11px;color:var(--gray);">${pct}</span>` : ''}` : '—';
+    const cell = (v, pct) => v>0 ? `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
     const cellNoPct = (v) => v>0 ? fmt.money(v) : '—';
     const dividerStyle = 'border-left:2px solid var(--purple-deep);';
 
@@ -14717,7 +14522,7 @@ function renderRevenueOutlet(mArr, locId) {
       <td class="num" style="font-weight:700;">${cell(yearOld, pctOf(yearOld, yearTotal))}</td>
       <td class="num" style="font-weight:700;${dividerStyle}">${cellNoPct(yearTotal)}</td>
     </tr>`;
-    html += `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('outlet', 'revenue')}</div><div class="table-wrap"><table class="data">
+    html += `<div class="table-wrap"><table class="data">
       <thead><tr>
         <th>Month</th>
         <th class="num">Ads Sales</th>
@@ -14731,9 +14536,8 @@ function renderRevenueOutlet(mArr, locId) {
   } else {
     // v6.67: Mobile — same merged table layout
     const walkInYr = yearNew - adsNewYr;
-    const _oShowP = tblPctOn('outlet'); // v9.04: 每表 % 开关
     const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
-    const cellHTML = (v, pct) => v>0 ? `${fmt.money(v)}${_oShowP ? ` <span style="font-size:11px;color:var(--gray);">${pct}</span>` : ''}` : '—';
+    const cellHTML = (v, pct) => v>0 ? `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
     const cellPlain = (v) => v>0 ? fmt.money(v) : '—';
     const dividerStyle = 'border-left:2px solid var(--purple-deep);';
 
@@ -14750,7 +14554,7 @@ function renderRevenueOutlet(mArr, locId) {
         <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellPlain(d.t)}</td>
       </tr>`;
     });
-    html += `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('outlet', 'revenue')}</div><div class="table-wrap"><table class="data">
+    html += `<div class="table-wrap"><table class="data">
       <thead><tr>
         <th style="width:60px;min-width:60px;">Month</th>
         <th class="num">Ads Sales</th>
@@ -14762,10 +14566,10 @@ function renderRevenueOutlet(mArr, locId) {
       <tbody>${mRows}</tbody>
       <tfoot><tr class="total-row">
         <td>TOTAL</td>
-        <td class="num">${cellHTML(adsNewYr, pctOf(adsNewYr, yearTotal))}</td>
-        <td class="num">${cellHTML(walkInYr, pctOf(walkInYr, yearTotal))}</td>
-        <td class="num" style="font-weight:700;${dividerStyle}">${cellHTML(yearNew, pctOf(yearNew, yearTotal))}</td>
-        <td class="num" style="font-weight:700;">${cellHTML(yearOld, pctOf(yearOld, yearTotal))}</td>
+        <td class="num">${fmt.money(adsNewYr)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(adsNewYr, yearTotal)}</span></td>
+        <td class="num">${fmt.money(walkInYr)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(walkInYr, yearTotal)}</span></td>
+        <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(yearNew)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(yearNew, yearTotal)}</span></td>
+        <td class="num" style="font-weight:700;">${fmt.money(yearOld)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(yearOld, yearTotal)}</span></td>
         <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(yearTotal)}</td>
       </tr></tfoot>
     </table></div>`;
@@ -14799,18 +14603,32 @@ function renderRevenueSummary(mArr) {
   const gNewPct = grandTotal > 0 ? (grandNew/grandTotal*100).toFixed(1) : '0.0';
   const gOldPct = grandTotal > 0 ? (grandOld/grandTotal*100).toFixed(1) : '0.0';
 
-  // v9.0: Summary → mockup 定稿的 KPI 卡排 (Year Total / New / Old / 各店, 点店卡跳该店)
-  const _kpi = (lab, val, sub, opts) => `<div class="rv-kpi"${opts && opts.click ? ` onclick="${opts.click}" style="cursor:pointer;"` : ''}>
-      <div class="rv-kpi-lab">${lab}</div>
-      <div class="rv-kpi-val${opts && opts.acc ? ' acc' : ''}">${val}</div>
-      <div class="rv-kpi-sub">${sub}</div>
-    </div>`;
-  // v9.04: 只留 3 张 (各门店卡拿掉 — Davy: 个别店的不需要卡片; 看单店用顶部 Outlet 下拉)
-  let html = `<div class="rv-kpis" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));max-width:760px;">`
-    + _kpi('Year Total', fmt.money(grandTotal), `${activeMonths.length} months · ${locs.length} outlets`, { acc: true })
-    + _kpi('New', fmt.money(grandNew), `${gNewPct}% of total`)
-    + _kpi('Old', fmt.money(grandOld), `${gOldPct}% of total`)
-    + `</div>`;
+  // Summary card
+  let html = `<div class="card" style="margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:20px;font-weight:700;color:var(--black);">All Outlets</div>
+        <div style="font-size:12px;color:var(--gray);">${activeMonths.length} months · ${locs.length} outlets</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;">Year Total</div>
+        <div style="font-size:28px;font-weight:800;color:var(--purple-deep);">${fmt.money(grandTotal)}</div>
+        <div style="font-size:12px;color:var(--green-dark);">● New: ${fmt.money(grandNew)} · ${gNewPct}%</div>
+        <div style="font-size:12px;color:var(--gray);">● Old: ${fmt.money(grandOld)} · ${gOldPct}%</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      ${locs.map(loc => {
+        const s = storeSummary[loc.id];
+        const pct = grandTotal > 0 ? (s.total/grandTotal*100).toFixed(0) : 0;
+        return `<div onclick="setRevOutlet('${loc.id}')" style="flex:1;min-width:80px;background:var(--purple-bg);border-radius:8px;padding:10px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(113,50,245,0.15)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:11px;color:var(--gray);font-weight:600;">${loc.name} ›</div>
+          <div style="font-size:15px;font-weight:700;color:var(--purple-deep);">${fmt.moneyK(s.total)}</div>
+          <div style="font-size:11px;color:var(--gray);">${pct}% of total</div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
 
   // No table — just card + chart
   const showMonths = activeM;
@@ -14842,9 +14660,8 @@ function renderRevenueSummary(mArr) {
     //   列顺序: Month | Ads Sales | Walk-in | ┃ Total New | Total Existing | ┃ Total Revenue
     //   所有 % 分母统一为 Total Revenue (4 列加起来 = 100%)
     const allWalkInYr = allYearNew - allYearAds;
-    const _mShowP = tblPctOn('monthly'); // v9.04: 每表 % 开关
     const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
-    const cell = (v, pct) => v>0 ? `${fmt.money(v)}${_mShowP ? ` <span style="font-size:11px;color:var(--gray);">${pct}</span>` : ''}` : '—';
+    const cell = (v, pct) => v>0 ? `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
     const cellNoPct = (v) => v>0 ? fmt.money(v) : '—';
     const dividerStyle = 'border-left:2px solid var(--purple-deep);';
 
@@ -14867,7 +14684,7 @@ function renderRevenueSummary(mArr) {
       <td class="num" style="font-weight:700;">${cell(allYearOld, pctOf(allYearOld, allYearTotal))}</td>
       <td class="num" style="font-weight:700;${dividerStyle}">${cellNoPct(allYearTotal)}</td>
     </tr>`;
-    monthlyPaneHTML = `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('monthly', 'revenue')}</div><div class="table-wrap"><table class="data">
+    monthlyPaneHTML = `<div class="table-wrap"><table class="data">
         <thead><tr>
           <th>Month</th>
           <th class="num">Ads Sales</th>
@@ -14881,10 +14698,8 @@ function renderRevenueSummary(mArr) {
   } else {
     // v6.67: Mobile — same merged table layout (months as rows, 5 metric columns)
     const allWalkInYr = allYearNew - allYearAds;
-    const _mShowP = tblPctOn('monthly'); // v9.04: 每表 % 开关
-    const _pspan = (s) => _mShowP ? ` <span style="font-size:11px;color:var(--gray);font-weight:400;">${s}</span>` : '';
     const pctOf = (v, base) => base>0 ? '('+(v/base*100).toFixed(1)+'%)' : '—';
-    const cellHTML = (v, pct) => v>0 ? `${fmt.money(v)}${_pspan(pct)}` : '—';
+    const cellHTML = (v, pct) => v>0 ? `${fmt.money(v)} <span style="font-size:11px;color:var(--gray);">${pct}</span>` : '—';
     const cellPlain = (v) => v>0 ? fmt.money(v) : '—';
     const dividerStyle = 'border-left:2px solid var(--purple-deep);';
 
@@ -14901,7 +14716,7 @@ function renderRevenueSummary(mArr) {
         <td class="num" style="vertical-align:top;font-weight:600;${dividerStyle}">${cellPlain(d.mTotal)}</td>
       </tr>`;
     });
-    monthlyPaneHTML = `<div style="display:flex;justify-content:flex-end;margin-bottom:8px;">${tblPctSeg('monthly', 'revenue')}</div><div class="table-wrap"><table class="data">
+    monthlyPaneHTML = `<div class="table-wrap"><table class="data">
         <thead><tr>
           <th style="width:60px;min-width:60px;">Month</th>
           <th class="num">Ads Sales</th>
@@ -14913,10 +14728,10 @@ function renderRevenueSummary(mArr) {
         <tbody>${mRows}</tbody>
         <tfoot><tr class="total-row">
           <td>TOTAL</td>
-          <td class="num">${fmt.money(allYearAds)}${_pspan(pctOf(allYearAds, allYearTotal))}</td>
-          <td class="num">${fmt.money(allWalkInYr)}${_pspan(pctOf(allWalkInYr, allYearTotal))}</td>
-          <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(allYearNew)}${_pspan(pctOf(allYearNew, allYearTotal))}</td>
-          <td class="num" style="font-weight:700;">${fmt.money(allYearOld)}${_pspan(pctOf(allYearOld, allYearTotal))}</td>
+          <td class="num">${fmt.money(allYearAds)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearAds, allYearTotal)}</span></td>
+          <td class="num">${fmt.money(allWalkInYr)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allWalkInYr, allYearTotal)}</span></td>
+          <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(allYearNew)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearNew, allYearTotal)}</span></td>
+          <td class="num" style="font-weight:700;">${fmt.money(allYearOld)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pctOf(allYearOld, allYearTotal)}</span></td>
           <td class="num" style="font-weight:700;${dividerStyle}">${fmt.money(allYearTotal)}</td>
         </tr></tfoot>
       </table></div>`;
@@ -14944,10 +14759,10 @@ function renderRevenueSummary(mArr) {
       return locs.reduce((s, loc) => s + getOutletTotal(m, loc.id), 0);
     };
 
-    // v8.36: 去掉进度条; v9.04: % 由每表开关控制 (show 参数)
-    const cellWithPct = (v, base, color, show) => {
+    // v8.36: 去掉进度条, % 直接放营业额旁边 (color 参数保留不用, 免动 5 处调用)
+    const cellWithPct = (v, base, color) => {
       if (v == null || v === 0) return '<span style="color:var(--silver);">—</span>';
-      const pctStr = (show && base > 0) ? ' <span style="font-size:11px;color:var(--gray);font-weight:400;">('+((v/base)*100).toFixed(1)+'%)</span>' : '';
+      const pctStr = base > 0 ? ' <span style="font-size:11px;color:var(--gray);font-weight:400;">('+((v/base)*100).toFixed(1)+'%)</span>' : '';
       return `<div>${fmt.money(v)}${pctStr}</div>`;
     };
 
@@ -14957,7 +14772,6 @@ function renderRevenueSummary(mArr) {
     // (For Total Revenue table, where each cell's base = monthly all-outlet total)
     const buildCmpTable = (label, hint, color, getVal, getBase, isShareTable) => {
       let tbl = '';
-        const showP = tblPctOn('cmp:' + label); // v9.04: 每表 % 开关
         const storeHdr = locs.map(l => `<th class="num">${esc(l.name)}</th>`).join('');
         let body = '';
         let colTotals = locs.map(() => 0);
@@ -14971,7 +14785,7 @@ function renderRevenueSummary(mArr) {
           locs.forEach((loc, i) => {
             const v = getVal(m, loc.id);
             const base = getBase(m, loc.id);
-            cells += `<td class="num" style="vertical-align:top;">${cellWithPct(v, base, color, showP)}</td>`;
+            cells += `<td class="num" style="vertical-align:top;">${cellWithPct(v, base, color)}</td>`;
             colTotals[i] += v || 0;
             colBaseTotals[i] += base || 0;
             rowTotal += v || 0;
@@ -14987,7 +14801,7 @@ function renderRevenueSummary(mArr) {
             rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}</div>`;
           } else {
             const rowPct = rowBaseTotal > 0 ? '('+((rowTotal/rowBaseTotal)*100).toFixed(1)+'%)' : '—';
-            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)}${showP ? ` <span style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</span>` : ''}</div>`;
+            rowCell = `<div style="font-weight:700;">${fmt.money(rowTotal)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${rowPct}</span></div>`;
           }
           body += `<tr><td>${fmt.monthShort(m)}</td>${cells}<td class="num" style="vertical-align:top;">${rowCell}</td></tr>`;
         });
@@ -15002,7 +14816,7 @@ function renderRevenueSummary(mArr) {
           } else {
             pct = colBaseTotals[i] > 0 ? '('+((t/colBaseTotals[i])*100).toFixed(1)+'%)' : '—';
           }
-          return `<td class="num" style="vertical-align:top;"><div style="font-weight:700;">${fmt.money(t)}${showP ? ` <span style="font-size:11px;color:var(--gray);font-weight:400;">${pct}</span>` : ''}</div></td>`;
+          return `<td class="num" style="vertical-align:top;"><div style="font-weight:700;">${fmt.money(t)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${pct}</span></div></td>`;
         }).join('');
         // YTD x Total: grand total. For Total Revenue, this IS the denominator — no %
         let grandCell;
@@ -15012,7 +14826,7 @@ function renderRevenueSummary(mArr) {
           grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)}</div>`;
         } else {
           const grandPct = grandBaseTotal > 0 ? '('+((grandTotal/grandBaseTotal)*100).toFixed(1)+'%)' : '—';
-          grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)}${showP ? ` <span style="font-size:11px;color:var(--gray);font-weight:400;">${grandPct}</span>` : ''}</div>`;
+          grandCell = `<div style="font-weight:700;">${fmt.money(grandTotal)} <span style="font-size:11px;color:var(--gray);font-weight:400;">${grandPct}</span></div>`;
         }
         // v8.37: 固定列宽 (table-layout:fixed + colgroup) → 5 表列对齐; 去掉 Total 前紫色竖线
         const cmpMinW = 90 + locs.length * 200 + 160;
@@ -15024,9 +14838,9 @@ function renderRevenueSummary(mArr) {
           <tfoot><tr class="total-row"><td style="font-weight:700;color:var(--purple);">YTD</td>${totalCells}<td class="num" style="vertical-align:top;">${grandCell}</td></tr></tfoot>
         </table>`;
       return `<div style="margin-top:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
-          <div style="font-size:13.5px;font-weight:700;color:var(--black);letter-spacing:0.3px;"><span style="color:${color};">●</span> ${label}</div>
-          <div style="display:flex;align-items:center;gap:10px;">${showP ? `<span style="font-size:11px;color:var(--silver);font-style:italic;">${hint}</span>` : ''}${tblPctSeg('cmp:' + label, 'revenue')}</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);letter-spacing:0.4px;"><span style="color:${color};">●</span> ${label.toUpperCase()}</div>
+          <div style="font-size:11px;color:var(--silver);font-weight:400;font-style:italic;">${hint}</div>
         </div>
         <div class="table-wrap">${tbl}</div>
       </div>`;
@@ -16264,7 +16078,7 @@ async function cloudBackupRefreshList() {
             <div style="font-size:11px;color:var(--silver);margin-top:2px;">${ageStr} · ${sizeKb} KB</div>
           </div>
           <div style="display:flex;gap:6px;flex-shrink:0;">
-            <button onclick="window.open('${escapeHTML(b.url)}','_blank')" title="Open in Drive" style="padding:5px 8px;font-size:11px;background:var(--white);border:1px solid var(--border);border-radius: 8px;color:var(--gray);cursor:pointer;">Open</button>
+            <button onclick="window.open('${escapeHTML(b.url)}','_blank')" title="Open in Drive" style="padding:5px 8px;font-size:11px;background:#fff;border:1px solid var(--border);border-radius: 8px;color:var(--gray);cursor:pointer;">Open</button>
             <button onclick="cloudBackupRestore('${escapeHTML(b.id)}','${escapeHTML(b.name)}')" style="padding:5px 10px;font-size:11px;background:var(--purple);color:#fff;border:none;border-radius: 8px;cursor:pointer;font-weight:500;">Restore</button>
           </div>
         </div>
@@ -16272,7 +16086,7 @@ async function cloudBackupRefreshList() {
     }).join('');
     setAll(`
       <div style="font-size:11px;color:var(--silver);margin-bottom:6px;">${backups.length} backup(s):</div>
-      <div style="background:var(--white);border:1px solid var(--border);border-radius:8px;max-height:280px;overflow-y:auto;">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:8px;max-height:280px;overflow-y:auto;">
         ${html}
       </div>
     `);
@@ -16294,7 +16108,7 @@ function cloudBackupRestore(backupId, backupName) {
   ];
 
   const checkboxes = tabs.map(t => `
-    <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;background:var(--white);">
+    <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;background:#fff;">
       <input type="checkbox" id="restore_tab_${escapeHTML(t.key)}" value="${escapeHTML(t.key)}" style="margin-top:2px;flex-shrink:0;">
       <div style="flex:1;">
         <div style="font-size:14px;font-weight:500;color:var(--black);">${escapeHTML(t.label)}</div>
@@ -18801,9 +18615,9 @@ function applyNumHighlight(text) {
 }
 
 // AI avatar (purple gradient circle with "AI" text) — used in chat bubbles and headers
-const AI_AVATAR_SVG = `<div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg, var(--purple), var(--purple-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;letter-spacing:0.3px;">AI</div>`;
+const AI_AVATAR_SVG = `<div style="width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg, var(--purple), #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;letter-spacing:0.3px;">AI</div>`;
 
-const AI_AVATAR_SVG_LARGE = `<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, var(--purple), var(--purple-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>`;
+const AI_AVATAR_SVG_LARGE = `<div style="width:64px;height:64px;margin:0 auto 12px;border-radius:50%;background:linear-gradient(135deg, var(--purple), #9b5fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;letter-spacing:1px;box-shadow:0 4px 16px rgba(113,50,245,0.35);">AI</div>`;
 
 // v6.68: 删除 escapeHTML 重复定义 (原本在 line ~15315, 跟 line 4561 完全一样).
 // JS function 声明虽然允许重复但容易混乱, 既然 line 4561 已早注册全局, 这里不需要.
@@ -18978,7 +18792,7 @@ function renderChipsEditorList() {
           style="font-size:12px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;resize:none;line-height:1.5;"
           id="chip-prompt-${i}">${c.prompt.replace(/</g,'&lt;')}</textarea>
       </div>
-      <button type="button" onclick="deleteChipRow(${i})" style="width:28px;height:28px;border:none;background:var(--red-subtle);color:var(--adscost-color);border-radius:8px;cursor:pointer;font-size:14px;flex-shrink:0;margin-top:2px;">✕</button>
+      <button type="button" onclick="deleteChipRow(${i})" style="width:28px;height:28px;border:none;background:#fee2e2;color:var(--adscost-color);border-radius:8px;cursor:pointer;font-size:14px;flex-shrink:0;margin-top:2px;">✕</button>
     </div>
   `).join('') + `<p style="font-size:11px;color:var(--gray);text-align:center;margin-top:4px;">拖拽暂不支持；删除后保存即生效</p>`;
 }
@@ -19667,7 +19481,7 @@ function buildLeadsCount() {
   };
 }
 
-// v9.0: Alt+A (AI Assistant) 快捷键移除 — Davy 不需要 AI 功能
+// v8.43: Alt+A (AI Assistant) 快捷键移除 — Davy 不需要 AI 功能
 
 // ---------- Global Quick Switcher (Ctrl+K) ----------
 let _gsSelectedIdx = 0;
@@ -19866,7 +19680,7 @@ function _gsSelectAndGo(idx) {
   if (_gsResults[idx]) _gsResults[idx].action();
 }
 
-// Keyboard navigation — v9.0: Ctrl+K 打开 Search 的分支移除 (Davy 不需要 Search 功能)
+// Keyboard navigation — v8.43: Ctrl+K 打开 Search 的分支移除 (Davy 不需要 Search 功能)
 document.addEventListener('keydown', e => {
   const bd = document.getElementById('globalSearchBackdrop');
   if (!bd || !bd.classList.contains('open')) return;
@@ -20742,7 +20556,7 @@ function renderLeadOrApptCard(p, type, activeCh, locations, apptTime, locName, n
       ${locationSelector}
       <div style="display:flex; gap:8px; align-items:stretch;">
         <button id="paddbtn-${esc(p.id)}" style="flex:1; padding:10px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="pendingConfirm('${esc(p.id)}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fff" style="flex-shrink:0;"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>Add</button>
-        <button id="pdelbtn-${esc(p.id)}" style="padding:10px 16px; font-size:14px; background:var(--white); color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; font-weight:500; flex-shrink:0; display:flex; align-items:center; justify-content:center;" onclick="pendingDelete('${esc(p.id)}')" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+        <button id="pdelbtn-${esc(p.id)}" style="padding:10px 16px; font-size:14px; background:#fff; color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; font-weight:500; flex-shrink:0; display:flex; align-items:center; justify-content:center;" onclick="pendingDelete('${esc(p.id)}')" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
       </div>
     </div>
     `;
@@ -20803,7 +20617,7 @@ function renderUpdateCard(p, locations, apptTime, locName, niceTime, esc) {
       </div>
       <div style="display:flex; gap:8px; align-items:stretch;">
         <button id="paddbtn-${esc(p.id)}" style="flex:1; padding:10px 14px; font-size:14px; background:var(--purple); color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:500;" onclick="pendingConfirm('${esc(p.id)}')">🔄 Apply Update</button>
-        <button id="pdelbtn-${esc(p.id)}" style="padding:10px 16px; font-size:14px; background:var(--white); color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; font-weight:500; flex-shrink:0; display:flex; align-items:center; justify-content:center;" onclick="pendingDelete('${esc(p.id)}')" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
+        <button id="pdelbtn-${esc(p.id)}" style="padding:10px 16px; font-size:14px; background:#fff; color:var(--red); border:1px solid var(--red); border-radius:8px; cursor:pointer; font-weight:500; flex-shrink:0; display:flex; align-items:center; justify-content:center;" onclick="pendingDelete('${esc(p.id)}')" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button>
       </div>
     </div>
     `;
@@ -21674,7 +21488,7 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
 
       <div style="margin-bottom: 16px;">
         <label style="display:block;font-size:13px;color:var(--gray);margin-bottom:6px;">📡 Channel</label>
-        <select id="mergeChannelSelect" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--white);">
+        <select id="mergeChannelSelect" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:#fff;">
           ${channelOptions}
         </select>
       </div>
