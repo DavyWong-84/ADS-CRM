@@ -3393,7 +3393,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.59</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.60</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3444,7 +3444,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.59</div>
+      <div class="nav-brand-version">v8.60</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -7629,7 +7629,7 @@ function populateLeadForm(l) {
   const adLabel = document.getElementById('f_apptDate_label');
   const adBtn = document.getElementById('f_apptDate_btn');
   if (adLabel && adBtn) {
-    if (l.apptDate) { adLabel.textContent = l.apptDate; adBtn.classList.remove('empty'); }
+    if (l.apptDate) { adLabel.textContent = String(l.apptDate).replace(' ', ' · '); adBtn.classList.remove('empty'); } // v8.60: 带出预约时间
     else { adLabel.textContent = ''; adBtn.classList.add('empty'); }
   }
   document.getElementById('f_location').value = l.locationId || '';
@@ -8225,12 +8225,20 @@ function clearDate() {
 function applyDate(dateStr) {
   const id = dpState.targetId;
   if (!id) return;
-  document.getElementById(id).value = dateStr;
+  const el = document.getElementById(id);
+  // v8.60: 预约日期改期时保住原本的时间 (GHL 推来的 "2026-07-24 14:00")。
+  //   表单只有日期选择器, 直接覆盖会把几点到店洗掉。
+  let out = dateStr;
+  if (dateStr && id === 'f_apptDate') {
+    const oldT = String(el.value || '').match(/[ T](\d{2}:\d{2})/);
+    if (oldT) out = dateStr + ' ' + oldT[1];
+  }
+  el.value = out;
   const btn = document.getElementById(id + '_btn');
   const label = document.getElementById(id + '_label');
   if (btn && label) {
     if (dateStr) {
-      label.textContent = dateStr;
+      label.textContent = out.replace(' ', ' · ');
       btn.classList.remove('empty');
     } else {
       label.textContent = '';
@@ -8778,7 +8786,8 @@ function apptCountdownText(l) {
   if (l.status !== 'booked') return { text: '—', cls: 'cd-past' };
   if (!l.apptDate) return { text: '—', cls: 'cd-past' };
   const today0 = new Date(); today0.setHours(0,0,0,0);
-  const appt0 = new Date(l.apptDate + 'T00:00:00');
+  // v8.60: apptDate 后端起会带时间 ("2026-07-24 14:00"), 只取日期部分再拼 T00:00:00
+  const appt0 = new Date(String(l.apptDate).slice(0, 10) + 'T00:00:00');
   if (isNaN(appt0)) return { text: '—', cls: 'cd-past' };
   const diff = Math.round((appt0 - today0) / 86400000);
   if (diff === 0) return { text: 'Today', cls: 'cd-today' };
@@ -17441,7 +17450,7 @@ function computeAlerts() {
   // Lead dangling
   state.leads.forEach(l => {
     if (l.status === 'booked' && l.apptDate) {
-      const apptTime = new Date(l.apptDate + 'T00:00:00').getTime();
+      const apptTime = new Date(String(l.apptDate).slice(0, 10) + 'T00:00:00').getTime(); // v8.60: apptDate 可能带时间
       const daysPast = Math.floor((Date.now() - apptTime) / 86400000);
       // v5.90: Bug C fix — 当天/昨天的 booked 已过, 也提醒填 Show Up (不只 >3天)
       if (daysPast >= 0 && daysPast <= 1 && !l.showUp) {
