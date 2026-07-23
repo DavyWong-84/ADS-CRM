@@ -805,7 +805,7 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 /* v8.46: Ads Spend 顶行 — sync 状态 + % 开关同一行, 跟下面表格拉开距离 */
 .ads-topline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 26px; margin: 4px 2px 16px; }
 /* v8.46: GHL 推来的预约时间 (只有带时间的才显示) */
-.tbl-view .appt-time { font-size: 11px; color: var(--purple-deep); font-weight: 600; margin-top: 2px; }
+.tbl-view .appt-time { font-size: 11px; color: var(--purple-deep); font-weight: 600; white-space: nowrap; }
 .appt-time-inline { color: var(--purple-deep); font-weight: 600; }
 
 /* Countdown chip */
@@ -3308,11 +3308,16 @@ body.contact-view-table .modal-backdrop.open {
 .ib-actempty { font-size: 11.5px; color: var(--silver); padding: 10px 0; }
 .sl-grp { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; color: var(--silver); text-transform: uppercase; letter-spacing: 0.5px; margin: 13px 0 1px; }
 .sl-grp::after { content: ""; flex: 1; height: 1px; background: var(--border-light); }
-.sl-li { display: flex; align-items: center; gap: 7px; padding: 7px 0; border-bottom: 1px solid var(--border-light); font-size: 12.5px; white-space: nowrap; cursor: pointer; }
+/* v8.59: 两行 — 跟手机版 Contact 卡片同构 */
+.sl-li { display: block; padding: 8px 0; border-bottom: 1px solid var(--border-light); cursor: pointer; }
 .sl-li:last-child { border-bottom: 0; }
 .sl-li:hover { background: var(--surface-2); }
-.sl-tm { font-size: 11px; color: var(--silver); font-variant-numeric: tabular-nums; flex: none; width: 38px; }
-.sl-nm { font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.sl-r1 { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; }
+.sl-r2 { display: flex; align-items: center; gap: 7px; }
+.sl-gap { flex: 1; min-width: 4px; }          /* 把门店 / channel 推到最右 */
+.sl-tm { font-size: 11px; color: var(--silver); font-variant-numeric: tabular-nums; flex: none; }
+.sl-sep { color: var(--border); flex: none; }
+.sl-nm { font-weight: 600; font-size: 13.5px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sl-out { font-size: 11px; font-weight: 600; color: var(--gray); flex: none; }
 .sl-ch { font-size: 10.5px; background: var(--surface-2); border-radius: 6px; padding: 2px 6px; color: var(--gray); font-weight: 500; flex: none; display: inline-flex; align-items: center; gap: 4px; line-height: 1; }
 .sl-at { font-size: 11px; color: var(--purple-deep); font-weight: 700; font-variant-numeric: tabular-nums; flex: none; }
@@ -3388,7 +3393,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.58</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.59</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3439,7 +3444,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.58</div>
+      <div class="nav-brand-version">v8.59</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -8838,7 +8843,7 @@ function renderListAsTableHTML(slice) {
       <td>${stBadge}</td>
       <td>${channelChip}</td>
       <td>${locationChip}</td>
-      <td class="dt">${esc(leadDt)} <span class="arrow">→</span> <strong>${esc(apptDt)}</strong>${apptTm ? `<div class="appt-time">${esc(apptTm)}</div>` : ''}</td>
+      <td class="dt">${esc(leadDt)} <span class="arrow">→</span> <strong>${esc(apptDt)}</strong>${apptTm ? ` <span class="appt-time">${esc(apptTm)}</span>` : ''}</td><!-- v8.59: 时间接同一行, 免得行高不一 -->
       <td>${countdownCell}</td>
       <td class="num">${spendCell}</td>
     </tr>`;
@@ -20303,7 +20308,7 @@ function renderInboxActivity() {
     const _logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(l.channelName, _chObj && _chObj.color) : '';
     const ch = _inboxShortCh(l.channelName);
     const chHtml = ch ? `<span class="sl-ch">${_logo}${E(ch)}</span>` : '';
-    let extra = chHtml;
+    let extra = `<span class="sl-gap"></span>` + chHtml;   // 入库两组: 只有 channel, 靠右
     if (a.k === 'appt') {
       const loc = (state.locations || []).find(x => x.id === l.locationId);
       const on = (loc && loc.name) || l.location || '';
@@ -20312,11 +20317,14 @@ function renderInboxActivity() {
       const _atTm = apptTimeOf(l.apptDate, l);
       const at = (_inboxApptStr(l.apptDate) || '').replace(/\s+\d{1,2}:\d{2}(AM|PM)$/i, '')
                + (_atTm ? ` ${_atTm}` : '');
-      extra = (on ? `<span class="sl-out">${E(on)}</span>` : '') + chHtml
-            + (at ? `<span class="sl-at" title="Appointment date">${E(at)}</span>` : '');
+      extra = (at ? `<span class="sl-sep">·</span><span class="sl-at" title="Appointment">${E(at)}</span>` : '')
+            + `<span class="sl-gap"></span>`
+            + (on ? `<span class="sl-out">${E(on)}</span>` : '') + chHtml;
     }
-    return `<div class="sl-li" onclick="nav('contact');setTimeout(function(){ if(typeof editLead==='function') editLead('${E(l.id)}'); },60);" title="打开这笔资料">`
-      + `<span class="sl-tm">${E(tm)}</span><span class="sl-nm">${E(nm)}</span>${extra}</div>`;
+    // v8.59: 两行 — 跟手机版 Contact 卡片同构 (行1 名字; 行2 时刻 · 预约日 … 门店 … channel 靠右)
+    return `<div class="sl-li" onclick="nav('contact');setTimeout(function(){ if(typeof editLead==='function') editLead('${E(l.id)}'); },60);" title="Open this record">`
+      + `<div class="sl-r1"><span class="sl-nm">${E(nm)}</span></div>`
+      + `<div class="sl-r2"><span class="sl-tm">${E(tm)}</span>${extra}</div></div>`;
   };
 
   if (_inboxActSeg === 'all') {
