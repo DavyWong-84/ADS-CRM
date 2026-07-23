@@ -3330,14 +3330,11 @@ body.contact-view-table .modal-backdrop.open {
 .rv-kpi-sub { font-size: 11px; color: var(--silver); margin-top: 3px; }
 @media (max-width: 520px) { .rv-kpis { grid-template-columns: 1fr 1fr; } .rv-kpi-val { font-size: 18px; } }
 
-/* 第 2 行: 状态 chips 在左, 今日统计靠右 */
-.ct-line2 { display: flex; align-items: flex-start; gap: 12px; }
-/* v8.47: 手机端 Today 统计独立一行 (原本跟 chips 抢同一行, 把 chips 挤到被截断)
-   v8.50: 顺序改成 chips 在上、Today 在下 → 紧贴卡片列表上方 */
-@media (max-width: 768px) {
-  .ct-line2 { flex-direction: column; gap: 0; }
-  .ct-line2 #autoTodayHint { padding-bottom: 0; margin: 2px 0 10px 2px; white-space: normal; }
-  .ct-line2 .filter-tabs-wrap { width: 100%; }
+/* v8.53: 今日统计 — 独立一行, 位在 sticky 筛选下面 / 卡片上面 (跟 sync 提示同款), 上下留白 */
+.ct-today {
+  align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 11.5px; color: var(--gray);
+  margin: 12px 0 10px 2px;
 }
 @media (max-width: 768px) {
   /* On mobile, fall back to top header button — re-show it */
@@ -3390,7 +3387,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.52</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.54</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3441,7 +3438,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.52</div>
+      <div class="nav-brand-version">v8.54</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3546,16 +3543,15 @@ body.contact-view-table .modal-backdrop.open {
   </button></span>
           </div>
           </div><!-- /contact-toolbar -->
-          <!-- Filter row 2: Status tabs + 今日统计(靠右) -->
-          <div class="ct-line2">
-            <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap" style="flex:1;min-width:0;">
-              <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Appt<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Show Up<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No Show<span class="count">0</span></button></div>
-            </div>
-            <div id="autoTodayHint" style="display:none;align-items:center;gap:5px;font-size:11.5px;color:var(--gray);white-space:nowrap;flex:none;padding-bottom:10px;"><b style="color:var(--black);font-weight:600;">Today</b><span style="margin-left:10px;">Lead <b style="color:var(--purple-deep);font-weight:700;">+0</b></span><span style="margin-left:10px;">Appt <b style="color:var(--green-dark);font-weight:700;">+0</b></span></div>
+          <!-- Filter row 2: Status tabs -->
+          <div class="filter-tabs-wrap at-start at-end" id="listFiltersWrap">
+            <div class="filter-tabs filter-tabs-sticky" id="listFilters"><button class="filter-tab active" onclick="setListFilter('all')">All<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('lead')">Lead<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('booked')">Appt<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('done')">Show Up<span class="count">0</span></button><button class="filter-tab " onclick="setListFilter('noshow')">No Show<span class="count">0</span></button></div>
           </div>
         </div>
         <!-- v4.23: Filters moved here from unified-header -->
         
+        <!-- v8.53: 今日统计移出 sticky 区 — 独立一行, 在筛选下面 / 卡片上面 (跟 sync 提示同款位置) -->
+        <div id="autoTodayHint" class="ct-today" style="display:none;"><b style="color:var(--black);font-weight:600;">Today</b><span style="margin-left:10px;">Lead <b style="color:var(--purple-deep);font-weight:700;">+0</b></span><span style="margin-left:10px;">Appt <b style="color:var(--green-dark);font-weight:700;">+0</b></span></div>
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <!-- v4.20: Mobile-only "Load More" button (hidden on desktop via CSS) -->
         <div id="loadMoreWrap"></div>
@@ -20240,7 +20236,7 @@ function renderInboxActivity() {
   const c = _inboxCounts, total = c.auto + c.manual + c.appt;
   if (ttl) ttl.textContent = "Today's activity";
 
-  let h = `<div class="ib-actsub">Auto ${c.auto} · Manual ${c.manual} · Appt received ${c.appt}</div>`;
+  let h = `<div class="ib-actsub">Auto ${c.auto} · Manual ${c.manual} · Appt today ${c.appt}</div>`;
   h += `<div class="ib-actseg">` + [['all', 'All', total], ['auto', 'Auto', c.auto], ['manual', 'Manual', c.manual], ['appt', 'Appt', c.appt]]
     .map(([k, lb, n]) => `<span class="${_inboxActSeg === k ? 'on' : ''}" onclick="inboxSetActSeg('${k}')">${lb} ${n}</span>`).join('') + `</div>`;
 
@@ -20252,7 +20248,8 @@ function renderInboxActivity() {
   const row = (a) => {
     const l = a.l;
     const nm = (l.name && l.name.trim()) ? l.name : (l.contact || '—');
-    const tm = String(l.updatedAt || '').slice(11, 16);
+    // 入库两组 = 几点进来的; 预约组 = 几点到店 (都是今天, 不用再显示日期)
+    let tm = String(l.updatedAt || '').slice(11, 16);
     // v8.52: channel 带回 logo (跟 Contact 卡片一致)
     const _chObj = (state.channels || []).find(x => x.id === l.channelId);
     const _logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(l.channelName, _chObj && _chObj.color) : '';
@@ -20262,23 +20259,24 @@ function renderInboxActivity() {
     if (a.k === 'appt') {
       const loc = (state.locations || []).find(x => x.id === l.locationId);
       const on = (loc && loc.name) || l.location || '';
-      const at = _inboxApptStr(l.apptDate);   // 这是「约在哪天」, 不是今天
-      extra = (on ? `<span class="sl-out">${E(on)}</span>` : '') + chHtml
-            + (at ? `<span class="sl-at" title="Appointment date">${E(at)}</span>` : '');
+      tm = String(l.apptDate || '').slice(11, 16) || '—';   // v8.54: 几点到店
+      extra = (on ? `<span class="sl-out">${E(on)}</span>` : '') + chHtml;
     }
     return `<div class="sl-li" onclick="nav('contact');setTimeout(function(){ if(typeof editLead==='function') editLead('${E(l.id)}'); },60);" title="打开这笔资料">`
       + `<span class="sl-tm">${E(tm)}</span><span class="sl-nm">${E(nm)}</span>${extra}</div>`;
   };
 
   if (_inboxActSeg === 'all') {
-    [['appt', 'Appointments received', c.appt], ['auto', 'Auto added', c.auto], ['manual', 'Added manually', c.manual]].forEach(([k, lb, n]) => {
+    [['appt', "Today's appointments", c.appt], ['auto', 'Auto added', c.auto], ['manual', 'Added manually', c.manual]].forEach(([k, lb, n]) => {
       if (!n) return;
       const items = _inboxActs.filter(a => a.k === k);
+      if (k === 'appt') items.sort((x, y) => String(x.l.apptDate || '').localeCompare(String(y.l.apptDate || ''))); // 到店时间 早→晚
       h += `<div class="sl-grp">${lb} · ${n}</div>` + items.slice(0, 6).map(row).join('');
       if (items.length > 6) h += `<div class="sl-li" style="color:var(--silver);"><span class="sl-tm"></span>+${items.length - 6} more</div>`;
     });
   } else {
     const items = _inboxActs.filter(a => a.k === _inboxActSeg);
+    if (_inboxActSeg === 'appt') items.sort((x, y) => String(x.l.apptDate || '').localeCompare(String(y.l.apptDate || '')));
     h += items.length ? items.map(row).join('') : `<div class="ib-actempty">Nothing in this group today</div>`;
   }
   box.innerHTML = h;
@@ -20339,8 +20337,9 @@ function pendingRender() {
 
     // v8.46: 三类今日动态 — 自动入库 / 手动入库 / 新预约
     const _manual = _all.filter(l => !(l.flags && l.flags.auto) && String(l.leadDate || '') === _td);
-    const _apptToday = _all.filter(l => String(l.updatedAt || '').slice(0, 10) === _td
-      && l.apptDate && (l.status === 'booked' || l.status === 'done' || l.status === 'noshow'));
+    // v8.54: 口径跟上面「TODAY APPT」卡片一致 = 今天要来的预约 (apptDate 是今天), 不是今天收到的
+    const _apptToday = _all.filter(l => String(l.apptDate || '').slice(0, 10) === _td
+      && (l.status === 'booked' || l.status === 'done' || l.status === 'noshow'));
     _inboxActs = []
       .concat(_auto.map(l => ({ k: 'auto', l })))
       .concat(_manual.map(l => ({ k: 'manual', l })))
