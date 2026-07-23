@@ -3292,6 +3292,7 @@ body.contact-view-table .modal-backdrop.open {
 .ib-stats .ib-s .l { font-size: 10.5px; color: var(--gray); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
 .ib-stats .ib-s .v { font-size: 20px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
 .ib-stats .ib-s .v.p { color: var(--purple-deep); } .ib-stats .ib-s .v.g { color: var(--green-dark); } .ib-stats .ib-s .v.m { color: var(--silver); }
+.ib-stats .ib-s .ib-s-sub { font-size: 10.5px; color: var(--silver); margin-top: 2px; }
 .ib-2col { display: grid; grid-template-columns: 1.35fr 1fr; gap: 16px; align-items: start; }
 .ib-panel { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 13px 15px; }
 .ib-panel h4 { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -3387,7 +3388,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.54</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.55</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3438,7 +3439,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.54</div>
+      <div class="nav-brand-version">v8.55</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -20216,6 +20217,28 @@ function inboxSetActSeg(seg) { _inboxActSeg = seg; renderInboxActivity(); }
 function _inboxShortCh(name) {           // Google Ads → Google (右栏窄, 用短名)
   return String(name || '').trim().replace(/\s*Ads$/i, '');
 }
+// v8.55: 「今天收到的预约」— Leads 表没有「预约建立时间」栏位, 只能从 remark 的活动记录解析。
+//   后端写入格式: "[Auto] 23 Jul 15:31 Appt received · …" / "Appt merged" / "Lead received · … · Appt …"
+//   回传当天那笔的 HH:MM (没有就 null)。
+function _apptReceivedAt(l) {
+  if (!l || !l.remark) return null;
+  const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, '0');
+  const mon = MO[now.getMonth()];
+  let hit = null;
+  String(l.remark).split(/\r?\n/).forEach(line => {
+    const m = line.match(/^\[Auto\]\s+(\d{1,2})\s+(\w{3})\s+(\d{1,2}:\d{2})\s+(.+)$/);
+    if (!m) return;
+    if (String(m[1]).padStart(2, '0') !== dd || m[2] !== mon) return;   // 不是今天
+    const rest = m[4];
+    // 收到预约 = Appt received / Appt merged / Lead received 那行带 "Appt "
+    const isAppt = /^Appt received/i.test(rest) || /^Appt merged/i.test(rest)
+      || (/^Lead received/i.test(rest) && /·\s*Appt\s/i.test(rest));
+    if (isAppt) hit = m[3].padStart(5, '0');   // 取最后一笔当天的
+  });
+  return hit;
+}
 function _inboxApptStr(raw) {            // 2026-07-24 14:00 → 24 Jul 2:00PM (没时间就只给日期)
   if (!raw) return '';
   const MO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -20236,7 +20259,7 @@ function renderInboxActivity() {
   const c = _inboxCounts, total = c.auto + c.manual + c.appt;
   if (ttl) ttl.textContent = "Today's activity";
 
-  let h = `<div class="ib-actsub">Auto ${c.auto} · Manual ${c.manual} · Appt today ${c.appt}</div>`;
+  let h = `<div class="ib-actsub">Auto ${c.auto} · Manual ${c.manual} · Appt booked ${c.appt}</div>`;
   h += `<div class="ib-actseg">` + [['all', 'All', total], ['auto', 'Auto', c.auto], ['manual', 'Manual', c.manual], ['appt', 'Appt', c.appt]]
     .map(([k, lb, n]) => `<span class="${_inboxActSeg === k ? 'on' : ''}" onclick="inboxSetActSeg('${k}')">${lb} ${n}</span>`).join('') + `</div>`;
 
@@ -20259,24 +20282,26 @@ function renderInboxActivity() {
     if (a.k === 'appt') {
       const loc = (state.locations || []).find(x => x.id === l.locationId);
       const on = (loc && loc.name) || l.location || '';
-      tm = String(l.apptDate || '').slice(11, 16) || '—';   // v8.54: 几点到店
-      extra = (on ? `<span class="sl-out">${E(on)}</span>` : '') + chHtml;
+      tm = _apptReceivedAt(l) || tm;                 // v8.55: 几点收到这笔预约
+      const at = _inboxApptStr(l.apptDate);          // 约在哪天几点
+      extra = (on ? `<span class="sl-out">${E(on)}</span>` : '') + chHtml
+            + (at ? `<span class="sl-at" title="Appointment date">${E(at)}</span>` : '');
     }
     return `<div class="sl-li" onclick="nav('contact');setTimeout(function(){ if(typeof editLead==='function') editLead('${E(l.id)}'); },60);" title="打开这笔资料">`
       + `<span class="sl-tm">${E(tm)}</span><span class="sl-nm">${E(nm)}</span>${extra}</div>`;
   };
 
   if (_inboxActSeg === 'all') {
-    [['appt', "Today's appointments", c.appt], ['auto', 'Auto added', c.auto], ['manual', 'Added manually', c.manual]].forEach(([k, lb, n]) => {
+    [['appt', 'Appointments booked today', c.appt], ['auto', 'Auto added', c.auto], ['manual', 'Added manually', c.manual]].forEach(([k, lb, n]) => {
       if (!n) return;
       const items = _inboxActs.filter(a => a.k === k);
-      if (k === 'appt') items.sort((x, y) => String(x.l.apptDate || '').localeCompare(String(y.l.apptDate || ''))); // 到店时间 早→晚
+      if (k === 'appt') items.sort((x, y) => String(_apptReceivedAt(y.l) || '').localeCompare(String(_apptReceivedAt(x.l) || ''))); // 收到时刻 新→旧
       h += `<div class="sl-grp">${lb} · ${n}</div>` + items.slice(0, 6).map(row).join('');
       if (items.length > 6) h += `<div class="sl-li" style="color:var(--silver);"><span class="sl-tm"></span>+${items.length - 6} more</div>`;
     });
   } else {
     const items = _inboxActs.filter(a => a.k === _inboxActSeg);
-    if (_inboxActSeg === 'appt') items.sort((x, y) => String(x.l.apptDate || '').localeCompare(String(y.l.apptDate || '')));
+    if (_inboxActSeg === 'appt') items.sort((x, y) => String(_apptReceivedAt(y.l) || '').localeCompare(String(_apptReceivedAt(x.l) || '')));
     h += items.length ? items.map(row).join('') : `<div class="ib-actempty">Nothing in this group today</div>`;
   }
   box.innerHTML = h;
@@ -20327,19 +20352,19 @@ function pendingRender() {
     const _auto = _all.filter(l => l.flags && l.flags.auto && String(l.leadDate || '') === _td)
       .slice().sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
     const _waiting = pendingData.filter(p => String(p.type || '').toLowerCase() !== 'reschedule_notice').length;
+    // v8.46: 三类今日动态 — 自动入库 / 手动入库 / 新预约
+    const _manual = _all.filter(l => !(l.flags && l.flags.auto) && String(l.leadDate || '') === _td);
+    // v8.55: 「今天收到的预约」= remark 活动记录里今天有 Appt received/merged 那笔 (对齐 GHL 的 Created on)
+    //   之前用 updatedAt 是错的 — 任何改动/同步都会更新它, 数字虚高。
+    const _apptToday = _all.filter(l => l.apptDate && _apptReceivedAt(l));
 
     const _st = document.getElementById('pendingStats');
     if (_st) _st.innerHTML =
         `<div class="ib-s"><div class="l">Today Lead</div><div class="v p">${_todayLead}</div></div>`
-      + `<div class="ib-s"><div class="l">Today Appt</div><div class="v g">${_todayAppt}</div></div>`
+      + `<div class="ib-s"><div class="l">Appt booked</div><div class="v g">${_apptToday.length}</div><div class="ib-s-sub">${_todayAppt} coming today</div></div>`
       + `<div class="ib-s"><div class="l">Auto added</div><div class="v">${_auto.length}</div></div>`
       + `<div class="ib-s"><div class="l">Waiting</div><div class="v${_waiting ? '' : ' m'}">${_waiting}</div></div>`;
 
-    // v8.46: 三类今日动态 — 自动入库 / 手动入库 / 新预约
-    const _manual = _all.filter(l => !(l.flags && l.flags.auto) && String(l.leadDate || '') === _td);
-    // v8.54: 口径跟上面「TODAY APPT」卡片一致 = 今天要来的预约 (apptDate 是今天), 不是今天收到的
-    const _apptToday = _all.filter(l => String(l.apptDate || '').slice(0, 10) === _td
-      && (l.status === 'booked' || l.status === 'done' || l.status === 'noshow'));
     _inboxActs = []
       .concat(_auto.map(l => ({ k: 'auto', l })))
       .concat(_manual.map(l => ({ k: 'manual', l })))
