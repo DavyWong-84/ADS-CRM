@@ -783,6 +783,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 }
 /* v8.45: 表格里的 APPT / AUTO 徽章尺寸对齐右边的 Countdown chip */
 .tbl-view .badge { padding: 2px 8px; border-radius: 4px; font-weight: 500; letter-spacing: 0.2px; }
+/* v8.46: GHL 推来的预约时间 (只有带时间的才显示) */
+.tbl-view .appt-time { font-size: 11px; color: var(--purple-deep); font-weight: 600; margin-top: 2px; }
+.appt-time-inline { color: var(--purple-deep); font-weight: 600; }
 
 /* Countdown chip */
 .tbl-view .countdown {
@@ -4924,6 +4927,19 @@ function autoBadgeHTML(l) {
   return (l && l.flags && l.flags.auto) ? '<span class="badge badge-auto">Auto</span>' : '';  // flags 是 object
 }
 
+// v8.46: 从 apptDate 取出预约时间 → "2:00 PM"。
+//   GHL 推来的是 "2026-07-24 14:00"(带时间); 手动填的只有 "2026-07-24"(没时间)→ 回传 '' 不显示。
+function apptTimeOf(raw) {
+  if (!raw) return '';
+  const m = String(raw).trim().match(/^\d{4}-\d{2}-\d{2}[ T](\d{2}):(\d{2})/);
+  if (!m) return '';
+  let hr = parseInt(m[1], 10);
+  if (isNaN(hr)) return '';
+  const ampm = hr >= 12 ? 'PM' : 'AM';
+  hr = hr % 12 || 12;
+  return `${hr}:${m[2]} ${ampm}`;
+}
+
 function remarkIconHTML(l) {
   return ''; // v8.44: 活动记录图标(Lead received / Appt merged 时间轴)隐藏 — Davy 不用了; remark 资料仍保留在 lead 上
   /* eslint-disable no-unreachable */
@@ -8851,6 +8867,7 @@ function renderListAsTableHTML(slice) {
     // dates
     const leadDt = l.leadDate ? fmt.monthDay(l.leadDate) : '—';
     const apptDt = l.apptDate ? fmt.monthDay(l.apptDate) : '—';
+    const apptTm = apptTimeOf(l.apptDate); // v8.46: GHL 推来的预约时间 (没有就空字串)
     const displayName = l.name || l.contact || '(no data)';
     // v6.85 codex P1: Spend 列 — Show Up 显示金额 (允许 0). 其他 status 显示 —.
     //   修前: Number(spend) > 0 → 0 显示成 — 跟 lead 一样, 用户分不清.
@@ -8867,7 +8884,7 @@ function renderListAsTableHTML(slice) {
       <td>${stBadge}</td>
       <td>${channelChip}</td>
       <td>${locationChip}</td>
-      <td class="dt">${esc(leadDt)} <span class="arrow">→</span> <strong>${esc(apptDt)}</strong></td>
+      <td class="dt">${esc(leadDt)} <span class="arrow">→</span> <strong>${esc(apptDt)}</strong>${apptTm ? `<div class="appt-time">${esc(apptTm)}</div>` : ''}</td>
       <td>${countdownCell}</td>
       <td class="num">${spendCell}</td>
     </tr>`;
@@ -9174,7 +9191,7 @@ function renderList() {
         </div>
         <div class="lc-foot">
           <span>Lead: <strong>${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}</strong></span>
-          <span class="${l.apptDate ? '' : 'muted'}">Appt: <strong>${l.apptDate ? fmt.monthDay(l.apptDate) : '—'}</strong></span>
+          <span class="${l.apptDate ? '' : 'muted'}">Appt: <strong>${l.apptDate ? fmt.monthDay(l.apptDate) : '—'}</strong>${apptTimeOf(l.apptDate) ? ` <span class="appt-time-inline">${apptTimeOf(l.apptDate)}</span>` : ''}</span>
           ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
           ${l.location ? `<span class="lc-location">${esc(l.location)}</span>` : ''}
         </div>
