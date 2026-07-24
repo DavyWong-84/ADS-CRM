@@ -644,6 +644,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   line-height: 1;
 }
 .lead-item .lc-foot .lc-channel { margin-left: auto; }
+/* v8.67: 有 outlet 时, channel 紧贴 outlet (只有 location 用 auto 推整组靠右);
+   没 outlet 的 Lead 卡, channel 仍走上面的 auto 自己靠右, 不受影响 */
+.lead-item .lc-foot .lc-location + .lc-channel { margin-left: 7px; }
 /* v3.43: Inline logo + initial circle */
 .chip-logo {
   width: 12px;
@@ -3395,7 +3398,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.66</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.67</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3446,7 +3449,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.66</div>
+      <div class="nav-brand-version">v8.67</div>
     </div>
   </div>
   <div class="nav-divider"></div>
