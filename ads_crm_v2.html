@@ -3395,7 +3395,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.65</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.66</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3446,7 +3446,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.65</div>
+      <div class="nav-brand-version">v8.66</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3607,10 +3607,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-07-23</span>
+                      <span id="f_leadDate_label">2026-07-24</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-07-23">
+                    <input type="hidden" id="f_leadDate" value="2026-07-24">
                   </div>
                 </div>
               </div>
@@ -5576,7 +5576,17 @@ function extractApptDateTime(raw) {
   const s = String(raw).trim();
   const m = s.match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2}))?/);
   if (m) return m[2] && m[2] !== '00:00' ? `${m[1]} ${m[2]}` : m[1];
-  return extractDateOnly(s);   // 非标准格式 → 退回原逻辑
+  // v8.66: 后端 Pending 把 apptDate 存成 Date, 读回来是 JS Date 字串
+  //   ("Thu Jul 24 2026 14:00:00 GMT+0800") → 老逻辑掉进 extractDateOnly 把时间砍了。
+  //   带 GMT 偏移的字串 new Date 解析后按本地(MY GMT+8)读, 时间不会偏。
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) {
+    const pad = n => ('0' + n).slice(-2);
+    const date = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    const hh = d.getHours(), mi = d.getMinutes();
+    return (hh === 0 && mi === 0) ? date : `${date} ${pad(hh)}:${pad(mi)}`;
+  }
+  return extractDateOnly(s);   // 真的解析不了 → 退回原逻辑
 }
 function extractDateOnly(raw) {
   if (!raw) return '';
@@ -9169,7 +9179,7 @@ function renderList() {
           <span class="lc-contact">${esc(l.contact || '')}</span>
           ${l.apptDate ? `<span class="lc-sep">·</span><span class="lc-when${whenCls}">${fmt.monthDay(l.apptDate)}${apptTimeOf(l.apptDate, l) ? ` ${apptTimeOf(l.apptDate, l)}` : ''}</span>` : ''}
           ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : ''}
-          ${l.location ? `<span class="lc-location">${esc(l.location)}</span>` : ''}
+          ${(()=>{const loc=state.locations.find(x=>x.id===l.locationId);const locName=(loc&&loc.name)||l.location||l.locationName||'';return locName?`<span class="lc-location">${esc(locName)}</span>`:'';})()}<!-- v8.66: 门店改用 locationId 查表 (跟表格一致), 之前只读 l.location 字串, merge 进来的没这字串就漏了 -->
           ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
         </div>
       </div></div>`;
