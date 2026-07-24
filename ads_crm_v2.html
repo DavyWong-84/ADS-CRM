@@ -686,6 +686,31 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .lead-item.lead-compact-v2 .lc-name { font-size: 14px; }
 .lead-item.lead-compact-v2 .lc-foot { margin-top: 0; font-size: 12px; }
 
+/* ══ v8.69: Agenda Rail 手机卡片 (方案 C) ══
+   左边日期/金额方块 (每个状态一个固定的家, 钱不再乱飘) + 竖线 + 内容。白卡软阴影, 无硬边框。*/
+.lead-item.lc-agenda { display: flex; gap: 13px; align-items: center; padding: 12px 14px; border: none; border-left: none; border-radius: 14px; box-shadow: 0 1px 2px rgba(16,17,20,.04), 0 10px 26px -18px rgba(113,50,245,.42); }
+.lc-agenda .lc-date { flex-shrink: 0; width: 52px; text-align: center; }
+.lc-agenda .lc-date .d { font-size: 20px; font-weight: 700; letter-spacing: -.03em; color: var(--purple-deep); line-height: 1; }
+.lc-agenda .lc-date .mo { font-size: 10px; font-weight: 600; letter-spacing: .5px; color: var(--silver); margin-top: 3px; }
+.lc-agenda .lc-date .t { font-size: 10.5px; font-weight: 700; color: var(--purple-deep); margin-top: 5px; letter-spacing: -.02em; }
+.lc-agenda .lc-date.when-today .t { color: var(--amber); }
+.lc-agenda .lc-date.when-overdue .d { color: var(--red); }
+.lc-agenda .lc-date.miss .d { color: var(--red); }
+.lc-agenda .lc-date.money .rm { font-size: 9.5px; font-weight: 700; color: var(--green); letter-spacing: .3px; }
+.lc-agenda .lc-date.money .d { font-size: 15px; color: var(--green-dark); letter-spacing: -.02em; }
+.lc-agenda .lc-date.lead .d { font-size: 12px; font-weight: 600; color: var(--silver); padding-top: 3px; }
+.lc-agenda .lc-date.lead .mo { margin-top: 2px; }
+.lc-agenda .lc-rail { width: 1px; align-self: stretch; background: var(--border-light); flex-shrink: 0; }
+.lc-agenda .lc-body { flex: 1; min-width: 0; }
+.lc-agenda .lc-head { display: flex; align-items: center; gap: 9px; margin-bottom: 5px; }
+.lc-agenda .lc-name { font-weight: 600; font-size: 15px; letter-spacing: -.01em; color: var(--black); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.25; }
+.lc-agenda .lc-head-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.lc-agenda .lc-meta { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--gray); font-weight: 500; min-width: 0; }
+.lc-agenda .lc-meta .lc-out { color: var(--gray); white-space: nowrap; flex-shrink: 0; }
+.lc-agenda .lc-meta .lc-dot { color: var(--border); }
+.lc-agenda .lc-meta .lc-channel { display: inline-flex; align-items: center; gap: 5px; color: var(--gray); white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.lc-agenda .lc-meta .lc-when-sm { margin-left: auto; flex-shrink: 0; color: var(--silver); font-variant-numeric: tabular-nums; }
+
 /* v5.72: 删除 lead flag stars CSS (3个星星功能不再使用) */
 
 /* ============================================================
@@ -3398,7 +3423,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.68</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.69</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3449,7 +3474,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.68</div>
+      <div class="nav-brand-version">v8.69</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -9118,50 +9143,20 @@ function renderList() {
     // v6.78: Desktop Table 模式 — 用新渲染函数
     document.getElementById('leadList').innerHTML = renderListAsTableHTML(slice);
   } else {
+    // ══ v8.69: Agenda Rail 手机卡片 (方案 C) — 左边日期/金额方块固定车道, 钱不再乱飘 ══
+    const _MO = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const _dParts = ds => { const m = String(ds || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? { d: String(parseInt(m[3], 10)), mo: _MO[parseInt(m[2], 10) - 1] } : null; };
+    const _title = mo => mo.charAt(0) + mo.slice(1).toLowerCase();
     document.getElementById('leadList').innerHTML = slice.map(l => {
-      const today = todayStr();
-      const isToday = l.apptDate === today && (l.status === 'booked');
-      const isOverdue = l.status === 'booked' && l.apptDate && l.apptDate < today;
-      const cls = isToday ? 'today-appt' : (isOverdue ? 'overdue' : '');
       const selected = l.id === currentEditingId ? ' selected' : '';
       const statusLabelText = statusLabel(l.status);
-      // v5.72: 删除 3 个星星 flag 功能 (Davy 反馈已不再使用)
-      // Lead = same layout as booked, but more compact (no appt date, no amount)
-      if (l.status === 'lead') {
-        // Parse creation time from id (format: L-{base36_timestamp}...)
-        let timeStr = '';
-        if (l.id && l.id.startsWith('L-')) {
-          const tsPart = l.id.slice(2, 10);
-          const ts = parseInt(tsPart, 36);
-          if (!isNaN(ts) && ts > 1e12) {
-            const d = new Date(ts);
-            let h = d.getHours();
-            const m = String(d.getMinutes()).padStart(2, '0');
-            const ampm = h >= 12 ? 'PM' : 'AM';
-            h = h % 12 || 12;
-            timeStr = `(${h}:${m} ${ampm})`;
-          }
-        }
-        return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-lead lead-compact-v2${selected ? ' selected' : ''} swipe-card" onclick="editLead('${esc(l.id)}')">
-          <div class="lc-head">
-            <div class="lc-name">${esc(l.name || l.contact || '(no contact)')}${remarkIconHTML(l)}</div>
-            <div style="display:flex;align-items:center;gap:4px;">
-              ${rescheduleChipHTML(l)}
-              <span class="badge badge-lead">Lead</span>
-            </div>
-          </div>
-          <div class="lc-foot">
-            <span class="lc-contact">${esc(l.contact || '')}</span>
-            <span class="lc-sep">·</span>
-            <span class="lc-when muted-when">Lead ${l.leadDate ? fmt.monthDay(l.leadDate) : '—'}${timeStr ? ` ${timeStr.replace(/[()]/g, '')}` : ''}</span>
-            ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
-          </div>
-        </div></div>`;
-      }
-      // Booked / Done / No show — same standard layout
-      const showAmt = l.status === 'done' && l.spend;
-      // v8.51: 倒数 pill 移除 (方案 A — 预约时间已经讲清楚)。
-      //   但「今天 / 已过期」仍要看得出来 → 用预约时间本身的颜色表示。
+      // meta 行 (固定车道): 门店 · channel
+      const _loc = state.locations.find(x => x.id === l.locationId);
+      const locName = (_loc && _loc.name) || l.location || l.locationName || '';
+      const outHtml = locName ? `<span class="lc-out">${esc(locName)}</span>` : '';
+      const chHtml = l.channelName ? (() => { const ch = state.channels.find(c => c.id === l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`; })() : '';
+      const metaParts = [outHtml, chHtml].filter(Boolean).join('<span class="lc-dot">·</span>');
+      // 今天 / 过期 (只对 booked, 决定日期方块颜色)
       let whenCls = '';
       if (l.status === 'booked' && l.apptDate) {
         const today0 = new Date(); today0.setHours(0, 0, 0, 0);
@@ -9170,20 +9165,31 @@ function renderList() {
         if (diff === 0) whenCls = ' when-today';
         else if (diff < 0) whenCls = ' when-overdue';
       }
-      return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="删除"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-${l.status} ${cls}${selected} swipe-card" onclick="editLead('${esc(l.id)}')">
-        <div class="lc-head">
-          <div class="lc-name">${esc(l.name || l.contact || '(no data)')}${remarkIconHTML(l)}</div>
-          <div style="display:flex;align-items:center;gap:4px;">
-            ${rescheduleChipHTML(l)}
-            <span class="badge badge-${l.status}">${statusLabelText}</span>
+      // ── 左边方块: 每个状态一个固定的家 ──
+      let dateBlock = '', smallDate = '';
+      if (l.status === 'lead') {
+        const lp = _dParts(l.leadDate);
+        dateBlock = `<div class="lc-date lead"><div class="d">Lead</div><div class="mo">${lp ? lp.mo + ' ' + lp.d : ''}</div></div>`;
+      } else if (l.status === 'done' && l.spend != null && l.spend !== '' && Number(l.spend) > 0) {
+        const amt = String(fmt.money(l.spend)).replace(/^RM\s*/i, '');
+        dateBlock = `<div class="lc-date money"><div class="rm">RM</div><div class="d">${esc(amt)}</div></div>`;
+        const dp = _dParts(l.apptDate);
+        if (dp) smallDate = `<span class="lc-when-sm">${esc(_title(dp.mo) + ' ' + dp.d)}</span>`;
+      } else {
+        const dp = _dParts(l.apptDate);
+        const missCls = l.status === 'noshow' ? ' miss' : '';
+        const aptTm = apptTimeOf(l.apptDate, l);
+        dateBlock = `<div class="lc-date${whenCls}${missCls}"><div class="d">${dp ? dp.d : '—'}</div><div class="mo">${dp ? dp.mo : ''}</div>${aptTm ? `<div class="t">${esc(aptTm)}</div>` : ''}</div>`;
+      }
+      return `<div class="swipe-wrapper" data-lead-id="${esc(l.id)}"><div class="swipe-delete-bg"><button class="swipe-delete-btn" onclick="event.stopPropagation();confirmDeleteLead('${esc(l.id)}')" aria-label="Delete"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg></button></div><div class="lead-item lc-agenda lc-${l.status}${selected} swipe-card" onclick="editLead('${esc(l.id)}')">
+        ${dateBlock}
+        <div class="lc-rail"></div>
+        <div class="lc-body">
+          <div class="lc-head">
+            <div class="lc-name">${esc(l.name || l.contact || '(no data)')}${remarkIconHTML(l)}</div>
+            <div class="lc-head-right">${rescheduleChipHTML(l)}<span class="badge badge-${l.status}">${statusLabelText}</span></div>
           </div>
-        </div>
-        <div class="lc-foot">
-          <span class="lc-contact">${esc(l.contact || '')}</span>
-          ${l.apptDate ? `<span class="lc-sep">·</span><span class="lc-when${whenCls}">${fmt.monthDay(l.apptDate)}${apptTimeOf(l.apptDate, l) ? ` ${apptTimeOf(l.apptDate, l)}` : ''}</span>` : ''}
-          ${showAmt ? `<span class="lc-amt">${fmt.money(l.spend)}</span>` : ''}
-          ${(()=>{const loc=state.locations.find(x=>x.id===l.locationId);const locName=(loc&&loc.name)||l.location||l.locationName||'';return locName?`<span class="lc-location">${esc(locName)}</span>`:'';})()}<!-- v8.66: 门店改用 locationId 查表 (跟表格一致), 之前只读 l.location 字串, merge 进来的没这字串就漏了 -->
-          ${l.channelName ? (()=>{const ch=state.channels.find(c=>c.id===l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`;})() : ''}
+          <div class="lc-meta">${metaParts}${smallDate}</div>
         </div>
       </div></div>`;
     }).join('');
