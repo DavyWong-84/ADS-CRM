@@ -3398,7 +3398,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.67</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.68</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3449,7 +3449,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.67</div>
+      <div class="nav-brand-version">v8.68</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -20993,6 +20993,23 @@ async function pendingConfirmUpdate(p) {
   };
   if (newName) leadUpdate.name = newName;
 
+  // v8.68: merge 路径也当场写 "Appt received" 备注 (跟 add 路径一致)。
+  //   之前 merge 不写备注, Appt +N 靠解析 remark, 要等后端 sync 回来才有 → 慢。
+  //   现在本地当场加 + 送后端存, Appt 跟 Lead 一样秒出。dedup: 今天已有该行就不重复。
+  const _mergeExisting = (typeof state !== 'undefined' && state.leads)
+    ? state.leads.find(l => l.id === p.existingLeadId) : null;
+  const _mergeCh = _mergeExisting
+    ? ((state.channels || []).find(c => c.id === _mergeExisting.channelId) || { name: _mergeExisting.channelName || p.tag || '?' })
+    : { name: p.tag || '?' };
+  const _apptLine = buildAutoRemarkForNewLead(
+    { ...p, type: 'appt', locationId: locationId },
+    _mergeCh,
+    (typeof state !== 'undefined' && state.locations) ? state.locations : []);
+  const _oldRemark = (_mergeExisting && _mergeExisting.remark) ? String(_mergeExisting.remark) : '';
+  const _hasApptToday = _mergeExisting && typeof _apptReceivedAt === 'function' && _apptReceivedAt(_mergeExisting);
+  const _mergedRemark = _hasApptToday ? _oldRemark : (_oldRemark ? _oldRemark + '\n' + _apptLine : _apptLine);
+  leadUpdate.remark = _mergedRemark;
+
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
   if (!url) {
     _pendingInFlight.delete(pendingId);
@@ -21007,7 +21024,7 @@ async function pendingConfirmUpdate(p) {
   const _origLeadSnapshot = (typeof state !== 'undefined' && state.leads)
     ? (() => {
         const orig = state.leads.find(l => l.id === p.existingLeadId);
-        return orig ? { status: orig.status, apptDate: orig.apptDate, locationId: orig.locationId, name: orig.name, updatedAt: orig.updatedAt } : null;
+        return orig ? { status: orig.status, apptDate: orig.apptDate, locationId: orig.locationId, name: orig.name, updatedAt: orig.updatedAt, remark: orig.remark } : null;  // v8.68: 快照带 remark, 回滚才还原得回
       })()
     : null;
 
@@ -21021,6 +21038,7 @@ async function pendingConfirmUpdate(p) {
         existing.locationId = _origLeadSnapshot.locationId;
         existing.name = _origLeadSnapshot.name;
         existing.updatedAt = _origLeadSnapshot.updatedAt;
+        existing.remark = _origLeadSnapshot.remark;  // v8.68
         if (typeof saveState === 'function') saveState();
       }
     }
@@ -21034,6 +21052,7 @@ async function pendingConfirmUpdate(p) {
       existing.apptDate = apptDateStr;
       existing.locationId = locationId;
       if (newName) existing.name = newName;
+      existing.remark = _mergedRemark;  // v8.68: 本地当场写备注 → Appt +N 秒出
       existing.updatedAt = nowIso;
       if (typeof saveState === 'function') saveState();
     }
