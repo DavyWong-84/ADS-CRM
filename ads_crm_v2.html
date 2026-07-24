@@ -688,7 +688,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 
 /* ══ v8.69: Agenda Rail 手机卡片 (方案 C) ══
    左边日期/金额方块 (每个状态一个固定的家, 钱不再乱飘) + 竖线 + 内容。白卡软阴影, 无硬边框。*/
-.lead-item.lc-agenda { display: flex; gap: 13px; align-items: center; padding: 12px 14px; border: none; border-left: none; border-radius: 14px; box-shadow: 0 1px 2px rgba(16,17,20,.04), 0 10px 26px -18px rgba(113,50,245,.42); }
+/* v8.70: 边框加清楚 (之前只有软阴影太浅, 卡片分不出来) */
+.lead-item.lc-agenda { display: flex; gap: 13px; align-items: center; padding: 12px 14px; border: 1px solid var(--border); border-left: 1px solid var(--border); border-radius: 14px; box-shadow: 0 1px 3px rgba(16,17,20,.07); }
+.lead-item.lc-agenda.selected { border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-subtle); }
 .lc-agenda .lc-date { flex-shrink: 0; width: 52px; text-align: center; }
 .lc-agenda .lc-date .d { font-size: 20px; font-weight: 700; letter-spacing: -.03em; color: var(--purple-deep); line-height: 1; }
 .lc-agenda .lc-date .mo { font-size: 10px; font-weight: 600; letter-spacing: .5px; color: var(--silver); margin-top: 3px; }
@@ -701,15 +703,17 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
 .lc-agenda .lc-date.lead .d { font-size: 12px; font-weight: 600; color: var(--silver); padding-top: 3px; }
 .lc-agenda .lc-date.lead .mo { margin-top: 2px; }
 .lc-agenda .lc-rail { width: 1px; align-self: stretch; background: var(--border-light); flex-shrink: 0; }
-.lc-agenda .lc-body { flex: 1; min-width: 0; }
+/* v8.70: display:block 覆盖旧 .lead-item .lc-body 的 flex — 否则名字行和 meta 行被横排挤成一行, 名字截成 2 个字、channel 被切掉 */
+.lc-agenda .lc-body { flex: 1; min-width: 0; display: block; }
 .lc-agenda .lc-head { display: flex; align-items: center; gap: 9px; margin-bottom: 5px; }
 .lc-agenda .lc-name { font-weight: 600; font-size: 15px; letter-spacing: -.01em; color: var(--black); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.25; }
 .lc-agenda .lc-head-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .lc-agenda .lc-meta { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--gray); font-weight: 500; min-width: 0; }
 .lc-agenda .lc-meta .lc-out { color: var(--gray); white-space: nowrap; flex-shrink: 0; }
 .lc-agenda .lc-meta .lc-dot { color: var(--border); }
-.lc-agenda .lc-meta .lc-channel { display: inline-flex; align-items: center; gap: 5px; color: var(--gray); white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.lc-agenda .lc-meta .lc-when-sm { margin-left: auto; flex-shrink: 0; color: var(--silver); font-variant-numeric: tabular-nums; }
+.lc-agenda .lc-meta .lc-channel { display: inline-flex; align-items: center; gap: 5px; color: var(--gray); min-width: 0; }
+.lc-agenda .lc-meta .lc-channel .lc-chtext { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.lc-agenda .lc-meta .lc-when-sm { margin-left: auto; flex-shrink: 0; padding-left: 6px; color: var(--silver); font-variant-numeric: tabular-nums; }
 
 /* v5.72: 删除 lead flag stars CSS (3个星星功能不再使用) */
 
@@ -3423,7 +3427,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.69</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.70</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3474,7 +3478,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.69</div>
+      <div class="nav-brand-version">v8.70</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4021,7 +4025,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -4031,11 +4035,11 @@ body.contact-view-table .modal-backdrop.open {
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2028">
@@ -4044,11 +4048,32 @@ body.contact-view-table .modal-backdrop.open {
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+      <th class="num">New (RM)</th>
+      <th class="num">Total (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2028</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2028</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2028</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2028</td>
+    <td class="num">—</td>
+    <td class="num" style="font-weight:700;">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4058,15 +4083,34 @@ body.contact-view-table .modal-backdrop.open {
           <input type="hidden" id="as_entryYear" value="2028">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
+          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2028</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2028</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2028</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2028</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4083,7 +4127,7 @@ body.contact-view-table .modal-backdrop.open {
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -9154,7 +9198,7 @@ function renderList() {
       const _loc = state.locations.find(x => x.id === l.locationId);
       const locName = (_loc && _loc.name) || l.location || l.locationName || '';
       const outHtml = locName ? `<span class="lc-out">${esc(locName)}</span>` : '';
-      const chHtml = l.channelName ? (() => { const ch = state.channels.find(c => c.id === l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`; })() : '';
+      const chHtml = l.channelName ? (() => { const ch = state.channels.find(c => c.id === l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}<span class="lc-chtext">${esc(l.channelName)}</span></span>`; })() : '';
       const metaParts = [outHtml, chHtml].filter(Boolean).join('<span class="lc-dot">·</span>');
       // 今天 / 过期 (只对 booked, 决定日期方块颜色)
       let whenCls = '';
