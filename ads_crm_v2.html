@@ -3431,7 +3431,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.74</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.75</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3482,7 +3482,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.74</div>
+      <div class="nav-brand-version">v8.75</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3643,10 +3643,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-07-24</span>
+                      <span id="f_leadDate_label">2026-07-26</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-07-24">
+                    <input type="hidden" id="f_leadDate" value="2026-07-26">
                   </div>
                 </div>
               </div>
@@ -3659,12 +3659,14 @@ body.contact-view-table .modal-backdrop.open {
                   <div class="step-title">Booking</div>
                 </div>
               </div>
+              <!-- v8.75 (方案 A+): Name|Location 一行(人的资料), Appt Date|Appt Time 一行(预约时间)。
+                   还是 2 行 → 表单高度不变, 手机一页看得完; 时间不再跟日期挤同一格。 -->
               <div class="step-body">
-                <div>
-                  <label>Name</label>
-                  <input type="text" id="f_name">
-                </div>
-                <div class="form-row" style="margin-top:12px;">
+                <div class="form-row">
+                  <div>
+                    <label>Name</label>
+                    <input type="text" id="f_name">
+                  </div>
                   <div>
                     <label>Location</label>
                     <span id="popWrap_popSel_f_location" data-pop-wrap-for="f_location" style="display: block; width: 100%;"><button type="button" id="pop-popSel_f_location" class="pop-trigger pop-trigger-field is-empty" onclick="openPopover(event, 'popSel_f_location')" aria-haspopup="listbox">
@@ -3672,6 +3674,8 @@ body.contact-view-table .modal-backdrop.open {
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="f_location" data-pop="1" data-pop-icon="location" data-pop-placeholder="" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_f_location" data-pop-field="1" style="display: none;"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option></select>
                   </div>
+                </div>
+                <div class="form-row" style="margin-top:12px;">
                   <div>
                     <label>Appt Date</label>
                     <button type="button" class="date-btn empty" id="f_apptDate_btn" onclick="openDatePicker('f_apptDate')">
@@ -3679,6 +3683,10 @@ body.contact-view-table .modal-backdrop.open {
                       <span class="date-btn-icon">📅</span>
                     </button>
                     <input type="hidden" id="f_apptDate">
+                  </div>
+                  <div>
+                    <label>Appt Time</label>
+                    <input type="time" id="f_apptTime" step="300">
                   </div>
                 </div>
               </div>
@@ -4920,16 +4928,12 @@ function _apptTimeFromRemark(l) {
   });
   return hit;
 }
+// v8.75: 预约时间统一从 apptTime 栏位读 (单一来源)。
+//   raw(apptDate) 只在极旧混装资料还没经过 splitAppt 时兜底; remark 是最后的历史 fallback。
 function apptTimeOf(raw, lead) {
-  const m = raw ? String(raw).trim().match(/^\d{4}-\d{2}-\d{2}[ T](\d{2}):(\d{2})/) : null;
-  if (m) {
-    let hr = parseInt(m[1], 10);
-    if (!isNaN(hr)) {
-      const ampm = hr >= 12 ? 'PM' : 'AM';
-      hr = hr % 12 || 12;
-      return `${hr}:${m[2]} ${ampm}`;
-    }
-  }
+  if (lead && lead.apptTime) return fmtApptTime(lead.apptTime);
+  const t = raw ? splitAppt(raw).time : '';
+  if (t) return fmtApptTime(t);
   return lead ? _apptTimeFromRemark(lead) : '';
 }
 
@@ -5604,32 +5608,56 @@ function appendActivityLog(oldRemark, oldLead, newLead, eventLabel) {
 
 // v4.83: Extract YYYY-MM-DD from any date format (string, Date.toString, ISO, etc)
 // Replaces the buggy .substring(0, 10) which broke on "Thu Apr 30 2026 ..." style strings.
-// v8.61: 存预约用这个 — 保留 GHL 推来的时间 ("2026-07-24 14:00")。
-//   原本一律走 extractDateOnly, 时间在写进 CRM 前就被砍掉, 所以后端 v3.30 修了也看不到。
-//   extractDateOnly 不动 (别处还靠它清洗 "Thu Apr 30 2026 …" 这种脏资料)。
-function extractApptDateTime(raw) {
+// ══ v8.75【根治】预约日期/时间分家 ══════════════════════════════════════
+//   GHL / 旧资料送进来的可能是混装的 ("2026-07-24 14:00"、"Thu Jul 24 2026 14:00:00 GMT+0800"),
+//   解析混装输入是合理的 (来源就那样); 但 CRM 内部**永远不存混装** —
+//   日期进 apptDate (纯 yyyy-MM-dd), 时间进 apptTime (纯 HH:mm)。
+//   之前把两者塞同一个栏位, 害 isoWeek 算出 WNaN、fmt.monthDay 显示 Jul NaN、今天/过期比对失效。
+//   → 回到「一个栏位一个意思」, 那些旧代码不用改就自动全对。
+//   回传 { date, time }; time 没有就是 ''。
+function splitAppt(raw) {
+  if (!raw) return { date: '', time: '' };
+  const s = String(raw).trim();
+  const pad = n => ('0' + n).slice(-2);
+  const out = (date, hh, mi) => ({ date: date, time: (hh === '00' && mi === '00') ? '' : `${hh}:${mi}` });
+  // 1) 标准 "yyyy-MM-dd" / "yyyy-MM-dd HH:mm" / "yyyy-MM-ddTHH:mm"
+  const m = s.match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}):(\d{2}))?/);
+  if (m) return m[2] ? out(m[1], m[2], m[3]) : { date: m[1], time: '' };
+  // 2) JS Date 字串 "Thu Jul 25 2026 15:31:00 GMT+0800 (Singapore Standard Time)"。
+  //    手机浏览器对带时区名的字串 new Date() 常解析失败 → 用 regex 确定性抠, 不赌浏览器。
+  const MOS = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
+  const j = s.match(/^\w{3}\s+(\w{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{2}):(\d{2})/);
+  if (j && MOS[j[1]]) return out(`${j[3]}-${pad(MOS[j[1]])}-${pad(parseInt(j[2], 10))}`, j[4], j[5]);
+  // 3) 其他格式 → 退回 Date 解析
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) return out(d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()), pad(d.getHours()), pad(d.getMinutes()));
+  return { date: extractDateOnly(s), time: '' };
+}
+// 时间正规化 → "HH:mm" (给 apptTime 栏位用)。空/非法 → ''。
+function normApptTime(raw) {
   if (!raw) return '';
   const s = String(raw).trim();
-  const m = s.match(/^(\d{4}-\d{2}-\d{2})(?:[ T](\d{2}:\d{2}))?/);
-  if (m) return m[2] && m[2] !== '00:00' ? `${m[1]} ${m[2]}` : m[1];
-  // v8.73: 后端 Pending 把 apptDate 存成 Date, 读回来是 JS Date 字串
-  //   "Thu Jul 25 2026 15:31:00 GMT+0800 (Singapore Standard Time)"。
-  //   手机浏览器对这种带时区名的字串 new Date() 常解析失败 → 时间丢。
-  //   改用 regex 确定性抠出「年月日时分」, 不赌浏览器。(根治仍是后端 v3.31)
-  const pad = n => ('0' + n).slice(-2);
-  const _MOS = { Jan:1,Feb:2,Mar:3,Apr:4,May:5,Jun:6,Jul:7,Aug:8,Sep:9,Oct:10,Nov:11,Dec:12 };
-  const j = s.match(/^\w{3}\s+(\w{3})\s+(\d{1,2})\s+(\d{4})\s+(\d{2}):(\d{2})/);
-  if (j && _MOS[j[1]]) {
-    const date = `${j[3]}-${pad(_MOS[j[1]])}-${pad(parseInt(j[2], 10))}`;
-    return (j[4] === '00' && j[5] === '00') ? date : `${date} ${j[4]}:${j[5]}`;
+  let m = s.match(/^(\d{1,2}):(\d{2})\s*([AaPp])[Mm]?$/);   // "4:00 PM"
+  if (m) {
+    let h = parseInt(m[1], 10) % 12;
+    if (m[3].toLowerCase() === 'p') h += 12;
+    return ('0' + h).slice(-2) + ':' + m[2];
   }
-  const d = new Date(s);   // 其他格式 → 退回 Date 解析
-  if (!isNaN(d.getTime())) {
-    const date = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-    const hh = d.getHours(), mi = d.getMinutes();
-    return (hh === 0 && mi === 0) ? date : `${date} ${pad(hh)}:${pad(mi)}`;
+  m = s.match(/(\d{1,2}):(\d{2})/);                          // "16:00" / "2026-07-25 16:00"
+  if (m) {
+    const h = parseInt(m[1], 10);
+    if (h >= 0 && h <= 23) return ('0' + h).slice(-2) + ':' + m[2];
   }
-  return extractDateOnly(s);   // 真的解析不了 → 退回原逻辑
+  return '';
+}
+// "16:00" → "4:00 PM" (显示用)
+function fmtApptTime(hhmm) {
+  const t = normApptTime(hhmm);
+  if (!t) return '';
+  let h = parseInt(t.slice(0, 2), 10);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${t.slice(3)} ${ampm}`;
 }
 function extractDateOnly(raw) {
   if (!raw) return '';
@@ -7370,6 +7398,7 @@ let currentEditingId = null;
 function saveLead(base) {
   const name = document.getElementById('f_name').value.trim();
   const apptDate = document.getElementById('f_apptDate').value;
+  const apptTime = normApptTime(document.getElementById('f_apptTime').value);   // v8.75
   const locationId = document.getElementById('f_location').value;
   const showUp = document.getElementById('f_showUp').value;
   const race = document.getElementById('f_race').value;
@@ -7437,6 +7466,7 @@ function saveLead(base) {
     platform: ch?.platform || '',
     contact: base.contact,
     apptDate: apptDate || null,
+    apptTime: apptTime || '',   // v8.75
     name,
     race: race || null,
     locationId: locationId || null,
@@ -7485,6 +7515,7 @@ function resetLeadForm(wasEditingOverride) {
   const ldBtn = document.getElementById('f_leadDate_btn');
   if (ldLabel && ldBtn) { ldLabel.textContent = todayStr(); ldBtn.classList.remove('empty'); }
   document.getElementById('f_apptDate').value = '';
+  document.getElementById('f_apptTime').value = '';   // v8.75
   const adLabel = document.getElementById('f_apptDate_label');
   const adBtn = document.getElementById('f_apptDate_btn');
   if (adLabel && adBtn) { adLabel.textContent = ''; adBtn.classList.add('empty'); }
@@ -7508,7 +7539,7 @@ function resetLeadForm(wasEditingOverride) {
 // v6.85: Drawer dirty check helpers
 //   保存 form 打开时的初始字段值, 切换 lead 时对比当前 form 是否变了.
 let _formSnapshot = null;
-const _DIRTY_FIELDS = ['f_name', 'f_contact', 'f_channel', 'f_leadDate', 'f_apptDate', 'f_location', 'f_showUp', 'f_race', 'f_spend', 'f_remark'];
+const _DIRTY_FIELDS = ['f_name', 'f_contact', 'f_channel', 'f_leadDate', 'f_apptDate', 'f_apptTime', 'f_location', 'f_showUp', 'f_race', 'f_spend', 'f_remark'];
 function _captureFormSnapshot() {
   _formSnapshot = {};
   _DIRTY_FIELDS.forEach(id => {
@@ -7586,7 +7617,7 @@ function openNewLead() {
   // Reset form (native reset first)
   document.getElementById('leadForm').reset();
   // v4.10: explicitly clear everything — no defaults
-  const fieldsToEmpty = ['f_contact', 'f_name', 'f_channel', 'f_location', 'f_leadDate', 'f_apptDate', 'f_showUp', 'f_race', 'f_spend', 'f_remark'];
+  const fieldsToEmpty = ['f_contact', 'f_name', 'f_channel', 'f_location', 'f_leadDate', 'f_apptDate', 'f_apptTime', 'f_showUp', 'f_race', 'f_spend', 'f_remark'];
   fieldsToEmpty.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
@@ -7687,6 +7718,7 @@ function populateLeadForm(l) {
   }
   document.getElementById('f_name').value = l.name || '';
   document.getElementById('f_apptDate').value = l.apptDate || '';
+  document.getElementById('f_apptTime').value = normApptTime(l.apptTime) || '';   // v8.75
   const adLabel = document.getElementById('f_apptDate_label');
   const adBtn = document.getElementById('f_apptDate_btn');
   if (adLabel && adBtn) {
@@ -7779,10 +7811,14 @@ function renderDetailPanel(l) {
       <div class="step-card step-2">
         <div class="step-header"><span class="step-num">2</span><div><div class="step-title">Booking</div></div></div>
         <div class="step-body">
-          <div><label>Name</label><input type="text" id="df_name" value="${esc(l.name || '')}"></div>
-          <div class="form-row" style="margin-top:12px;">
+          <!-- v8.75 (A+): Name|Location 一行, Appt Date|Appt Time 一行 (跟手机表单一致) -->
+          <div class="form-row">
+            <div><label>Name</label><input type="text" id="df_name" value="${esc(l.name || '')}"></div>
             <div><label>Location</label><select id="df_location" data-pop="1" data-pop-icon="location" data-pop-placeholder=""><option value=""></option>${locationOpts}</select></div>
+          </div>
+          <div class="form-row" style="margin-top:12px;">
             <div><label>Appt Date</label><input type="date" id="df_apptDate" value="${l.apptDate || ''}"></div>
+            <div><label>Appt Time</label><input type="time" id="df_apptTime" step="300" value="${normApptTime(l.apptTime) || ''}"></div>
           </div>
         </div>
       </div>
@@ -7813,6 +7849,7 @@ function saveDetailLead() {
   if (!contact || !channelId || !leadDate) { toast('Please fill contact, channel, lead date'); return; }
   const name = document.getElementById('df_name').value.trim();
   const apptDate = document.getElementById('df_apptDate').value;
+  const apptTime = normApptTime(document.getElementById('df_apptTime').value);   // v8.75
   const locationId = document.getElementById('df_location').value;
   const showUp = document.getElementById('df_showUp').value;
   const race = document.getElementById('df_race').value;
@@ -7845,7 +7882,7 @@ function saveDetailLead() {
     id: currentEditingId, week: isoWeek(leadDate), channelId,
     leadDate,
     channel: ch?.name || '', channelName: ch?.name || '', platform: ch?.platform || '', contact,
-    apptDate: apptDate || null, name, race: race || null,
+    apptDate: apptDate || null, apptTime: apptTime || '', name, race: race || null,   // v8.75
     locationId: locationId || null, location: loc?.name || null,
     spend, showUp: showUp || '', status,
     remark: finalRemark,  // v5.88
@@ -8287,19 +8324,13 @@ function applyDate(dateStr) {
   const id = dpState.targetId;
   if (!id) return;
   const el = document.getElementById(id);
-  // v8.60: 预约日期改期时保住原本的时间 (GHL 推来的 "2026-07-24 14:00")。
-  //   表单只有日期选择器, 直接覆盖会把几点到店洗掉。
-  let out = dateStr;
-  if (dateStr && id === 'f_apptDate') {
-    const oldT = String(el.value || '').match(/[ T](\d{2}:\d{2})/);
-    if (oldT) out = dateStr + ' ' + oldT[1];
-  }
-  el.value = out;
+  // v8.75: 时间搬去 f_apptTime 自己一格了 → 这里不用再保时间 (v8.60 那个补丁拆掉)
+  el.value = dateStr;
   const btn = document.getElementById(id + '_btn');
   const label = document.getElementById(id + '_label');
   if (btn && label) {
     if (dateStr) {
-      label.textContent = out.replace(' ', ' · ');
+      label.textContent = dateStr;
       btn.classList.remove('empty');
     } else {
       label.textContent = '';
@@ -8848,7 +8879,7 @@ function apptCountdownText(l) {
   if (!l.apptDate) return { text: '—', cls: 'cd-past' };
   const today0 = new Date(); today0.setHours(0,0,0,0);
   // v8.60: apptDate 后端起会带时间 ("2026-07-24 14:00"), 只取日期部分再拼 T00:00:00
-  const appt0 = new Date(String(l.apptDate).slice(0, 10) + 'T00:00:00');
+  const appt0 = new Date(l.apptDate + "T00:00:00");   // v8.75: apptDate 恢复纯日期, 不用再 slice
   if (isNaN(appt0)) return { text: '—', cls: 'cd-past' };
   const diff = Math.round((appt0 - today0) / 86400000);
   if (diff === 0) return { text: 'Today', cls: 'cd-today' };
@@ -9175,7 +9206,7 @@ function renderList() {
       let whenCls = '';
       if (l.status === 'booked' && l.apptDate) {
         const today0 = new Date(); today0.setHours(0, 0, 0, 0);
-        const appt0 = new Date(String(l.apptDate).slice(0, 10) + 'T00:00:00');
+        const appt0 = new Date(l.apptDate + "T00:00:00");   // v8.75: apptDate 恢复纯日期, 不用再 slice
         const diff = Math.round((appt0 - today0) / 86400000);
         if (diff === 0) whenCls = ' when-today';
         else if (diff < 0) whenCls = ' when-overdue';
@@ -16395,7 +16426,7 @@ function _normalizeSheetPullData(d) {
   const sheetLocations = (d.Locations !== undefined) ? d.Locations : null;
 
   // Safety: detect unexpected columns (manual + silent pull 同样保护)
-  const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','locationId','locationName','showUp','race','spend','status','remark','flags','updatedAt']);
+  const EXPECTED_LEAD_KEYS = new Set(['id','contact','channelId','channelName','platform','leadDate','name','apptDate','apptTime','locationId','locationName','showUp','race','spend','status','remark','flags','updatedAt']);  // v8.75: apptTime 新栏位, 不加会被当「可疑列」挡掉整个 pull
   const suspiciousLead = sheetLeads.find(l => {
     const keys = Object.keys(l);
     return keys.some(k => !EXPECTED_LEAD_KEYS.has(k)) || keys.length !== new Set(keys).size;
@@ -16500,7 +16531,11 @@ function _normalizeSheetPullData(d) {
   const updatedMap = {};
   (state.leads || []).forEach(l => { if (l.id && l.updatedAt) updatedMap[l.id] = l.updatedAt; });
 
-  const leads = sheetLeads.map(l => ({
+  // v8.75: 单一入口拆分 — Sheet 里若还有 v8.61~74 写进去的混装 apptDate ("2026-07-25 16:00"),
+  //   在这里就拆成 apptDate(纯日期) + apptTime, 旧资料不用手动清。新栏位 apptTime 优先。
+  const leads = sheetLeads.map(l => {
+    const _sp = splitAppt(l.apptDate);
+    return {
     id: safeId(l.id),
     contact: String(l.contact || ''),
     channelId: l.channelId || '',
@@ -16508,7 +16543,8 @@ function _normalizeSheetPullData(d) {
     platform: l.platform || '',
     leadDate: toDateStr(l.leadDate),
     name: l.name || '',
-    apptDate: toDateStr(l.apptDate),
+    apptDate: toDateStr(_sp.date),
+    apptTime: normApptTime(l.apptTime) || _sp.time,
     locationId: l.locationId || '',
     location: locMap[l.locationId] || l.locationName || l.location || '',
     showUp: l.showUp || '',
@@ -16518,7 +16554,8 @@ function _normalizeSheetPullData(d) {
     remark: l.remark || '',
     flags: parseFlags(l.flags, flagsMap[l.id]),
     updatedAt: l.updatedAt || updatedMap[l.id] || ''
-  })).filter(l => l.id);  // v6.84 codex: 异常 id 被 safeId 清空, filter 掉防 state 内出现空 id lead
+  };
+  }).filter(l => l.id);  // v6.84 codex: 异常 id 被 safeId 清空, filter 掉防 state 内出现空 id lead
 
   const ads = sheetAds.map(a => ({
     id: a.id || '',
@@ -17194,6 +17231,7 @@ function gsLeadForSheet(l) {
     leadDate: l.leadDate || '',
     name: l.name || '',
     apptDate: l.apptDate || '',
+    apptTime: l.apptTime || '',   // v8.75: 不带的话存回 Sheet 时间就丢了
     locationId: l.locationId || '',
     showUp: l.showUp || '',
     race: l.race || '',
@@ -17496,7 +17534,7 @@ function computeAlerts() {
   // Lead dangling
   state.leads.forEach(l => {
     if (l.status === 'booked' && l.apptDate) {
-      const apptTime = new Date(String(l.apptDate).slice(0, 10) + 'T00:00:00').getTime(); // v8.60: apptDate 可能带时间
+      const apptTime = new Date(l.apptDate + "T00:00:00").getTime();   // v8.75: apptDate 恢复纯日期
       const daysPast = Math.floor((Date.now() - apptTime) / 86400000);
       // v5.90: Bug C fix — 当天/昨天的 booked 已过, 也提醒填 Show Up (不只 >3天)
       if (daysPast >= 0 && daysPast <= 1 && !l.showUp) {
@@ -20869,7 +20907,8 @@ async function pendingConfirm(pendingId) {
     platform: ch.platform,
     leadDate: todayStr,
     name: (isAppt && p.name) ? String(p.name).trim() : '',  // v5.01: pull name from GHL appt
-    apptDate: isAppt ? extractApptDateTime(p.apptDate) : '',
+    apptDate: isAppt ? splitAppt(p.apptDate).date : '',
+    apptTime: isAppt ? splitAppt(p.apptDate).time : '',   // v8.75: 时间自己一栏
     locationId: isAppt ? locationId : '',
     showUp: '',
     race: '',
@@ -20998,7 +21037,9 @@ async function pendingConfirmUpdate(p) {
 
   _pendingInFlight.add(pendingId);
 
-  const apptDateStr = extractApptDateTime(p.apptDate);
+  const _spAppt = splitAppt(p.apptDate);   // v8.75: 日期/时间分家
+  const apptDateStr = _spAppt.date;
+  const apptTimeStr = _spAppt.time;
   // v5.02: If GHL sent a customer name, include it in the update so existing
   // Lead row gets named (preserving leadDate + channel which are NOT in this object)
   const newName = p.name && p.name.trim() ? String(p.name).trim() : '';
@@ -21009,6 +21050,7 @@ async function pendingConfirmUpdate(p) {
     id: p.existingLeadId,
     status: 'booked',
     apptDate: apptDateStr,
+    apptTime: apptTimeStr,   // v8.75
     locationId: locationId,
     updatedAt: nowIso
   };
@@ -21045,7 +21087,7 @@ async function pendingConfirmUpdate(p) {
   const _origLeadSnapshot = (typeof state !== 'undefined' && state.leads)
     ? (() => {
         const orig = state.leads.find(l => l.id === p.existingLeadId);
-        return orig ? { status: orig.status, apptDate: orig.apptDate, locationId: orig.locationId, name: orig.name, updatedAt: orig.updatedAt, remark: orig.remark } : null;  // v8.68: 快照带 remark, 回滚才还原得回
+        return orig ? { status: orig.status, apptDate: orig.apptDate, apptTime: orig.apptTime, locationId: orig.locationId, name: orig.name, updatedAt: orig.updatedAt, remark: orig.remark } : null;  // v8.68 快照带 remark; v8.75 带 apptTime
       })()
     : null;
 
@@ -21056,6 +21098,7 @@ async function pendingConfirmUpdate(p) {
       if (existing) {
         existing.status = _origLeadSnapshot.status;
         existing.apptDate = _origLeadSnapshot.apptDate;
+        existing.apptTime = _origLeadSnapshot.apptTime;  // v8.75
         existing.locationId = _origLeadSnapshot.locationId;
         existing.name = _origLeadSnapshot.name;
         existing.updatedAt = _origLeadSnapshot.updatedAt;
@@ -21071,6 +21114,7 @@ async function pendingConfirmUpdate(p) {
     if (existing) {
       existing.status = 'booked';
       existing.apptDate = apptDateStr;
+      existing.apptTime = apptTimeStr;  // v8.75
       existing.locationId = locationId;
       if (newName) existing.name = newName;
       existing.remark = _mergedRemark;  // v8.68: 本地当场写备注 → Appt +N 秒出
@@ -21326,7 +21370,8 @@ function _buildBatchLeadRecords(tasks) {
 
     const tt = String(p.type || 'lead').toLowerCase();
     const isAppt = (tt === 'appt' || tt === 'lead+appt');
-    const apptDateStr = isAppt ? extractApptDateTime(p.apptDate) : '';
+    const _spB = isAppt ? splitAppt(p.apptDate) : { date: '', time: '' };   // v8.75: 日期/时间分家
+    const apptDateStr = _spB.date;
     const userPickedLoc = isAppt ? (document.getElementById('loc-' + p.id)?.value || '') : '';
     const locationIdVal = isAppt ? (userPickedLoc || p.locationId || '') : '';
     const statusVal = isAppt ? 'booked' : 'lead';
@@ -21338,6 +21383,7 @@ function _buildBatchLeadRecords(tasks) {
       platform: ch.platform, leadDate: todayStr,
       name: (isAppt && p.name) ? String(p.name).trim() : '',
       apptDate: apptDateStr,
+      apptTime: _spB.time,   // v8.75
       locationId: locationIdVal, showUp: '', race: '', spend: 0,
       remark: autoRemark, status: statusVal, flags: '',
       updatedAt: new Date().toISOString()
@@ -21394,7 +21440,8 @@ async function _pendingBatchSaveOne(p, ch, phone, remark) {
   // v4.66: If pending has appt info (type=appt or lead+appt), apply it
   const t = String(p.type || 'lead').toLowerCase();
   const isAppt = (t === 'appt' || t === 'lead+appt');
-  const apptDateStr = isAppt ? extractApptDateTime(p.apptDate) : '';
+  const _spS = isAppt ? splitAppt(p.apptDate) : { date: '', time: '' };   // v8.75: 日期/时间分家
+  const apptDateStr = _spS.date;
   // v6.65 codex P1 #2: Batch Add 也读用户在 inbox 卡片改的 outlet (跟单条 confirm 一致).
   //   之前: simple insert / force_new 路径只读 p.locationId, 用户改了 select 被忽略.
   //   现在: 优先用 select 值, 没改才回退 GHL 推的 p.locationId.
@@ -21410,6 +21457,7 @@ async function _pendingBatchSaveOne(p, ch, phone, remark) {
     platform: ch.platform, leadDate: todayStr,
     name: (isAppt && p.name) ? String(p.name).trim() : '',
     apptDate: apptDateStr,
+    apptTime: _spS.time,   // v8.75
     locationId: locationIdVal, showUp: '', race: '', spend: 0,
     remark: autoRemark, status: statusVal, flags: '',
     updatedAt: new Date().toISOString()  // v5.87
@@ -21537,12 +21585,10 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
     const oldChannel = existingLead.channelId || '';
     const newChannelId = defaultCh && defaultCh.id ? defaultCh.id : oldChannel;
     const oldApptDate = existingLead.apptDate || '';
-    // v8.74: 改用 extractApptDateTime — 保留预约时间 (跟 v8.61 修的其他 4 条写入路径同一出口)。
-    //   之前这条 Duplicate→Merge modal 路径还在用 extractDateOnly, 时间在 merge 时被砍,
-    //   所以 Inbox 卡片明明有 10:30 AM, merge 进 Leads 却只剩纯日期。
-    const newApptDate = (typeof extractApptDateTime === 'function')
-      ? extractApptDateTime(pendingItem.apptDate || '')
-      : extractDateOnly(pendingItem.apptDate || '');
+    // v8.75: 日期/时间分家 (跟其他 4 条写入路径同一出口 splitAppt)。
+    const _spM = splitAppt(pendingItem.apptDate || '');
+    const newApptDate = _spM.date;
+    const newApptTime = _spM.time;
     // v4.74b: Normalize loc id (legacy 'sunway' vs new 'st-sunway')
     const _locNorm = (id) => String(id || '').toLowerCase().replace(/^st-/, '');
     const oldLocId = existingLead.locationId || '';
@@ -21596,6 +21642,7 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
         ${diffRow('📝 Lead Date', existingLead.leadDate, '', false)}
         ${diffRow('👤 Name', oldName, newName, !!newName && oldName !== newName)}
         ${diffRow('📅 Appt Date', oldApptDate, newApptDate, !!newApptDate && oldApptDate !== newApptDate)}
+        ${newApptTime ? diffRow('🕐 Appt Time', fmtApptTime(existingLead.apptTime), fmtApptTime(newApptTime), normApptTime(existingLead.apptTime) !== newApptTime) : ''}<!-- v8.75: merge 前先看到时间 -->
         ${diffRow('📍 Location', oldLocName ? oldLocName.name : '', newLocName ? newLocName.name : '', !!newLocId && oldLocId !== newLocId)}
         ${diffRow('✅ Status', oldStatus, newStatus, oldStatus !== newStatus)}
       </div>
@@ -21665,6 +21712,7 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
       }
       if (newName) leadUpdate.name = newName;
       if (newApptDate) leadUpdate.apptDate = newApptDate;
+      if (newApptDate) leadUpdate.apptTime = newApptTime;   // v8.75: 跟日期一起走 (没时间就写空, 不留旧时间)
       if (newLocId) {
         leadUpdate.locationId = newLocId;
         // v5.73: 同步写 location 名字 (卡片渲染读 l.location 字符串, 不写会导致 merge 后等 15-30 秒才显示 outlet)
@@ -21689,6 +21737,7 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
           channelName: existingInState.channelName,
           platform: existingInState.platform,
           name: existingInState.name,
+          apptTime: existingInState.apptTime,   // v8.75
           apptDate: existingInState.apptDate,
           locationId: existingInState.locationId,
           location: existingInState.location,
@@ -21705,6 +21754,7 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
             existingInState.platform = _origSnapshot.platform;
             existingInState.name = _origSnapshot.name;
             existingInState.apptDate = _origSnapshot.apptDate;
+            existingInState.apptTime = _origSnapshot.apptTime;   // v8.75
             existingInState.locationId = _origSnapshot.locationId;
             existingInState.location = _origSnapshot.location;
             existingInState.updatedAt = _origSnapshot.updatedAt;
@@ -21722,7 +21772,7 @@ function _showMergeModal(existingLead, pendingItem, defaultCh) {
             existingInState.platform = chosenCh.platform;
           }
           if (newName) existingInState.name = newName;
-          if (newApptDate) existingInState.apptDate = newApptDate;
+          if (newApptDate) { existingInState.apptDate = newApptDate; existingInState.apptTime = newApptTime; }  // v8.75
           if (newLocId) {
             existingInState.locationId = newLocId;
             if (newLocName && newLocName.name) existingInState.location = newLocName.name;
