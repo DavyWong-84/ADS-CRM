@@ -2612,6 +2612,21 @@ body.contact-view-table .modal-backdrop.open {
 .dp-day.selected { background: var(--purple); color: white; font-weight: 600; }
 .dp-day.selected:hover { background: var(--purple-dark); }
 .dp-footer { display: flex; justify-content: space-between; padding: 12px 18px; border-top: 1px solid var(--border-light); }
+/* ══ v8.76: 时间选择器 — 用 app 自己的 modal, 不用浏览器原生 input[type=time] 那个蓝色弹窗 ══ */
+.tp-modal { max-width: 320px; padding: 0; }
+.tp-body { padding: 14px 18px; }
+.tp-label { font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--silver); margin-bottom: 7px; }
+.tp-ampm { display: flex; gap: 6px; margin-bottom: 14px; }
+.tp-ampm button { flex: 1; padding: 8px; border: 1px solid var(--border); background: var(--white); border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--gray); cursor: pointer; transition: all .15s; }
+.tp-ampm button.on { background: var(--purple); border-color: var(--purple); color: #fff; }
+.tp-grid { display: grid; gap: 5px; margin-bottom: 14px; }
+.tp-grid.hr { grid-template-columns: repeat(6, 1fr); }
+.tp-grid.min { grid-template-columns: repeat(4, 1fr); }
+.tp-cell { padding: 8px 0; text-align: center; font-size: 13px; border-radius: 8px; cursor: pointer; color: var(--black); font-variant-numeric: tabular-nums; transition: all .12s; }
+.tp-cell:hover { background: var(--purple-subtle); color: var(--purple-deep); }
+.tp-cell.on { background: var(--purple); color: #fff; font-weight: 600; }
+.tp-preview { text-align: center; font-size: 20px; font-weight: 700; letter-spacing: -.02em; color: var(--purple-deep); font-variant-numeric: tabular-nums; padding: 2px 0 12px; }
+.tp-preview.empty { color: var(--silver); font-weight: 500; font-size: 14px; }
 
 /* Month picker grid */
 .mp-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 4px; }
@@ -3431,7 +3446,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.75</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.76</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3482,7 +3497,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.75</div>
+      <div class="nav-brand-version">v8.76</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3686,7 +3701,12 @@ body.contact-view-table .modal-backdrop.open {
                   </div>
                   <div>
                     <label>Appt Time</label>
-                    <input type="time" id="f_apptTime" step="300">
+                    <!-- v8.76: 用 app 自己的选择器 (.date-btn 跟日期框同 class → 高度一致), 不用原生蓝色弹窗 -->
+                    <button type="button" class="date-btn empty" id="f_apptTime_btn" onclick="openTimePicker('f_apptTime')">
+                      <span id="f_apptTime_label"></span>
+                      <span class="date-btn-icon">🕐</span>
+                    </button>
+                    <input type="hidden" id="f_apptTime">
                   </div>
                 </div>
               </div>
@@ -7515,7 +7535,7 @@ function resetLeadForm(wasEditingOverride) {
   const ldBtn = document.getElementById('f_leadDate_btn');
   if (ldLabel && ldBtn) { ldLabel.textContent = todayStr(); ldBtn.classList.remove('empty'); }
   document.getElementById('f_apptDate').value = '';
-  document.getElementById('f_apptTime').value = '';   // v8.75
+  setApptTimeField('');   // v8.76
   const adLabel = document.getElementById('f_apptDate_label');
   const adBtn = document.getElementById('f_apptDate_btn');
   if (adLabel && adBtn) { adLabel.textContent = ''; adBtn.classList.add('empty'); }
@@ -7622,8 +7642,8 @@ function openNewLead() {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  // Clear date-btn labels & "empty" state
-  ['f_leadDate', 'f_apptDate'].forEach(id => {
+  // Clear date-btn labels & "empty" state (v8.76: f_apptTime 也是 date-btn, 一起清)
+  ['f_leadDate', 'f_apptDate', 'f_apptTime'].forEach(id => {
     const label = document.getElementById(id + '_label');
     const btn = document.getElementById(id + '_btn');
     if (label) label.textContent = '';
@@ -7718,13 +7738,13 @@ function populateLeadForm(l) {
   }
   document.getElementById('f_name').value = l.name || '';
   document.getElementById('f_apptDate').value = l.apptDate || '';
-  document.getElementById('f_apptTime').value = normApptTime(l.apptTime) || '';   // v8.75
   const adLabel = document.getElementById('f_apptDate_label');
   const adBtn = document.getElementById('f_apptDate_btn');
   if (adLabel && adBtn) {
-    if (l.apptDate) { adLabel.textContent = String(l.apptDate).replace(' ', ' · '); adBtn.classList.remove('empty'); } // v8.60: 带出预约时间
+    if (l.apptDate) { adLabel.textContent = l.apptDate; adBtn.classList.remove('empty'); }
     else { adLabel.textContent = ''; adBtn.classList.add('empty'); }
   }
+  setApptTimeField(normApptTime(l.apptTime));   // v8.76: 值 + 按钮文字一起设
   document.getElementById('f_location').value = l.locationId || '';
   document.getElementById('f_showUp').value = l.showUp || '';
   document.getElementById('f_race').value = l.race || '';
@@ -8318,6 +8338,83 @@ function confirmDate() {
 function clearDate() {
   applyDate('');
   closeModal();
+}
+
+// ══ v8.76: 时间选择器 (app 自己的 modal) ══════════════════════════════
+//   原生 input[type=time] 的弹窗是浏览器画的 (蓝底), 跟 app 完全不搭, 高度也跟旁边日期框对不上。
+//   这里照 openDatePicker 同一套做: 按钮 .date-btn (跟日期框同 class → 尺寸一致) + hidden input 存 "HH:mm"。
+let tpState = { targetId: null, hour: null, min: null, ampm: 'AM' };
+function openTimePicker(targetId) {
+  tpState.targetId = targetId;
+  const cur = normApptTime((document.getElementById(targetId) || {}).value);
+  if (cur) {
+    let h = parseInt(cur.slice(0, 2), 10);
+    tpState.ampm = h >= 12 ? 'PM' : 'AM';
+    tpState.hour = h % 12 || 12;
+    tpState.min = cur.slice(3);
+  } else {
+    tpState.hour = null; tpState.min = null; tpState.ampm = 'AM';
+  }
+  renderTimePicker();
+}
+function _tpValue() {
+  if (tpState.hour == null || tpState.min == null) return '';
+  let h = tpState.hour % 12;
+  if (tpState.ampm === 'PM') h += 12;
+  return ('0' + h).slice(-2) + ':' + tpState.min;
+}
+function renderTimePicker() {
+  const hours = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  const mins = ['00', '15', '30', '45', '05', '10', '20', '25', '35', '40', '50', '55'];
+  const val = _tpValue();
+  const cell = (txt, on, fn) => `<div class="tp-cell${on ? ' on' : ''}" onclick="${fn}">${txt}</div>`;
+  showModal(`
+    <div class="dp-header">
+      <div style="font-weight:600;font-size:15px;">Appt Time</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="tp-body">
+      <div class="tp-preview${val ? '' : ' empty'}">${val ? esc(fmtApptTime(val)) : 'No time set'}</div>
+      <div class="tp-ampm">
+        <button type="button" class="${tpState.ampm === 'AM' ? 'on' : ''}" onclick="tpSet('ampm','AM')">AM</button>
+        <button type="button" class="${tpState.ampm === 'PM' ? 'on' : ''}" onclick="tpSet('ampm','PM')">PM</button>
+      </div>
+      <div class="tp-label">Hour</div>
+      <div class="tp-grid hr">${hours.map(h => cell(h, tpState.hour === h, `tpSet('hour',${h})`)).join('')}</div>
+      <div class="tp-label">Minute</div>
+      <div class="tp-grid min">${mins.map(m => cell(m, tpState.min === m, `tpSet('min','${m}')`)).join('')}</div>
+    </div>
+    <div class="dp-footer">
+      <button type="button" class="btn btn-ghost" onclick="clearTime()">Clear</button>
+      <button type="button" class="btn btn-primary" onclick="confirmTime()">Confirm</button>
+    </div>
+  `, { className: 'tp-modal' });
+}
+function tpSet(k, v) {
+  tpState[k] = v;
+  if (k !== 'min' && tpState.min == null) tpState.min = '00';   // 选了小时就默认整点, 少点一次
+  if (k === 'min' && tpState.hour == null) tpState.hour = 12;
+  renderTimePicker();
+}
+function confirmTime() { applyTime(_tpValue()); closeModal(); }
+function clearTime() { applyTime(''); closeModal(); }
+function applyTime(hhmm) {
+  if (!tpState.targetId) return;
+  setApptTimeField(hhmm, tpState.targetId);
+  document.getElementById(tpState.targetId).dispatchEvent(new Event('change'));
+}
+// 设值 + 同步按钮文字 (editLead / reset / 选完 都走这里, 避免只改一半)
+function setApptTimeField(hhmm, targetId) {
+  const id = targetId || 'f_apptTime';
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.value = hhmm || '';
+  const btn = document.getElementById(id + '_btn');
+  const label = document.getElementById(id + '_label');
+  if (btn && label) {
+    label.textContent = hhmm ? fmtApptTime(hhmm) : '';
+    btn.classList.toggle('empty', !hhmm);
+  }
 }
 
 function applyDate(dateStr) {
