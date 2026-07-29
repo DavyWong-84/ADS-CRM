@@ -3004,6 +3004,13 @@ body.contact-view-table .modal-backdrop.open {
 .settings-row-sublabel { font-size: 12px; color: var(--silver); margin-top: 2px; }
 .settings-row-value { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray); }
 .settings-row-chevron { color: var(--silver); font-size: 14px; line-height: 1; }
+/* ══ v8.77: Daily report modal ══ */
+.dr-to { font-size: 12.5px; color: var(--gray); margin-bottom: 10px; }
+.dr-preview { background: var(--surface-2); border-radius: 9px; padding: 12px 13px; max-height: 260px; overflow-y: auto; }
+.dr-pre { font-family: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11.5px; line-height: 1.65; color: var(--gray); white-space: pre-wrap; word-break: break-word; margin: 0; }
+.dr-loading { font-size: 12.5px; color: var(--silver); text-align: center; padding: 22px 0; }
+.dr-err { font-size: 12.5px; color: var(--red); line-height: 1.5; padding: 6px 0; }
+.dr-status { font-size: 11.5px; color: var(--silver); text-align: center; margin-top: 9px; line-height: 1.5; }
 .settings-row-status-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--organic-color); }
 .settings-row-status-dot.warn { background: #f59e0b; }
 .settings-row-status-dot.err { background: var(--red); }
@@ -3446,7 +3453,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.76</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.77</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3497,7 +3504,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.76</div>
+      <div class="nav-brand-version">v8.77</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3658,10 +3665,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-07-26</span>
+                      <span id="f_leadDate_label">2026-07-29</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-07-26">
+                    <input type="hidden" id="f_leadDate" value="2026-07-29">
                   </div>
                 </div>
               </div>
@@ -4230,6 +4237,20 @@ body.contact-view-table .modal-backdrop.open {
             </div>
           </div>
 
+          <!-- v8.77: 手动发日报 (自动那条在 8:44 PM, 这里可随时补发) -->
+          <div class="settings-group">
+            <div class="settings-group-title">Reports</div>
+            <div class="settings-group-card">
+              <div class="settings-row" onclick="openSettingsModal('dailyreport')">
+                <div>
+                  <div class="settings-row-label">Daily report</div>
+                  <div class="settings-row-sublabel" id="drRowSub_m">2 WhatsApp · auto 8:44 PM</div>
+                </div>
+                <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
+              </div>
+            </div>
+          </div>
+
           <div class="settings-group">
             <div class="settings-group-title">Data</div>
             <div class="settings-group-card">
@@ -4309,6 +4330,17 @@ body.contact-view-table .modal-backdrop.open {
         </div>
 
         <!-- v8.46: Display 分组移除 (AI guide hints — AI 功能已下架) -->
+
+        <!-- v8.77 -->
+        <div class="settings-group">
+          <div class="settings-group-title">Reports</div>
+          <div class="settings-group-card">
+            <div class="settings-md-nav-row" data-section="dailyreport" onclick="selectSettingsSection('dailyreport')">
+              <span>Daily report</span>
+              <span class="settings-md-nav-meta">auto 8:44 PM</span>
+            </div>
+          </div>
+        </div>
 
         <div class="settings-group">
           <div class="settings-group-title">Data</div>
@@ -15375,7 +15407,8 @@ function openSettingsModal(kind) {
     stores: 'Stores',
     gsheet: 'Google Sheet sync',
     github: 'GitHub deploy',
-    backup: 'Cloud backup'
+    backup: 'Cloud backup',
+    dailyreport: 'Daily report'   // v8.77
   };
   const body = _buildSettingsModalBody(kind);
   const modalHTML = `
@@ -15399,7 +15432,8 @@ function selectSettingsSection(kind) {
     stores: 'Stores',
     gsheet: 'Google Sheet sync',
     github: 'GitHub deploy',
-    backup: 'Cloud backup'
+    backup: 'Cloud backup',
+    dailyreport: 'Daily report'   // v8.77
   };
   const detail = document.getElementById('settingsMdDetail');
   if (!detail) return;
@@ -15549,6 +15583,19 @@ function _buildSettingsModalBody(kind) {
       </div>
     `;
   }
+  // v8.77: Daily report — 先预览再送 (方案 E)。开弹窗就开始建报表, 建好显示内容, 确认才发。
+  if (kind === 'dailyreport') {
+    return `
+      <div class="settings-modal-section">
+        <div class="dr-to" id="drTo">Sending to 2 WhatsApp numbers</div>
+        <div class="dr-preview" id="drPreview"><div class="dr-loading">Building report… this takes about 30 seconds</div></div>
+      </div>
+      <div class="settings-modal-section">
+        <button class="btn btn-primary btn-full" id="drSendBtn" onclick="dailyReportSend()" disabled>Preparing…</button>
+        <div class="dr-status" id="drStatus">Auto-sends every day at 8:44 PM</div>
+      </div>
+    `;
+  }
   return '<div style="padding:20px;">Unknown setting</div>';
 }
 
@@ -15582,6 +15629,9 @@ function _initSettingsModal(kind) {
   if (kind === 'backup') {
     // v5.78: 打开 backup modal 自动加载列表 (不用用户再点 Refresh)
     setTimeout(() => modalBackupRefreshList(), 100);
+  }
+  if (kind === 'dailyreport') {
+    setTimeout(() => dailyReportPreview(), 100);   // v8.77: 一开就建报表
   }
 }
 
@@ -16243,6 +16293,94 @@ function exportGoogleConversions() {
 // =============================================================================
 // v5.08: Cloud Backup System (Apps Script + Google Drive folder)
 // =============================================================================
+
+// ══ v8.77: Settings → Reports → Daily report (方案 E: 先预览再送) ══════════
+//   开弹窗 = 后端建报表 (~30s) → 显示内容 → 你确认 → 只发你看过的那份 (~3s)。
+//   报表文字存在 _drText, 送出时带给后端, 后端不重建 → 总共只等一次。
+let _drText = '';
+let _drSending = false;
+
+function _drFetch(payload, timeoutMs) {
+  const url = getGsUrl();
+  if (!url) return Promise.reject(new Error('Apps Script URL not set'));
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  return fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(gsPostBody(payload)),
+    headers: { 'Content-Type': 'text/plain' },
+    signal: ctrl.signal
+  }).then(r => r.json()).finally(() => clearTimeout(timer));
+}
+
+async function dailyReportPreview() {
+  const prev = document.getElementById('drPreview');
+  const btn = document.getElementById('drSendBtn');
+  const to = document.getElementById('drTo');
+  if (!prev || !btn) return;
+  _drText = '';
+  btn.disabled = true;
+  btn.textContent = 'Preparing…';
+  try {
+    // 建报表本身要 ~30s, 给 90s 上限 (超时才算真的卡住)
+    const d = await _drFetch({ action: 'previewdailyreport' }, 90000);
+    const r = d && d.result;
+    if (!d || !d.success || !r || !r.ok || !r.text) throw new Error((r && r.error) || d.error || 'preview failed');
+    _drText = r.text;
+    prev.innerHTML = `<pre class="dr-pre">${esc(r.text)}</pre>`;
+    if (to) to.textContent = `Sending to ${r.recipients} WhatsApp number${r.recipients > 1 ? 's' : ''}`;
+    btn.disabled = false;
+    btn.textContent = 'Send to WhatsApp';
+  } catch (e) {
+    const msg = e.name === 'AbortError' ? 'Timed out building the report (over 90s)' : e.message;
+    prev.innerHTML = `<div class="dr-err">⚠️ ${esc(msg)}</div>`;
+    btn.disabled = false;
+    btn.textContent = 'Retry';
+    btn.onclick = () => { btn.onclick = dailyReportSend; dailyReportPreview(); };
+  }
+}
+
+async function dailyReportSend() {
+  if (_drSending) return;                       // 防连点
+  const btn = document.getElementById('drSendBtn');
+  const status = document.getElementById('drStatus');
+  if (!btn) return;
+  _drSending = true;
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  try {
+    // 只是发已建好的文字, 很快; 40s 上限 (webhook 偶尔会卡)
+    const d = await _drFetch({ action: 'senddailyreport', text: _drText }, 40000);
+    const r = d && d.result;
+    if (r && r.ok) {
+      btn.textContent = '✓ Sent';
+      const t = new Date();
+      const hh = t.getHours() % 12 || 12, ap = t.getHours() >= 12 ? 'PM' : 'AM';
+      const stamp = `Sent ${hh}:${String(t.getMinutes()).padStart(2, '0')} ${ap} · ${r.sent}/${r.total} delivered`;
+      if (status) status.textContent = stamp;
+      const sub = document.getElementById('drRowSub_m');
+      if (sub) sub.textContent = stamp;
+      toast(`✅ Daily report sent (${r.sent}/${r.total})`);
+    } else {
+      throw new Error((r && r.error) || (d && d.error) || 'send failed');
+    }
+  } catch (e) {
+    if (e.name === 'AbortError') {
+      // 后端多半还在跑, 只是前端不等了 — 别谎报失败
+      btn.textContent = 'Sent — check WhatsApp';
+      if (status) status.textContent = 'Took over 40s. It was likely sent — please check WhatsApp.';
+      toast('⏱ Still sending — check WhatsApp');
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Retry send';
+      if (status) status.textContent = '⚠️ ' + e.message;
+      toast('❌ ' + e.message);
+      _drSending = false;
+      return;
+    }
+  }
+  setTimeout(() => { _drSending = false; }, 60000);   // 锁 60 秒防重复发
+}
 
 async function cloudBackupNow() {
   const url = getGsUrl();
