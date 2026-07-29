@@ -3453,7 +3453,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.77</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.78</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3504,7 +3504,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.77</div>
+      <div class="nav-brand-version">v8.78</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -15588,11 +15588,11 @@ function _buildSettingsModalBody(kind) {
     return `
       <div class="settings-modal-section">
         <div class="dr-to" id="drTo">Sending to 2 WhatsApp numbers</div>
-        <div class="dr-preview" id="drPreview"><div class="dr-loading">Building report… this takes about 30 seconds</div></div>
+        <div class="dr-preview" id="drPreview"><div class="dr-loading">Tap “Build report” to generate today’s numbers.<br>Takes about 30 seconds.</div></div>
       </div>
       <div class="settings-modal-section">
-        <button class="btn btn-primary btn-full" id="drSendBtn" onclick="dailyReportSend()" disabled>Preparing…</button>
-        <div class="dr-status" id="drStatus">Auto-sends every day at 8:44 PM</div>
+        <button class="btn btn-primary btn-full" id="drSendBtn" onclick="dailyReportAction()">Build report</button>
+        <div class="dr-status" id="drStatus">Auto-sends every day at 8:44 PM · building here does not affect it</div>
       </div>
     `;
   }
@@ -15631,7 +15631,8 @@ function _initSettingsModal(kind) {
     setTimeout(() => modalBackupRefreshList(), 100);
   }
   if (kind === 'dailyreport') {
-    setTimeout(() => dailyReportPreview(), 100);   // v8.77: 一开就建报表
+    _drText = ''; _drSnap = null;   // v8.77: 每次开都重来 (不留上次建好的旧数字)
+    _drSending = false;
   }
 }
 
@@ -16298,7 +16299,13 @@ function exportGoogleConversions() {
 //   开弹窗 = 后端建报表 (~30s) → 显示内容 → 你确认 → 只发你看过的那份 (~3s)。
 //   报表文字存在 _drText, 送出时带给后端, 后端不重建 → 总共只等一次。
 let _drText = '';
+let _drSnap = null;   // v8.78: 跟报表文字绑一起, 送达才存进基准线
 let _drSending = false;
+// 一颗按钮两个角色: 还没建 → Build report; 建好了 → Send to WhatsApp
+function dailyReportAction() {
+  if (_drText) dailyReportSend();
+  else dailyReportPreview();
+}
 
 function _drFetch(payload, timeoutMs) {
   const url = getGsUrl();
@@ -16318,15 +16325,17 @@ async function dailyReportPreview() {
   const btn = document.getElementById('drSendBtn');
   const to = document.getElementById('drTo');
   if (!prev || !btn) return;
-  _drText = '';
+  _drText = ''; _drSnap = null;
   btn.disabled = true;
-  btn.textContent = 'Preparing…';
+  btn.textContent = 'Building…';
+  prev.innerHTML = '<div class="dr-loading">Building report… about 30 seconds</div>';
   try {
     // 建报表本身要 ~30s, 给 90s 上限 (超时才算真的卡住)
     const d = await _drFetch({ action: 'previewdailyreport' }, 90000);
     const r = d && d.result;
     if (!d || !d.success || !r || !r.ok || !r.text) throw new Error((r && r.error) || d.error || 'preview failed');
     _drText = r.text;
+    _drSnap = r.snapshot || null;   // v8.78
     prev.innerHTML = `<pre class="dr-pre">${esc(r.text)}</pre>`;
     if (to) to.textContent = `Sending to ${r.recipients} WhatsApp number${r.recipients > 1 ? 's' : ''}`;
     btn.disabled = false;
@@ -16335,8 +16344,7 @@ async function dailyReportPreview() {
     const msg = e.name === 'AbortError' ? 'Timed out building the report (over 90s)' : e.message;
     prev.innerHTML = `<div class="dr-err">⚠️ ${esc(msg)}</div>`;
     btn.disabled = false;
-    btn.textContent = 'Retry';
-    btn.onclick = () => { btn.onclick = dailyReportSend; dailyReportPreview(); };
+    btn.textContent = 'Try again';   // _drText still '' → 按钮回到 build 角色
   }
 }
 
@@ -16350,7 +16358,7 @@ async function dailyReportSend() {
   btn.textContent = 'Sending…';
   try {
     // 只是发已建好的文字, 很快; 40s 上限 (webhook 偶尔会卡)
-    const d = await _drFetch({ action: 'senddailyreport', text: _drText }, 40000);
+    const d = await _drFetch({ action: 'senddailyreport', text: _drText, snapshot: _drSnap }, 40000);
     const r = d && d.result;
     if (r && r.ok) {
       btn.textContent = '✓ Sent';
@@ -16372,7 +16380,7 @@ async function dailyReportSend() {
       toast('⏱ Still sending — check WhatsApp');
     } else {
       btn.disabled = false;
-      btn.textContent = 'Retry send';
+      btn.textContent = 'Retry send';   // _drText 还在 → 按钮维持 send 角色, 不用重建
       if (status) status.textContent = '⚠️ ' + e.message;
       toast('❌ ' + e.message);
       _drSending = false;
