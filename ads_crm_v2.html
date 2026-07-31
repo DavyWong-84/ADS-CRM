@@ -3470,7 +3470,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.83</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.84</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3521,7 +3521,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.83</div>
+      <div class="nav-brand-version">v8.84</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5350,6 +5350,30 @@ function platformColor(id) { const p = getPlatform(id); return (p && p.color) ||
 function platformHasAd(id) { const p = getPlatform(id); return !!(p && p.hasAdSpend); }
 // 有广告费的 platform（Ads Cost 输入页、ROAS/CPL 计算用）
 function adPlatforms() { return activePlatforms().filter(p => p.hasAdSpend); }
+// v8.84: 把 channel.platform 统一成 platform 的 id。
+//   在 Google Sheet 手改过 platform 栏的会填成「名字」（Instagram），而系统各处是拿 id 比对
+//   （c.platform === p.id）。只在 getPlatform 里做名字兜底不够 —— 那些严格比对的地方
+//   （Platforms 页的 channel 计数、setAdsTab 的第二层、tabChannelFilter…）还是会对不上，
+//   症状就是「Channels 页看得到归属，但 Platforms 页显示 0 channels」。
+//   所以在 pull 之后正规化一次，让 state 里永远只有 id。
+// v8.84: 找某个 platform 底下的 channel。走 getPlatform 正规化，所以 channel.platform
+//   存的是 id 还是名字都算得对（正规化跑之前也不会显示成 0 channels）。
+function channelsOfPlatform(pid) {
+  return (state.channels || []).filter(c => {
+    const g = getPlatform(c.platform);
+    return g && g.id === pid;
+  });
+}
+
+function _normalizeChannelPlatforms() {
+  let fixed = 0;
+  (state.channels || []).forEach(c => {
+    const p = getPlatform(c.platform);
+    if (p && c.platform !== p.id) { c.platform = p.id; fixed++; }
+  });
+  return fixed;
+}
+
 // 按当前 platform 清单建统计桶。原本各处写死 { meta:0, google:0, organic:0, followup:0 } —
 //   那个物件同时当「白名单」用（if (bucket[l.platform] !== undefined) 才计数），
 //   所以桶的 key 决定了哪些 platform 会被统计到。改成动态後，新加的 platform 自动进统计。
@@ -5367,7 +5391,8 @@ function tabChannelFilter(tab, ch) {
   if (!ch) return false;
   if (!tab || tab === 'all') return true;
   if (tab === 'ofu') return ch.platform === 'organic' || ch.platform === 'followup';
-  return ch.platform === tab;
+  const _g = getPlatform(ch.platform);   // v8.84: 名字也算得对
+  return !!_g && _g.id === tab;
 }
 function platformBucket(onlyAd) {
   const o = {};
@@ -11408,7 +11433,7 @@ function setAdsTab(tab, subChannel) {
   //   底层筛选 (l.channelId === subCh) 本来就支持任何 platform，这里只是把它开放出来。
   const _tabPf = getPlatform(tab);
   if (_tabPf) {
-    const chs = state.channels.filter(c => c.platform === tab);
+    const chs = channelsOfPlatform(tab);   // v8.84
     subSel.innerHTML = `<option value="all">All ${esc(_tabPf.name)}</option>` +
       chs.map(c => `<option value="${esc(c.id)}" ${state.adsSubChannel === c.id ? 'selected' : ''}>${esc(c.name)}${c.active === false ? ' (inactive)' : ''}</option>`).join('');
     // v3.59: show subSel + sync popover (items + visibility)
@@ -11467,7 +11492,7 @@ function renderAdsSpend() {
     const _syncPf = getPlatform(_stateTab);
     if (_syncPf) {
       // 重建 sub channel options + 设值
-      const chs = state.channels.filter(c => c.platform === _stateTab);
+      const chs = channelsOfPlatform(_stateTab);   // v8.84
       _subSel.innerHTML = `<option value="all">All ${esc(_syncPf.name)}</option>` +
         chs.map(c => `<option value="${esc(c.id)}">${esc(c.name)}${c.active === false ? ' (inactive)' : ''}</option>`).join('');
       _subSel.value = _stateSubCh || 'all';
@@ -15885,8 +15910,9 @@ function _renderModalPlatformsList() {
   target.innerHTML = allPlatforms().map(p => {
     const isActive = p.active !== false;
     const color = p.color || '#9497a9';
-    const n = (state.channels || []).filter(c => c.platform === p.id).length;
-    const names = (state.channels || []).filter(c => c.platform === p.id).map(c => c.name).join(', ');
+    const _chs = channelsOfPlatform(p.id);   // v8.84: 用正规化比对，不再严格比 id
+    const n = _chs.length;
+    const names = _chs.map(c => c.name).join(', ');
     return `<div class="cl-row cfg-row ${isActive ? '' : 'inactive'}">
       <div class="cl-row-left">
         <button type="button" class="cl-color-dot" onclick="openColorPicker(event, 'platform', '${esc(p.id)}')" title="Change color" style="background:${color};"></button>
@@ -15937,7 +15963,7 @@ function _setPlatformAd(id, on) {
 function setPlatformActive(id, active) {
   const p = getPlatform(id); if (!p) return;
   if (!active) {
-    const n = (state.channels || []).filter(c => c.platform === id && c.active !== false).length;
+    const n = channelsOfPlatform(id).filter(c => c.active !== false).length;   // v8.84
     if (n > 0) { toast(`Turn off its ${n} channel${n === 1 ? '' : 's'} first`); return; }
   }
   p.active = active;
@@ -15948,7 +15974,7 @@ function setPlatformActive(id, active) {
 async function deletePlatform(id) {
   const p = getPlatform(id); if (!p) return;
   if (p.builtin) { toast('Built-in platform cannot be deleted — turn it off instead'); return; }
-  const n = (state.channels || []).filter(c => c.platform === id).length;
+  const n = channelsOfPlatform(id).length;   // v8.84
   if (n > 0) { toast(`Cannot delete — ${n} channel${n === 1 ? '' : 's'} still using it`); return; }
   if (!await showConfirm(`Delete platform "${p.name}"?`, { title: 'Delete platform', okText: 'Delete', danger: true })) return;
   state.platforms = allPlatforms().filter(x => x.id !== id);
@@ -17771,6 +17797,8 @@ async function _gsPullSilentInner(isRetry) {
     } else if (normalizedPlatforms !== null && (state.platforms || []).length > 0) {
       skipped.push('platforms');
     }
+    // v8.84: platform 载入後，把 channel.platform 里手填的名字统一转成 id
+    if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig();
     // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
     if (!state.pnl) state.pnl = { rows: [], staff: [], config: [], employees: [], empSalary: [], empV: 0, stockCost: [] };
     if (pnlRows !== null && pnlRows !== undefined)   state.pnl.rows   = pnlRows;
@@ -17954,6 +17982,8 @@ async function gsPull() {
     } else if (normalizedPlatforms !== null) {
       skipped.push('platforms');
     }
+    // v8.84: 同上 — 手填的名字转成 id，转过就推回 Sheet
+    if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig();
     // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
     if (!state.pnl) state.pnl = { rows: [], staff: [], config: [], employees: [], empSalary: [], empV: 0, stockCost: [] };
     if (pnlRows !== null && pnlRows !== undefined)   state.pnl.rows   = pnlRows;
