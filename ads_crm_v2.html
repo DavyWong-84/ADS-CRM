@@ -3004,6 +3004,23 @@ body.contact-view-table .modal-backdrop.open {
 .settings-row-sublabel { font-size: 12px; color: var(--silver); margin-top: 2px; }
 .settings-row-value { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray); }
 .settings-row-chevron { color: var(--silver); font-size: 14px; line-height: 1; }
+/* ══ v8.82: Settings → Platforms ══ */
+.pf-pill { display: inline-block; font-size: 9.5px; font-weight: 600; letter-spacing: 0.3px;
+           padding: 2px 6px; border-radius: 20px; margin-left: 5px; vertical-align: 1px; }
+.pf-ad { background: rgba(220,38,38,0.10); color: #DC2626; }
+.pf-free { background: rgba(16,185,129,0.10); color: #059669; }
+.pf-lock { background: var(--surface-2); color: var(--silver); }
+.pf-chk { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--black);
+          cursor: pointer; padding: 6px 0; user-select: none; }
+.pf-chk input { width: 15px; height: 15px; accent-color: var(--purple); cursor: pointer; flex-shrink: 0; }
+.pf-del { font-size: 11px; color: var(--red); background: none; border: 1px solid var(--red-subtle);
+          border-radius: 6px; padding: 6px 10px; cursor: pointer; font-family: inherit; }
+.pf-del:hover { background: var(--red-subtle); }
+.pf-prev { display: flex; align-items: center; gap: 8px; padding: 9px 11px; background: var(--surface);
+           border: 1px dashed var(--border); border-radius: 8px; font-size: 12.5px; flex-wrap: wrap; }
+.pf-prev-note { font-size: 11px; color: var(--silver); line-height: 1.45; }
+.cl-row-name .chip-logo, .cl-row-name .chip-initial { vertical-align: -2px; margin-right: 4px; }
+
 /* ══ v8.77: Daily report modal ══ */
 .dr-to { font-size: 12.5px; color: var(--gray); margin-bottom: 10px; }
 .dr-preview { background: var(--surface-2); border-radius: 9px; padding: 12px 13px; max-height: 260px; overflow-y: auto; }
@@ -3453,7 +3470,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.81</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.82</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3504,7 +3521,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.81</div>
+      <div class="nav-brand-version">v8.82</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3845,12 +3862,7 @@ body.contact-view-table .modal-backdrop.open {
         <span id="popWrap_popSel_storeChannelSelect" data-pop-wrap-for="storeChannelSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_storeChannelSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_storeChannelSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">A</span><span>All channels</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="storeChannelSelect" data-pop="1" data-pop-icon="channel" class="cf-select" data-pop-placeholder="All channels" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_storeChannelSelect" style="display: none;">
-          <option value="all">All channels</option>
-          <option value="meta">Meta</option>
-          <option value="google">Google</option>
-          <option value="ofu">Organic+FU</option>
-        </select>
+  </button></span><select id="storeChannelSelect" data-pop="1" data-pop-icon="channel" class="cf-select" data-pop-placeholder="All channels" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_storeChannelSelect" style="display: none;"><option value="all">All channels</option><option value="meta">Meta</option><option value="google">Google</option><option value="organic">Organic</option><option value="followup">Follow Up</option></select>
       </div>
       <!-- v3.61: Pill tabs inside header — flows with topbar white area -->
       <div class="pill-tabs-inheader">
@@ -3877,12 +3889,7 @@ body.contact-view-table .modal-backdrop.open {
         <span id="popWrap_popSel_adsPlatformSelect" data-pop-wrap-for="adsPlatformSelect" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_adsPlatformSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_adsPlatformSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">A</span><span>All channels</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="adsPlatformSelect" data-pop="1" data-pop-icon="channel" class="cf-select" onchange="setAdsTab(this.value)" data-pop-placeholder="All" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_adsPlatformSelect" style="display: none;">
-          <option value="all">All channels</option>
-          <option value="meta">Meta</option>
-          <option value="google">Google</option>
-          <option value="ofu">Organic+FU</option>
-        </select>
+  </button></span><select id="adsPlatformSelect" data-pop="1" data-pop-icon="channel" class="cf-select" onchange="setAdsTab(this.value)" data-pop-placeholder="All" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_adsPlatformSelect" style="display: none;"><option value="all">All channels</option><option value="meta">Meta</option><option value="google">Google</option><option value="organic">Organic</option><option value="followup">Follow Up</option></select>
         <span id="popWrap_popSel_adsSubSelect" data-pop-wrap-for="adsSubSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_adsSubSelect" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_adsSubSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>All</span></span>
     <span class="pop-trigger-chevron">▾</span>
@@ -4195,6 +4202,14 @@ body.contact-view-table .modal-backdrop.open {
           <div class="settings-group">
             <div class="settings-group-title">Workspace</div>
             <div class="settings-group-card">
+              <!-- v8.82: Platforms 放 Channels 上面 (channel 要先有 platform 才能挂) -->
+              <div class="settings-row" onclick="openSettingsModal('platforms')">
+                <div>
+                  <div class="settings-row-label">Platforms</div>
+                  <div class="settings-row-sublabel" id="settingsPlatformStatus_m">4 active</div>
+                </div>
+                <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
+              </div>
               <div class="settings-row" onclick="openSettingsModal('channels')">
                 <div><div class="settings-row-label">Channels</div></div>
                 <div class="settings-row-value">
@@ -4312,6 +4327,11 @@ body.contact-view-table .modal-backdrop.open {
         <div class="settings-group">
           <div class="settings-group-title">Workspace</div>
           <div class="settings-group-card">
+            <!-- v8.82 -->
+            <div class="settings-md-nav-row" data-section="platforms" onclick="selectSettingsSection('platforms')">
+              <span>Platforms</span>
+              <span class="settings-md-nav-meta" id="settingsPlatformStatus">4 active</span>
+            </div>
             <div class="settings-md-nav-row" data-section="channels" onclick="selectSettingsSection('channels')">
               <span>Channels</span>
               <span class="settings-md-nav-meta" id="settingsChannelStatus">4 active</span>
@@ -4477,13 +4497,7 @@ body.contact-view-table .modal-backdrop.open {
            HTML 规范会让它变成空字符串 → 每个新增 channel 的 platform 都存成 ''。
            症状: Settings 显示 "?"、Ads 筛选/Ads Cost/日报全都找不到该 channel。
            选项必须跟 openPlatformPicker 那份保持一致。 -->
-      <select id="ch_platform">
-        <option value="meta">Meta</option>
-        <option value="google">Google</option>
-        <option value="organic">Organic</option>
-        <option value="followup">Follow Up</option>
-        <option value="other">Other</option>
-      </select>
+      <select id="ch_platform"><option value="meta">Meta</option><option value="google">Google</option><option value="organic">Organic</option><option value="followup">Follow Up</option></select>
       <input type="month" id="ch_added">
       <div id="locationsList"><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--border-light);font-size:14px;">
       <div style="display:flex;align-items:center;gap:10px;">
@@ -5287,6 +5301,68 @@ const STORAGE_KEY = 'ads-crm-v2';
 const DATA_VERSION = '4.79'; // v7.25 — 门店盈亏表(P&L, 配后端 v3.15): 每店分层盈亏表(营业额→毛利→费用→净利), auto 行前端现算, 费用行可改名/增删/拖动/选类型, 时段+RM/% 切换, Manpower modal(EPF/SOCSO 自填). | v7.24 — 门店/渠道可配置 UI(配后端 v3.14): Stores/Channels 设置每行加 GHL keyword + 33CRM code 输入 + Save(确认 modal)+ 提示; pull 带回 Channels/Locations, push 合并写(不洗手填值). 加新店/渠道在界面填两栏即可, 不碰 Sheet. | v7.23 — 新 lead 自动入库(后端 v3.13): 全新电话+渠道清楚的 ghl_lead 直接进 Leads(flags='auto'), 前端显示 AUTO 标签 + "当天自动加入"计数; 疑似重复(电话已存在)留 Pending | v7.22 — gsPullSilent 加"变化检测"短路 (治刷新卡顿) | v7.21 Google 导出同意列
 
 // ---------- State ----------
+// ══ v8.82: Platforms 可配置 ═══════════════════════════════════════════════
+// platform 从写死变成读 Sheet 的 Platforms 表（后端 v3.39+ 会自动建表）。
+// 这份 DEFAULT 是 fallback —— 只有在还没 pull 过 / 表读不到时才用。
+// ⚠️ id 必须跟后端 PLATFORMS_SEED 完全一致：Leads.platform 和 AdsSpend.platform
+//    里存的就是这些字串，改 id 会让历史数据失去归属。
+const DEFAULT_PLATFORMS = [
+  { id: 'meta',     name: 'Meta',      hasAdSpend: true,  color: '#1877F2', builtin: true, active: true },
+  { id: 'google',   name: 'Google',    hasAdSpend: true,  color: '#CA8A04', builtin: true, active: true },
+  { id: 'organic',  name: 'Organic',   hasAdSpend: false, color: '#10B981', builtin: true, active: true },
+  { id: 'followup', name: 'Follow Up', hasAdSpend: false, color: '#F59E0B', builtin: true, active: true },
+];
+// Sheet 回来的 bool 可能是 true / 'TRUE' / 1 — 统一判断
+function _pBool(v) {
+  if (v === true || v === 1) return true;
+  const s = String(v).trim().toLowerCase();
+  return s === 'true' || s === 'yes' || s === '1';
+}
+// 色码清洗：旧数据出现过 'var(--followup-color)' 这种 CSS 变量被误存进 Sheet
+function _pColor(v) {
+  const s = String(v || '').trim();
+  return /^#[0-9a-fA-F]{3,8}$/.test(s) ? s : '';
+}
+// 全部 platform（含停用的）— 管理页用
+function allPlatforms() {
+  return (state.platforms && state.platforms.length) ? state.platforms : DEFAULT_PLATFORMS;
+}
+// 只要 active 的 — 下拉、报表、统计都用这个。永远不会回传空阵列。
+function activePlatforms() {
+  const list = allPlatforms().filter(p => p.active !== false);
+  return list.length ? list : DEFAULT_PLATFORMS;
+}
+function getPlatform(id) { return allPlatforms().find(p => p.id === id) || null; }
+function platformName(id) { const p = getPlatform(id); return p ? p.name : (id || '?'); }
+function platformColor(id) { const p = getPlatform(id); return (p && p.color) || '#9497a9'; }
+function platformHasAd(id) { const p = getPlatform(id); return !!(p && p.hasAdSpend); }
+// 有广告费的 platform（Ads Cost 输入页、ROAS/CPL 计算用）
+function adPlatforms() { return activePlatforms().filter(p => p.hasAdSpend); }
+// 按当前 platform 清单建统计桶。原本各处写死 { meta:0, google:0, organic:0, followup:0 } —
+//   那个物件同时当「白名单」用（if (bucket[l.platform] !== undefined) 才计数），
+//   所以桶的 key 决定了哪些 platform 会被统计到。改成动态後，新加的 platform 自动进统计。
+//   onlyAd=true → 只建有广告费的（广告花费桶用）。
+// v8.82: Ads 页那 20 处 `tab === 'ofu'` 判断，语义其实都是「这个 tab 没有广告费，
+//   所以成本 / CPL / ROAS 那些东西没意义，不要显示」。现在改成查 platform 的 hasAdSpend。
+//   tab='all' 一律回 true（汇总视图有总广告费）。'ofu' 是旧值，保留兼容。
+function tabHasAdSpend(tab) {
+  if (!tab || tab === 'all') return true;
+  if (tab === 'ofu') return false;
+  return platformHasAd(tab);
+}
+// tab 对应的 channel 过滤器：'all' → 全部有广告费的；'ofu' → 旧的两个；否则 → 该 platform 的
+function tabChannelFilter(tab, ch) {
+  if (!ch) return false;
+  if (!tab || tab === 'all') return true;
+  if (tab === 'ofu') return ch.platform === 'organic' || ch.platform === 'followup';
+  return ch.platform === tab;
+}
+function platformBucket(onlyAd) {
+  const o = {};
+  (onlyAd ? adPlatforms() : activePlatforms()).forEach(p => { o[p.id] = 0; });
+  return o;
+}
+
 let state = {
   version: DATA_VERSION,
   leads: [],
@@ -5295,6 +5371,7 @@ let state = {
   thirdPartyFees: [],
   channels: [],
   locations: [],
+  platforms: [],   // v8.82: 从 Sheet 的 Platforms 表来，空阵列时 fallback 到 DEFAULT_PLATFORMS
   pnl: { rows: [], staff: [], config: [], seedV: {}, employees: [], empSalary: [], empV: 0 }, // v7.25: 门店盈亏表 P&L
   sheetUrl: '',
   listPage: 1,
@@ -5367,6 +5444,8 @@ function loadState() {
   state.thirdPartyFees = PRELOADED.thirdPartyFees || [];
   state.channels = PRELOADED.channels || [];
   state.locations = PRELOADED.locations || [];
+  // v8.82: 还没 pull 过时先用内建 4 个，pull 回来会被 Sheet 的 Platforms 表覆盖
+  state.platforms = PRELOADED.platforms || DEFAULT_PLATFORMS.map(p => ({ ...p }));
   // Use per-store revenue data if available
   state.revenue = [];
   if (PRELOADED.revenuePerStore) {
@@ -6340,7 +6419,7 @@ const ChartJS = {
 
 function renderCostChart(mArr, monthData, tab, fullData) {
   if (!document.getElementById('chart_cost')) return;
-  if (tab === 'ofu') { document.getElementById('chart_cost').innerHTML = ''; return; }
+  if (!tabHasAdSpend(tab)) { document.getElementById('chart_cost').innerHTML = ''; return; }   // v8.82
   const labels = mArr.map(m => fmt.monthShort(m));
   let series;
   if (tab === 'all') {
@@ -6372,16 +6451,18 @@ function renderRoasChart(mArr, tab, monthData, fullData) {
   // Sales chart (v3.70: changed from bars to lines for better trend visibility)
   if (document.getElementById('chart_sales')) {
     let salesSeries;
-    if (tab === 'ofu') {
-      salesSeries = [{ label:'Sales', color:AdsChart.C.green, type:'line', data: monthData.map(d => d.spend) }];
-    } else if (tab === 'all') {
-      salesSeries = [
-        { label:'Meta Sales',   color:AdsChart.C.meta,   type:'line', data: fullData.map(d => d.spendByPlatform.meta) },
-        { label:'Google Sales', color:AdsChart.C.google, type:'line', data: fullData.map(d => d.spendByPlatform.google) },
-        { label:'Organic+FU',   color:AdsChart.C.green,  type:'line', data: fullData.map(d => (d.spendByPlatform.organic||0)+(d.spendByPlatform.followup||0)) },
-      ];
+    if (tab === 'all') {
+      // v8.82: 每个 active platform 一条线，颜色用它自己设的。
+      //   原本写死三条（Meta / Google / Organic+FU）—— Organic 和 Follow Up 被合并成一条
+      //   （Davy 要拆开），而且自订 platform 永远画不出来。
+      salesSeries = activePlatforms().map(p => ({
+        label: p.name + ' Sales',
+        color: p.color || AdsChart.C.green,
+        type: 'line',
+        data: fullData.map(d => (d.spendByPlatform || {})[p.id] || 0)
+      }));
     } else {
-      salesSeries = [{ label:'Sales', color:AdsChart.C.green, type:'line', data: monthData.map(d => d.spend) }];
+      salesSeries = [{ label:'Sales', color: (tab === 'ofu' ? AdsChart.C.green : (platformColor(tab) || AdsChart.C.green)), type:'line', data: monthData.map(d => d.spend) }];
     }
     // v6.26: chart_sales 用 Vercel Analytics 渐变风格
     const salesCfg = { title: 'Sales by Month', labels, series: salesSeries, yFmt: yFmtMoney, fillStyle: 'gradient' };
@@ -6391,16 +6472,20 @@ function renderRoasChart(mArr, tab, monthData, fullData) {
 
   // ROAS chart (lines only, no bars)
   if (document.getElementById('chart_roas')) {
-    if (tab === 'ofu') {
+    if (!tabHasAdSpend(tab)) {   // v8.82: 没广告费的 platform 不画 ROAS（原本只挡 ofu）
       document.getElementById('chart_roas').innerHTML = '';
     } else {
       let roasSeries;
       if (tab === 'all') {
-        roasSeries = [
-          { label:'Meta ROAS',   color:AdsChart.C.meta,   type:'line', data: fullData.map(d => d.metaROAS) },
-          { label:'Google ROAS', color:AdsChart.C.orange, type:'line', data: fullData.map(d => d.googleROAS) },
+        // v8.82: 每个「有广告费」的 platform 一条线 + Total，动态
+        roasSeries = adPlatforms().map(p => ({
+          label: p.name + ' ROAS',
+          color: p.color || AdsChart.C.meta,
+          type: 'line',
+          data: fullData.map(d => { const r = (d.roasByPlatform || {})[p.id]; return r === undefined ? null : r; })
+        })).concat([
           { label:'Total ROAS',  color:AdsChart.C.purple, type:'line', data: fullData.map(d => d.totalROAS) },
-        ];
+        ]);
       } else {
         roasSeries = [
           { label:'ROAS', color:AdsChart.C.orange, type:'line', data: monthData.map(d => d.cost>0?d.spend/d.cost:null) },
@@ -6488,7 +6573,7 @@ function _renderFunnelHorizontal(elId, leads, appts, shows) {
 
 function renderCplChart(mArr, monthData, tab, fullData) {
   if (!document.getElementById('chart_cpl')) return;
-  if (tab === 'ofu') { document.getElementById('chart_cpl').innerHTML = ''; return; }
+  if (!tabHasAdSpend(tab)) { document.getElementById('chart_cpl').innerHTML = ''; return; }   // v8.82
   const labels = mArr.map(m => fmt.monthShort(m));
   let series;
   if (tab === 'all') {
@@ -6525,7 +6610,7 @@ function renderCplChart(mArr, monthData, tab, fullData) {
 function renderAvgDayChart(mArr, tab, fullData, monthData) {
   const el = document.getElementById('chart_avgday');
   if (!el) return;
-  if (tab === 'ofu') { el.innerHTML = ''; return; }
+  if (!tabHasAdSpend(tab)) { el.innerHTML = ''; return; }   // v8.82
   const labels = mArr.map(m => fmt.monthShort(m));
   const curY = new Date().getFullYear();
   const curM = new Date().getMonth() + 1;
@@ -6559,7 +6644,7 @@ function renderAvgDayChart(mArr, tab, fullData, monthData) {
 function renderCplTotalChart(mArr, tab, fullData, monthData) {
   const el = document.getElementById('chart_cpl_total');
   if (!el) return;
-  if (tab === 'ofu') { el.innerHTML = ''; return; }
+  if (!tabHasAdSpend(tab)) { el.innerHTML = ''; return; }   // v8.82
   const labels = mArr.map(m => fmt.monthShort(m));
   let series;
   if (tab === 'all') {
@@ -6709,9 +6794,11 @@ function renderFunnelTab() {
   }
 
   // Platform filter for this tab
-  const platFilter = tab === 'meta' ? ['meta'] : tab === 'google' ? ['google'] : tab === 'ofu' ? ['organic', 'followup'] : null;
-  // Channel filter for sub-channel display (only when meta + no subCh)
-  const tabChannels = (tab === 'meta' && !subCh) ? state.channels.filter(c => c.platform === 'meta') : null;
+  // v8.82: tab 现在直接就是 platform id（'all' 除外）。
+  //   'ofu' 是旧的合并值（Organic+FU），保留兼容以防哪里还存着它。
+  const platFilter = (!tab || tab === 'all') ? null : (tab === 'ofu' ? ['organic', 'followup'] : [tab]);
+  // Channel filter for sub-channel display（以前只有 meta 有，现在每个 platform 都有）
+  const tabChannels = (platFilter && tab !== 'ofu' && !subCh) ? state.channels.filter(c => c.platform === tab) : null;
 
   // Compute per-month metrics filtered by tab + subCh + outlet
   const monthData = mArr.map(m => {
@@ -6756,15 +6843,16 @@ function renderFunnelTab() {
     // tab=all 没 platFilter 时, 模拟 calcMonthMetrics 返回的额外字段 (leadsByPlatform 等),
     // 这样后面的 fullData 用 monthData 时不会缺字段
     if (!platFilter) {
-      const leadsByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
+      // v8.82: 桶改成按 platform 清单动态建（原本写死 4 个 key，新 platform 会被漏统计）
+      const leadsByPlatform = platformBucket();
       byLead.forEach(l => { if (leadsByPlatform[l.platform] !== undefined) leadsByPlatform[l.platform]++; });
-      const apptsByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
+      const apptsByPlatform = platformBucket();
       byAppt.forEach(l => { if (apptsByPlatform[l.platform] !== undefined) apptsByPlatform[l.platform]++; });
-      const showsByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
+      const showsByPlatform = platformBucket();
       shows.forEach(l => { if (showsByPlatform[l.platform] !== undefined) showsByPlatform[l.platform]++; });
-      const spendByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
+      const spendByPlatform = platformBucket();
       shows.forEach(l => { if (l.spend && spendByPlatform[l.platform] !== undefined) spendByPlatform[l.platform] += l.spend; });
-      const costByPlatform = { meta: 0, google: 0 };
+      const costByPlatform = platformBucket(true);   // 只有「有广告费」的 platform
       let totalAdsCost = 0;
       state.adsSpend.filter(a => a.month === m).forEach(a => {
         const ch = getChannel(a.channelId);
@@ -6772,15 +6860,21 @@ function renderFunnelTab() {
         if (costByPlatform[ch.platform] !== undefined) costByPlatform[ch.platform] += a.amount;
         totalAdsCost += a.amount;
       });
-      const totalCustomerSpend = spendByPlatform.meta + spendByPlatform.google + spendByPlatform.organic + spendByPlatform.followup;
-      const metaROAS = costByPlatform.meta > 0 ? spendByPlatform.meta / costByPlatform.meta : null;
-      const googleROAS = costByPlatform.google > 0 ? spendByPlatform.google / costByPlatform.google : null;
+      const totalCustomerSpend = Object.values(spendByPlatform).reduce((s, v) => s + (v || 0), 0);
+      // 每个有广告费的 platform 各自的 ROAS（新 platform 自动有）
+      const roasByPlatform = {};
+      Object.keys(costByPlatform).forEach(pid => {
+        roasByPlatform[pid] = costByPlatform[pid] > 0 ? (spendByPlatform[pid] || 0) / costByPlatform[pid] : null;
+      });
+      // metaROAS / googleROAS 保留成别名 —— 旧的表格和图表还在读这两个名字
+      const metaROAS = roasByPlatform.meta !== undefined ? roasByPlatform.meta : null;
+      const googleROAS = roasByPlatform.google !== undefined ? roasByPlatform.google : null;
       const totalROAS = totalAdsCost > 0 ? totalCustomerSpend / totalAdsCost : null;
       return {
         month: m, totalLeads: byLead.length, appts: byAppt.length, showUps: shows.length, noShows: noshows.length,
-        leadsByPlatform, leadsByPlatformByLead: leadsByPlatform, apptsByPlatform, showsByPlatform, noShowsByPlatform: { meta:0, google:0, organic:0, followup:0 },
+        leadsByPlatform, leadsByPlatformByLead: leadsByPlatform, apptsByPlatform, showsByPlatform, noShowsByPlatform: platformBucket(),
         spendByPlatform, totalCustomerSpend, costByPlatform, totalAdsCost,
-        metaROAS, googleROAS, totalROAS, byChannel
+        roasByPlatform, metaROAS, googleROAS, totalROAS, byChannel
       };
     }
     return { month: m, totalLeads: byLead.length, appts: byAppt.length, showUps: shows.length, noShows: noshows.length, cost, spend, byChannel };
@@ -6812,7 +6906,7 @@ function renderFunnelTab() {
   };
 
   const fmtMonthShort = m => fmt.monthShort(m);
-  if (tab === 'ofu') {
+  if (!tabHasAdSpend(tab)) {   // v8.82: 没广告费的 platform 用简版 sales 表
     document.getElementById('salesWrap').innerHTML = buildResponsiveTable(
       'Sales (by Appt Date)', srH4,
       [{ label:'Sales', values:monthData.map(d => d.spend), formatter:fmt.money }],
@@ -6964,8 +7058,8 @@ function renderFunnelTab() {
   // --- Efficiency table (CPL/CPA/CPS) ---
   const cplH4 = 'font-size:12px;color:var(--purple-deep);font-weight:700;text-transform:uppercase;letter-spacing:0.4px;margin:14px 0 6px;';
   const fmtAvg = v => v != null ? fmt.money(v) : '—';
-  if (tab === 'ofu') {
-    const noData = '<div style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">No ads cost for Organic+FU</div>';
+  if (!tabHasAdSpend(tab)) {   // v8.82
+    const noData = '<div style="text-align:center;padding:20px;color:var(--gray);font-size:13px;">No ads cost for this platform</div>';
     document.getElementById('cplTableWrap').innerHTML = noData;
     document.getElementById('cpaTableWrap').innerHTML = noData;
     document.getElementById('cpsTableWrap').innerHTML = noData;
@@ -6995,7 +7089,7 @@ function renderFunnelTab() {
         l.leadDate && l.leadDate.startsWith(m) && l.status === 'done' && matchOutlet(l)
       ).length);
       apptsByPlatformByMonth = mArr.map(m => {
-        const o = { meta: 0, google: 0, organic: 0, followup: 0 };
+        const o = platformBucket();   // v8.82
         state.leads.forEach(l => {
           if (!l.leadDate || !l.leadDate.startsWith(m)) return;
           if (!matchOutlet(l)) return;
@@ -7005,7 +7099,7 @@ function renderFunnelTab() {
         return o;
       });
       showsByPlatformByMonth = mArr.map(m => {
-        const o = { meta: 0, google: 0, organic: 0, followup: 0 };
+        const o = platformBucket();   // v8.82
         state.leads.forEach(l => {
           if (!l.leadDate || !l.leadDate.startsWith(m)) return;
           if (!matchOutlet(l)) return;
@@ -7018,7 +7112,7 @@ function renderFunnelTab() {
       apptsByMonth = fullData.map(m => m.appts);
       showsByMonth = fullData.map(m => m.showUps);
       apptsByPlatformByMonth = fullData.map(m => m.apptsByPlatform);
-      showsByPlatformByMonth = fullData.map(m => m.showsByPlatform || { meta: 0, google: 0 });
+      showsByPlatformByMonth = fullData.map(m => m.showsByPlatform || platformBucket());   // v8.82
     }
     const tAppts = apptsByMonth.reduce((s,v) => s+v, 0);
     const tMetaAppts = apptsByPlatformByMonth.reduce((s,o) => s + (o.meta||0), 0);
@@ -7146,6 +7240,36 @@ function getLocation(id) { return state.locations.find(l => l.id === id); }
 // ---------- Populate selects ----------
 function refreshSelects() {
   populateRevOutletSelect();
+  // v8.82: Ads 页第一层下拉动态填充。
+  //   原本写死 All / Meta / Google / Organic+FU —— Organic 和 Follow Up 被合并成一格（Davy 要拆开），
+  //   而且自订 platform 永远不会出现。现在改成列出所有 active platform。
+  const _adsPlatSel = document.getElementById('adsPlatformSelect');
+  if (_adsPlatSel) {
+    const _acts = activePlatforms();
+    const _cur = _adsPlatSel.value || state.adsTab || 'all';
+    _adsPlatSel.innerHTML = '<option value="all">All channels</option>' +
+      _acts.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+    // 旧值（例如已废弃的 'ofu'）不在清单里就退回 all，否则 select 会显示空白
+    _adsPlatSel.value = (_cur === 'all' || _acts.some(p => p.id === _cur)) ? _cur : 'all';
+    if (typeof refreshSelectPopover === 'function') refreshSelectPopover(_adsPlatSel);
+  }
+  // v8.82: Appt 页 channel filter 同样动态（原本也是写死 Meta/Google/Organic+FU）
+  const _stCh = document.getElementById('storeChannelSelect');
+  if (_stCh) {
+    const _acts2 = activePlatforms();
+    const _cur2 = _stCh.value || state.storeChannelFilter || 'all';
+    _stCh.innerHTML = '<option value="all">All channels</option>' +
+      _acts2.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+    _stCh.value = (_cur2 === 'all' || _acts2.some(p => p.id === _cur2)) ? _cur2 : 'all';
+    if (typeof refreshSelectPopover === 'function') refreshSelectPopover(_stCh);
+  }
+  // v8.82: legacy ch_platform 的 option 改成动态（v8.80 写死 5 个已不适用 —— 自订 platform 没写死）
+  const _chPlat = document.getElementById('ch_platform');
+  if (_chPlat) {
+    const _cur = _chPlat.value;
+    _chPlat.innerHTML = activePlatforms().map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+    if (_cur && activePlatforms().some(p => p.id === _cur)) _chPlat.value = _cur;
+  }
   const chSel = document.getElementById('f_channel');
   // Only show ACTIVE channels in Lead entry page
   const activeChannels = state.channels.filter(c => c.active !== false);
@@ -7158,8 +7282,9 @@ function refreshSelects() {
   // Data Entry: Ads Cost channel dropdown (Meta/Google, both active + inactive with marker)
   const asCh = document.getElementById('as_entryChannel');
   if (asCh) {
-    // Include ALL Meta/Google channels (active + inactive) so historical data stays editable
-    const adCh = state.channels.filter(c => c.platform === 'meta' || c.platform === 'google');
+    // Include ALL channels whose platform has ad spend (active + inactive) so historical data stays editable
+    // v8.82: 从写死 meta/google 改成查 platform 的 hasAdSpend — 新加的广告平台自动能填钱
+    const adCh = state.channels.filter(c => platformHasAd(c.platform));
     const curVal = asCh.value;
     asCh.innerHTML = (adCh.length === 0 ? '<option value=""></option>' :
       adCh.map(c => {
@@ -9654,7 +9779,9 @@ function calcMonthMetrics(month) {
   const byApptDate = getLeadsInMonth(month, 'apptDate');
 
   // Leads (count by lead date)
-  const leadsByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
+  // v8.82: 以下所有 byPlatform 桶改成 platformBucket() 动态建 —
+  //   桶的 key 同时当白名单用，写死 4 个的话新 platform 的数字会被默默丢掉。
+  const leadsByPlatform = platformBucket();
   byLeadDate.forEach(l => { if (leadsByPlatform[l.platform] !== undefined) leadsByPlatform[l.platform]++; });
   const totalLeads = byLeadDate.length;
 
@@ -9663,24 +9790,24 @@ function calcMonthMetrics(month) {
   const showUps = appts.filter(l => l.status === 'done');
   const noShows = appts.filter(l => l.status === 'noshow');
 
-  const apptsByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
-  const showsByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
-  const noShowsByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
+  const apptsByPlatform = platformBucket();
+  const showsByPlatform = platformBucket();
+  const noShowsByPlatform = platformBucket();
   appts.forEach(l => { if (apptsByPlatform[l.platform] !== undefined) apptsByPlatform[l.platform]++; });
   showUps.forEach(l => { if (showsByPlatform[l.platform] !== undefined) showsByPlatform[l.platform]++; });
   noShows.forEach(l => { if (noShowsByPlatform[l.platform] !== undefined) noShowsByPlatform[l.platform]++; });
 
   // Customer spend (by appt date)
-  const spendByPlatform = { meta: 0, google: 0, organic: 0, followup: 0 };
+  const spendByPlatform = platformBucket();
   appts.forEach(l => { if (l.spend && spendByPlatform[l.platform] !== undefined) spendByPlatform[l.platform] += l.spend; });
-  const totalCustomerSpend = spendByPlatform.meta + spendByPlatform.google + spendByPlatform.organic + spendByPlatform.followup;
+  const totalCustomerSpend = Object.values(spendByPlatform).reduce((s, v) => s + (v || 0), 0);
 
   // Leads count by platform for lead date (for CPL)
-  const leadsByPlatformByLead = { meta: 0, google: 0, organic: 0, followup: 0 };
+  const leadsByPlatformByLead = platformBucket();
   byLeadDate.forEach(l => { if (leadsByPlatformByLead[l.platform] !== undefined) leadsByPlatformByLead[l.platform]++; });
 
   // Ads cost — sum ALL channels so new ones are auto-included
-  const costByPlatform = { meta: 0, google: 0 };
+  const costByPlatform = platformBucket(true);   // v8.82: 只有「有广告费」的 platform
   let totalAdsCost = 0;
   state.adsSpend.filter(a => a.month === month).forEach(a => {
     const ch = getChannel(a.channelId);
@@ -9691,12 +9818,18 @@ function calcMonthMetrics(month) {
   });
 
   // ROAS
-  const metaSales = spendByPlatform.meta;
-  const googleSales = spendByPlatform.google;
-  const organicFUSales = spendByPlatform.organic + spendByPlatform.followup;
-  const metaROAS = costByPlatform.meta > 0 ? metaSales / costByPlatform.meta : null;
-  const googleROAS = costByPlatform.google > 0 ? googleSales / costByPlatform.google : null;
-  const totalROAS = totalAdsCost > 0 ? (metaSales + googleSales + organicFUSales) / totalAdsCost : null;
+  // v8.82: 改成每个「有广告费」的 platform 各自算一份，新 platform 自动有。
+  //   metaROAS / googleROAS 保留成别名 —— 旧的表格和图表还在读这两个名字。
+  const roasByPlatform = {};
+  Object.keys(costByPlatform).forEach(pid => {
+    roasByPlatform[pid] = costByPlatform[pid] > 0 ? (spendByPlatform[pid] || 0) / costByPlatform[pid] : null;
+  });
+  const metaSales = spendByPlatform.meta || 0;
+  const googleSales = spendByPlatform.google || 0;
+  const metaROAS = roasByPlatform.meta !== undefined ? roasByPlatform.meta : null;
+  const googleROAS = roasByPlatform.google !== undefined ? roasByPlatform.google : null;
+  // 分母是全部广告费，分子是全部成交（含没广告费的 platform）— 口径同日报，不变
+  const totalROAS = totalAdsCost > 0 ? totalCustomerSpend / totalAdsCost : null;
 
   // 3rd party fees
   const fees = state.thirdPartyFees.filter(f => f.month === month);
@@ -9748,8 +9881,10 @@ function calcMonthMetrics(month) {
     noShows: noShows.length, noShowsByPlatform,
     spendByPlatform, totalCustomerSpend,
     costByPlatform, totalAdsCost,
-    metaROAS, googleROAS, totalROAS,
-    metaSales, googleSales, totalAdsSales: metaSales + googleSales + organicFUSales,
+    roasByPlatform, metaROAS, googleROAS, totalROAS,   // v8.82: roasByPlatform = 每个有广告费的 platform 各自的
+    // v8.82: totalAdsSales 原本是 meta+google+organic+followup 手动相加（写死 4 个）；
+    //   totalCustomerSpend 就是「全部 platform 的成交额」，数值完全相同但新 platform 自动纳入。
+    metaSales, googleSales, totalAdsSales: totalCustomerSpend,
     fees, totalFees,
     revenue: { total: totalRev, new: newRev, old: oldRev },
     daysInMonth, effectiveDays,
@@ -10376,9 +10511,9 @@ function calcStoreMetrics(storeId, period, channelFilter) {
   const isMonth = period.length === 7;
   const matchChannel = (l) => {
     if (cf === 'all') return true;
-    if (cf === 'meta')   return l.platform === 'meta';
-    if (cf === 'google') return l.platform === 'google';
-    if (cf === 'ofu')    return l.platform === 'organic' || l.platform === 'followup';
+    // v8.82: cf 可能是 platform id（动态清单）或 channel id
+    if (cf === 'ofu') return l.platform === 'organic' || l.platform === 'followup';   // 旧值兼容
+    if (getPlatform(cf)) return l.platform === cf;
     return l.channelId === cf;
   };
   const leadsInPeriod = state.leads.filter(l => {
@@ -10527,9 +10662,9 @@ function renderStore() {
   const cf = state.storeChannelFilter || 'all';
   if (cf !== 'all') {
     const _matchCh = (l) => {
-      if (cf === 'meta')   return l.platform === 'meta';
-      if (cf === 'google') return l.platform === 'google';
-      if (cf === 'ofu')    return l.platform === 'organic' || l.platform === 'followup';
+      // v8.82: cf 可能是 platform id 或 channel id
+      if (cf === 'ofu') return l.platform === 'organic' || l.platform === 'followup';
+      if (getPlatform(cf)) return l.platform === cf;
       return l.channelId === cf;
     };
     state.leads = _origLeads.filter(_matchCh);
@@ -11246,9 +11381,13 @@ function setAdsTab(tab, subChannel) {
   state.adsSubChannel = (subChannel === '' || subChannel === 'undefined' || subChannel === 'all') ? null : (subChannel || null);
   document.getElementById('adsPlatformSelect').value = tab;
   const subSel = document.getElementById('adsSubSelect');
-  if (tab === 'meta') {
-    const metaChs = state.channels.filter(c => c.platform === 'meta');
-    subSel.innerHTML = '<option value="all">All Meta</option>' + metaChs.map(c => `<option value="${esc(c.id)}" ${state.adsSubChannel === c.id ? 'selected' : ''}>${esc(c.name)}</option>`).join('');
+  // v8.82: 第二层（选 channel）以前只有 Meta 才出现，现在每个 platform 都有。
+  //   底层筛选 (l.channelId === subCh) 本来就支持任何 platform，这里只是把它开放出来。
+  const _tabPf = getPlatform(tab);
+  if (_tabPf) {
+    const chs = state.channels.filter(c => c.platform === tab);
+    subSel.innerHTML = `<option value="all">All ${esc(_tabPf.name)}</option>` +
+      chs.map(c => `<option value="${esc(c.id)}" ${state.adsSubChannel === c.id ? 'selected' : ''}>${esc(c.name)}${c.active === false ? ' (inactive)' : ''}</option>`).join('');
     // v3.59: show subSel + sync popover (items + visibility)
     if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(subSel, false);
     else subSel.style.display = '';
@@ -11298,12 +11437,16 @@ function renderAdsSpend() {
     _platSel.value = _stateTab;
     if (typeof refreshSelectPopover === 'function') refreshSelectPopover(_platSel);
   }
-  // adsSubSelect: meta tab 才显示, sub channel 选定也要同步
+  // adsSubSelect: 任何 platform tab 都显示（v8.82 之前只有 meta），sub channel 选定也要同步
+  //   ⚠️ 这段是 setAdsTab 之外的「第二个」重建入口（反向同步用）。
+  //     两边逻辑必须一致 —— 之前这里写死 meta，会把 setAdsTab 为其他 platform 建好的选项清空。
   if (_subSel) {
-    if (_stateTab === 'meta') {
+    const _syncPf = getPlatform(_stateTab);
+    if (_syncPf) {
       // 重建 sub channel options + 设值
-      const metaChs = state.channels.filter(c => c.platform === 'meta');
-      _subSel.innerHTML = '<option value="all">All Meta</option>' + metaChs.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+      const chs = state.channels.filter(c => c.platform === _stateTab);
+      _subSel.innerHTML = `<option value="all">All ${esc(_syncPf.name)}</option>` +
+        chs.map(c => `<option value="${esc(c.id)}">${esc(c.name)}${c.active === false ? ' (inactive)' : ''}</option>`).join('');
       _subSel.value = _stateSubCh || 'all';
       if (typeof setPopoverSelectHidden === 'function') setPopoverSelectHidden(_subSel, false);
       if (typeof refreshSelectPopover === 'function') refreshSelectPopover(_subSel);
@@ -11352,8 +11495,8 @@ function renderAdsSpend() {
   const mArr = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
 
   // --- Ads Cost Report ---
-  if (tab === 'ofu') {
-    document.getElementById('adsSpendReport').innerHTML = '<tbody><tr><td style="text-align:center;padding:20px;color:var(--gray);">Organic+FU has no ads cost</td></tr></tbody>';
+  if (!tabHasAdSpend(tab)) {   // v8.82
+    document.getElementById('adsSpendReport').innerHTML = '<tbody><tr><td style="text-align:center;padding:20px;color:var(--gray);">This platform has no ads cost</td></tr></tbody>';
   } else {
     const isMobile = window.innerWidth < 767;
     // Compute per-month spend data
@@ -11422,7 +11565,7 @@ function renderAdsSpend() {
     const subCh2 = state.adsSubChannel || null;
     const mArr2 = Array.from({length:12}, (_, i) => `${year}-${String(i+1).padStart(2,'0')}`);
     const fullData2 = mArr2.map(m => calcMonthMetrics(m));
-    const platFilter2 = tab2 === 'meta' ? ['meta'] : tab2 === 'google' ? ['google'] : tab2 === 'ofu' ? ['organic','followup'] : null;
+    const platFilter2 = (!tab2 || tab2 === 'all') ? null : (tab2 === 'ofu' ? ['organic','followup'] : [tab2]);   // v8.82
     const monthData2 = mArr2.map(m => {
       const full = calcMonthMetrics(m);
       if (!platFilter2) return full;
@@ -11473,7 +11616,7 @@ function renderAdsSpendSection(key) {
   if (key === 'fees' || key === '_fees_internal') {
     const feesTable = document.getElementById('feesTable');
     if (!feesTable) return;
-    if (tab === 'ofu') { feesTable.innerHTML = '<div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">No fees for Organic+FU</div>'; return; }
+    if (!tabHasAdSpend(tab)) { feesTable.innerHTML = '<div style="text-align:center;padding:30px;color:var(--gray);font-size:13px;">No fees for this platform</div>'; return; }   // v8.82
 
     // Collect all fee names and months with data
     const filteredFees = state.thirdPartyFees.filter(f => {
@@ -11559,17 +11702,13 @@ function renderAdsSpendSection(key) {
       const ch = getChannel(a.channelId);
       if (!ch) return tab === 'all';
       if (tab === 'all') return true;
-      if (tab === 'meta'   && ch.platform !== 'meta')   return false;
-      if (tab === 'google' && ch.platform !== 'google') return false;
-      if (tab === 'ofu'    && ch.platform !== 'organic' && ch.platform !== 'followup') return false;
+      if (!tabChannelFilter(tab, ch)) return false;   // v8.82: 取代写死的 meta/google/ofu 三行
       if (subCh && a.channelId !== subCh) return false;
       return true;
     };
     const matchFee = (f) => {
       if (tab === 'all') return true;
-      if (tab === 'meta'   && f.platform !== 'meta')   return false;
-      if (tab === 'google' && f.platform !== 'google') return false;
-      if (tab === 'ofu'    && f.platform !== 'organic' && f.platform !== 'followup') return false;
+      if (!tabChannelFilter(tab, f)) return false;   // v8.82 (f 有 .platform, 结构同 channel)
       return true;
     };
 
@@ -11745,20 +11884,17 @@ function renderFunnelComboTable() {
   }
 
   const matchesPlatform = (l) => {
+    // v8.82: tab 就是 platform id。subCh (选了具体 channel) 对每个 platform 都生效, 不再只有 meta。
     if (tab === 'all') return true;
-    if (tab === 'meta') {
-      if (l.platform !== 'meta') return false;
-      if (subCh && l.channelId !== subCh) return false;
-      return true;
-    }
-    if (tab === 'google') return l.platform === 'google';
     if (tab === 'ofu') return l.platform === 'organic' || l.platform === 'followup';
+    if (l.platform !== tab) return false;
+    if (subCh && l.channelId !== subCh) return false;
     return true;
   };
   const matchesOutlet = (l) => !useOutletFilter || l.locationId === outletId;
 
   const calcCostForMonth = (yyyymm) => {
-    if (tab === 'ofu') return null;
+    if (!tabHasAdSpend(tab)) return null;   // v8.82
     return (state.adsSpend || []).filter(a => {
       if (a.month !== yyyymm) return false;
       const ch = state.channels.find(c => c.id === a.channelId);
@@ -11847,8 +11983,8 @@ function renderFunnelComboTable() {
   const totalShowPct = tBooked > 0 ? tShow / tBooked : null;
   // v6.76: TOTAL 行 No Show %
   const totalNoShowPct = tBooked > 0 ? tNoShow / tBooked : null;
-  const totalRoas = (tab === 'ofu' || tCost === 0) ? null : tSales / tCost;
-  const totalCostShow = tab === 'ofu' ? null : tCost;
+  const totalRoas = (!tabHasAdSpend(tab) || tCost === 0) ? null : tSales / tCost;   // v8.82
+  const totalCostShow = tabHasAdSpend(tab) ? tCost : null;
   // v6.65 codex P2 #4: TOTAL 行同步 — By Ads Count 视图下 salesPct 口径错, 不显示
   const totalSalesPct = (view === 'outlet' && tRev > 0) ? tSales / tRev : null;
 
@@ -11964,9 +12100,7 @@ function renderSpendingPower() {
     const ch = getChannel(l.channelId);
     if (!ch) return tab === 'all'; // 没channel的lead在 all 时算入
     if (tab === 'all') return true;
-    if (tab === 'meta')   { if (ch.platform !== 'meta')   return false; }
-    if (tab === 'google') { if (ch.platform !== 'google') return false; }
-    if (tab === 'ofu')    { if (ch.platform !== 'organic' && ch.platform !== 'followup') return false; }
+    if (!tabChannelFilter(tab, ch)) return false;   // v8.82
     if (subCh && l.channelId !== subCh) return false;
     return true;
   };
@@ -15400,6 +15534,9 @@ function updateSettingsRowStatuses() {
     if (mobile) mobile.innerHTML = html;
   };
 
+  // v8.82: Platforms
+  setBoth('settingsPlatformStatus', activePlatforms().length + ' active');
+
   // Channels
   const chCount = (state.channels || []).filter(c => c.active !== false).length;
   setBoth('settingsChannelStatus', chCount + ' active');
@@ -15432,6 +15569,7 @@ function confirmClearCacheReload() {
 // v5.75: Open the appropriate settings modal
 function openSettingsModal(kind) {
   const titles = {
+    platforms: 'Platforms',   // v8.82
     channels: 'Channels',
     stores: 'Stores',
     gsheet: 'Google Sheet sync',
@@ -15458,6 +15596,7 @@ let _currentSettingsSection = null;
 function selectSettingsSection(kind) {
   _currentSettingsSection = kind;
   const titles = {
+    platforms: 'Platforms',   // v8.82
     channels: 'Channels',
     stores: 'Stores',
     gsheet: 'Google Sheet sync',
@@ -15479,6 +15618,35 @@ function selectSettingsSection(kind) {
 }
 
 function _buildSettingsModalBody(kind) {
+  // v8.82: Platforms — 放 Channels 前面（channel 要先有 platform 才能挂）
+  if (kind === 'platforms') {
+    return `
+      <div class="settings-modal-section">
+        <div id="modalPlatformsList"></div>
+      </div>
+      <div class="settings-modal-section">
+        <div class="settings-modal-section-title">Add new platform</div>
+        <div class="settings-modal-input-row">
+          <label>Name</label>
+          <input type="text" id="modal_pf_name" placeholder="e.g. TikTok Ads" oninput="_pfPreview()">
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Preview</label>
+          <div class="pf-prev" id="modal_pf_prev"></div>
+          <span id="modal_pf_color" data-color="#8B5CF6" style="display:none;"></span>
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Color <span style="color:var(--silver);font-size:11px;">— used by charts and tables</span></label>
+          <div class="color-grid" id="modal_pf_swatches" data-color="#8B5CF6"></div>
+        </div>
+        <div class="settings-modal-input-row">
+          <label>Ad spend</label>
+          <label class="pf-chk"><input type="checkbox" id="modal_pf_ad" checked>Has ad spend — only then can you enter cost and see ROAS / CPL / CPA / CPS</label>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="modalAddPlatform()">Add platform</button>
+      </div>
+    `;
+  }
   if (kind === 'channels') {
     return `
       <div class="settings-modal-section">
@@ -15500,13 +15668,8 @@ function _buildSettingsModalBody(kind) {
             <span id="modal_ch_platform_label">Meta</span>
             <span class="pseudo-select-chevron">›</span>
           </div>
-          <select id="modal_ch_platform" style="display:none;">
-            <option value="meta">Meta</option>
-            <option value="google">Google</option>
-            <option value="organic">Organic</option>
-            <option value="followup">Follow Up</option>
-            <option value="other">Other</option>
-          </select>
+          <!-- v8.82: 原本这里有个隐藏 select 当中转，已移除 —
+               modalAddChannel 改成直接读上面 pseudo-select 的 data-value。 -->
         </div>
         <button class="btn btn-primary btn-full" onclick="modalAddChannel()">Add channel</button>
       </div>
@@ -15644,6 +15807,11 @@ function _buildSettingsModalBody(kind) {
 }
 
 function _initSettingsModal(kind) {
+  if (kind === 'platforms') {   // v8.82
+    _renderModalPlatformsList();
+    _pfRenderSwatches();
+    _pfPreview();
+  }
   if (kind === 'channels') {
     _renderModalChannelsList();
     // v5.77: 不再初始化 modal_ch_added (字段已删除)
@@ -15686,14 +15854,145 @@ function _initSettingsModal(kind) {
 
 // Mirror the legacy lists into the modal (v5.76: 用新 cl-row 风格 + iOS toggle + color picker modal)
 // v5.79: 同样的渲染函数也用于 desktop master-detail (id 都是 modalChannelsList / modalStoresList)
+// ══ v8.82: Settings → Platforms（跟 Channels 页同一套 class 与模式）══════════
+//   platform 存在 Sheet 的 Platforms 表。这里改完就 gsPushConfig 推回去。
+function _renderModalPlatformsList() {
+  const target = document.getElementById('modalPlatformsList');
+  if (!target) return;
+  target.innerHTML = allPlatforms().map(p => {
+    const isActive = p.active !== false;
+    const color = p.color || '#9497a9';
+    const n = (state.channels || []).filter(c => c.platform === p.id).length;
+    const names = (state.channels || []).filter(c => c.platform === p.id).map(c => c.name).join(', ');
+    return `<div class="cl-row cfg-row ${isActive ? '' : 'inactive'}">
+      <div class="cl-row-left">
+        <button type="button" class="cl-color-dot" onclick="openColorPicker(event, 'platform', '${esc(p.id)}')" title="Change color" style="background:${color};"></button>
+        <div class="cl-row-info">
+          <div class="cl-row-name">${chipLogoHTML(p.name, color)}${esc(p.name)}${
+            p.hasAdSpend ? '<span class="pf-pill pf-ad">HAS AD SPEND</span>' : '<span class="pf-pill pf-free">NO AD SPEND</span>'
+          }${p.builtin ? '<span class="pf-pill pf-lock">BUILT-IN</span>' : ''}</div>
+          <div class="cl-row-meta">${n} channel${n === 1 ? '' : 's'}${names ? ' · ' + esc(names) : ''}</div>
+          <div class="cfg-fields">
+            <div class="cfg-field"><label>Name</label>
+              <input type="text" class="cfg-in" value="${esc(p.name)}" onchange="_setPlatformName('${esc(p.id)}', this.value)"></div>
+            <div class="cfg-field"><label>Ad spend</label>
+              <label class="pf-chk"><input type="checkbox" ${p.hasAdSpend ? 'checked' : ''} onchange="_setPlatformAd('${esc(p.id)}', this.checked)">Has ad spend</label></div>
+            ${p.builtin ? '' : `<div class="cfg-field"><label>&nbsp;</label>
+              <button type="button" class="pf-del" onclick="deletePlatform('${esc(p.id)}')">Delete</button></div>`}
+          </div>
+        </div>
+      </div>
+      <div class="settings-toggle ${isActive ? 'on' : ''}" onclick="setPlatformActive('${esc(p.id)}', ${!isActive})"></div>
+    </div>`;
+  }).join('');
+}
+
+// 改完统一走这里：存本地 → 推 Sheet → 重画列表和所有下拉
+function _pfSave() {
+  saveState();
+  if (typeof gsPushConfig === 'function') gsPushConfig();
+  if (typeof refreshSelects === 'function') refreshSelects();
+  setTimeout(_renderModalPlatformsList, 30);
+  setTimeout(updateSettingsRowStatuses, 50);
+}
+
+function _setPlatformName(id, v) {
+  const p = getPlatform(id); if (!p) return;
+  const name = String(v || '').trim();
+  if (!name) { toast('Name cannot be empty'); _renderModalPlatformsList(); return; }
+  p.name = name;
+  _pfSave();
+}
+
+function _setPlatformAd(id, on) {
+  const p = getPlatform(id); if (!p) return;
+  p.hasAdSpend = !!on;
+  _pfSave();
+}
+
+// 停用前挡一下：底下还有启用中的 channel 就不让停 —— 否则那些 channel 会从所有下拉消失
+function setPlatformActive(id, active) {
+  const p = getPlatform(id); if (!p) return;
+  if (!active) {
+    const n = (state.channels || []).filter(c => c.platform === id && c.active !== false).length;
+    if (n > 0) { toast(`Turn off its ${n} channel${n === 1 ? '' : 's'} first`); return; }
+  }
+  p.active = active;
+  _pfSave();
+}
+
+// 内建的不可删（历史 lead / 广告费挂在上面）；自订的要底下没 channel 才能删
+async function deletePlatform(id) {
+  const p = getPlatform(id); if (!p) return;
+  if (p.builtin) { toast('Built-in platform cannot be deleted — turn it off instead'); return; }
+  const n = (state.channels || []).filter(c => c.platform === id).length;
+  if (n > 0) { toast(`Cannot delete — ${n} channel${n === 1 ? '' : 's'} still using it`); return; }
+  if (!await showConfirm(`Delete platform "${p.name}"?`, { title: 'Delete platform', okText: 'Delete', danger: true })) return;
+  state.platforms = allPlatforms().filter(x => x.id !== id);
+  _pfSave();
+  toast('Platform deleted');
+}
+
+function modalAddPlatform() {
+  const nameEl = document.getElementById('modal_pf_name');
+  const name = String(nameEl?.value || '').trim();
+  if (!name) { toast('Fill name'); return; }
+  if (allPlatforms().some(p => p.name.toLowerCase() === name.toLowerCase())) { toast('That name already exists'); return; }
+  const color = document.getElementById('modal_pf_color')?.dataset.color || '#8B5CF6';
+  state.platforms = allPlatforms().concat([{
+    id: uid('pf'), name,
+    hasAdSpend: !!document.getElementById('modal_pf_ad')?.checked,
+    color, builtin: false, active: true
+  }]);
+  if (nameEl) nameEl.value = '';
+  _pfSave();
+  _pfPreview();
+  toast('Platform added');
+}
+
+// 打名字时即时显示会拿到什么 logo（logo 按名字自动匹配，不用选）
+function _pfPreview() {
+  const box = document.getElementById('modal_pf_prev');
+  if (!box) return;
+  const name = String(document.getElementById('modal_pf_name')?.value || '').trim() || 'New platform';
+  const color = document.getElementById('modal_pf_color')?.dataset.color || '#8B5CF6';
+  const n = name.toLowerCase();
+  const brand = ['meta','facebook','fb','simply','google','tiktok','抖音','instagram','ig','whatsapp','wa','xhs','小红书','redbook']
+    .find(k => n.includes(k) || n === k);
+  box.innerHTML = `${chipLogoHTML(name, color)}<b>${esc(name)}</b>` +
+    `<span class="pf-prev-note">${brand
+      ? 'Official logo matched by name · your color still applies to charts'
+      : 'No brand logo — uses first letter + your color'}</span>`;
+}
+
+function _pfRenderSwatches() {
+  const box = document.getElementById('modal_pf_swatches');
+  if (!box) return;
+  const cur = box.dataset.color || '#8B5CF6';
+  box.innerHTML = COLOR_PALETTE.map(c =>
+    `<button type="button" class="color-swatch ${c.toLowerCase() === cur.toLowerCase() ? 'selected' : ''}" data-color="${c}" onclick="_pfPickColor('${c}')" style="background:${c};"></button>`
+  ).join('');
+}
+function _pfPickColor(c) {
+  const box = document.getElementById('modal_pf_swatches');
+  const holder = document.getElementById('modal_pf_color');
+  if (box) box.dataset.color = c;
+  if (holder) holder.dataset.color = c;
+  _pfRenderSwatches();
+  _pfPreview();
+}
+
 function _renderModalChannelsList() {
   const target = document.getElementById('modalChannelsList');
   if (!target) return;
-  const platLabels = { meta: 'Meta', google: 'Google', organic: 'Organic', followup: 'Follow Up', other: 'Other' };
   target.innerHTML = (state.channels || []).map(c => {
     const isActive = c.active !== false;
     const color = c.color || (typeof hashColor === 'function' ? hashColor(c.name) : '#888');
-    const platLabel = platLabels[c.platform] || c.platform || '?';
+    // v8.82: platform 名字改成查表。空的 / 查不到的用红字标出来让 Davy 自己改 —
+    //   那是 v8.80 修掉的那个 bug 留下的坏数据（platform 存成空字符串），不自动搬家。
+    const _pf = c.platform ? getPlatform(c.platform) : null;
+    const platLabel = _pf ? esc(_pf.name)
+      : `<span style="color:var(--red);">⚠️ ${c.platform ? 'Unknown platform: ' + esc(c.platform) : 'No platform — pick one'}</span>`;
     return `<div class="cl-row cfg-row ${isActive ? '' : 'inactive'}">
       <div class="cl-row-left">
         <button type="button" class="cl-color-dot" onclick="openColorPicker(event, 'channel', '${esc(c.id)}')" title="改颜色" style="background:${color};"></button>
@@ -15745,7 +16044,18 @@ async function _saveCfg() {
 // Wrappers — write modal input back to legacy hidden input, then call original handler
 function modalAddChannel() {
   document.getElementById('ch_name').value = document.getElementById('modal_ch_name').value;
-  document.getElementById('ch_platform').value = document.getElementById('modal_ch_platform').value;
+  // v8.82【根治】直接读 pseudo-select 的 dataset.value，不再靠隐藏 select 中转。
+  //   v8.80 修的那个 bug（platform 全部存成空字符串）根源就是「给没有对应 option 的
+  //   select 设 value 会变成 ''」。platform 变成可配置后，自订的 pf-xxx 更不可能
+  //   预先写在 option 里 —— 所以这里先确保 legacy select 有那个 option 再设值。
+  const _pv = document.getElementById('modal_ch_platform_btn')?.dataset.value || (activePlatforms()[0]?.id || 'meta');
+  const _legacy = document.getElementById('ch_platform');
+  if (_legacy && _pv) {
+    if (!_legacy.querySelector(`option[value="${_pv}"]`)) {
+      _legacy.insertAdjacentHTML('beforeend', `<option value="${esc(_pv)}">${esc(platformName(_pv))}</option>`);
+    }
+    _legacy.value = _pv;
+  }
   // v5.77: addedMonth 字段已无用, 不再设值 (legacy form handler 会自动用 todayStr)
   document.getElementById('ch_added').value = '';
   document.getElementById('channelForm').dispatchEvent(new Event('submit'));
@@ -15808,13 +16118,10 @@ async function modalBackupRefreshList() {
 
 // v5.76: Platform picker modal (replaces native select)
 function openPlatformPicker() {
-  const platforms = [
-    { value: 'meta', label: 'Meta' },
-    { value: 'google', label: 'Google' },
-    { value: 'organic', label: 'Organic' },
-    { value: 'followup', label: 'Follow Up' },
-    { value: 'other', label: 'Other' }
-  ];
+  // v8.82: 改成动态列出 active platform。
+  //   拿掉了 'Other' —— 查过整个系统没有任何地方消费 platform==='other'，
+  //   选了等于这个 channel 不进任何报表和筛选。要「其他」就去 Settings 加一个 platform。
+  const platforms = activePlatforms().map(p => ({ value: p.id, label: p.name }));
   const cur = document.getElementById('modal_ch_platform_btn')?.dataset.value || 'meta';
   const onMobile = window.innerWidth < 768;
   const closeFn = onMobile ? 'closeSubModal' : 'closeModal';
@@ -15839,10 +16146,8 @@ function openPlatformPicker() {
 function selectPlatform(value, label) {
   const btn = document.getElementById('modal_ch_platform_btn');
   const lbl = document.getElementById('modal_ch_platform_label');
-  const sel = document.getElementById('modal_ch_platform');
-  if (btn) btn.dataset.value = value;
+  if (btn) btn.dataset.value = value;   // v8.82: dataset 就是唯一来源，隐藏 select 已移除
   if (lbl) lbl.textContent = label;
-  if (sel) sel.value = value;
   // v5.79: Close — 手机 sub modal, 桌面 normal modal
   if (window.innerWidth < 768) closeSubModal();
   else closeModal();
@@ -15924,7 +16229,8 @@ const COLOR_PALETTE = [
 
 function openColorPicker(event, kind, id) {
   event.stopPropagation();
-  const list = kind === 'channel' ? state.channels : state.locations;
+  // v8.82: 多一种 kind='platform'
+  const list = kind === 'channel' ? state.channels : (kind === 'platform' ? (state.platforms || []) : state.locations);
   const item = list.find(x => x.id === id);
   if (!item) return;
   const current = (item.color || hashColor(item.name)).toLowerCase();
@@ -15952,7 +16258,8 @@ function openColorPicker(event, kind, id) {
 }
 
 function _pickColor(kind, id, color) {
-  const list = kind === 'channel' ? state.channels : state.locations;
+  // v8.82: 多一种 kind='platform'
+  const list = kind === 'channel' ? state.channels : (kind === 'platform' ? (state.platforms || []) : state.locations);
   const item = list.find(x => x.id === id);
   if (!item) return;
   if (color === 'reset') delete item.color;
@@ -15961,6 +16268,7 @@ function _pickColor(kind, id, color) {
   // v6.69: 同步到 Sheet (channel 有 color 字段, location 没有 — _syncLocation 会忽略)
   if (kind === 'channel' && typeof _syncChannel === 'function') _syncChannel(item);
   else if (kind === 'location' && typeof _syncLocation === 'function') _syncLocation(item);
+  else if (kind === 'platform' && typeof gsPushConfig === 'function') gsPushConfig();   // v8.82
   // v5.79: 关闭 modal — 桌面用 closeModal, 手机用 closeSubModal
   if (window.innerWidth < 768) closeSubModal();
   else closeModal();
@@ -16023,6 +16331,15 @@ async function gsPushConfig() {
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : null;
   if (!url) return;
   try {
+    // v8.82: Platforms 一起推（后端走 _writeTabByHeader 合并写，空阵列会被挡下不清表）
+    const enrichedPlatforms = (state.platforms || []).map(p => ({
+      id: p.id,
+      name: p.name || '',
+      hasAdSpend: !!p.hasAdSpend,
+      color: p.color || '',
+      builtin: !!p.builtin,
+      active: p.active === false ? false : true,
+    }));
     const enrichedChannels = state.channels.map(c => ({
       id: c.id,
       name: c.name || '',
@@ -16046,6 +16363,7 @@ async function gsPushConfig() {
       data: {
         // 只传 Channels + Locations, 其他 4 个表不传 → 后端跳过, 不会动其他数据
         Channels: enrichedChannels,
+        Platforms: enrichedPlatforms,   // v8.82
         Locations: enrichedLocations
       }
     };
@@ -17011,7 +17329,18 @@ function _normalizeSheetPullData(d) {
     return o;
   });
 
-  return { leads, ads, rev, fees, channels, locations, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary };
+  // v8.82: Platforms — 旧后端没有这个字段 → undefined → 回 null → apply 时保留本地不动
+  const platforms = (d.Platforms === undefined) ? null : (d.Platforms || []).filter(r => r && r.id).map(r => ({
+    id: String(r.id),
+    name: String(r.name || r.id),
+    hasAdSpend: _pBool(r.hasAdSpend),
+    color: _pColor(r.color),          // 挡掉误存的 'var(--x)' CSS 变量
+    builtin: _pBool(r.builtin),
+    // 空白当 active（旧行没填不该被当成停用）
+    active: (r.active === '' || r.active === undefined || r.active === null) ? true : _pBool(r.active),
+  }));
+
+  return { leads, ads, rev, fees, channels, locations, platforms, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary };
 }
 
 async function gsPushAll() {
@@ -17101,6 +17430,15 @@ async function gsPushAll() {
     // v6.69: Channels + Locations 同步 — 修 codex P1 #1, 防换设备丢配置.
     //   配套 Apps Script v2.26 (SCHEMAS 加 Channels/Locations + getSheet auto-create tab).
     //   Channels 已有 platform/active/color/addedMonth, Locations 只有 active/addedMonth (无 color).
+    // v8.82: Platforms 一起推（后端走 _writeTabByHeader 合并写，空阵列会被挡下不清表）
+    const enrichedPlatforms = (state.platforms || []).map(p => ({
+      id: p.id,
+      name: p.name || '',
+      hasAdSpend: !!p.hasAdSpend,
+      color: p.color || '',
+      builtin: !!p.builtin,
+      active: p.active === false ? false : true,
+    }));
     const enrichedChannels = state.channels.map(c => ({
       id: c.id,
       name: c.name || '',
@@ -17126,6 +17464,7 @@ async function gsPushAll() {
         Revenue: enrichedRev,
         ThirdPartyFees: state.thirdPartyFees,
         Channels: enrichedChannels,
+        Platforms: enrichedPlatforms,   // v8.82
         Locations: enrichedLocations
       }
     };
@@ -17317,7 +17656,7 @@ async function _gsPullSilentInner(isRetry) {
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPull 共享, 避免代码漂移)
     // v6.69: 同时拿 channels + locations
-    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary } = _normalizeSheetPullData(d.data);
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, platforms: normalizedPlatforms, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary } = _normalizeSheetPullData(d.data);
 
     if (suspiciousLead) {
       console.warn('[Auto-pull] BLOCKED: suspicious lead columns:', Object.keys(suspiciousLead));
@@ -17362,6 +17701,12 @@ async function _gsPullSilentInner(isRetry) {
       state.locations = normalizedLocations;
     } else if (normalizedLocations !== null && state.locations.length > 0) {
       skipped.push('locations');
+    }
+    // v8.82: Platforms — 同一套 50% 保护。旧后端没这字段 → null → 保留本地内建 4 个。
+    if (normalizedPlatforms !== null && normalizedPlatforms.length > 0 && normalizedPlatforms.length >= (state.platforms || []).length * 0.5) {
+      state.platforms = normalizedPlatforms;
+    } else if (normalizedPlatforms !== null && (state.platforms || []).length > 0) {
+      skipped.push('platforms');
     }
     // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
     if (!state.pnl) state.pnl = { rows: [], staff: [], config: [], employees: [], empSalary: [], empV: 0, stockCost: [] };
@@ -17468,7 +17813,7 @@ async function gsPull() {
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPullSilent 共享, 避免代码漂移)
     // v6.69: 同时拿 channels + locations (codex P1 #1 同步)
-    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary } = _normalizeSheetPullData(d.data);
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, platforms: normalizedPlatforms, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary } = _normalizeSheetPullData(d.data);
 
     // Safety check: reject if Sheet has unexpected columns (manual Pull 弹 alert, gsPullSilent 静默)
     if (suspiciousLead) {
@@ -17539,6 +17884,12 @@ async function gsPull() {
       state.locations = normalizedLocations;
     } else if (normalizedLocations !== null) {
       skipped.push('locations');
+    }
+    // v8.82: Platforms — 同一套 50% 保护
+    if (normalizedPlatforms !== null && normalizedPlatforms.length > 0 && normalizedPlatforms.length >= (state.platforms || []).length * 0.5) {
+      state.platforms = normalizedPlatforms;
+    } else if (normalizedPlatforms !== null) {
+      skipped.push('platforms');
     }
     // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
     if (!state.pnl) state.pnl = { rows: [], staff: [], config: [], employees: [], empSalary: [], empV: 0, stockCost: [] };
