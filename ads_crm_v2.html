@@ -3470,7 +3470,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.84</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.85</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3521,7 +3521,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.84</div>
+      <div class="nav-brand-version">v8.85</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5363,6 +5363,25 @@ function channelsOfPlatform(pid) {
     const g = getPlatform(c.platform);
     return g && g.id === pid;
   });
+}
+
+// v8.85: 把 lead / adsSpend 的 platform「快照」对齐到它所属 channel 的当前 platform。
+//   为什么会不一致：那两张表的 platform 栏是建立当下从 channel 抄过去的，channel 后来改了
+//   归属，历史资料不会自己跟着走（v8.85 之前改归属也不会搬）。
+//   症状：Contact 页（按 channelId 筛）看得到，Ads 页 / Dashboard / 日报月报（按 platform 筛）却是 0。
+//   channel 是权威来源 —— 一笔 lead 属于哪个 platform，就看它的 channel 现在挂在哪。
+function _syncPlatformSnapshots() {
+  let n = 0;
+  (state.leads || []).forEach(l => {
+    const ch = getChannel(l.channelId);
+    if (ch && ch.platform && l.platform !== ch.platform) { l.platform = ch.platform; n++; }
+  });
+  (state.adsSpend || []).forEach(a => {
+    const ch = getChannel(a.channelId);
+    if (ch && ch.platform && a.platform !== ch.platform) { a.platform = ch.platform; n++; }
+  });
+  if (n > 0 && typeof _monthMetricsCache !== 'undefined') _monthMetricsCache.clear();
+  return n;
 }
 
 function _normalizeChannelPlatforms() {
@@ -15971,15 +15990,34 @@ function setPlatformActive(id, active) {
 }
 
 // 内建的不可删（历史 lead / 广告费挂在上面）；自订的要底下没 channel 才能删
+// v8.85【删除规则】能删的一定是「删了也不会丢任何东西」的。
+//   只要有 channel / lead / 广告费用过它 → 一律挡下来，叫你用「停用」。
+//   停用 = 从所有下拉和报告消失，但资料全在、随时开回来 —— 所以不需要软删除，
+//   也不需要靠确认弹窗去挡：会丢资料的删除动作根本不存在。
 async function deletePlatform(id) {
   const p = getPlatform(id); if (!p) return;
-  if (p.builtin) { toast('Built-in platform cannot be deleted — turn it off instead'); return; }
-  const n = channelsOfPlatform(id).length;   // v8.84
-  if (n > 0) { toast(`Cannot delete — ${n} channel${n === 1 ? '' : 's'} still using it`); return; }
-  if (!await showConfirm(`Delete platform "${p.name}"?`, { title: 'Delete platform', okText: 'Delete', danger: true })) return;
+  if (p.builtin) { toast('内建 platform 不能删 — 请改用停用'); return; }
+  const nCh = channelsOfPlatform(id).length;
+  const nLead = (state.leads || []).filter(l => l.platform === id).length;
+  const nSpend = (state.adsSpend || []).filter(a => a.platform === id).length;
+  if (nCh || nLead || nSpend) {
+    const parts = [];
+    if (nCh) parts.push(`${nCh} 个 channel`);
+    if (nLead) parts.push(`${nLead} 笔 lead`);
+    if (nSpend) parts.push(`${nSpend} 笔广告费`);
+    await showConfirm(
+      `「${p.name}」已经有资料在用，不能删除：\n\n· ${parts.join('\n· ')}\n\n` +
+      `请改用右边的开关「停用」它 —— 停用后它会从所有下拉和报告消失，\n但资料一笔都不会少，随时可以再打开。`,
+      { title: '不能删除', okText: '知道了' }
+    );
+    return;
+  }
+  if (!await showConfirm(
+    `删除 platform「${p.name}」？\n\n它底下没有任何 channel、lead 或广告费，删掉不会影响任何资料。`,
+    { title: '删除 platform', okText: '删除', danger: true })) return;
   state.platforms = allPlatforms().filter(x => x.id !== id);
   _pfSave();
-  toast('Platform deleted');
+  toast(`已删除「${p.name}」`);
 }
 
 function modalAddPlatform() {
@@ -16106,19 +16144,53 @@ function _setChannelName(id, v) {
   saveState();
   if (typeof _syncChannel === 'function') _syncChannel(c);
   if (typeof refreshSelects === 'function') refreshSelects();
+  if (typeof renderList === 'function') renderList();   // v8.85: Contact 页的下拉也要跟着换名字
   setTimeout(_renderModalChannelsList, 30);
 }
 // v8.83: 改 channel 归属的 platform。存的一定是 platform 的 id（不是名字），
 //   所以在 Sheet 里手填过名字的，只要在这里重选一次就会写成正确的 id。
-function _setChannelPlatform(id, pid) {
+async function _setChannelPlatform(id, pid) {
   const c = getChannel(id);
-  if (!c || !pid) return;
+  if (!c || !pid || c.platform === pid) return;
+
+  // v8.85【关键】Leads 和 AdsSpend 各自存了一份 platform「快照」——
+  //   那是 lead / 花费建立当下从 channel 抄过去的值，不会自己跟着 channel 走。
+  //   只改 channel 归属而不搬历史资料的话会变成：
+  //     Contact 页（按 channelId 筛）看得到，
+  //     Ads 页 / Dashboard / 日报 / 月报（按 platform 筛）却全是 0。
+  //   所以这里要把该 channel 名下的历史资料一起搬过去。
+  const affectedLeads = (state.leads || []).filter(l => l.channelId === id && l.platform !== pid);
+  const affectedSpend = (state.adsSpend || []).filter(a => a.channelId === id && a.platform !== pid);
+  const total = affectedLeads.length + affectedSpend.length;
+
+  if (total > 0) {
+    const ok = await showConfirm(
+      `把 ${c.name} 从「${platformName(c.platform) || c.platform || '(未设定)'}」改挂到「${platformName(pid)}」。\n\n` +
+      `同时会把它名下的历史资料一起搬过去：\n` +
+      `· ${affectedLeads.length} 笔 lead\n· ${affectedSpend.length} 笔广告费\n\n` +
+      `不搬的话，Ads 页和日报月报会抓不到这些资料（显示 0）。`,
+      { title: '改变归属', okText: '改并搬移' }
+    );
+    if (!ok) { _renderModalChannelsList(); return; }
+  }
+
   c.platform = pid;
+  affectedLeads.forEach(l => { l.platform = pid; });
+  affectedSpend.forEach(a => { a.platform = pid; });
   saveState();
-  if (typeof _syncChannel === 'function') _syncChannel(c);
+  if (typeof _monthMetricsCache !== 'undefined') _monthMetricsCache.clear();   // 数字变了, 清缓存
   if (typeof refreshSelects === 'function') refreshSelects();
+  if (typeof renderList === 'function') renderList();   // Contact 页的下拉也要跟着更新
   setTimeout(_renderModalChannelsList, 30);
-  toast(`${c.name} → ${platformName(pid)}`);
+
+  if (total > 0) {
+    // 历史资料改了就一定要推回 Sheet，否则下次 pull 会被旧值盖回去
+    toast(`${c.name} → ${platformName(pid)}（搬移 ${total} 笔，同步中…）`);
+    if (typeof gsPushAll === 'function') { try { await gsPushAll(); } catch (e) { toast('⚠️ 同步失败，请手动 Push All'); } }
+  } else {
+    toast(`${c.name} → ${platformName(pid)}`);
+    if (typeof gsPushConfig === 'function') gsPushConfig();
+  }
 }
 function _setChannelKeyword(id, v) { const c = (state.channels || []).find(x => x.id === id); if (c) c.ghlKeyword = v; }
 function _setStoreKeyword(id, v)   { const l = (state.locations || []).find(x => x.id === id); if (l) l.ghlKeyword = v; }
@@ -17799,6 +17871,12 @@ async function _gsPullSilentInner(isRetry) {
     }
     // v8.84: platform 载入後，把 channel.platform 里手填的名字统一转成 id
     if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig();
+    // v8.85: channel 归属正规化之後，把 lead / 广告费的 platform 快照也对齐
+    const _snapFixed = _syncPlatformSnapshots();
+    if (_snapFixed > 0) {
+      console.log(`[platform sync] 对齐了 ${_snapFixed} 笔 lead/广告费的 platform`);
+      if (typeof toast === 'function') toast(`已修正 ${_snapFixed} 笔资料的 platform 归属 · 记得按 Push All 同步`);
+    }
     // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
     if (!state.pnl) state.pnl = { rows: [], staff: [], config: [], employees: [], empSalary: [], empV: 0, stockCost: [] };
     if (pnlRows !== null && pnlRows !== undefined)   state.pnl.rows   = pnlRows;
@@ -17984,6 +18062,12 @@ async function gsPull() {
     }
     // v8.84: 同上 — 手填的名字转成 id，转过就推回 Sheet
     if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig();
+    // v8.85: channel 归属正规化之後，把 lead / 广告费的 platform 快照也对齐
+    const _snapFixed = _syncPlatformSnapshots();
+    if (_snapFixed > 0) {
+      console.log(`[platform sync] 对齐了 ${_snapFixed} 笔 lead/广告费的 platform`);
+      if (typeof toast === 'function') toast(`已修正 ${_snapFixed} 笔资料的 platform 归属 · 记得按 Push All 同步`);
+    }
     // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
     if (!state.pnl) state.pnl = { rows: [], staff: [], config: [], employees: [], empSalary: [], empV: 0, stockCost: [] };
     if (pnlRows !== null && pnlRows !== undefined)   state.pnl.rows   = pnlRows;
