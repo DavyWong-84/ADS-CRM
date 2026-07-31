@@ -3470,7 +3470,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.85</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.87</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3521,7 +3521,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.85</div>
+      <div class="nav-brand-version">v8.87</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3890,10 +3890,14 @@ body.contact-view-table .modal-backdrop.open {
     <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">A</span><span>All channels</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="adsPlatformSelect" data-pop="1" data-pop-icon="channel" class="cf-select" onchange="setAdsTab(this.value)" data-pop-placeholder="All" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_adsPlatformSelect" style="display: none;"><option value="all">All channels</option><option value="meta">Meta</option><option value="google">Google</option><option value="organic">Organic</option><option value="followup">Follow Up</option></select>
+        <!-- v8.87 修 bug: 这里原本写死 setAdsTab('meta', ...) —— 第二层以前只有 Meta 会出现，
+             所以硬编码没问题。v8.82 开放给所有 platform 之後，选任何 platform 的 channel
+             都会被强制跳回 Meta（Davy 点 Insta Organic 跳去 Meta 就是这个）。
+             改成沿用当前选的 platform。 -->
         <span id="popWrap_popSel_adsSubSelect" data-pop-wrap-for="adsSubSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_adsSubSelect" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_adsSubSelect')" aria-haspopup="listbox">
     <span class="pop-trigger-label"><span>All</span></span>
     <span class="pop-trigger-chevron">▾</span>
-  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab('meta', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
+  </button></span><select id="adsSubSelect" data-pop="1" class="cf-select" style="display:none;" onchange="setAdsTab(state.adsTab || 'all', this.value)" data-pop-placeholder="All" data-pop-orig-display="none" data-pop-hidden="1" data-pop-upgraded="1" data-pop-id="popSel_adsSubSelect">
         </select>
         <!-- v5.44: Outlet filter (只在 Spending Power tab 显示) -->
         <span id="popWrap_popSel_spendOutletSelect" data-pop-wrap-for="spendOutletSelect" style="display: none; width: auto;"><button type="button" id="pop-popSel_spendOutletSelect" class="pop-trigger" onclick="openPopover(event, 'popSel_spendOutletSelect')" aria-haspopup="listbox">
@@ -16488,9 +16492,13 @@ function _syncLocation(l) {
 // v6.71: 全量推 channels + locations (单 endpoint, 用现有 pushAll action 但只传这两个表).
 //   后端 pushAll 用 Object.keys(SCHEMAS).forEach, 没传的表跳过("skipped (not array)").
 //   所以只传 Channels + Locations 两个 array, 其他 4 个表不会被影响.
-async function gsPushConfig() {
+// v8.86: 加 silent 参数。
+//   之前只有「失败」才 toast，成功完全静默 —— 在 Settings 改完名字/归属没有任何反应，
+//   会让人以为没同步（Davy 就是这样跑去 Sheet 找，结果其实早就写进去了）。
+//   silent=true 给自动触发的场合用（pull 后的正规化），不要莫名其妙跳提示。
+async function gsPushConfig(silent) {
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : null;
-  if (!url) return;
+  if (!url) { if (!silent && typeof toast === 'function') toast('⚠️ 还没设定 Google Sheet 网址，改动只存在本机'); return; }
   try {
     // v8.82: Platforms 一起推（后端走 _writeTabByHeader 合并写，空阵列会被挡下不清表）
     const enrichedPlatforms = (state.platforms || []).map(p => ({
@@ -16535,6 +16543,7 @@ async function gsPushConfig() {
     if (parsed && parsed.success === false) {
       throw new Error(parsed.error || 'upstream failure');
     }
+    if (!silent && typeof toast === 'function') toast('✓ 已同步到 Google Sheet');   // v8.86: 成功也要给回馈
   } catch (e) {
     console.warn('GS config sync failed, queuing for retry:', e.message);
     // 不进 pending queue (queue 是单条 upsert 设计的, 不适合 pushAll).
@@ -17449,7 +17458,10 @@ function _normalizeSheetPullData(d) {
     name: c.name || '',
     platform: c.platform || '',
     active: toBool(c.active),
-    color: c.color || '',
+    // v8.86: 清洗色码 —— Sheet 里出现过 'var(--followup-color)' 这种 CSS 变量被误存进去
+    //   （Google Ads 那行就中了，害它在界面上显示成 Follow Up 的橘色）。
+    //   非 #RRGGBB 一律当没设，让它走 hashColor 自动配色；下次 push 会把那格洗干净。
+    color: _pColor(c.color),
     addedMonth: toMonthStr(c.addedMonth),
     ghlKeyword: c.ghlKeyword || ''   // v7.24: GHL tag 匹配词
   }));
@@ -17870,7 +17882,7 @@ async function _gsPullSilentInner(isRetry) {
       skipped.push('platforms');
     }
     // v8.84: platform 载入後，把 channel.platform 里手填的名字统一转成 id
-    if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig();
+    if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig(true);   // v8.86: 自动触发, 不跳提示
     // v8.85: channel 归属正规化之後，把 lead / 广告费的 platform 快照也对齐
     const _snapFixed = _syncPlatformSnapshots();
     if (_snapFixed > 0) {
@@ -18061,7 +18073,7 @@ async function gsPull() {
       skipped.push('platforms');
     }
     // v8.84: 同上 — 手填的名字转成 id，转过就推回 Sheet
-    if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig();
+    if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig(true);   // v8.86: 自动触发, 不跳提示
     // v8.85: channel 归属正规化之後，把 lead / 广告费的 platform 快照也对齐
     const _snapFixed = _syncPlatformSnapshots();
     if (_snapFixed > 0) {
