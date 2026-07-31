@@ -3470,7 +3470,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.82</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.83</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3521,7 +3521,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.82</div>
+      <div class="nav-brand-version">v8.83</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5332,7 +5332,19 @@ function activePlatforms() {
   const list = allPlatforms().filter(p => p.active !== false);
   return list.length ? list : DEFAULT_PLATFORMS;
 }
-function getPlatform(id) { return allPlatforms().find(p => p.id === id) || null; }
+// v8.83: 先按 id 找；找不到再按「名字」兜底。
+//   为什么要兜底：内建 4 个的 id 跟名字长得很像（meta/Meta），所以在 Google Sheet 手动
+//   改 channel 的 platform 栏时，很自然会填名字。自订 platform 的 id 是系统生成的随机码，
+//   填名字就对不上 → 显示「Unknown platform」。按名字兜底让手填也能正确对上。
+//   （名字在 Settings 新增时已查重，不会有两个同名的。）
+function getPlatform(id) {
+  if (!id) return null;
+  const list = allPlatforms();
+  const byId = list.find(p => p.id === id);
+  if (byId) return byId;
+  const k = String(id).trim().toLowerCase();
+  return list.find(p => String(p.name).trim().toLowerCase() === k) || null;
+}
 function platformName(id) { const p = getPlatform(id); return p ? p.name : (id || '?'); }
 function platformColor(id) { const p = getPlatform(id); return (p && p.color) || '#9497a9'; }
 function platformHasAd(id) { const p = getPlatform(id); return !!(p && p.hasAdSpend); }
@@ -9012,6 +9024,9 @@ const CHANNEL_LOGO_SVG = {
   xhs: '<svg class="chip-logo" viewBox="0 0 24 24" fill="#FF2442" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm-2.5 5.5v7l6-3.5-6-3.5z"/></svg>'
 };
 
+// v8.83: IG logo 的 gradient 唯一化用的流水号（见 chipLogoHTML 里的说明）
+let _igGradSeq = 0;
+
 // Auto-color palette for unknown channels (by name hash)
 const INITIAL_COLORS = ['var(--purple)', 'var(--organic-color)', 'var(--followup-color)', '#EF4444', '#3B82F6', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316', '#6366F1'];
 function hashColor(str) {
@@ -9032,7 +9047,15 @@ function chipLogoHTML(name, customColor) {
   if (n.includes('meta') || n.includes('facebook') || n.includes('fb') || n.includes('simply')) return CHANNEL_LOGO_SVG.meta;
   if (n.includes('google')) return CHANNEL_LOGO_SVG.google;
   if (n.includes('tiktok') || n.includes('tt ads') || n.includes('抖音')) return CHANNEL_LOGO_SVG.tiktok;
-  if (n.includes('instagram') || n === 'ig' || n.startsWith('ig ')) return CHANNEL_LOGO_SVG.instagram;
+  // v8.83: IG logo 是唯一用 <linearGradient> 的，而那个 gradient 的 id 写死叫 'ig-grad'。
+  //   同一页出现两个以上 IG logo 时 id 撞名 —— 浏览器只认第一个定义，后面的 fill="url(#ig-grad)"
+  //   指向的元素已被视为重复，填不到色 → 看起来「没有 icon」。
+  //   （症状：Contact 页下拉有 icon，Ads 页下拉同一个 Instagram 却是空白。）
+  //   修法：每次输出都给它一个唯一 id。
+  if (n.includes('instagram') || n === 'ig' || n.startsWith('ig ')) {
+    const _gid = 'ig-grad-' + (++_igGradSeq);
+    return CHANNEL_LOGO_SVG.instagram.split('ig-grad').join(_gid);
+  }
   if (n.includes('whatsapp') || n === 'wa' || n.startsWith('wa ')) return CHANNEL_LOGO_SVG.whatsapp;
   if (n.includes('xhs') || n.includes('小红书') || n.includes('redbook')) return CHANNEL_LOGO_SVG.xhs;
   // Non-brand channels: use custom color if set, else auto-hashed color
@@ -15939,8 +15962,14 @@ function modalAddPlatform() {
   if (!name) { toast('Fill name'); return; }
   if (allPlatforms().some(p => p.name.toLowerCase() === name.toLowerCase())) { toast('That name already exists'); return; }
   const color = document.getElementById('modal_pf_color')?.dataset.color || '#8B5CF6';
+  // v8.83: id 从名字生成（'TikTok Ads' → 'tiktok-ads'），不用随机码 —
+  //   这样在 Google Sheet 里看 Leads.platform / AdsSpend.platform 那栏是看得懂的，
+  //   手动改也不容易填错。撞名就加数字后缀。
+  let base = name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'platform';
+  let pid = base, i = 2;
+  while (allPlatforms().some(p => p.id === pid)) pid = base + '-' + (i++);
   state.platforms = allPlatforms().concat([{
-    id: uid('pf'), name,
+    id: pid, name,
     hasAdSpend: !!document.getElementById('modal_pf_ad')?.checked,
     color, builtin: false, active: true
   }]);
@@ -16000,6 +16029,16 @@ function _renderModalChannelsList() {
           <div class="cl-row-name">${esc(c.name)}</div>
           <div class="cl-row-meta">${platLabel}</div>
           <div class="cfg-fields">
+            <!-- v8.83: 加改名 —— 否则 channel 想跟 platform 取不同名字只能去 Sheet 改 -->
+            <div class="cfg-field"><label>Name</label>
+              <input type="text" class="cfg-in" value="${esc(c.name)}" onchange="_setChannelName('${esc(c.id)}', this.value)"></div>
+            <!-- v8.83: 直接在这里改 platform，不用去 Google Sheet 手填 id -->
+            <div class="cfg-field"><label>Platform</label>
+              <select class="cfg-in" onchange="_setChannelPlatform('${esc(c.id)}', this.value)">
+                ${_pf ? '' : '<option value="">— pick one —</option>'}
+                ${activePlatforms().map(p => `<option value="${esc(p.id)}"${_pf && p.id === _pf.id ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}
+              </select>
+            </div>
             <div class="cfg-field"><label>GHL tag keyword</label><input type="text" class="cfg-in" value="${esc(c.ghlKeyword || '')}" placeholder="e.g. google" onchange="_setChannelKeyword('${esc(c.id)}', this.value)"></div>
           </div>
         </div>
@@ -16031,6 +16070,30 @@ function _renderModalStoresList() {
 }
 
 // v7.24: 配置字段编辑 — onchange 只更新 state(草稿, 不重渲染防丢焦点), 点 Save 才推 Sheet.
+// v8.83: 改 channel 名字。lead 是靠 channelId 关联的，改名不影响任何历史数据。
+function _setChannelName(id, v) {
+  const c = getChannel(id);
+  if (!c) return;
+  const name = String(v || '').trim();
+  if (!name) { toast('Name cannot be empty'); _renderModalChannelsList(); return; }
+  c.name = name;
+  saveState();
+  if (typeof _syncChannel === 'function') _syncChannel(c);
+  if (typeof refreshSelects === 'function') refreshSelects();
+  setTimeout(_renderModalChannelsList, 30);
+}
+// v8.83: 改 channel 归属的 platform。存的一定是 platform 的 id（不是名字），
+//   所以在 Sheet 里手填过名字的，只要在这里重选一次就会写成正确的 id。
+function _setChannelPlatform(id, pid) {
+  const c = getChannel(id);
+  if (!c || !pid) return;
+  c.platform = pid;
+  saveState();
+  if (typeof _syncChannel === 'function') _syncChannel(c);
+  if (typeof refreshSelects === 'function') refreshSelects();
+  setTimeout(_renderModalChannelsList, 30);
+  toast(`${c.name} → ${platformName(pid)}`);
+}
 function _setChannelKeyword(id, v) { const c = (state.channels || []).find(x => x.id === id); if (c) c.ghlKeyword = v; }
 function _setStoreKeyword(id, v)   { const l = (state.locations || []).find(x => x.id === id); if (l) l.ghlKeyword = v; }
 function _setStoreCode(id, v)      { const l = (state.locations || []).find(x => x.id === id); if (l) l.crm33Code = v; }
