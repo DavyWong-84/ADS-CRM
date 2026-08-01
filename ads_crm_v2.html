@@ -3566,7 +3566,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.91</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.92</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.91</div>
+      <div class="nav-brand-version">v8.92</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -9137,7 +9137,12 @@ function upgradeAllPopSelects() {
     if (iconKind === 'channel') {
       options.itemIcon = (it) => {
         if (!it.value) return '';
+        // v8.92: 改吃 iconHTML —— 才看得到 Settings 里手动选的 icon。
+        //   Ads 页第一层下拉的 value 是 platform id, 所以 channel 找不到就找 platform。
         const ch = state.channels?.find(c => c.id === it.value || c.name === it.label);
+        if (ch && typeof iconHTML === 'function') return iconHTML(ch, 'channel');
+        const _pf = (typeof getPlatform === 'function') ? getPlatform(it.value) : null;
+        if (_pf && typeof iconHTML === 'function') return iconHTML(_pf, 'platform');
         return (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, ch?.color) : '';
       };
     } else if (iconKind === 'location') {
@@ -9426,7 +9431,7 @@ function renderListAsTableHTML(slice) {
     // channel chip
     const ch = state.channels.find(c => c.id === l.channelId);
     const channelChip = l.channelName
-      ? `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}${esc(l.channelName)}</span>`
+      ? `<span class="lc-channel">${ch ? iconHTML(ch, 'channel') : chipLogoHTML(l.channelName, '')}${esc(l.channelName)}</span>`
       : '<span class="muted">—</span>';
     // location chip — v6.78 codex P3: fallback 跟 cards 模式一致 (l.location 老字段)
     const loc = state.locations.find(x => x.id === l.locationId);
@@ -9548,12 +9553,16 @@ function renderList() {
       selected: state.listChannelId || '',
       triggerFormatter: (it) => {
         if (!it.value) return `<span>All channels</span>`;
-        const logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, it.color) : '';
+        const _c = (state.channels || []).find(c => c.id === it.value);   // v8.92
+        const logo = _c && typeof iconHTML === 'function' ? iconHTML(_c, 'channel')
+                   : ((typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, it.color) : '');
         return `${logo}<span>${esc(it.label)}</span>`;
       },
       itemFormatter: (it) => {
         if (!it.value) return `<span class="pop-item-icon" style="width:14px;height:14px;border-radius:50%;background:var(--purple);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:600;">A</span><span>All channels</span>`;
-        const logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, it.color) : '';
+        const _c = (state.channels || []).find(c => c.id === it.value);   // v8.92
+        const logo = _c && typeof iconHTML === 'function' ? iconHTML(_c, 'channel')
+                   : ((typeof chipLogoHTML === 'function') ? chipLogoHTML(it.label, it.color) : '');
         return `<span class="pop-item-icon">${logo}</span><span>${esc(it.label)}</span>`;
       },
       onChange: (v) => { setListChannelFilter(v); }
@@ -9710,7 +9719,7 @@ function renderList() {
       const _loc = state.locations.find(x => x.id === l.locationId);
       const locName = (_loc && _loc.name) || l.location || l.locationName || '';
       const outHtml = locName ? `<span class="lc-out">${esc(locName)}</span>` : '';
-      const chHtml = l.channelName ? (() => { const ch = state.channels.find(c => c.id === l.channelId); return `<span class="lc-channel">${chipLogoHTML(l.channelName, ch && ch.color)}<span class="lc-chtext">${esc(l.channelName)}</span></span>`; })() : '';
+      const chHtml = l.channelName ? (() => { const ch = state.channels.find(c => c.id === l.channelId); return `<span class="lc-channel">${ch ? iconHTML(ch, 'channel') : chipLogoHTML(l.channelName, '')}<span class="lc-chtext">${esc(l.channelName)}</span></span>`; })() : '';
       const metaParts = [outHtml, chHtml].filter(Boolean).join('<span class="lc-dot">·</span>');
       // 今天 / 过期 (只对 booked, 决定日期方块颜色)
       let whenCls = '';
@@ -21785,7 +21794,8 @@ function renderInboxActivity() {
     let tm = _leadAddedAt(l) || String(l.updatedAt || '').slice(11, 16) || '';
     // v8.52: channel 带回 logo (跟 Contact 卡片一致)
     const _chObj = (state.channels || []).find(x => x.id === l.channelId);
-    const _logo = (typeof chipLogoHTML === 'function') ? chipLogoHTML(l.channelName, _chObj && _chObj.color) : '';
+    const _logo = (_chObj && typeof iconHTML === 'function') ? iconHTML(_chObj, 'channel')
+                : ((typeof chipLogoHTML === 'function') ? chipLogoHTML(l.channelName, '') : '');   // v8.92
     const ch = _inboxShortCh(l.channelName);
     const chHtml = ch ? `<span class="sl-ch">${_logo}${E(ch)}</span>` : '';
     let extra = `<span class="sl-gap"></span>` + chHtml;   // 入库两组: 只有 channel, 靠右
