@@ -653,6 +653,9 @@ table.data tr.subheader .subheader-pad { background: var(--purple-bg); padding: 
   height: 12px;
   flex-shrink: 0;
 }
+/* v8.90: 通用 icon 的容器 — SVG 用 currentColor，颜色由这层的 style 决定 */
+.chip-generic { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.chip-generic svg { width: 12px; height: 12px; }
 .chip-initial {
   width: 14px;
   height: 14px;
@@ -3004,6 +3007,93 @@ body.contact-view-table .modal-backdrop.open {
 .settings-row-sublabel { font-size: 12px; color: var(--silver); margin-top: 2px; }
 .settings-row-value { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray); }
 .settings-row-chevron { color: var(--silver); font-size: 14px; line-height: 1; }
+/* ══ v8.89: 报告弹窗的 Copy + Send 按钮列 ══ */
+.rpt-btn-row { display: flex; gap: 8px; }
+.rpt-btn-row .rpt-copy { flex: 0 0 auto; padding-left: 16px; padding-right: 16px; }
+.rpt-btn-row .rpt-send { flex: 1; }
+.rpt-btn-row .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ══ v8.90: Platforms & Channels 树状 ══ */
+.tg { border-bottom: 1px solid var(--border); }
+.tg:last-of-type { border-bottom: none; }
+.tg.off { opacity: .5; }
+.tg-head { display: flex; align-items: center; gap: 9px; padding: 13px 16px; background: var(--surface);
+           cursor: pointer; user-select: none; }
+.tg-head:hover { background: var(--surface-2); }
+.tg-name { font-size: 14px; font-weight: 600; }
+.tg-chev { margin-left: auto; color: var(--silver); font-size: 11px; }
+.tk { display: flex; align-items: center; gap: 9px; padding: 11px 16px 11px 44px; position: relative;
+      border-top: .5px solid var(--border-light); font-size: 13px; cursor: pointer; user-select: none; }
+.tk:hover { background: rgba(0,0,0,.015); }
+.tk.off { opacity: .5; }
+.tk::before { content: ''; position: absolute; left: 26px; top: 0; height: 50%; width: 1px; background: var(--border); }
+.tk::after  { content: ''; position: absolute; left: 26px; top: 50%; width: 9px; height: 1px; background: var(--border); }
+.tk-ico { display: inline-flex; align-items: center; gap: 5px; flex-shrink: 0; }
+.tk-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.tk-name { font-weight: 500; }
+.tk-kw { font-size: 11px; color: var(--silver); }
+.tk-add { padding: 10px 16px 12px 44px; font-size: 12px; color: var(--purple-deep); font-weight: 500;
+          cursor: pointer; border-top: .5px solid var(--border-light); }
+.tk-add:hover { background: var(--purple-bg); }
+.tk-empty { padding: 10px 16px 10px 44px; font-size: 12px; color: var(--silver);
+            border-top: .5px solid var(--border-light); }
+.tk-new { display: flex; align-items: center; gap: 7px; padding: 9px 16px 11px 44px;
+          border-top: .5px solid var(--border-light); background: var(--purple-bg); }
+.tk-new .fin { flex: 1; min-height: 33px; padding: 6px 10px; }
+.tk-new-ok { padding: 7px 14px; font-size: 12.5px; }
+.tk-new-x { background: none; border: none; color: var(--silver); font-size: 13px; cursor: pointer;
+            padding: 6px 4px; font-family: inherit; }
+/* inline 编辑区 */
+.ed { display: flex; background: linear-gradient(180deg, rgba(133,91,251,.05), rgba(133,91,251,.02));
+      border-top: .5px solid var(--border-light); }
+.ed-bar { width: 3px; flex-shrink: 0; }
+.ed-body { flex: 1; padding: 13px 16px 14px 41px; min-width: 0; }
+.fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.f label { display: block; font-size: 9.5px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
+           color: var(--silver); margin-bottom: 5px; }
+.fin { width: 100%; font-family: inherit; font-size: 13px; padding: 8px 11px; background: #fff;
+       border: 1px solid var(--border); border-radius: 8px; color: var(--black); min-height: 35px; }
+.fin:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-subtle); }
+select.fin { cursor: pointer; }
+label.fin { display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 12.5px; }
+label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor: pointer; }
+.fhint { font-size: 10.5px; color: var(--silver); margin-top: 5px; line-height: 1.45; }
+.ed-foot { display: flex; align-items: center; gap: 9px; margin-top: 14px; padding-top: 12px;
+           border-top: .5px solid var(--border); }
+.swatch-btn { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; background: #fff;
+              border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; cursor: pointer;
+              font-family: inherit; color: var(--black); }
+.swatch-btn:hover { border-color: var(--purple); }
+.swatch-btn .chev { color: var(--silver); }
+.ed-lock { margin-left: auto; font-size: 11px; color: var(--silver); }
+.del-btn { margin-left: auto; font-size: 11.5px; color: var(--red); background: none; border: none;
+           padding: 6px 4px; cursor: pointer; font-family: inherit; }
+.del-btn:hover { text-decoration: underline; }
+@media (max-width: 640px) {
+  .tk { padding-left: 38px; font-size: 12.5px; }
+  .tk::before, .tk::after { left: 22px; }
+  .tk-add, .tk-empty { padding-left: 38px; }
+  .ed-body { padding-left: 38px; }
+  .fgrid { grid-template-columns: 1fr; }
+}
+
+/* ══ v8.90: Icon & Color picker ══ */
+.ip-body { padding: 4px 18px 16px; max-height: 62vh; overflow-y: auto; }
+.ip-label { font-size: 10px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
+            color: var(--silver); margin: 12px 0 8px; }
+.ip-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+.ip-ic { width: 44px; height: 44px; flex: 0 0 auto; border: 1px solid var(--border); border-radius: 9px;
+         background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+         color: var(--gray); transition: .12s; padding: 0; }
+.ip-ic:hover { border-color: var(--purple); background: var(--purple-bg); }
+.ip-ic.selected { border-color: var(--purple); border-width: 2px; background: var(--purple-bg); }
+.ip-ic .chip-logo, .ip-ic .chip-generic svg { width: 19px; height: 19px; }
+.ip-ic .chip-initial { width: 19px; height: 19px; font-size: 11px; }
+.ip-inherit { width: auto; padding: 0 13px; gap: 8px; font-size: 12.5px; font-weight: 500;
+              font-family: inherit; color: var(--black); }
+.ip-hint { font-size: 11px; color: var(--silver); margin-top: 10px; line-height: 1.5; }
+.ip-foot { padding: 12px 18px 16px; border-top: .5px solid var(--border); }
+
 /* ══ v8.82: Settings → Platforms ══ */
 .pf-pill { display: inline-block; font-size: 9.5px; font-weight: 600; letter-spacing: 0.3px;
            padding: 2px 6px; border-radius: 20px; margin-left: 5px; vertical-align: 1px; }
@@ -3470,7 +3560,7 @@ body.contact-view-table .modal-backdrop.open {
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.88</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.90</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3481,7 +3571,7 @@ body.contact-view-table .modal-backdrop.open {
       <!-- v8.43: AI Assistant / Search 入口移除 (Davy 不需要) -->
       <button onclick="openAlertsModal()" id="alertsBtn" aria-label="Alerts" title="Data alerts" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-        <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">6</span>
+        <span id="alertsBadge" style="display:none;position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;background:var(--red);color:#fff;border-radius:8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-sizing:content-box;">1</span>
       </button>
       <button onclick="nav('pending')" id="pendingTopbarBtn" aria-label="Pending leads" title="Pending leads (GHL)" style="position:relative;width:36px;height:36px;border-radius: 8px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
@@ -3521,12 +3611,12 @@ body.contact-view-table .modal-backdrop.open {
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.88</div>
+      <div class="nav-brand-version">v8.90</div>
     </div>
   </div>
   <div class="nav-divider"></div>
   <!-- v8.43: AI Assistant / Search 侧栏入口移除 (Davy 不需要) -->
-  <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 8px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">6</span></button>
+  <button class="nav-item nav-tool" onclick="openAlertsModal()" id="alertsBtnNav" data-tooltip="Alerts" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg></span><span class="nav-label">Alerts</span><span id="alertsBadgeNav" style="display: inline-flex; margin-left: auto; min-width: 18px; height: 18px; padding: 0px 5px; background: var(--red); color: rgb(255, 255, 255); border-radius: 8px; font-size: 10px; font-weight: 700; align-items: center; justify-content: center;">1</span></button>
   <button class="nav-item" data-page="pending" data-tooltip="Inbox" style="position:relative;"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg></span><span class="nav-label">Inbox</span><span id="pendingBadgeNav" style="display:none;margin-left:auto;min-width:18px;height:18px;padding:0 5px;background:var(--red);color:#fff;border-radius: 8px;font-size:10px;font-weight:700;align-items:center;justify-content:center;">0</span></button>
   <div class="nav-divider"></div>
   <button class="nav-item" data-page="contact" data-tooltip="Contact"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></span><span class="nav-label">Contact</span></button>
@@ -3602,10 +3692,10 @@ body.contact-view-table .modal-backdrop.open {
               <button class="toggle" data-mode="year" onclick="setListMode('year')">Year</button>
             </div>
             <button type="button" class="date-btn cf-select" id="listMonth_btn" onclick="openMonthPicker('listMonth')">
-              <span id="listMonth_label">Jul 2026</span>
+              <span id="listMonth_label">Aug 2026</span>
               <span class="date-btn-icon">📅</span>
             </button>
-            <input type="hidden" id="listMonth" value="2026-07">
+            <input type="hidden" id="listMonth" value="2026-08">
             <button type="button" class="date-btn cf-select" id="listYearBtn" style="display:none;" onclick="openYearPicker('listYear', this)">
               <span id="listYear_label">2026</span>
               <span class="date-btn-icon">📅</span>
@@ -3682,10 +3772,10 @@ body.contact-view-table .modal-backdrop.open {
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-07-31</span>
+                      <span id="f_leadDate_label">2026-08-01</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-07-31">
+                    <input type="hidden" id="f_leadDate" value="2026-08-01">
                   </div>
                 </div>
               </div>
@@ -3812,10 +3902,10 @@ body.contact-view-table .modal-backdrop.open {
           <span class="date-btn-icon">📅</span>
         </button>
         <button type="button" class="date-btn cf-select" id="summaryMonth_btn" style="display:block;" onclick="openMonthPicker('summaryMonth')">
-          <span id="summaryMonth_label">Jul 2026</span>
+          <span id="summaryMonth_label">Aug 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <input type="hidden" id="summaryMonth" value="2026-07">
+        <input type="hidden" id="summaryMonth" value="2026-08">
       </div>
     </div>
     <div class="unified-header-spacer"></div>
@@ -3839,10 +3929,10 @@ body.contact-view-table .modal-backdrop.open {
           <span class="date-btn-icon">📅</span>
         </button>
         <button type="button" class="date-btn cf-select" id="storeMonth_btn" onclick="openMonthPicker('storeMonth')">
-          <span id="storeMonth_label">Jul 2026</span>
+          <span id="storeMonth_label">Aug 2026</span>
           <span class="date-btn-icon">📅</span>
         </button>
-        <input type="hidden" id="storeMonth" value="2026-07">
+        <input type="hidden" id="storeMonth" value="2026-08">
         <button type="button" class="date-btn cf-select" id="storeFromMonth_btn" style="display:none;" onclick="openMonthPicker('storeFromMonth')">
           <span id="storeFromMonth_label">From</span>
           <span class="date-btn-icon">📅</span>
@@ -4207,20 +4297,16 @@ body.contact-view-table .modal-backdrop.open {
             <div class="settings-group-title">Workspace</div>
             <div class="settings-group-card">
               <!-- v8.82: Platforms 放 Channels 上面 (channel 要先有 platform 才能挂) -->
+              <!-- v8.90: Platforms 和 Channels 合并成一个树状页（层级看得见） -->
               <div class="settings-row" onclick="openSettingsModal('platforms')">
                 <div>
-                  <div class="settings-row-label">Platforms</div>
-                  <div class="settings-row-sublabel" id="settingsPlatformStatus_m">4 active</div>
+                  <div class="settings-row-label">Platforms &amp; Channels</div>
+                  <div class="settings-row-sublabel" id="settingsPlatformStatus_m">4 platforms · 4 channels</div>
                 </div>
                 <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
               </div>
-              <div class="settings-row" onclick="openSettingsModal('channels')">
-                <div><div class="settings-row-label">Channels</div></div>
-                <div class="settings-row-value">
-                  <span id="settingsChannelStatus_m">4 active</span>
-                  <span class="settings-row-chevron">›</span>
-                </div>
-              </div>
+              <!-- 旧的 Channels 入口已并入上面那个；保留隐藏元素免得旧程式找不到 id 报错 -->
+              <span id="settingsChannelStatus_m" style="display:none;">4 active</span>
               <div class="settings-row" onclick="openSettingsModal('stores')">
                 <div><div class="settings-row-label">Stores</div></div>
                 <div class="settings-row-value">
@@ -4267,11 +4353,11 @@ body.contact-view-table .modal-backdrop.open {
                 </div>
                 <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
               </div>
-              <!-- v8.79: 月报 YTD (自动那条在每月最后一天 10 PM, 这里可随时补发) -->
+              <!-- v8.79: 月报 YTD (自动那条在每月 1 号早上 8-9 AM, 这里可随时补发) -->
               <div class="settings-row" onclick="openSettingsModal('ytdreport')">
                 <div>
                   <div class="settings-row-label">YTD report</div>
-                  <div class="settings-row-sublabel" id="yrRowSub_m">2 WhatsApp · auto month end 10 PM</div>
+                  <div class="settings-row-sublabel" id="yrRowSub_m">2 WhatsApp · auto 1st of month 8-9 AM</div>
                 </div>
                 <div class="settings-row-value"><span class="settings-row-chevron">›</span></div>
               </div>
@@ -4332,14 +4418,12 @@ body.contact-view-table .modal-backdrop.open {
           <div class="settings-group-title">Workspace</div>
           <div class="settings-group-card">
             <!-- v8.82 -->
+            <!-- v8.90: 两个入口合并 -->
             <div class="settings-md-nav-row" data-section="platforms" onclick="selectSettingsSection('platforms')">
-              <span>Platforms</span>
-              <span class="settings-md-nav-meta" id="settingsPlatformStatus">4 active</span>
+              <span>Platforms &amp; Channels</span>
+              <span class="settings-md-nav-meta" id="settingsPlatformStatus">4 platforms · 4 channels</span>
             </div>
-            <div class="settings-md-nav-row" data-section="channels" onclick="selectSettingsSection('channels')">
-              <span>Channels</span>
-              <span class="settings-md-nav-meta" id="settingsChannelStatus">4 active</span>
-            </div>
+            <span id="settingsChannelStatus" style="display:none;">4 active</span>
             <div class="settings-md-nav-row" data-section="stores" onclick="selectSettingsSection('stores')">
               <span>Stores</span>
               <span class="settings-md-nav-meta" id="settingsStoreStatus">3 active</span>
@@ -4374,7 +4458,7 @@ body.contact-view-table .modal-backdrop.open {
             <!-- v8.79 -->
             <div class="settings-md-nav-row" data-section="ytdreport" onclick="selectSettingsSection('ytdreport')">
               <span>YTD report</span>
-              <span class="settings-md-nav-meta">auto month end</span>
+              <span class="settings-md-nav-meta">auto 1st, 8-9 AM</span>
             </div>
           </div>
         </div>
@@ -9066,11 +9150,35 @@ function upgradeAllPopSelects() {
 const CHANNEL_LOGO_SVG = {
   meta: '<svg class="chip-logo" viewBox="0 0 24 24" fill="var(--meta-color)" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
   google: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>',
-  tiktok: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="#FE2C55" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/></svg>',
+  // v8.90 修: 之前是纯红色 #FE2C55, 不是 TikTok 的品牌样式。
+  //   正确的是「黑色音符 + 青(#25F4EE)红(#FE2C55)重影」— 同一条路径画三次, 前两次做位移。
+  tiktok: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><g transform="translate(-1,-0.6)"><path fill="#25F4EE" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/></g><g transform="translate(1,0.6)"><path fill="#FE2C55" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/></g><path fill="#010101" d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.1z"/></svg>',
   instagram: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="ig-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F58529"/><stop offset="50%" stop-color="#DD2A7B"/><stop offset="100%" stop-color="#8134AF"/></linearGradient></defs><path fill="url(#ig-grad)" d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63 3.35.94 2.68 1.34 2.01 2.01 1.34 2.68.94 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.31.79.71 1.46 1.38 2.13.67.67 1.34 1.07 2.13 1.38.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.31 1.46-.71 2.13-1.38.67-.67 1.07-1.34 1.38-2.13.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.31-.79-.71-1.46-1.38-2.13C21.32 1.34 20.65.94 19.86.63c-.76-.3-1.64-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 12 18.16 6.16 6.16 0 0 0 12 5.84zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.85a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>',
   whatsapp: '<svg class="chip-logo" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>',
-  xhs: '<svg class="chip-logo" viewBox="0 0 24 24" fill="#FF2442" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm0 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9 4.03-9 9-9zm-2.5 5.5v7l6-3.5-6-3.5z"/></svg>'
+  // v8.90 修: 之前是「圆形 + 播放三角」, 看起来像 YouTube。改成红底圆角方块 + 白色笔记行
+  //   (小红书是笔记 app, 这个形象好认得多)。
+  xhs: '<svg class="chip-logo" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3.5" width="20" height="17" rx="5" fill="#FF2442"/><path d="M7.5 9h9M7.5 12.5h9M7.5 16h5.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>'
 };
+
+// ══ v8.90: 通用 icon（给没有品牌 logo 的 platform / channel 用）══════════════
+//   线性风格, stroke-width 1.8, 用 currentColor 上色 → 颜色由外面的 style 决定。
+//   key 会存进 Sheet 的 icon 栏, 所以【不要改 key 名】, 改了旧资料就配不到。
+const GENERIC_ICON_SVG = {
+  leaf:   '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
+  chat:   '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+  phone:  '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2 4.2 2 2 0 0 1 4 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.1a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>',
+  mail:   '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>',
+  door:   '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4v16"/><path d="M17 4H8a2 2 0 0 0-2 2v14"/><path d="M6 20h13"/><circle cx="15" cy="12" r=".6" fill="currentColor"/></svg>',
+  users:  '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  search: '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+  video:  '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none"/></svg>',
+  star:   '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 15 9l6.5.9-4.7 4.6 1.1 6.5-5.9-3.1-5.9 3.1 1.1-6.5L2.5 9.9 9 9z"/></svg>',
+  tag:    '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2c0 .5.2 1 .6 1.4l8.8 8.8a2 2 0 0 0 2.8 0l7.2-7.2a2 2 0 0 0 0-2.8z"/><circle cx="7" cy="7" r="1.2" fill="currentColor"/></svg>',
+  globe:  '<svg class="chip-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 0 20 15.3 15.3 0 0 1 0-20"/></svg>'
+};
+// icon 选择器要显示的顺序（'letter' 是特例：首字母圆圈，不在 SVG 库里）
+const ICON_PICKER_BRAND = ['meta', 'google', 'instagram', 'tiktok', 'whatsapp', 'xhs'];
+const ICON_PICKER_GENERIC = ['letter', 'leaf', 'chat', 'phone', 'mail', 'door', 'users', 'search', 'video', 'star', 'tag', 'globe'];
 
 // v8.83: IG logo 的 gradient 唯一化用的流水号（见 chipLogoHTML 里的说明）
 let _igGradSeq = 0;
@@ -9081,6 +9189,48 @@ function hashColor(str) {
   let h = 0;
   for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
   return INITIAL_COLORS[Math.abs(h) % INITIAL_COLORS.length];
+}
+
+// ══ v8.90: icon 解析 — 全站唯一出口 ═══════════════════════════════════════
+// 优先序：① 手动选的 → ② (channel) 继承它 platform 的 → ③ 按名字自动配 → ④ 首字母圆圈
+//   entity = platform 或 channel 物件；kind = 'platform' | 'channel'
+//   ⚠️ 'letter' 是特例 key：代表「我就是要首字母」，不是「没设定」。
+function resolveIconKey(entity, kind) {
+  if (!entity) return null;
+  const manual = String(entity.icon || '').trim();
+  if (manual) return manual;                        // ① 手动选的最优先
+  if (kind === 'channel') {
+    const p = getPlatform(entity.platform);
+    if (p) return resolveIconKey(p, 'platform');    // ② 继承 platform（"Same as X"）
+  }
+  return null;                                      // ③ 交给下面按名字自动配
+}
+
+function iconHTML(entity, kind) {
+  if (!entity) return '';
+  const key = resolveIconKey(entity, kind);
+  const fallbackColor = () =>
+    entity.color ||
+    (kind === 'channel' ? platformColor(entity.platform) : '') ||
+    (typeof hashColor === 'function' ? hashColor(entity.name || '') : '#9497a9');
+
+  if (key === 'letter') {                            // 明确选了首字母
+    const letter = String(entity.name || '?').trim().charAt(0).toUpperCase();
+    return `<span class="chip-initial" style="background:${fallbackColor()};">${letter}</span>`;
+  }
+  if (key && CHANNEL_LOGO_SVG[key]) return CHANNEL_LOGO_SVG[key];   // 品牌 logo（自带配色）
+  if (key && GENERIC_ICON_SVG[key]) {                                // 通用 icon（吃 currentColor）
+    return `<span class="chip-generic" style="color:${fallbackColor()};">${GENERIC_ICON_SVG[key]}</span>`;
+  }
+  // ③ 没手动选、也没继承到明确的 key → 按名字自动配
+  //   ⚠️ channel 这里要用【platform 的名字】去配，不是 channel 自己的名字 ——
+  //   否则「Insta Organic」这种名字配不到 instagram，继承就形同虚设。
+  if (kind === 'channel') {
+    const p = getPlatform(entity.platform);
+    if (p) return chipLogoHTML(p.name, p.color || entity.color);
+  }
+  // ④ platform 自己 / 找不到 platform 的 channel → 用自己的名字，配不到就首字母圆圈
+  return chipLogoHTML(entity.name, entity.color);
 }
 
 // Main helper: returns SVG or initial circle for a channel/location name
@@ -15612,8 +15762,9 @@ function updateSettingsRowStatuses() {
     if (mobile) mobile.innerHTML = html;
   };
 
-  // v8.82: Platforms
-  setBoth('settingsPlatformStatus', activePlatforms().length + ' active');
+  // v8.90: 合并后一行显示两个数字
+  setBoth('settingsPlatformStatus',
+    `${activePlatforms().length} platforms · ${(state.channels || []).filter(c => c.active !== false).length} channels`);
 
   // Channels
   const chCount = (state.channels || []).filter(c => c.active !== false).length;
@@ -15647,7 +15798,7 @@ function confirmClearCacheReload() {
 // v5.75: Open the appropriate settings modal
 function openSettingsModal(kind) {
   const titles = {
-    platforms: 'Platforms',   // v8.82
+    platforms: 'Platforms & Channels',   // v8.90: 两页合并
     channels: 'Channels',
     stores: 'Stores',
     gsheet: 'Google Sheet sync',
@@ -15674,7 +15825,7 @@ let _currentSettingsSection = null;
 function selectSettingsSection(kind) {
   _currentSettingsSection = kind;
   const titles = {
-    platforms: 'Platforms',   // v8.82
+    platforms: 'Platforms & Channels',   // v8.90: 两页合并
     channels: 'Channels',
     stores: 'Stores',
     gsheet: 'Google Sheet sync',
@@ -15696,11 +15847,11 @@ function selectSettingsSection(kind) {
 }
 
 function _buildSettingsModalBody(kind) {
-  // v8.82: Platforms — 放 Channels 前面（channel 要先有 platform 才能挂）
+  // v8.90: Platforms & Channels 合并成树状一页（原本 platforms / channels 两页）
   if (kind === 'platforms') {
     return `
-      <div class="settings-modal-section">
-        <div id="modalPlatformsList"></div>
+      <div class="settings-modal-section" style="padding:0">
+        <div id="platformTree"></div>
       </div>
       <div class="settings-modal-section">
         <div class="settings-modal-section-title">Add new platform</div>
@@ -15863,7 +16014,11 @@ function _buildSettingsModalBody(kind) {
         <div class="dr-preview" id="drPreview"><div class="dr-loading">Tap “Build report” to generate today’s numbers.<br>Takes about 30 seconds.</div></div>
       </div>
       <div class="settings-modal-section">
-        <button class="btn btn-primary btn-full" id="drSendBtn" onclick="dailyReportAction()">Build report</button>
+        <!-- v8.89: 加 Copy — 建好之後可以复制整份，自己贴去别的地方 -->
+        <div class="rpt-btn-row">
+          <button class="btn btn-outline rpt-copy" id="drCopyBtn" onclick="copyReportText('daily')" disabled>Copy</button>
+          <button class="btn btn-primary rpt-send" id="drSendBtn" onclick="dailyReportAction()">Build report</button>
+        </div>
         <div class="dr-status" id="drStatus">Auto-sends every day at 8:44 PM · building here does not affect it</div>
       </div>
     `;
@@ -15876,8 +16031,12 @@ function _buildSettingsModalBody(kind) {
         <div class="dr-preview" id="yrPreview"><div class="dr-loading">Tap “Build report” to generate this year’s numbers.<br>Takes about 40 seconds.</div></div>
       </div>
       <div class="settings-modal-section">
-        <button class="btn btn-primary btn-full" id="yrSendBtn" onclick="ytdReportAction()">Build report</button>
-        <div class="dr-status" id="yrStatus">Auto-sends on the last day of each month at 10 PM · building here does not affect it</div>
+        <!-- v8.89: 同日报，加 Copy -->
+        <div class="rpt-btn-row">
+          <button class="btn btn-outline rpt-copy" id="yrCopyBtn" onclick="copyReportText('ytd')" disabled>Copy</button>
+          <button class="btn btn-primary rpt-send" id="yrSendBtn" onclick="ytdReportAction()">Build report</button>
+        </div>
+        <div class="dr-status" id="yrStatus">Auto-sends on the 1st of each month at 8-9 AM · building here does not affect it</div>
       </div>
     `;
   }
@@ -15885,8 +16044,9 @@ function _buildSettingsModalBody(kind) {
 }
 
 function _initSettingsModal(kind) {
-  if (kind === 'platforms') {   // v8.82
-    _renderModalPlatformsList();
+  if (kind === 'platforms') {   // v8.90: 树状页
+    _treeOpen = null;
+    _renderPlatformTree();
     _pfRenderSwatches();
     _pfPreview();
   }
@@ -15923,17 +16083,177 @@ function _initSettingsModal(kind) {
   if (kind === 'dailyreport') {
     _drText = ''; _drSnap = null;   // v8.77: 每次开都重来 (不留上次建好的旧数字)
     _drSending = false;
+    const cb = document.getElementById('drCopyBtn'); if (cb) { cb.disabled = true; cb.textContent = 'Copy'; }   // v8.89
   }
   if (kind === 'ytdreport') {
     _yrText = '';                   // v8.79: 同上
     _yrSending = false;
+    const cb = document.getElementById('yrCopyBtn'); if (cb) { cb.disabled = true; cb.textContent = 'Copy'; }   // v8.89
   }
 }
 
 // Mirror the legacy lists into the modal (v5.76: 用新 cl-row 风格 + iOS toggle + color picker modal)
 // v5.79: 同样的渲染函数也用于 desktop master-detail (id 都是 modalChannelsList / modalStoresList)
-// ══ v8.82: Settings → Platforms（跟 Channels 页同一套 class 与模式）══════════
-//   platform 存在 Sheet 的 Platforms 表。这里改完就 gsPushConfig 推回去。
+// ══ v8.90: Platforms & Channels 树状页 ══════════════════════════════════
+//   为什么合并：platform 和 channel 是父子关系，拆成两页看不出层级，Davy 一直搞混。
+//   一次只展开一行（_treeOpen），避免整页都是输入框。
+let _treeOpen = null;    // 'p:<id>' 或 'c:<id>' — 目前展开的那一行
+let _treeAdding = null;  // 正在哪个 platform 底下加 channel
+
+function _treeToggle(kind, id) {
+  const key = (kind === 'p' ? 'p:' : 'c:') + id;
+  _treeOpen = (_treeOpen === key) ? null : key;
+  _renderPlatformTree();
+}
+
+function _treeEditor(kind, item) {
+  const isCh = kind === 'channel';
+  const q = s => esc(String(s));
+  const color = item.color || (isCh ? platformColor(item.platform) : '') || '#9497a9';
+  const curPf = isCh ? getPlatform(item.platform) : null;
+
+  const left = isCh
+    ? `<div class="f"><label>Platform</label>
+         <select class="fin" onchange="_setChannelPlatform('${q(item.id)}', this.value)">
+           ${activePlatforms().map(p =>
+             `<option value="${q(p.id)}"${curPf && curPf.id === p.id ? ' selected' : ''}>${esc(p.name)}</option>`).join('')}
+         </select></div>`
+    : `<div class="f"><label>Ad spend</label>
+         <label class="fin"><input type="checkbox" ${item.hasAdSpend ? 'checked' : ''}
+           onchange="_setPlatformAd('${q(item.id)}', this.checked)">Has ad spend</label></div>`;
+
+  const kw = isCh
+    ? `<div class="f" style="margin-top:11px"><label>GHL tag keyword</label>
+         <input class="fin" type="text" value="${esc(item.ghlKeyword || '')}" placeholder="e.g. simply 5"
+                onchange="_setChannelKeyword('${q(item.id)}', this.value)">
+         <div class="fhint">GHL 推来的标签含这个字，就自动归到这个 channel</div></div>`
+    : '';
+
+  const del = item.builtin
+    ? '<span class="ed-lock">Built-in · 不能删，只能停用</span>'
+    : `<button type="button" class="del-btn" onclick="${isCh ? `deleteChannel('${q(item.id)}')` : `deletePlatform('${q(item.id)}')`}">Delete</button>`;
+
+  return `<div class="ed" onclick="event.stopPropagation()">
+    <div class="ed-bar" style="background:${color}"></div>
+    <div class="ed-body">
+      <div class="fgrid">
+        <div class="f"><label>Name</label>
+          <input class="fin" type="text" value="${esc(item.name)}"
+                 onchange="${isCh ? `_setChannelName('${q(item.id)}', this.value)` : `_setPlatformName('${q(item.id)}', this.value)`}"></div>
+        ${left}
+      </div>
+      ${kw}
+      <div class="ed-foot">
+        <button type="button" class="swatch-btn" onclick="openIconColorPicker(event, '${kind}', '${q(item.id)}')">
+          ${iconHTML(item, kind)}<span>Icon &amp; Color</span><span class="chev">›</span>
+        </button>
+        ${del}
+      </div>
+    </div>
+  </div>`;
+}
+
+function _renderPlatformTree() {
+  const target = document.getElementById('platformTree');
+  if (!target) return;
+  const q = s => esc(String(s));
+  target.innerHTML = allPlatforms().map(p => {
+    const kids = channelsOfPlatform(p.id);
+    const pOpen = _treeOpen === 'p:' + p.id;
+    const rows = kids.map(c => {
+      const cOpen = _treeOpen === 'c:' + c.id;
+      return `<div class="tk ${c.active === false ? 'off' : ''}" onclick="_treeToggle('c','${q(c.id)}')">
+          <span class="tk-ico">${iconHTML(c, 'channel')}<span class="tk-dot" style="background:${c.color || platformColor(c.platform)}"></span></span>
+          <span class="tk-name">${esc(c.name)}</span>
+          ${c.ghlKeyword ? `<span class="tk-kw">${esc(c.ghlKeyword)}</span>` : ''}
+          <span class="tg-chev">${cOpen ? '&#9650;' : '&#9660;'}</span>
+          <div class="settings-toggle ${c.active !== false ? 'on' : ''}"
+               onclick="event.stopPropagation(); setChannelActive('${q(c.id)}', ${c.active === false}); setTimeout(_renderPlatformTree, 40);"></div>
+        </div>${cOpen ? _treeEditor('channel', c) : ''}`;
+    }).join('');
+
+    return `<div class="tg ${p.active === false ? 'off' : ''}">
+      <div class="tg-head" onclick="_treeToggle('p','${q(p.id)}')">
+        ${iconHTML(p, 'platform')}
+        <span class="tg-name">${esc(p.name)}</span>
+        ${p.hasAdSpend ? '<span class="pf-pill pf-ad">AD SPEND</span>' : '<span class="pf-pill pf-free">NO AD SPEND</span>'}
+        ${p.builtin ? '<span class="pf-pill pf-lock">BUILT-IN</span>' : ''}
+        <span class="tg-chev">${pOpen ? '&#9650;' : '&#9660;'}</span>
+        <div class="settings-toggle ${p.active !== false ? 'on' : ''}"
+             onclick="event.stopPropagation(); setPlatformActive('${q(p.id)}', ${p.active === false}); setTimeout(_renderPlatformTree, 40);"></div>
+      </div>
+      ${pOpen ? _treeEditor('platform', p) : ''}
+      ${rows || (_treeAdding === p.id ? '' : `<div class="tk-empty">还没有 channel</div>`)}
+      ${_treeAdding === p.id
+        ? `<div class="tk-new" onclick="event.stopPropagation()">
+             <input id="treeNewName" class="fin" type="text" placeholder="Channel name"
+                    onkeydown="if(event.key==='Enter'){_treeAddCommit('${q(p.id)}')}else if(event.key==='Escape'){_treeAddCancel()}">
+             <button type="button" class="btn btn-primary tk-new-ok" onclick="_treeAddCommit('${q(p.id)}')">Add</button>
+             <button type="button" class="tk-new-x" onclick="_treeAddCancel()">✕</button>
+           </div>`
+        : `<div class="tk-add" onclick="_treeAddChannel('${q(p.id)}')">+ Add channel to ${esc(p.name)}</div>`}
+    </div>`;
+  }).join('');
+}
+
+// 在指定 platform 底下加 channel。
+//   ⚠️ 这里刻意不用弹窗（app 没有 showPrompt，而且加一个名字弹一次窗太重）——
+//   点 "+ Add channel" 就地变成一行输入框，Enter 送出、Esc 取消。
+function _treeAddChannel(pid) {
+  _treeAdding = pid;
+  _treeOpen = null;
+  _renderPlatformTree();
+  setTimeout(() => { const el = document.getElementById('treeNewName'); if (el) el.focus(); }, 40);
+}
+
+function _treeAddCancel() { _treeAdding = null; _renderPlatformTree(); }
+
+function _treeAddCommit(pid) {
+  const el = document.getElementById('treeNewName');
+  const nm = String(el && el.value || '').trim();
+  if (!nm) { _treeAddCancel(); return; }
+  if ((state.channels || []).some(c => String(c.name).toLowerCase() === nm.toLowerCase())) {
+    toast('那个名字已经有了'); return;
+  }
+  const ch = { id: uid('ch'), name: nm, platform: pid, addedMonth: localMonth(), active: true };
+  state.channels.push(ch);
+  saveState();
+  if (typeof _syncChannel === 'function') _syncChannel(ch);
+  if (typeof refreshSelects === 'function') refreshSelects();
+  _treeAdding = null;
+  _treeOpen = 'c:' + ch.id;          // 加完直接展开，方便接着填 GHL keyword
+  _renderPlatformTree();
+  toast(`已加入 ${nm}`);
+}
+
+// v8.90: 删 channel — 跟 platform 同一条规则：有资料在用就不给删，只能停用
+async function deleteChannel(id) {
+  const c = getChannel(id);
+  if (!c) return;
+  const nLead = (state.leads || []).filter(l => l.channelId === id).length;
+  const nSpend = (state.adsSpend || []).filter(a => a.channelId === id).length;
+  if (nLead || nSpend) {
+    const parts = [];
+    if (nLead) parts.push(`${nLead} 笔 lead`);
+    if (nSpend) parts.push(`${nSpend} 笔广告费`);
+    await showConfirm(
+      `「${c.name}」已经有资料在用，不能删除：\n\n· ${parts.join('\n· ')}\n\n` +
+      `请改用右边的开关「停用」—— 停用后它会从所有下拉消失，但资料一笔都不会少。`,
+      { title: '不能删除', okText: '知道了' });
+    return;
+  }
+  if (!await showConfirm(`删除 channel「${c.name}」？\n\n它底下没有任何 lead 或广告费，删掉不会影响任何资料。`,
+      { title: '删除 channel', okText: '删除', danger: true })) return;
+  state.channels = (state.channels || []).filter(x => x.id !== id);
+  saveState();
+  if (typeof gsPushConfig === 'function') gsPushConfig();
+  if (typeof refreshSelects === 'function') refreshSelects();
+  _treeOpen = null;
+  _renderPlatformTree();
+  toast(`已删除「${c.name}」`);
+}
+
+// ══ v8.82: Settings → Platforms（旧的平铺列表，v8.90 起由树状取代，保留供回退）══
 function _renderModalPlatformsList() {
   const target = document.getElementById('modalPlatformsList');
   if (!target) return;
@@ -16399,6 +16719,107 @@ const COLOR_PALETTE = [
   '#888888', // gray (neutral)
 ];
 
+// ══ v8.90: Icon & Color picker（platform / channel 用）════════════════════
+//   location 没有 icon，继续用下面旧的 openColorPicker。
+//   选了不关弹窗 —— icon 和颜色是两个维度，要让 Davy 一次调完。用右上角 ✕ 关。
+function _ipEntity(kind, id) { return kind === 'platform' ? getPlatform(id) : getChannel(id); }
+
+function _ipBodyHTML(kind, id) {
+  const item = _ipEntity(kind, id);
+  if (!item) return '';
+  const curIcon = String(item.icon || '').trim();
+  const curColor = String(item.color || '').toLowerCase();
+  const q = s => String(s).replace(/'/g, "\\'");
+
+  // channel 专属：第一格「跟 platform 一样」（= icon 存空值）
+  let inherit = '';
+  if (kind === 'channel') {
+    const p = getPlatform(item.platform);
+    if (p) inherit =
+      `<div class="ip-label">Default</div>
+       <div class="ip-grid">
+         <button type="button" class="ip-ic ip-inherit ${!curIcon ? 'selected' : ''}"
+                 onclick="_ipPickIcon('${q(kind)}','${q(id)}','')">
+           ${iconHTML(p, 'platform')}<span>Same as ${esc(p.name)}</span>
+         </button>
+       </div>`;
+  }
+
+  const brand = ICON_PICKER_BRAND.map(k =>
+    `<button type="button" class="ip-ic ${curIcon === k ? 'selected' : ''}" title="${k}"
+             onclick="_ipPickIcon('${q(kind)}','${q(id)}','${k}')">${CHANNEL_LOGO_SVG[k]}</button>`).join('');
+
+  const generic = ICON_PICKER_GENERIC.map(k => {
+    const c = item.color || (kind === 'channel' ? platformColor(item.platform) : '') || '#9497a9';
+    const inner = k === 'letter'
+      ? `<span class="chip-initial" style="background:${c};">${esc(String(item.name || '?').trim().charAt(0).toUpperCase())}</span>`
+      : `<span class="chip-generic" style="color:${c};">${GENERIC_ICON_SVG[k]}</span>`;
+    return `<button type="button" class="ip-ic ${curIcon === k ? 'selected' : ''}" title="${k}"
+             onclick="_ipPickIcon('${q(kind)}','${q(id)}','${k}')">${inner}</button>`;
+  }).join('');
+
+  const colors = COLOR_PALETTE.map(c =>
+    `<button type="button" class="color-swatch ${c.toLowerCase() === curColor ? 'selected' : ''}"
+             onclick="_ipPickColor('${q(kind)}','${q(id)}','${c}')" style="background:${c};"></button>`).join('');
+
+  return `${inherit}
+    <div class="ip-label">Brand logos</div><div class="ip-grid">${brand}</div>
+    <div class="ip-label">Generic</div><div class="ip-grid">${generic}</div>
+    <div class="ip-label">Color</div><div class="color-grid">${colors}</div>
+    <div class="ip-hint">选了品牌 logo 的话，颜色只影响图表线条和表格底色（logo 自带配色）。</div>`;
+}
+
+function openIconColorPicker(event, kind, id) {
+  if (event) event.stopPropagation();
+  const item = _ipEntity(kind, id);
+  if (!item) return;
+  const onMobile = window.innerWidth < 768;
+  const closeFn = onMobile ? 'closeSubModal' : 'closeModal';
+  const html = `
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Icon &amp; Color</div>
+        <div style="font-size:12px;color:var(--silver);margin-top:2px;">${esc(item.name)}</div>
+      </div>
+      <button class="modal-close" onclick="${closeFn}()" aria-label="Close">✕</button>
+    </div>
+    <div class="ip-body" id="ipBody">${_ipBodyHTML(kind, id)}</div>
+    <div class="ip-foot">
+      <button type="button" class="btn btn-outline btn-full"
+              onclick="_ipPickIcon('${String(kind).replace(/'/g, "\\'")}','${String(id).replace(/'/g, "\\'")}','__reset__')">
+        Reset to auto
+      </button>
+    </div>`;
+  if (onMobile) showSubModal(html); else showModal(html);
+}
+
+function _ipPickIcon(kind, id, key) {
+  const item = _ipEntity(kind, id);
+  if (!item) return;
+  if (key === '__reset__') { delete item.icon; delete item.color; }
+  else if (key === '') delete item.icon;    // 空 = 继承 platform / 按名字自动
+  else item.icon = key;
+  _ipSave(kind, item, id);
+}
+
+function _ipPickColor(kind, id, color) {
+  const item = _ipEntity(kind, id);
+  if (!item) return;
+  item.color = color;
+  _ipSave(kind, item, id);
+}
+
+function _ipSave(kind, item, id) {
+  saveState();
+  if (kind === 'channel' && typeof _syncChannel === 'function') _syncChannel(item);
+  else if (typeof gsPushConfig === 'function') gsPushConfig(true);   // 静默推，选色不要一直跳提示
+  if (typeof refreshSelects === 'function') refreshSelects();
+  // 弹窗不关 —— 重画内容让选中状态跟上，同时刷新背后的列表
+  const box = document.getElementById('ipBody');
+  if (box) box.innerHTML = _ipBodyHTML(kind, id);
+  if (typeof _renderPlatformTree === 'function') _renderPlatformTree();
+}
+
 function openColorPicker(event, kind, id) {
   event.stopPropagation();
   // v8.82: 多一种 kind='platform'
@@ -16515,6 +16936,7 @@ async function gsPushConfig(silent) {
       color: p.color || '',
       builtin: !!p.builtin,
       active: p.active === false ? false : true,
+      icon: p.icon || '',   // v8.90
     }));
     const enrichedChannels = state.channels.map(c => ({
       id: c.id,
@@ -16523,7 +16945,8 @@ async function gsPushConfig(silent) {
       active: c.active === false ? false : true,
       color: c.color || '',
       addedMonth: c.addedMonth || '',
-      ghlKeyword: c.ghlKeyword || ''   // v7.24: 带回 GHL 匹配词
+      ghlKeyword: c.ghlKeyword || '',  // v7.24: 带回 GHL 匹配词
+      icon: c.icon || ''               // v8.90
     }));
     const enrichedLocations = state.locations.map(l => ({
       id: l.id,
@@ -16879,6 +17302,7 @@ async function dailyReportPreview() {
     if (!d || !d.success || !r || !r.ok || !r.text) throw new Error((r && r.error) || d.error || 'preview failed');
     _drText = r.text;
     _drSnap = r.snapshot || null;   // v8.78
+    { const cb = document.getElementById('drCopyBtn'); if (cb) cb.disabled = false; }   // v8.89: 建好才能 Copy
     prev.innerHTML = `<pre class="dr-pre">${esc(r.text)}</pre>`;
     if (to) to.textContent = `Sending to ${r.recipients} WhatsApp number${r.recipients > 1 ? 's' : ''}`;
     btn.disabled = false;
@@ -16943,6 +17367,32 @@ function ytdReportAction() {
   else ytdReportPreview();
 }
 
+// v8.89: 复制整份报告到剪贴簿（日报 / 月报共用）。
+//   navigator.clipboard 需要 https 或 localhost；GitHub Pages 是 https 没问题，
+//   但用 file:// 直接开档时会失败 → 退回旧的 execCommand 做法。
+async function copyReportText(kind) {
+  const text = kind === 'daily' ? _drText : _yrText;
+  if (!text) { toast('先按 Build report'); return; }
+  const btn = document.getElementById(kind === 'daily' ? 'drCopyBtn' : 'yrCopyBtn');
+  const done = () => {
+    toast('✓ 已复制 — 可以直接贴进 WhatsApp');
+    if (btn) { const o = btn.textContent; btn.textContent = '✓ Copied'; setTimeout(() => { btn.textContent = o; }, 1500); }
+  };
+  try {
+    await navigator.clipboard.writeText(text);
+    done();
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); }
+    catch (e2) { toast('⚠️ 复制失败 — 请长按上面的预览框手动选取'); }
+    document.body.removeChild(ta);
+  }
+}
+
 async function ytdReportPreview() {
   const prev = document.getElementById('yrPreview');
   const btn = document.getElementById('yrSendBtn');
@@ -16957,6 +17407,7 @@ async function ytdReportPreview() {
     const r = d && d.result;
     if (!d || !d.success || !r || !r.ok || !r.text) throw new Error((r && r.error) || d.error || 'preview failed');
     _yrText = r.text;
+    { const cb = document.getElementById('yrCopyBtn'); if (cb) cb.disabled = false; }   // v8.89
     prev.innerHTML = `<pre class="dr-pre">${esc(r.text)}</pre>`;
     if (to) {
       // 顺便显示字数 — WhatsApp 上限 4096, 超过 4000 后端会自动拆 2 条
@@ -17470,7 +17921,8 @@ function _normalizeSheetPullData(d) {
     //   非 #RRGGBB 一律当没设，让它走 hashColor 自动配色；下次 push 会把那格洗干净。
     color: _pColor(c.color),
     addedMonth: toMonthStr(c.addedMonth),
-    ghlKeyword: c.ghlKeyword || ''   // v7.24: GHL tag 匹配词
+    ghlKeyword: c.ghlKeyword || '',  // v7.24: GHL tag 匹配词
+    icon: String(c.icon || '').trim() // v8.90: 空 = 继承 platform 的 icon
   }));
   const locations = sheetLocations === null ? null : sheetLocations.filter(l => l && l.id).map(l => ({
     id: l.id,
@@ -17518,6 +17970,7 @@ function _normalizeSheetPullData(d) {
     builtin: _pBool(r.builtin),
     // 空白当 active（旧行没填不该被当成停用）
     active: (r.active === '' || r.active === undefined || r.active === null) ? true : _pBool(r.active),
+    icon: String(r.icon || '').trim(),   // v8.90: 空 = 按名字自动配
   }));
 
   return { leads, ads, rev, fees, channels, locations, platforms, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary };
@@ -17618,6 +18071,7 @@ async function gsPushAll() {
       color: p.color || '',
       builtin: !!p.builtin,
       active: p.active === false ? false : true,
+      icon: p.icon || '',   // v8.90
     }));
     const enrichedChannels = state.channels.map(c => ({
       id: c.id,
