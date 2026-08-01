@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.97</div>
+      <div class="nav-brand-version">v8.98</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13951,8 +13951,10 @@ function renderAdsVideo() {
     }
     if (l.apptDate && _avInScope(l.apptDate)) {
       if (bucket) bucket.appts++; else noLinkAppts++;
-      // 值是 'Show up' / 'No Show up' —— 不是 yes/no
-      if (l.showUp === 'Show up') {
+      // v8.98: 用 status==='done', 不是 showUp==='Show up' —— 要跟 Ads 页同一套口径。
+      //   done = 到店 + 有填金额 + 有填种族。只看 showUp 会把「到店但还没填金额」也算进 SHOW,
+      //   两页数字就对不上, Davy 一看就会怀疑整张表。
+      if (l.status === 'done') {
         if (bucket) { bucket.shows++; bucket.sales += (l.spend || 0); }
         else { noLinkShows++; noLinkSales += (l.spend || 0); }
       }
