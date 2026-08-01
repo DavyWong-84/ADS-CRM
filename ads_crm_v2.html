@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 735.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.95</div>
+      <div class="nav-brand-version">v8.96</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3677,7 +3677,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 791px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 735px;"><div class="contact-filters-inline">
           <!-- v8.44: 桌面端把「搜索行」+「筛选行」合并成一行 (方案 A) — 手机端保持两行, 结构不动 -->
           <div class="contact-toolbar">
           <div class="ct-line1" style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
@@ -3739,7 +3739,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 791px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 735px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -13910,6 +13910,10 @@ function _avYears() {
 function renderAdsVideo() {
   const root = document.getElementById('avRoot');
   if (!root) return;
+  // 这页的样式跟 P&L 的写在同一段动态注入的 CSS 里 (要跟那页长得一样, 分开写会漂移)。
+  // 那段只有 renderPnL 会注入 —— 没进过 P&L 页就没有样式, 表格会变成裸文字。
+  // _pnlInjectCss 自己挡重复 (查 #pnlCss), 这里直接叫安全。
+  if (typeof _pnlInjectCss === 'function') _pnlInjectCss();
   _avInit();
 
   const adChIds = _avAdChannelIds();
