@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.99</div>
+      <div class="nav-brand-version">v9.01</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13647,6 +13647,7 @@ function _pnlInjectCss() {
 #avRoot td.pos{color:var(--green-dark);font-weight:600;}
 #avRoot td.neg{color:var(--red);font-weight:600;}
 #avRoot .av-empty{padding:60px 20px;text-align:center;color:var(--gray);font-size:13px;}
+#avRoot .av-dash{color:var(--silver);font-size:13px;padding:0 1px;}
 /* 分区竖线 — 漏斗 / 金额 / 单位成本 / 效率 四组各自分开, 眼睛才不会在 11 栏里迷路 */
 #avRoot .pnl-t th.sep,#avRoot .pnl-t td.sep{border-left:1px solid #e9e9f0;}
 /* 可排序表头 */
@@ -13872,22 +13873,22 @@ function _pnlStick(root) {
 // 【口径跟日报一致】leads 看 leadDate 落在期间内; appt / show / 成交额 看 apptDate。
 // ============================================================================
 
-const _avState = { mode: 'year', year: '', month: '', ch: '', sort: 'roas', dir: 'desc' };
+// v9.00: 改成「几月到几月」的区间。原本 Month / Year 两段切换不要了 ——
+//   单月 = from 和 to 选同一个月, 全年 = Jan → Dec, 少一个控件还更灵活。
+const _avState = { year: '', from: '01', to: '12', ch: '', sort: 'roas', dir: 'desc' };
+const _AV_MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 // 跟后端 _copyKey_ 同一套规则 —— 改这里就要改后端, 不然两边对不上
 function _avKey(s) {
   return String(s || '').replace(/[^一-龥a-zA-Z0-9]/g, '').substring(0, 15);
 }
-function _avInScope(dateStr) {
-  const s = String(dateStr || '');
-  if (!s) return false;
-  return _avState.mode === 'month' ? s.indexOf(_avState.month) === 0 : s.indexOf(_avState.year) === 0;
-}
+// yyyy-MM 的字串比大小刚好等于时间先后, 不用转 Date
 function _avMonthInScope(m) {
-  const s = String(m || '');
-  if (!s) return false;
-  return _avState.mode === 'month' ? s === _avState.month : s.indexOf(_avState.year) === 0;
+  const s = String(m || '').substring(0, 7);
+  if (s.length !== 7) return false;
+  return s >= (_avState.year + '-' + _avState.from) && s <= (_avState.year + '-' + _avState.to);
 }
+function _avInScope(dateStr) { return _avMonthInScope(String(dateStr || '').substring(0, 7)); }
 // 这页只看 Meta —— 页名就叫 META Ads Video Performance。
 //   v8.97: 原本用「有广告费的 platform」去筛, 结果 Google Ads 也跑进下拉里。
 //   Google 不是 Click-to-WhatsApp, 根本不会有影片来源资料, 出现在这里只会误导。
@@ -13899,10 +13900,13 @@ function _avAdChannelIds() {
 
 function _avInit() {
   const yrs = _avYears();
-  if (!_avState.year || yrs.indexOf(_avState.year) < 0) _avState.year = yrs[0] || String(new Date().getFullYear());
-  if (!_avState.month || _avState.month.indexOf(_avState.year) !== 0) {
+  if (!_avState.year || yrs.indexOf(_avState.year) < 0) {
+    _avState.year = yrs[0] || String(new Date().getFullYear());
+    // 预设 1 月 → 当月 (今年的话); 往年就整年
     const now = new Date();
-    _avState.month = _avState.year + '-' + String(now.getMonth() + 1).padStart(2, '0');
+    _avState.from = '01';
+    _avState.to = (_avState.year === String(now.getFullYear()))
+      ? String(now.getMonth() + 1).padStart(2, '0') : '12';
   }
 }
 function _avYears() {
@@ -14007,28 +14011,23 @@ function _avRoas(v) { return v.spend > 0 ? v.sales / v.spend : 0; }
 function _avBarHtml() {
   const yrs = _avYears();
   const chs = (state.channels || []).filter(c => _avAdChannelIds().indexOf(c.id) >= 0);
-  const tog = (m, label) => `<button class="toggle${_avState.mode === m ? ' active' : ''}" onclick="_avSet('mode','${m}')">${label}</button>`;
-  // 年份一律给, month 模式再多一个月份下拉。
-  //   刻意不用 openMonthPicker —— 那个绑了自己的 label/hidden input 命名规则,
-  //   这页只是选个区间, 用 select 少一层耦合。
+  // 年份 + 起月 – 迄月。刻意不用 openMonthPicker —— 那个绑了自己的 label/hidden input
+  //   命名规则, 这页只是选区间, 用 select 少一层耦合。
   // v8.97: 全部要带 data-pop="1" —— 那是 upgradeAllPopSelects 的触发条件,
   //   不加就维持浏览器原生下拉 (展开是蓝底白字), 跟这个 app 其他页长得不一样。
-  const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  let dateBtn = `<select class="cf-select" data-pop="1" onchange="_avSet('year',this.value)">`
-    + yrs.map(y => `<option value="${y}"${y === _avState.year ? ' selected' : ''}>${y}</option>`).join('')
+  const monSel = (which) => `<select class="cf-select" data-pop="1" onchange="_avSet('${which}',this.value)">`
+    + _AV_MN.map((n, i) => { const mm = String(i + 1).padStart(2, '0');
+        return `<option value="${mm}"${mm === _avState[which] ? ' selected' : ''}>${n}</option>`; }).join('')
     + `</select>`;
-  if (_avState.mode === 'month') {
-    const cur = _avState.month.substring(5);
-    dateBtn += `<select class="cf-select" data-pop="1" onchange="_avSet('month', _avState.year + '-' + this.value)">`
-      + MN.map((n, i) => { const mm = String(i + 1).padStart(2, '0');
-          return `<option value="${mm}"${mm === cur ? ' selected' : ''}>${n}</option>`; }).join('')
-      + `</select>`;
-  }
+  const dateBtn = `<select class="cf-select" data-pop="1" onchange="_avSet('year',this.value)">`
+    + yrs.map(y => `<option value="${y}"${y === _avState.year ? ' selected' : ''}>${y}</option>`).join('')
+    + `</select>`
+    + monSel('from') + `<span class="av-dash">–</span>` + monSel('to');
   return `<h1 class="av-title"><span>META</span> Ads Video Performance</h1>`
     + `<div class="compact-filter">`
-    + `<div class="toggle-group">${tog('month', 'Month')}${tog('year', 'Year')}</div>`
     + dateBtn
-    + `<select class="cf-select" data-pop="1" data-pop-icon="channel" onchange="_avSet('ch',this.value)">`
+    // v9.01: 要给 data-pop-placeholder, 不然那套下拉在收合时显示预设的「Select...」
+    + `<select class="cf-select" data-pop="1" data-pop-icon="channel" data-pop-placeholder="All channels" onchange="_avSet('ch',this.value)">`
     // v8.99: value 不能是空字串 —— upgradeAllPopSelects 把空值当 placeholder,
     //   会显示成「Select...」而且点了不触发 change。用 __all 当哨兵值, _avSet 再转回空。
     + `<option value="__all"${_avState.ch ? '' : ' selected'}>All channels</option>`
@@ -14107,7 +14106,9 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
 function _avSet(k, v) {
   if (k === 'ch' && v === '__all') v = '';   // v8.99: 哨兵值转回「不筛选」
   _avState[k] = v;
-  if (k === 'year' && _avState.month.indexOf(v) !== 0) _avState.month = v + '-' + _avState.month.substring(5);
+  // v9.00: 起月不能晚于迄月 —— 选到就把另一头跟着推, 免得选出空区间还以为没资料
+  if (k === 'from' && _avState.to < v) _avState.to = v;
+  if (k === 'to' && _avState.from > v) _avState.from = v;
   renderAdsVideo();
 }
 // 点同一栏 = 反向, 点别栏 = 换栏并从大到小 (看排行榜通常先想看最高的)
