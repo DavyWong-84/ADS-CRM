@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.02</div>
+      <div class="nav-brand-version">v9.03</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13662,6 +13662,8 @@ function _pnlInjectCss() {
 #avRoot .av-empty{padding:60px 20px;text-align:center;color:var(--gray);font-size:13px;}
 #avRoot .av-dash{color:var(--silver);font-size:13px;padding:0 1px;}
 /* v9.02: Coverage tab 的长条 */
+/* v9.03: 这张表第一列不用像 Videos 那样宽 (那边要塞影片文案), 月份 120px 就够 */
+#avRoot .pnl-t.av-cov th.l,#avRoot .pnl-t.av-cov td.l{min-width:120px;}
 #avRoot .cov-barcell{min-width:200px;}
 #avRoot .cov-bar{height:7px;border-radius:99px;background:#eeedf6;overflow:hidden;width:180px;}
 #avRoot .cov-bar>i{display:block;height:100%;border-radius:99px;background:var(--purple);}
@@ -14045,7 +14047,8 @@ function _avRoas(v) { return v.spend > 0 ? v.sales / v.spend : 0; }
  *   不看这张就会误判某支影片很烂, 其实只是那个月没抓到。
  *
  * 【口径】看 leadDate 落在哪个月; adLink 是 '-' / '--' 都算没抓到 (那是「查过了没有」的标记)。
- *   刻意不套上面的月份区间 —— 这张要看的是长期趋势, 限区间反而看不出来。
+ *   v9.03: 跟上面的年份 / 月份区间联动 —— 本来想让它显示长期趋势所以不套筛选,
+ *   但两张表用同一排筛选却各看各的期间, Davy 一眼就觉得对不上, 那比看不到趋势更糟。
  */
 function _avCoverageHtml() {
   const chFilter = _avState.ch ? [_avState.ch] : _avAdChannelIds();
@@ -14054,14 +14057,15 @@ function _avCoverageHtml() {
     if (chFilter.indexOf(l.channelId) < 0) return;
     const m = String(l.leadDate || '').substring(0, 7);
     if (m.length !== 7) return;
+    if (!_avMonthInScope(m)) return;        // v9.03: 跟上面的年份 / 月份区间联动
     if (!by[m]) by[m] = { n: 0, hit: 0 };
     by[m].n++;
     const v = String(l.adLink || '').trim();
     if (v && v.charAt(0) !== '-') by[m].hit++;
   });
 
-  const months = Object.keys(by).sort().reverse();
-  if (!months.length) return `<div class="av-empty">这个渠道还没有 lead 资料。</div>`;
+  const months = Object.keys(by).sort();   // v9.03: 旧 → 新, 才看得出趋势
+  if (!months.length) return `<div class="av-empty">这个期间没有 lead 资料。</div>`;
 
   let tn = 0, th = 0, body = '';
   months.forEach(m => {
@@ -14079,9 +14083,10 @@ function _avCoverageHtml() {
     + `<td class="sep">${tn}</td><td>${th}</td><td>${tn - th}</td>`
     + `<td class="sep">${tp}%</td><td class="l"></td></tr>`;
 
-  return `<div class="pnl-scroll"><table class="pnl-t"><thead><tr>`
-    + `<th class="l">Month</th><th class="sep">Meta Leads</th><th>抓到来源</th><th>没抓到</th>`
-    + `<th class="sep">覆盖率</th><th class="l"></th>`
+  // v9.03: 表头一律英文 (跟 Videos 那页和 app 其他表格一致); 解释性文字才用中文
+  return `<div class="pnl-scroll"><table class="pnl-t av-cov"><thead><tr>`
+    + `<th class="l">Month</th><th class="sep">Meta Leads</th><th>Tracked</th><th>Missing</th>`
+    + `<th class="sep">Coverage</th><th class="l"></th>`
     + `</tr></thead><tbody>${body}</tbody></table></div>`
     + `<div class="pnl-foot-note">这张表看的是「Videos 那页能信几成」。`
     + `某个月覆盖率低 = 那个月的 ROAS 会被<b>低估</b>（成交算不进去，但广告费全算），别拿来判断影片好坏。`
