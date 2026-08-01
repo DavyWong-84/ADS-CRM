@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.01</div>
+      <div class="nav-brand-version">v9.02</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13632,8 +13632,15 @@ function _pnlInjectCss() {
 #avRoot .pnl-t thead th.l{z-index:7;background:var(--surface);}
 #avRoot .pnl-t tr.grp td{background:#f0ecfa;padding:0;text-align:left;position:sticky;top:32px;z-index:4;border-top:1px solid #e7e2f7;border-bottom:1px solid #e7e2f7;}
 #avRoot .pnl-t .glabel{position:sticky;left:0;display:inline-block;color:var(--purple-deep);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:7px 10px;}
-#avRoot .pnl-t tr.big td{font-size:13.5px;font-weight:700;border-top:1px solid #e7e7ee;}
+/* v9.02: Total 钉在底部 —— 影片多的时候要一直滚到最下面才看得到总计, 很难用。
+   背景一定要写死不透明色, 不然滚过去的资料会从底下透出来。 */
+#avRoot .pnl-t tr.big td{font-size:13.5px;font-weight:700;border-top:1px solid #e7e7ee;
+  position:sticky;bottom:0;z-index:5;background:#fff;}
+#avRoot .pnl-t tr.big td.l{z-index:6;background:#fff;}
 #avRoot .pnl-t tr.big td.l .nm{font-size:13px;font-weight:700;}
+/* v9.02: 滑到哪一行就整行打亮 — 11 栏很宽, 眼睛容易看错行。Total 那行不参与 */
+#avRoot .pnl-t tbody tr:not(.big):not(.grp):hover td{background:#faf8ff;}
+#avRoot .pnl-t tbody tr:not(.big):not(.grp):hover td.l{background:#f5f1ff;}
 #avRoot .pnl-t tr.ref td{color:var(--gray);}
 #avRoot .pnl-t tr.ref td.l .nm{font-weight:400;color:var(--gray);}
 #avRoot .pnl-t td.l .nm{font-weight:500;}
@@ -13642,12 +13649,22 @@ function _pnlInjectCss() {
 #avRoot .vid:hover{color:var(--purple-deep);}
 #avRoot .vid svg{color:#c4c4cf;flex-shrink:0;}
 #avRoot .vid:hover svg{color:var(--purple);}
-#avRoot .adnames{font-size:9.5px;color:#b6b8c6;margin-top:3px;white-space:normal;max-width:270px;line-height:1.35;}
+/* v9.02: 每支广告各自可点 (Davy 选的 A 方案)。字级 9.5 → 10.5、分隔符前后留 7px,
+   不然几支挤在一起看不出边界 —— 他明确要求「区分明显点」。 */
+#avRoot .adnames{font-size:10.5px;color:#b6b8c6;margin-top:4px;white-space:normal;max-width:300px;line-height:1.6;}
+#avRoot .adlink{color:var(--purple);text-decoration:none;font-weight:500;}
+#avRoot .adlink:hover{text-decoration:underline;}
+#avRoot .adnoLink{color:#b6b8c6;}
+#avRoot .adsep{color:#dcdce6;padding:0 7px;}
 #avRoot .warn-dot{color:var(--amber);}
 #avRoot td.pos{color:var(--green-dark);font-weight:600;}
 #avRoot td.neg{color:var(--red);font-weight:600;}
 #avRoot .av-empty{padding:60px 20px;text-align:center;color:var(--gray);font-size:13px;}
 #avRoot .av-dash{color:var(--silver);font-size:13px;padding:0 1px;}
+/* v9.02: Coverage tab 的长条 */
+#avRoot .cov-barcell{min-width:200px;}
+#avRoot .cov-bar{height:7px;border-radius:99px;background:#eeedf6;overflow:hidden;width:180px;}
+#avRoot .cov-bar>i{display:block;height:100%;border-radius:99px;background:var(--purple);}
 /* 分区竖线 — 漏斗 / 金额 / 单位成本 / 效率 四组各自分开, 眼睛才不会在 11 栏里迷路 */
 #avRoot .pnl-t th.sep,#avRoot .pnl-t td.sep{border-left:1px solid #e9e9f0;}
 /* 可排序表头 */
@@ -13875,7 +13892,7 @@ function _pnlStick(root) {
 
 // v9.00: 改成「几月到几月」的区间。原本 Month / Year 两段切换不要了 ——
 //   单月 = from 和 to 选同一个月, 全年 = Jan → Dec, 少一个控件还更灵活。
-const _avState = { year: '', from: '01', to: '12', ch: '', sort: 'roas', dir: 'desc' };
+const _avState = { tab: 'videos', year: '', from: '01', to: '12', ch: '', sort: 'roas', dir: 'desc' };
 const _AV_MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 // 跟后端 _copyKey_ 同一套规则 —— 改这里就要改后端, 不然两边对不上
@@ -13939,7 +13956,13 @@ function renderAdsVideo() {
                               leads: 0, appts: 0, shows: 0, sales: 0, chs: {} };
     vids[k].spend += v.spend || 0;
     vids[k].chs[v.channelId] = 1;
-    String(v.adNames || '').split(' · ').forEach(n => { if (n.trim()) vids[k].ads[n.trim()] = 1; });
+    // v9.02: adNames / adLinks 同顺序同分隔符 → 每支广告配自己的连结
+    const _ns = String(v.adNames || '').split(' · ');
+    const _ls = String(v.adLinks || '').split(' · ');
+    _ns.forEach((n, i) => {
+      const nm = n.trim();
+      if (nm && !vids[k].ads[nm]) vids[k].ads[nm] = (_ls[i] || '').trim();
+    });
     if (!vids[k].link && v.link) vids[k].link = v.link;
     if (!vids[k].name && v.videoName) vids[k].name = v.videoName;
   });
@@ -13997,6 +14020,12 @@ function renderAdsVideo() {
     return _avState.dir === 'asc' ? -d : d;
   });
 
+  if (_avState.tab === 'coverage') {
+    root.innerHTML = _avBarHtml() + _avCoverageHtml();
+    setTimeout(() => { if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects(); }, 0);
+    return;
+  }
+
   root.innerHTML = _avBarHtml() + (list.length
     ? _avTableHtml(list, unmatched, totalSpend, { leads: noLinkLeads, appts: noLinkAppts, shows: noLinkShows, sales: noLinkSales })
     : `<div class="av-empty">还没有影片资料。<br><br>去 Apps Script 跑一次 <b>syncAdVideos</b>，再回来按同步。</div>`);
@@ -14007,6 +14036,57 @@ function renderAdsVideo() {
 }
 
 function _avRoas(v) { return v.spend > 0 ? v.sales / v.spend : 0; }
+
+/**
+ * v9.02: Coverage tab — 每个月有多少 Meta lead 抓得到来源影片。
+ *
+ * 【为什么要这张】Videos 表里的 ROAS 只反映「抓得到来源的那部分 lead」。
+ *   某个月覆盖率只有 30% 的话, 那个月的 ROAS 会严重低估 (成交算不进去但花费全算)。
+ *   不看这张就会误判某支影片很烂, 其实只是那个月没抓到。
+ *
+ * 【口径】看 leadDate 落在哪个月; adLink 是 '-' / '--' 都算没抓到 (那是「查过了没有」的标记)。
+ *   刻意不套上面的月份区间 —— 这张要看的是长期趋势, 限区间反而看不出来。
+ */
+function _avCoverageHtml() {
+  const chFilter = _avState.ch ? [_avState.ch] : _avAdChannelIds();
+  const by = {};
+  (state.leads || []).forEach(l => {
+    if (chFilter.indexOf(l.channelId) < 0) return;
+    const m = String(l.leadDate || '').substring(0, 7);
+    if (m.length !== 7) return;
+    if (!by[m]) by[m] = { n: 0, hit: 0 };
+    by[m].n++;
+    const v = String(l.adLink || '').trim();
+    if (v && v.charAt(0) !== '-') by[m].hit++;
+  });
+
+  const months = Object.keys(by).sort().reverse();
+  if (!months.length) return `<div class="av-empty">这个渠道还没有 lead 资料。</div>`;
+
+  let tn = 0, th = 0, body = '';
+  months.forEach(m => {
+    const o = by[m];
+    tn += o.n; th += o.hit;
+    const pct = o.n > 0 ? Math.round(o.hit / o.n * 100) : 0;
+    const cls = pct >= 80 ? 'pos' : (pct >= 50 ? '' : 'neg');
+    body += `<tr><td class="l"><span class="nm">${fmt.monthShort(m)} ${m.substring(0, 4)}</span></td>`
+      + `<td class="sep">${o.n}</td><td>${o.hit}</td><td>${o.n - o.hit}</td>`
+      + `<td class="sep ${cls}">${pct}%</td>`
+      + `<td class="l cov-barcell"><div class="cov-bar"><i style="width:${pct}%"></i></div></td></tr>`;
+  });
+  const tp = tn > 0 ? Math.round(th / tn * 100) : 0;
+  body += `<tr class="big"><td class="l"><span class="nm">Total</span></td>`
+    + `<td class="sep">${tn}</td><td>${th}</td><td>${tn - th}</td>`
+    + `<td class="sep">${tp}%</td><td class="l"></td></tr>`;
+
+  return `<div class="pnl-scroll"><table class="pnl-t"><thead><tr>`
+    + `<th class="l">Month</th><th class="sep">Meta Leads</th><th>抓到来源</th><th>没抓到</th>`
+    + `<th class="sep">覆盖率</th><th class="l"></th>`
+    + `</tr></thead><tbody>${body}</tbody></table></div>`
+    + `<div class="pnl-foot-note">这张表看的是「Videos 那页能信几成」。`
+    + `某个月覆盖率低 = 那个月的 ROAS 会被<b>低估</b>（成交算不进去，但广告费全算），别拿来判断影片好坏。`
+    + `<br>覆盖率低的原因通常是：当时 GHL 那边捞资料失败、或客人不是从 Click-to-WhatsApp 广告进来的。</div>`;
+}
 
 function _avBarHtml() {
   const yrs = _avYears();
@@ -14023,8 +14103,12 @@ function _avBarHtml() {
     + yrs.map(y => `<option value="${y}"${y === _avState.year ? ' selected' : ''}>${y}</option>`).join('')
     + `</select>`
     + monSel('from') + `<span class="av-dash">–</span>` + monSel('to');
+  // v9.02: Videos / Coverage 两个 tab。Coverage 让 Davy 一眼看出「这张表能信几成」——
+  //   覆盖率低的月份, 表格里的 ROAS 只反映抓得到的那部分, 不看这个会误判。
+  const tab = (k, label) => `<button class="toggle${_avState.tab === k ? ' active' : ''}" onclick="_avSet('tab','${k}')">${label}</button>`;
   return `<h1 class="av-title"><span>META</span> Ads Video Performance</h1>`
     + `<div class="compact-filter">`
+    + `<div class="toggle-group">${tab('videos', 'Videos')}${tab('coverage', 'Coverage')}</div>`
     + dateBtn
     // v9.01: 要给 data-pop-placeholder, 不然那套下拉在收合时显示预设的「Select...」
     + `<select class="cf-select" data-pop="1" data-pop-icon="channel" data-pop-placeholder="All channels" onchange="_avSet('ch',this.value)">`
@@ -14040,7 +14124,7 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
   // 不用 fmt.num —— 它把 0 显示成「—」, 这里 RM 0 要看得见
   const rm = n => 'RM ' + Math.round(n || 0).toLocaleString('en-MY');
   const per = (cost, n) => n > 0 && cost > 0 ? rm(cost / n) : '—';
-  const linkIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+  const linkIcon = ` <svg width="9" height="9" style="vertical-align:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
 
   let body = '';
   body += `<tr class="grp"><td colspan="11"><span class="glabel">Tracked videos</span></td></tr>`;
@@ -14050,10 +14134,15 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
     const cls = v.spend > 0 ? (roas >= 1 ? 'pos' : 'neg') : '';
     const names = Object.keys(v.ads);
     tLeads += v.leads; tAppts += v.appts; tShows += v.shows; tSales += v.sales; tAds += names.length;
-    const title = v.link
-      ? `<a class="vid" href="${esc(v.link)}" target="_blank" rel="noopener"><span class="nm">${esc(v.name || v.key)}</span>${linkIcon}</a>`
-      : `<span class="vid"><span class="nm">${esc(v.name || v.key)}</span></span>`;
-    body += `<tr><td class="l">${title}<div class="adnames">${esc(names.join(' · ')) || '—'}</div></td>`
+    // v9.02: 影片名字不再是连结 —— 它代表「这组文案」, 底下可能是好几支不同影片,
+    //   给一个连结等于随便挑一支。改成底下每支广告名字各自可点 (Davy 选的 A 方案)。
+    const title = `<span class="vid"><span class="nm">${esc(v.name || v.key)}</span></span>`;
+    const adsHtml = names.length
+      ? names.map(n => v.ads[n]
+          ? `<a class="adlink" href="${esc(v.ads[n])}" target="_blank" rel="noopener">${esc(n)}${linkIcon}</a>`
+          : `<span class="adnoLink">${esc(n)}</span>`).join('<span class="adsep">·</span>')
+      : '—';
+    body += `<tr><td class="l">${title}<div class="adnames">${adsHtml}</div></td>`
       + `<td>${names.length}</td>`
       + `<td class="sep">${v.leads}</td><td>${v.appts}</td><td>${v.shows}</td>`
       + `<td class="sep">${rm(v.sales)}</td><td>${rm(v.spend)}</td>`
@@ -18312,6 +18401,7 @@ function _normalizeSheetPullData(d) {
     videoKey: String(r.videoKey || ''),
     videoName: String(r.videoName || ''),
     adNames: String(r.adNames || ''),
+    adLinks: String(r.adLinks || ''),   // v9.02: 跟 adNames 同顺序, 每支广告各自的连结
     link: String(r.link || ''),
     spend: toNum(r.spend)
   }));
