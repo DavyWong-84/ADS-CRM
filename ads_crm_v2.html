@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.93</div>
+      <div class="nav-brand-version">v8.94</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3629,6 +3629,8 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
   <button class="nav-item" data-page="summary" data-tooltip="Dashboard"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></span><span class="nav-label">Dashboard</span></button>
   <button class="nav-item" data-page="store" data-tooltip="Appt"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg></span><span class="nav-label">Appt</span></button>
   <button class="nav-item" data-page="adsspend" data-tooltip="Ads Spend"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></span><span class="nav-label">Ads Spend</span></button>
+  <!-- v8.94: META Ads Video Performance — 只做桌面版 (Davy 指定), 手机 bottom-nav 不加 -->
+  <button class="nav-item" data-page="adsvideo" data-tooltip="Ads Video"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><rect x="2" y="3" width="20" height="14" rx="2"></rect><path d="M10 8l5 3-5 3z"></path><line x1="8" y1="21" x2="16" y2="21"></line></svg></span><span class="nav-label">Ads Video</span></button>
   <button class="nav-item" data-page="revenue" data-tooltip="Revenue Outlet"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span><span class="nav-label">Revenue Outlet</span></button>
   <button class="nav-item" data-page="pnl" data-tooltip="Profit &amp; Loss"><span class="nav-icon"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;"><path d="M3 3v18h18"></path><path d="M7 14l4-4 3 3 5-6"></path></svg></span><span class="nav-label">Profit &amp; Loss</span></button>
 
@@ -4171,7 +4173,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
+    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -4181,11 +4183,11 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span>Select outlet</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -4194,60 +4196,11 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-    <thead><tr>
-      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-      <th class="num">New (RM)</th>
-      <th class="num">Total (RM)</th>
-    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Sep 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr><tr style="background:rgba(0,0,0,0.02);">
-      <td><strong>Oct 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
-    </tr></tbody><tfoot><tr class="total-row">
-    <td>TOTAL 2026</td>
-    <td class="num">—</td>
-    <td class="num" style="font-weight:700;">—</td>
-  </tr></tfoot></table></div></div>
+        <div id="rv_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4257,55 +4210,15 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
+          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
-      <thead><tr>
-        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
-        <th class="num">Amount (RM)</th>
-      </tr></thead>
-      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jan 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Feb 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Mar 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Apr 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>May 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jun 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Jul 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Aug 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Sep 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
-      <td><strong>Oct 2026</strong></td>
-      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
-    </tr></tbody>
-      <tfoot><tr class="total-row">
-        <td>TOTAL 2026</td>
-        <td class="num">—</td>
-      </tr></tfoot>
-    </table></div></div>
+        <div id="as_entryTable" class="entry-card-table"></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
+      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4322,7 +4235,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
+        <div id="fee_entryTable" class="entry-card-table"></div>
       </div>
 
     </div>
@@ -4372,6 +4285,11 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
 <!-- v7.25: PROFIT & LOSS PAGE -->
 <section class="page" id="page-pnl">
   <div id="pnlRoot"></div>
+</section>
+
+<!-- v8.94: META ADS VIDEO PERFORMANCE — 哪支影片赚钱。只做桌面版 (Davy 指定) -->
+<section class="page" id="page-adsvideo">
+  <div id="avRoot"></div>
 </section>
 
 <section class="page active" id="page-settings">
@@ -5611,6 +5529,7 @@ let state = {
   channels: [],
   locations: [],
   platforms: [],   // v8.82: 从 Sheet 的 Platforms 表来，空阵列时 fallback 到 DEFAULT_PLATFORMS
+  adVideos: [],    // v8.94: 每支影片的月花费 (后端 syncAdVideos 同步)。只读，不 push 回 Sheet
   pnl: { rows: [], staff: [], config: [], seedV: {}, employees: [], empSalary: [], empV: 0 }, // v7.25: 门店盈亏表 P&L
   sheetUrl: '',
   listPage: 1,
@@ -6171,6 +6090,7 @@ function nav(page) {
   if (page === 'adsspend') renderAdsSpend();
   if (page === 'revenue') renderRevenue();
   if (page === 'pnl') renderPnL();
+  if (page === 'adsvideo') renderAdsVideo();   // v8.94
   if (page === 'settings') renderSettings();
   // v3.34: AI Guide tooltip — wrapped in try-catch so any failure doesn't break nav
   // v8.43: AI 引导气泡触发移除 (AI 功能已下架)
@@ -13698,6 +13618,43 @@ function _pnlInjectCss() {
 #pnlRoot .pnl-savebtn:disabled{opacity:.7;}
 #pnlRoot .pnl-dirty{box-shadow:0 0 0 3px rgba(255,184,0,.35);}
 #pnlRoot .pnl-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ffb800;margin-right:7px;vertical-align:middle;}
+/* ===== v8.94: META Ads Video Performance =====
+   表格样式整套沿用 P&L 的 (#pnlRoot .pnl-t / .pnl-scroll) —— Davy 指定要跟那页一样,
+   所以下面只写这页独有的东西, 共用的部分靠选择器一起挂在 #avRoot 上。 */
+#avRoot .av-title{font-size:20px;font-weight:700;letter-spacing:-.3px;color:var(--black);margin-bottom:12px;}
+#avRoot .av-title span{color:var(--purple);}
+#avRoot .compact-filter{margin-bottom:14px;}
+#avRoot .pnl-scroll{overflow:auto;max-height:calc(100vh - 190px);min-height:300px;border:1px solid #ececf1;border-radius:12px;}
+#avRoot table.pnl-t{border-collapse:separate;border-spacing:0;font-size:11.5px;white-space:nowrap;width:100%;}
+#avRoot .pnl-t th,#avRoot .pnl-t td{padding:7px 10px;text-align:center;border-bottom:.5px solid #f3f3f7;font-variant-numeric:tabular-nums;}
+#avRoot .pnl-t thead th{height:32px;box-sizing:border-box;font-size:9.5px;font-weight:500;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;background:var(--surface);border-bottom:1px solid #e6e6ee;position:sticky;top:0;z-index:6;text-align:center;}
+#avRoot .pnl-t th.l,#avRoot .pnl-t td.l{text-align:left;position:sticky;left:0;background:#fff;z-index:2;min-width:280px;border-right:1px solid #f0f0f5;}
+#avRoot .pnl-t thead th.l{z-index:7;background:var(--surface);}
+#avRoot .pnl-t tr.grp td{background:#f0ecfa;padding:0;text-align:left;position:sticky;top:32px;z-index:4;border-top:1px solid #e7e2f7;border-bottom:1px solid #e7e2f7;}
+#avRoot .pnl-t .glabel{position:sticky;left:0;display:inline-block;color:var(--purple-deep);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:7px 10px;}
+#avRoot .pnl-t tr.big td{font-size:13.5px;font-weight:700;border-top:1px solid #e7e7ee;}
+#avRoot .pnl-t tr.big td.l .nm{font-size:13px;font-weight:700;}
+#avRoot .pnl-t tr.ref td{color:var(--gray);}
+#avRoot .pnl-t tr.ref td.l .nm{font-weight:400;color:var(--gray);}
+#avRoot .pnl-t td.l .nm{font-weight:500;}
+#avRoot .pnl-foot-note{color:var(--gray);font-size:12px;margin-top:10px;}
+#avRoot .vid{display:inline-flex;align-items:center;gap:5px;color:var(--black);text-decoration:none;font-weight:500;}
+#avRoot .vid:hover{color:var(--purple-deep);}
+#avRoot .vid svg{color:#c4c4cf;flex-shrink:0;}
+#avRoot .vid:hover svg{color:var(--purple);}
+#avRoot .adnames{font-size:9.5px;color:#b6b8c6;margin-top:3px;white-space:normal;max-width:270px;line-height:1.35;}
+#avRoot .warn-dot{color:var(--amber);}
+#avRoot td.pos{color:var(--green-dark);font-weight:600;}
+#avRoot td.neg{color:var(--red);font-weight:600;}
+#avRoot .av-empty{padding:60px 20px;text-align:center;color:var(--gray);font-size:13px;}
+/* 分区竖线 — 漏斗 / 金额 / 单位成本 / 效率 四组各自分开, 眼睛才不会在 12 栏里迷路 */
+#avRoot .pnl-t th.sep,#avRoot .pnl-t td.sep{border-left:1px solid #e9e9f0;}
+/* 手机: 这页不做 (Davy 指定只在电脑看) */
+@media screen and (max-width:767px){
+  #avRoot .pnl-scroll,#avRoot .compact-filter,#avRoot .pnl-foot-note{display:none!important;}
+  #avRoot::after{content:'Desktop only';display:block;text-align:center;color:#9497a9;font-size:12px;padding:24px 0;}
+}
+
 #pnlRoot .pnl-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:18px;}
 @media(max-width:820px){#pnlRoot .pnl-cards{grid-template-columns:repeat(2,1fr);}}
 #pnlRoot .pnl-card{position:relative;background:#fff;border:1px solid #ececf1;border-radius:14px;padding:13px 14px 13px 16px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;}
@@ -13896,6 +13853,235 @@ function _pnlStick(root) {
   const tbH = (tb && getComputedStyle(tb).display !== 'none') ? tb.offsetHeight : 0; // 手机 topbar 是 fixed, 不能用 offsetParent 判断
   w.style.top = tbH + 'px'; // 贴在 topbar 下面
 }
+// ============================================================================
+// v8.94: META Ads Video Performance — 哪支影片赚钱
+//
+// 【资料从哪来】两边凑:
+//   花费  ← state.adVideos (后端 syncAdVideos 从 Meta 拉的, 按文案分组)
+//   漏斗  ← state.leads    (lead/appt/show/成交额, CRM 本来就有)
+//   桥梁  ← 广告文案。Meta 不给 Click-to-WhatsApp 短码 (后端 v3.47 实测零命中),
+//          但 CRM 存的 adName 就是广告文案, Meta 的 creative.body 也是同一段。
+//
+// 【为什么 key 要砍成纯中英数】CRM 那边是从 WhatsApp 讯息抓的、Meta 那边是 API 给的,
+//   emoji / 换行 / 标点两边格式不一样, 不砍掉必定对不上 (后端踩过同一个坑)。
+//
+// 【口径跟日报一致】leads 看 leadDate 落在期间内; appt / show / 成交额 看 apptDate。
+// ============================================================================
+
+const _avState = { mode: 'year', year: '', month: '', ch: '', sort: 'roas' };
+
+// 跟后端 _copyKey_ 同一套规则 —— 改这里就要改后端, 不然两边对不上
+function _avKey(s) {
+  return String(s || '').replace(/[^一-龥a-zA-Z0-9]/g, '').substring(0, 15);
+}
+function _avInScope(dateStr) {
+  const s = String(dateStr || '');
+  if (!s) return false;
+  return _avState.mode === 'month' ? s.indexOf(_avState.month) === 0 : s.indexOf(_avState.year) === 0;
+}
+function _avMonthInScope(m) {
+  const s = String(m || '');
+  if (!s) return false;
+  return _avState.mode === 'month' ? s === _avState.month : s.indexOf(_avState.year) === 0;
+}
+// 这页只看有广告费的 platform (Meta / Google)，organic / follow up 没广告不进来
+function _avAdChannelIds() {
+  return (state.channels || [])
+    .filter(c => { const p = getPlatform(c.platform); return p && p.hasAdSpend; })
+    .map(c => c.id);
+}
+
+function _avInit() {
+  const yrs = _avYears();
+  if (!_avState.year || yrs.indexOf(_avState.year) < 0) _avState.year = yrs[0] || String(new Date().getFullYear());
+  if (!_avState.month || _avState.month.indexOf(_avState.year) !== 0) {
+    const now = new Date();
+    _avState.month = _avState.year + '-' + String(now.getMonth() + 1).padStart(2, '0');
+  }
+}
+function _avYears() {
+  const set = {};
+  (state.adVideos || []).forEach(v => { if (v.month) set[v.month.substring(0, 4)] = 1; });
+  (state.leads || []).forEach(l => { if (l.leadDate) set[String(l.leadDate).substring(0, 4)] = 1; });
+  const ys = Object.keys(set).sort().reverse();
+  return ys.length ? ys : [String(new Date().getFullYear())];
+}
+
+function renderAdsVideo() {
+  const root = document.getElementById('avRoot');
+  if (!root) return;
+  _avInit();
+
+  const adChIds = _avAdChannelIds();
+  const chFilter = _avState.ch ? [_avState.ch] : adChIds;
+
+  // ① 花费: 按 videoKey 汇总 (同一支影片跑多个 campaign / 多个月 → 加总)
+  const vids = {};
+  (state.adVideos || []).forEach(v => {
+    if (!_avMonthInScope(v.month)) return;
+    if (chFilter.indexOf(v.channelId) < 0) return;
+    const k = v.videoKey;
+    if (!vids[k]) vids[k] = { key: k, name: v.videoName, link: v.link, ads: {}, spend: 0,
+                              leads: 0, appts: 0, shows: 0, sales: 0, paid: 0, chs: {} };
+    vids[k].spend += v.spend || 0;
+    vids[k].chs[v.channelId] = 1;
+    String(v.adNames || '').split(' · ').forEach(n => { if (n.trim()) vids[k].ads[n.trim()] = 1; });
+    if (!vids[k].link && v.link) vids[k].link = v.link;
+    if (!vids[k].name && v.videoName) vids[k].name = v.videoName;
+  });
+
+  // ② 漏斗: 按 lead 的 adName 分组。口径跟日报一致 —— lead 看 leadDate, appt/show 看 apptDate
+  let noLinkLeads = 0, noLinkAppts = 0, noLinkShows = 0, noLinkSales = 0, noLinkPaid = 0;
+  (state.leads || []).forEach(l => {
+    if (chFilter.indexOf(l.channelId) < 0) return;
+    const k = _avKey(l.adName);
+    const bucket = (k && vids[k]) ? vids[k] : null;
+    if (_avInScope(l.leadDate)) {
+      if (bucket) bucket.leads++; else noLinkLeads++;
+    }
+    if (l.apptDate && _avInScope(l.apptDate)) {
+      if (bucket) bucket.appts++; else noLinkAppts++;
+      // 值是 'Show up' / 'No Show up' —— 不是 yes/no
+      if (l.showUp === 'Show up') {
+        const paid = (l.spend || 0) > 0 ? 1 : 0;   // Show → Sale 要算「到店后真的付钱」的人数
+        if (bucket) { bucket.shows++; bucket.sales += (l.spend || 0); bucket.paid += paid; }
+        else { noLinkShows++; noLinkSales += (l.spend || 0); noLinkPaid += paid; }
+      }
+    }
+  });
+
+  // ③ 配不到影片的广告费 = 该期间该渠道的 AdsSpend 总额 − 已归到影片的
+  //    这一行一定要显示 —— 不显示的话 Cost 总计跟 Ads Spend 页对不上, Davy 会以为算错
+  let totalSpend = 0;
+  (state.adsSpend || []).forEach(a => {
+    if (!_avMonthInScope(a.month)) return;
+    if (chFilter.indexOf(a.channelId) < 0) return;
+    totalSpend += (a.amount || 0);
+  });
+  const list = Object.keys(vids).map(k => vids[k]);
+  const matchedSpend = list.reduce((s, v) => s + v.spend, 0);
+  const unmatched = Math.round((totalSpend - matchedSpend) * 100) / 100;
+
+  const SORTS = {
+    roas: (a, b) => _avRoas(b) - _avRoas(a),
+    sales: (a, b) => b.sales - a.sales,
+    leads: (a, b) => b.leads - a.leads,
+    cost: (a, b) => b.spend - a.spend
+  };
+  list.sort(SORTS[_avState.sort] || SORTS.roas);
+
+  root.innerHTML = _avBarHtml() + (list.length
+    ? _avTableHtml(list, unmatched, totalSpend, { leads: noLinkLeads, appts: noLinkAppts, shows: noLinkShows, sales: noLinkSales, paid: noLinkPaid })
+    : `<div class="av-empty">还没有影片资料。<br><br>去 Apps Script 跑一次 <b>syncAdVideos</b>，再回来按同步。</div>`);
+}
+
+function _avRoas(v) { return v.spend > 0 ? v.sales / v.spend : 0; }
+
+function _avBarHtml() {
+  const yrs = _avYears();
+  const chs = (state.channels || []).filter(c => _avAdChannelIds().indexOf(c.id) >= 0);
+  const tog = (m, label) => `<button class="toggle${_avState.mode === m ? ' active' : ''}" onclick="_avSet('mode','${m}')">${label}</button>`;
+  // 年份一律给, month 模式再多一个月份下拉。
+  //   刻意不用 openMonthPicker —— 那个绑了自己的 label/hidden input 命名规则,
+  //   这页只是选个区间, 用 select 少一层耦合。
+  const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let dateBtn = `<select class="cf-select" onchange="_avSet('year',this.value)">`
+    + yrs.map(y => `<option value="${y}"${y === _avState.year ? ' selected' : ''}>${y}</option>`).join('')
+    + `</select>`;
+  if (_avState.mode === 'month') {
+    const cur = _avState.month.substring(5);
+    dateBtn += `<select class="cf-select" onchange="_avSet('month', _avState.year + '-' + this.value)">`
+      + MN.map((n, i) => { const mm = String(i + 1).padStart(2, '0');
+          return `<option value="${mm}"${mm === cur ? ' selected' : ''}>${n}</option>`; }).join('')
+      + `</select>`;
+  }
+  return `<h1 class="av-title"><span>META</span> Ads Video Performance</h1>`
+    + `<div class="compact-filter">`
+    + `<div class="toggle-group">${tog('month', 'Month')}${tog('year', 'Year')}</div>`
+    + dateBtn
+    + `<select class="cf-select" onchange="_avSet('ch',this.value)">`
+    + `<option value="">All channels</option>`
+    + chs.map(c => `<option value="${e(c.id)}"${c.id === _avState.ch ? ' selected' : ''}>${e(c.name)}</option>`).join('')
+    + `</select>`
+    + `<select class="cf-select" onchange="_avSet('sort',this.value)">`
+    + [['roas', 'ROAS'], ['sales', 'Sales'], ['leads', 'Leads'], ['cost', 'Cost']]
+        .map(([v, n]) => `<option value="${v}"${v === _avState.sort ? ' selected' : ''}>Sort: ${n}</option>`).join('')
+    + `</select></div>`;
+}
+
+function _avTableHtml(list, unmatched, totalSpend, noLink) {
+  // 不用 fmt.num —— 它把 0 显示成「—」, 这里 RM 0 要看得见
+  const rm = n => 'RM ' + Math.round(n || 0).toLocaleString('en-MY');
+  const per = (cost, n) => n > 0 && cost > 0 ? rm(cost / n) : '—';
+  const pctS = (a, b) => b > 0 ? Math.round(a / b * 100) + '%' : '—';
+  const linkIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
+
+  let body = '';
+  body += `<tr class="grp"><td colspan="12"><span class="glabel">Tracked videos</span></td></tr>`;
+  let tLeads = 0, tAppts = 0, tShows = 0, tSales = 0, tAds = 0, tPaid = 0;
+  list.forEach(v => {
+    const roas = _avRoas(v);
+    const cls = v.spend > 0 ? (roas >= 1 ? 'pos' : 'neg') : '';
+    const names = Object.keys(v.ads);
+    tLeads += v.leads; tAppts += v.appts; tShows += v.shows; tSales += v.sales; tAds += names.length; tPaid += v.paid;
+    const title = v.link
+      ? `<a class="vid" href="${e(v.link)}" target="_blank" rel="noopener"><span class="nm">${e(v.name || v.key)}</span>${linkIcon}</a>`
+      : `<span class="vid"><span class="nm">${e(v.name || v.key)}</span></span>`;
+    body += `<tr><td class="l">${title}<div class="adnames">${e(names.join(' · ')) || '—'}</div></td>`
+      + `<td>${names.length}</td>`
+      + `<td class="sep">${v.leads}</td><td>${v.appts}</td><td>${v.shows}</td>`
+      + `<td class="sep">${rm(v.sales)}</td><td>${rm(v.spend)}</td>`
+      + `<td class="sep">${per(v.spend, v.leads)}</td><td>${per(v.spend, v.appts)}</td><td>${per(v.spend, v.shows)}</td>`
+      + `<td class="sep">${pctS(v.paid, v.shows)}</td>`
+      + `<td class="${cls}">${v.spend > 0 ? roas.toFixed(2) : '—'}</td></tr>`;
+  });
+
+  body += `<tr class="grp"><td colspan="12"><span class="glabel">Not tracked</span></td></tr>`;
+  if (unmatched > 0.5) {
+    body += `<tr class="ref"><td class="l"><span class="nm">配不到影片的广告费</span>`
+      + `<div class="adnames">这些钱确实花了，但对不到是哪支影片带来的 —— 多半是已经关掉的旧广告、改过文案的、或不是 Click-to-WhatsApp 的广告</div></td>`
+      + `<td>—</td><td class="sep">—</td><td>—</td><td>—</td>`
+      + `<td class="sep">—</td><td>${rm(unmatched)}</td>`
+      + `<td class="sep">—</td><td>—</td><td>—</td><td class="sep">—</td><td>—</td></tr>`;
+  }
+  body += `<tr class="ref"><td class="l"><span class="nm">不是广告来的 lead</span>`
+    + `<div class="adnames">走进来的、朋友介绍的、以及补不回广告来源的旧资料</div></td>`
+    + `<td>—</td><td class="sep">${noLink.leads}</td><td>${noLink.appts}</td><td>${noLink.shows}</td>`
+    + `<td class="sep">${rm(noLink.sales)}</td><td>—</td>`
+    + `<td class="sep">—</td><td>—</td><td>—</td>`
+    + `<td class="sep">${pctS(noLink.paid, noLink.shows)}</td><td>—</td></tr>`;
+
+  const aLeads = tLeads + noLink.leads, aAppts = tAppts + noLink.appts;
+  const aShows = tShows + noLink.shows, aSales = tSales + noLink.sales;
+  const aPaid = tPaid + noLink.paid;
+  body += `<tr class="big"><td class="l"><span class="nm">Total · ${list.length} videos</span></td>`
+    + `<td>${tAds}</td>`
+    + `<td class="sep">${aLeads}</td><td>${aAppts}</td><td>${aShows}</td>`
+    + `<td class="sep">${rm(aSales)}</td><td>${rm(totalSpend)}</td>`
+    + `<td class="sep">${per(totalSpend, aLeads)}</td><td>${per(totalSpend, aAppts)}</td><td>${per(totalSpend, aShows)}</td>`
+    + `<td class="sep">${pctS(aPaid, aShows)}</td>`
+    + `<td>${totalSpend > 0 ? (aSales / totalSpend).toFixed(2) : '—'}</td></tr>`;
+
+  const tracked = tLeads, all = aLeads;
+  return `<div class="pnl-scroll"><table class="pnl-t"><thead><tr>`
+    + `<th class="l">Video</th><th>Ads</th>`
+    + `<th class="sep">Leads</th><th>Appt</th><th>Show</th>`
+    + `<th class="sep">Sales</th><th>Cost</th>`
+    + `<th class="sep">CPL</th><th>CPA</th><th>CPS</th>`
+    + `<th class="sep">Show → Sale</th><th>ROAS</th>`
+    + `</tr></thead><tbody>${body}</tbody></table></div>`
+    + `<div class="pnl-foot-note">Sales / Cost / CPL / CPA / CPS 单位 RM　·　`
+    + `<b>Cost 总计 = Ads Spend 页的数字</b>　·　`
+    + `追踪到 <b>${tracked} / ${all}</b> 个 lead 的来源影片${all > 0 ? '（' + Math.round(tracked / all * 100) + '%）' : ''}　·　`
+    + `点影片名字开那支影片</div>`;
+}
+
+function _avSet(k, v) {
+  _avState[k] = v;
+  if (k === 'year' && _avState.month.indexOf(v) !== 0) _avState.month = v + '-' + _avState.month.substring(5);
+  renderAdsVideo();
+}
+
 function renderPnL() {
   _pnlInjectCss();
   const root = document.getElementById('pnlRoot');
@@ -18082,7 +18268,19 @@ function _normalizeSheetPullData(d) {
     icon: String(r.icon || '').trim(),   // v8.90: 空 = 按名字自动配
   }));
 
-  return { leads, ads, rev, fees, channels, locations, platforms, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary };
+  // v8.94: AdVideos — 后端还没同步过就是 undefined → 回 null → apply 时保留本地不动
+  const adVideos = (d.AdVideos === undefined) ? null : (d.AdVideos || []).filter(r => r && r.videoKey).map(r => ({
+    id: String(r.id || ''),
+    month: toMonthStr(r.month),
+    channelId: String(r.channelId || ''),
+    videoKey: String(r.videoKey || ''),
+    videoName: String(r.videoName || ''),
+    adNames: String(r.adNames || ''),
+    link: String(r.link || ''),
+    spend: toNum(r.spend)
+  }));
+
+  return { leads, ads, rev, fees, channels, locations, platforms, adVideos, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary };
 }
 
 async function gsPushAll() {
@@ -18399,7 +18597,7 @@ async function _gsPullSilentInner(isRetry) {
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPull 共享, 避免代码漂移)
     // v6.69: 同时拿 channels + locations
-    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, platforms: normalizedPlatforms, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary } = _normalizeSheetPullData(d.data);
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, platforms: normalizedPlatforms, adVideos: normalizedAdVideos, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary } = _normalizeSheetPullData(d.data);
 
     if (suspiciousLead) {
       console.warn('[Auto-pull] BLOCKED: suspicious lead columns:', Object.keys(suspiciousLead));
@@ -18451,6 +18649,8 @@ async function _gsPullSilentInner(isRetry) {
     } else if (normalizedPlatforms !== null && (state.platforms || []).length > 0) {
       skipped.push('platforms');
     }
+    // v8.94: AdVideos — 后端只读表, 没同步过就是 null → 保留本地不动
+    if (normalizedAdVideos !== null) state.adVideos = normalizedAdVideos;
     // v8.84: platform 载入後，把 channel.platform 里手填的名字统一转成 id
     if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig(true);   // v8.86: 自动触发, 不跳提示
     // v8.85: channel 归属正规化之後，把 lead / 广告费的 platform 快照也对齐
@@ -18566,7 +18766,7 @@ async function gsPull() {
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPullSilent 共享, 避免代码漂移)
     // v6.69: 同时拿 channels + locations (codex P1 #1 同步)
-    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, platforms: normalizedPlatforms, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary } = _normalizeSheetPullData(d.data);
+    const { leads: normalizedLeads, ads: normalizedAds, rev: normalizedRev, fees: normalizedFees, channels: normalizedChannels, locations: normalizedLocations, platforms: normalizedPlatforms, adVideos: normalizedAdVideos, suspiciousLead, pnlRows, pnlStaff, pnlConfig, pnlEmployees, pnlEmpSalary } = _normalizeSheetPullData(d.data);
 
     // Safety check: reject if Sheet has unexpected columns (manual Pull 弹 alert, gsPullSilent 静默)
     if (suspiciousLead) {
@@ -18644,6 +18844,8 @@ async function gsPull() {
     } else if (normalizedPlatforms !== null) {
       skipped.push('platforms');
     }
+    // v8.94: AdVideos — 后端只读表, 没同步过就是 null → 保留本地不动
+    if (normalizedAdVideos !== null) state.adVideos = normalizedAdVideos;
     // v8.84: 同上 — 手填的名字转成 id，转过就推回 Sheet
     if (_normalizeChannelPlatforms() > 0 && typeof gsPushConfig === 'function') gsPushConfig(true);   // v8.86: 自动触发, 不跳提示
     // v8.85: channel 归属正规化之後，把 lead / 广告费的 platform 快照也对齐
