@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.94</div>
+      <div class="nav-brand-version">v8.95</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -14001,7 +14001,7 @@ function _avBarHtml() {
     + dateBtn
     + `<select class="cf-select" onchange="_avSet('ch',this.value)">`
     + `<option value="">All channels</option>`
-    + chs.map(c => `<option value="${e(c.id)}"${c.id === _avState.ch ? ' selected' : ''}>${e(c.name)}</option>`).join('')
+    + chs.map(c => `<option value="${esc(c.id)}"${c.id === _avState.ch ? ' selected' : ''}>${esc(c.name)}</option>`).join('')
     + `</select>`
     + `<select class="cf-select" onchange="_avSet('sort',this.value)">`
     + [['roas', 'ROAS'], ['sales', 'Sales'], ['leads', 'Leads'], ['cost', 'Cost']]
@@ -14025,9 +14025,9 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
     const names = Object.keys(v.ads);
     tLeads += v.leads; tAppts += v.appts; tShows += v.shows; tSales += v.sales; tAds += names.length; tPaid += v.paid;
     const title = v.link
-      ? `<a class="vid" href="${e(v.link)}" target="_blank" rel="noopener"><span class="nm">${e(v.name || v.key)}</span>${linkIcon}</a>`
-      : `<span class="vid"><span class="nm">${e(v.name || v.key)}</span></span>`;
-    body += `<tr><td class="l">${title}<div class="adnames">${e(names.join(' · ')) || '—'}</div></td>`
+      ? `<a class="vid" href="${esc(v.link)}" target="_blank" rel="noopener"><span class="nm">${esc(v.name || v.key)}</span>${linkIcon}</a>`
+      : `<span class="vid"><span class="nm">${esc(v.name || v.key)}</span></span>`;
+    body += `<tr><td class="l">${title}<div class="adnames">${esc(names.join(' · ')) || '—'}</div></td>`
       + `<td>${names.length}</td>`
       + `<td class="sep">${v.leads}</td><td>${v.appts}</td><td>${v.shows}</td>`
       + `<td class="sep">${rm(v.sales)}</td><td>${rm(v.spend)}</td>`
