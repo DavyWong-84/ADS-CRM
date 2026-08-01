@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" style="--app-vh: 735.2000122070312px;"><head>
+<html lang="en" style="--app-vh: 791.2000122070312px;"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.96</div>
+      <div class="nav-brand-version">v8.97</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3677,7 +3677,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
 
     <div class="contact-layout">
       <!-- LEFT: List panel (contains filters + list + load more) -->
-      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 735px;"><div class="contact-filters-inline">
+      <div class="contact-list-panel" id="contactListPanel" style="top: 0px; max-height: 791px;"><div class="contact-filters-inline">
           <!-- v8.44: 桌面端把「搜索行」+「筛选行」合并成一行 (方案 A) — 手机端保持两行, 结构不动 -->
           <div class="contact-toolbar">
           <div class="ct-line1" style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
@@ -3739,7 +3739,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
       </div>
 
       <!-- RIGHT: Form panel (desktop: always visible; mobile: full screen overlay) -->
-      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 735px;">
+      <div class="contact-form-panel" id="contactFormPanel" style="top: 0px; height: 791px;">
         <!-- Mobile: close button (hidden on desktop, shown when form is open on mobile) -->
         <div id="contactBackBar">
           <button type="button" onclick="closeContactForm()" aria-label="Close" style="background:transparent;border:0;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gray);font-size:20px;line-height:1;">✕</button>
@@ -13647,8 +13647,12 @@ function _pnlInjectCss() {
 #avRoot td.pos{color:var(--green-dark);font-weight:600;}
 #avRoot td.neg{color:var(--red);font-weight:600;}
 #avRoot .av-empty{padding:60px 20px;text-align:center;color:var(--gray);font-size:13px;}
-/* 分区竖线 — 漏斗 / 金额 / 单位成本 / 效率 四组各自分开, 眼睛才不会在 12 栏里迷路 */
+/* 分区竖线 — 漏斗 / 金额 / 单位成本 / 效率 四组各自分开, 眼睛才不会在 11 栏里迷路 */
 #avRoot .pnl-t th.sep,#avRoot .pnl-t td.sep{border-left:1px solid #e9e9f0;}
+/* 可排序表头 */
+#avRoot .pnl-t th.av-sort{cursor:pointer;user-select:none;}
+#avRoot .pnl-t th.av-sort:hover{color:var(--purple);background:#f2eeff;}
+#avRoot .pnl-t th.av-sort.on{color:var(--purple-deep);font-weight:700;background:#f0e9ff;}
 /* 手机: 这页不做 (Davy 指定只在电脑看) */
 @media screen and (max-width:767px){
   #avRoot .pnl-scroll,#avRoot .compact-filter,#avRoot .pnl-foot-note{display:none!important;}
@@ -13868,7 +13872,7 @@ function _pnlStick(root) {
 // 【口径跟日报一致】leads 看 leadDate 落在期间内; appt / show / 成交额 看 apptDate。
 // ============================================================================
 
-const _avState = { mode: 'year', year: '', month: '', ch: '', sort: 'roas' };
+const _avState = { mode: 'year', year: '', month: '', ch: '', sort: 'roas', dir: 'desc' };
 
 // 跟后端 _copyKey_ 同一套规则 —— 改这里就要改后端, 不然两边对不上
 function _avKey(s) {
@@ -13884,10 +13888,12 @@ function _avMonthInScope(m) {
   if (!s) return false;
   return _avState.mode === 'month' ? s === _avState.month : s.indexOf(_avState.year) === 0;
 }
-// 这页只看有广告费的 platform (Meta / Google)，organic / follow up 没广告不进来
+// 这页只看 Meta —— 页名就叫 META Ads Video Performance。
+//   v8.97: 原本用「有广告费的 platform」去筛, 结果 Google Ads 也跑进下拉里。
+//   Google 不是 Click-to-WhatsApp, 根本不会有影片来源资料, 出现在这里只会误导。
 function _avAdChannelIds() {
   return (state.channels || [])
-    .filter(c => { const p = getPlatform(c.platform); return p && p.hasAdSpend; })
+    .filter(c => { const p = getPlatform(c.platform); return p && p.id === 'meta'; })
     .map(c => c.id);
 }
 
@@ -13926,7 +13932,7 @@ function renderAdsVideo() {
     if (chFilter.indexOf(v.channelId) < 0) return;
     const k = v.videoKey;
     if (!vids[k]) vids[k] = { key: k, name: v.videoName, link: v.link, ads: {}, spend: 0,
-                              leads: 0, appts: 0, shows: 0, sales: 0, paid: 0, chs: {} };
+                              leads: 0, appts: 0, shows: 0, sales: 0, chs: {} };
     vids[k].spend += v.spend || 0;
     vids[k].chs[v.channelId] = 1;
     String(v.adNames || '').split(' · ').forEach(n => { if (n.trim()) vids[k].ads[n.trim()] = 1; });
@@ -13935,7 +13941,7 @@ function renderAdsVideo() {
   });
 
   // ② 漏斗: 按 lead 的 adName 分组。口径跟日报一致 —— lead 看 leadDate, appt/show 看 apptDate
-  let noLinkLeads = 0, noLinkAppts = 0, noLinkShows = 0, noLinkSales = 0, noLinkPaid = 0;
+  let noLinkLeads = 0, noLinkAppts = 0, noLinkShows = 0, noLinkSales = 0;
   (state.leads || []).forEach(l => {
     if (chFilter.indexOf(l.channelId) < 0) return;
     const k = _avKey(l.adName);
@@ -13947,9 +13953,8 @@ function renderAdsVideo() {
       if (bucket) bucket.appts++; else noLinkAppts++;
       // 值是 'Show up' / 'No Show up' —— 不是 yes/no
       if (l.showUp === 'Show up') {
-        const paid = (l.spend || 0) > 0 ? 1 : 0;   // Show → Sale 要算「到店后真的付钱」的人数
-        if (bucket) { bucket.shows++; bucket.sales += (l.spend || 0); bucket.paid += paid; }
-        else { noLinkShows++; noLinkSales += (l.spend || 0); noLinkPaid += paid; }
+        if (bucket) { bucket.shows++; bucket.sales += (l.spend || 0); }
+        else { noLinkShows++; noLinkSales += (l.spend || 0); }
       }
     }
   });
@@ -13966,17 +13971,33 @@ function renderAdsVideo() {
   const matchedSpend = list.reduce((s, v) => s + v.spend, 0);
   const unmatched = Math.round((totalSpend - matchedSpend) * 100) / 100;
 
-  const SORTS = {
-    roas: (a, b) => _avRoas(b) - _avRoas(a),
-    sales: (a, b) => b.sales - a.sales,
-    leads: (a, b) => b.leads - a.leads,
-    cost: (a, b) => b.spend - a.spend
+  // v8.97: 点表头排序。每个 key 给一个取值函数, 单位成本类没有分母时给 -1 沉到最底
+  //   (不是 0 —— 0 会假装成「最便宜」排到最前面, 那是骗人的)
+  const SORT_VAL = {
+    ads:   v => Object.keys(v.ads).length,
+    leads: v => v.leads,
+    appts: v => v.appts,
+    shows: v => v.shows,
+    sales: v => v.sales,
+    cost:  v => v.spend,
+    cpl:   v => v.leads > 0 && v.spend > 0 ? v.spend / v.leads : -1,
+    cpa:   v => v.appts > 0 && v.spend > 0 ? v.spend / v.appts : -1,
+    cps:   v => v.shows > 0 && v.spend > 0 ? v.spend / v.shows : -1,
+    roas:  v => _avRoas(v)
   };
-  list.sort(SORTS[_avState.sort] || SORTS.roas);
+  const sortFn = SORT_VAL[_avState.sort] || SORT_VAL.roas;
+  list.sort((a, b) => {
+    const d = sortFn(b) - sortFn(a);
+    return _avState.dir === 'asc' ? -d : d;
+  });
 
   root.innerHTML = _avBarHtml() + (list.length
-    ? _avTableHtml(list, unmatched, totalSpend, { leads: noLinkLeads, appts: noLinkAppts, shows: noLinkShows, sales: noLinkSales, paid: noLinkPaid })
+    ? _avTableHtml(list, unmatched, totalSpend, { leads: noLinkLeads, appts: noLinkAppts, shows: noLinkShows, sales: noLinkSales })
     : `<div class="av-empty">还没有影片资料。<br><br>去 Apps Script 跑一次 <b>syncAdVideos</b>，再回来按同步。</div>`);
+
+  // v8.97: 每次重画都要重新升级下拉 —— nav() 只在切页时叫一次,
+  //   改筛选后这里重画出来的是全新的 <select>, 不叫就变回原生样式。
+  setTimeout(() => { if (typeof upgradeAllPopSelects === 'function') upgradeAllPopSelects(); }, 0);
 }
 
 function _avRoas(v) { return v.spend > 0 ? v.sales / v.spend : 0; }
@@ -13988,13 +14009,15 @@ function _avBarHtml() {
   // 年份一律给, month 模式再多一个月份下拉。
   //   刻意不用 openMonthPicker —— 那个绑了自己的 label/hidden input 命名规则,
   //   这页只是选个区间, 用 select 少一层耦合。
+  // v8.97: 全部要带 data-pop="1" —— 那是 upgradeAllPopSelects 的触发条件,
+  //   不加就维持浏览器原生下拉 (展开是蓝底白字), 跟这个 app 其他页长得不一样。
   const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  let dateBtn = `<select class="cf-select" onchange="_avSet('year',this.value)">`
+  let dateBtn = `<select class="cf-select" data-pop="1" onchange="_avSet('year',this.value)">`
     + yrs.map(y => `<option value="${y}"${y === _avState.year ? ' selected' : ''}>${y}</option>`).join('')
     + `</select>`;
   if (_avState.mode === 'month') {
     const cur = _avState.month.substring(5);
-    dateBtn += `<select class="cf-select" onchange="_avSet('month', _avState.year + '-' + this.value)">`
+    dateBtn += `<select class="cf-select" data-pop="1" onchange="_avSet('month', _avState.year + '-' + this.value)">`
       + MN.map((n, i) => { const mm = String(i + 1).padStart(2, '0');
           return `<option value="${mm}"${mm === cur ? ' selected' : ''}>${n}</option>`; }).join('')
       + `</select>`;
@@ -14003,31 +14026,27 @@ function _avBarHtml() {
     + `<div class="compact-filter">`
     + `<div class="toggle-group">${tog('month', 'Month')}${tog('year', 'Year')}</div>`
     + dateBtn
-    + `<select class="cf-select" onchange="_avSet('ch',this.value)">`
+    + `<select class="cf-select" data-pop="1" data-pop-icon="channel" onchange="_avSet('ch',this.value)">`
     + `<option value="">All channels</option>`
     + chs.map(c => `<option value="${esc(c.id)}"${c.id === _avState.ch ? ' selected' : ''}>${esc(c.name)}</option>`).join('')
     + `</select>`
-    + `<select class="cf-select" onchange="_avSet('sort',this.value)">`
-    + [['roas', 'ROAS'], ['sales', 'Sales'], ['leads', 'Leads'], ['cost', 'Cost']]
-        .map(([v, n]) => `<option value="${v}"${v === _avState.sort ? ' selected' : ''}>Sort: ${n}</option>`).join('')
-    + `</select></div>`;
+    + `</div>`;   // v8.97: 排序下拉拿掉了 —— 改成直接点表头, 两套并存只会互相打架
 }
 
 function _avTableHtml(list, unmatched, totalSpend, noLink) {
   // 不用 fmt.num —— 它把 0 显示成「—」, 这里 RM 0 要看得见
   const rm = n => 'RM ' + Math.round(n || 0).toLocaleString('en-MY');
   const per = (cost, n) => n > 0 && cost > 0 ? rm(cost / n) : '—';
-  const pctS = (a, b) => b > 0 ? Math.round(a / b * 100) + '%' : '—';
   const linkIcon = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
 
   let body = '';
-  body += `<tr class="grp"><td colspan="12"><span class="glabel">Tracked videos</span></td></tr>`;
-  let tLeads = 0, tAppts = 0, tShows = 0, tSales = 0, tAds = 0, tPaid = 0;
+  body += `<tr class="grp"><td colspan="11"><span class="glabel">Tracked videos</span></td></tr>`;
+  let tLeads = 0, tAppts = 0, tShows = 0, tSales = 0, tAds = 0;
   list.forEach(v => {
     const roas = _avRoas(v);
     const cls = v.spend > 0 ? (roas >= 1 ? 'pos' : 'neg') : '';
     const names = Object.keys(v.ads);
-    tLeads += v.leads; tAppts += v.appts; tShows += v.shows; tSales += v.sales; tAds += names.length; tPaid += v.paid;
+    tLeads += v.leads; tAppts += v.appts; tShows += v.shows; tSales += v.sales; tAds += names.length;
     const title = v.link
       ? `<a class="vid" href="${esc(v.link)}" target="_blank" rel="noopener"><span class="nm">${esc(v.name || v.key)}</span>${linkIcon}</a>`
       : `<span class="vid"><span class="nm">${esc(v.name || v.key)}</span></span>`;
@@ -14036,53 +14055,60 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
       + `<td class="sep">${v.leads}</td><td>${v.appts}</td><td>${v.shows}</td>`
       + `<td class="sep">${rm(v.sales)}</td><td>${rm(v.spend)}</td>`
       + `<td class="sep">${per(v.spend, v.leads)}</td><td>${per(v.spend, v.appts)}</td><td>${per(v.spend, v.shows)}</td>`
-      + `<td class="sep">${pctS(v.paid, v.shows)}</td>`
-      + `<td class="${cls}">${v.spend > 0 ? roas.toFixed(2) : '—'}</td></tr>`;
+      + `<td class="sep ${cls}">${v.spend > 0 ? roas.toFixed(2) : '—'}</td></tr>`;
   });
 
-  body += `<tr class="grp"><td colspan="12"><span class="glabel">Not tracked</span></td></tr>`;
+  body += `<tr class="grp"><td colspan="11"><span class="glabel">Not tracked</span></td></tr>`;
   if (unmatched > 0.5) {
     body += `<tr class="ref"><td class="l"><span class="nm">配不到影片的广告费</span>`
       + `<div class="adnames">这些钱确实花了，但对不到是哪支影片带来的 —— 多半是已经关掉的旧广告、改过文案的、或不是 Click-to-WhatsApp 的广告</div></td>`
       + `<td>—</td><td class="sep">—</td><td>—</td><td>—</td>`
       + `<td class="sep">—</td><td>${rm(unmatched)}</td>`
-      + `<td class="sep">—</td><td>—</td><td>—</td><td class="sep">—</td><td>—</td></tr>`;
+      + `<td class="sep">—</td><td>—</td><td>—</td><td class="sep">—</td></tr>`;
   }
   body += `<tr class="ref"><td class="l"><span class="nm">不是广告来的 lead</span>`
     + `<div class="adnames">走进来的、朋友介绍的、以及补不回广告来源的旧资料</div></td>`
     + `<td>—</td><td class="sep">${noLink.leads}</td><td>${noLink.appts}</td><td>${noLink.shows}</td>`
     + `<td class="sep">${rm(noLink.sales)}</td><td>—</td>`
-    + `<td class="sep">—</td><td>—</td><td>—</td>`
-    + `<td class="sep">${pctS(noLink.paid, noLink.shows)}</td><td>—</td></tr>`;
+    + `<td class="sep">—</td><td>—</td><td>—</td><td class="sep">—</td></tr>`;
 
   const aLeads = tLeads + noLink.leads, aAppts = tAppts + noLink.appts;
   const aShows = tShows + noLink.shows, aSales = tSales + noLink.sales;
-  const aPaid = tPaid + noLink.paid;
   body += `<tr class="big"><td class="l"><span class="nm">Total · ${list.length} videos</span></td>`
     + `<td>${tAds}</td>`
     + `<td class="sep">${aLeads}</td><td>${aAppts}</td><td>${aShows}</td>`
     + `<td class="sep">${rm(aSales)}</td><td>${rm(totalSpend)}</td>`
     + `<td class="sep">${per(totalSpend, aLeads)}</td><td>${per(totalSpend, aAppts)}</td><td>${per(totalSpend, aShows)}</td>`
-    + `<td class="sep">${pctS(aPaid, aShows)}</td>`
-    + `<td>${totalSpend > 0 ? (aSales / totalSpend).toFixed(2) : '—'}</td></tr>`;
+    + `<td class="sep">${totalSpend > 0 ? (aSales / totalSpend).toFixed(2) : '—'}</td></tr>`;
 
   const tracked = tLeads, all = aLeads;
+  const th = (key, label, sep) => {
+    const on = _avState.sort === key;
+    const arrow = on ? (_avState.dir === 'asc' ? ' ↑' : ' ↓') : '';
+    return `<th class="${sep ? 'sep ' : ''}av-sort${on ? ' on' : ''}" onclick="_avSort('${key}')">${label}${arrow}</th>`;
+  };
   return `<div class="pnl-scroll"><table class="pnl-t"><thead><tr>`
-    + `<th class="l">Video</th><th>Ads</th>`
-    + `<th class="sep">Leads</th><th>Appt</th><th>Show</th>`
-    + `<th class="sep">Sales</th><th>Cost</th>`
-    + `<th class="sep">CPL</th><th>CPA</th><th>CPS</th>`
-    + `<th class="sep">Show → Sale</th><th>ROAS</th>`
+    + `<th class="l">Video</th>` + th('ads', 'Ads')
+    + th('leads', 'Leads', 1) + th('appts', 'Appt') + th('shows', 'Show')
+    + th('sales', 'Sales', 1) + th('cost', 'Cost')
+    + th('cpl', 'CPL', 1) + th('cpa', 'CPA') + th('cps', 'CPS')
+    + th('roas', 'ROAS', 1)
     + `</tr></thead><tbody>${body}</tbody></table></div>`
     + `<div class="pnl-foot-note">Sales / Cost / CPL / CPA / CPS 单位 RM　·　`
     + `<b>Cost 总计 = Ads Spend 页的数字</b>　·　`
     + `追踪到 <b>${tracked} / ${all}</b> 个 lead 的来源影片${all > 0 ? '（' + Math.round(tracked / all * 100) + '%）' : ''}　·　`
-    + `点影片名字开那支影片</div>`;
+    + `点影片名字开那支影片　·　点表头排序</div>`;
 }
 
 function _avSet(k, v) {
   _avState[k] = v;
   if (k === 'year' && _avState.month.indexOf(v) !== 0) _avState.month = v + '-' + _avState.month.substring(5);
+  renderAdsVideo();
+}
+// 点同一栏 = 反向, 点别栏 = 换栏并从大到小 (看排行榜通常先想看最高的)
+function _avSort(key) {
+  if (_avState.sort === key) _avState.dir = (_avState.dir === 'asc') ? 'desc' : 'asc';
+  else { _avState.sort = key; _avState.dir = 'desc'; }
   renderAdsVideo();
 }
 
