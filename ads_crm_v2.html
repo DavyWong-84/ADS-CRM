@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.98</div>
+      <div class="nav-brand-version">v8.99</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -14029,7 +14029,9 @@ function _avBarHtml() {
     + `<div class="toggle-group">${tog('month', 'Month')}${tog('year', 'Year')}</div>`
     + dateBtn
     + `<select class="cf-select" data-pop="1" data-pop-icon="channel" onchange="_avSet('ch',this.value)">`
-    + `<option value="">All channels</option>`
+    // v8.99: value 不能是空字串 —— upgradeAllPopSelects 把空值当 placeholder,
+    //   会显示成「Select...」而且点了不触发 change。用 __all 当哨兵值, _avSet 再转回空。
+    + `<option value="__all"${_avState.ch ? '' : ' selected'}>All channels</option>`
     + chs.map(c => `<option value="${esc(c.id)}"${c.id === _avState.ch ? ' selected' : ''}>${esc(c.name)}</option>`).join('')
     + `</select>`
     + `</div>`;   // v8.97: 排序下拉拿掉了 —— 改成直接点表头, 两套并存只会互相打架
@@ -14103,6 +14105,7 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
 }
 
 function _avSet(k, v) {
+  if (k === 'ch' && v === '__all') v = '';   // v8.99: 哨兵值转回「不筛选」
   _avState[k] = v;
   if (k === 'year' && _avState.month.indexOf(v) !== 0) _avState.month = v + '-' + _avState.month.substring(5);
   renderAdsVideo();
