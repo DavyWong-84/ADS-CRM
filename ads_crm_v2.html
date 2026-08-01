@@ -3077,6 +3077,12 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
   .fgrid { grid-template-columns: 1fr; }
 }
 
+/* v8.90 修: .color-swatch 是 aspect-ratio:1/1 + 6 栏 grid —— 在窄 modal 里刚好，
+   但塞进 Settings 这种宽面板每格会被撑成大方块。这里改成固定尺寸的 flex。
+   （原本的 color picker modal 不套这条，维持不变。） */
+.ip-body .color-grid { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 0; }
+.ip-body .color-swatch { width: 30px; height: 30px; flex: 0 0 auto; aspect-ratio: auto; border-radius: 50%; }
+
 /* ══ v8.90: Icon & Color picker ══ */
 .ip-body { padding: 4px 18px 16px; max-height: 62vh; overflow-y: auto; }
 .ip-label { font-size: 10px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase;
@@ -3560,7 +3566,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.90</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v8.91</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3611,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v8.90</div>
+      <div class="nav-brand-version">v8.91</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -15865,14 +15871,13 @@ function _buildSettingsModalBody(kind) {
           <span id="modal_pf_color" data-color="#8B5CF6" style="display:none;"></span>
         </div>
         <div class="settings-modal-input-row">
-          <label>Color <span style="color:var(--silver);font-size:11px;">— used by charts and tables</span></label>
-          <div class="color-grid" id="modal_pf_swatches" data-color="#8B5CF6"></div>
-        </div>
-        <div class="settings-modal-input-row">
           <label>Ad spend</label>
           <label class="pf-chk"><input type="checkbox" id="modal_pf_ad" checked>Has ad spend — only then can you enter cost and see ROAS / CPL / CPA / CPS</label>
         </div>
         <button class="btn btn-primary btn-full" onclick="modalAddPlatform()">Add platform</button>
+        <!-- v8.90: 色板从这里拿掉了 —— 加的时候只要名字，加完会自动展开那一行，
+             在里面点 "Icon & Color" 慢慢挑。表单短一半，也少一个当下要做的决定。 -->
+        <span id="modal_pf_swatches" data-color="#8B5CF6" style="display:none;"></span>
       </div>
     `;
   }
@@ -16291,7 +16296,8 @@ function _pfSave() {
   saveState();
   if (typeof gsPushConfig === 'function') gsPushConfig();
   if (typeof refreshSelects === 'function') refreshSelects();
-  setTimeout(_renderModalPlatformsList, 30);
+  // v8.90: 改成重绘树状页（旧的平铺列表已被取代）
+  setTimeout(() => { if (typeof _renderPlatformTree === 'function') _renderPlatformTree(); }, 30);
   setTimeout(updateSettingsRowStatuses, 50);
 }
 
@@ -16369,9 +16375,10 @@ function modalAddPlatform() {
     color, builtin: false, active: true
   }]);
   if (nameEl) nameEl.value = '';
+  _treeOpen = 'p:' + pid;   // v8.90: 加完直接展开那一行，接着就能点 Icon & Color 挑
   _pfSave();
   _pfPreview();
-  toast('Platform added');
+  toast(`已加入 ${name}`);
 }
 
 // 打名字时即时显示会拿到什么 logo（logo 按名字自动匹配，不用选）
@@ -18348,7 +18355,9 @@ async function _gsPullSilentInner(isRetry) {
     const _snapFixed = _syncPlatformSnapshots();
     if (_snapFixed > 0) {
       console.log(`[platform sync] 对齐了 ${_snapFixed} 笔 lead/广告费的 platform`);
-      if (typeof toast === 'function') toast(`已修正 ${_snapFixed} 笔资料的 platform 归属 · 记得按 Push All 同步`);
+      // v8.90 修: 原本立刻 toast, 会跟 pull 自己的「✅ Synced from Sheet」撞在一起叠成乱码。
+      //   延后 2.6 秒等前一个消失再跳。
+      if (typeof toast === 'function') setTimeout(() => toast(`已修正 ${_snapFixed} 笔 platform 归属 · 请按 Push All`), 2600);
     }
     // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
     if (!state.pnl) state.pnl = { rows: [], staff: [], config: [], employees: [], empSalary: [], empV: 0, stockCost: [] };
@@ -18539,7 +18548,9 @@ async function gsPull() {
     const _snapFixed = _syncPlatformSnapshots();
     if (_snapFixed > 0) {
       console.log(`[platform sync] 对齐了 ${_snapFixed} 笔 lead/广告费的 platform`);
-      if (typeof toast === 'function') toast(`已修正 ${_snapFixed} 笔资料的 platform 归属 · 记得按 Push All 同步`);
+      // v8.90 修: 原本立刻 toast, 会跟 pull 自己的「✅ Synced from Sheet」撞在一起叠成乱码。
+      //   延后 2.6 秒等前一个消失再跳。
+      if (typeof toast === 'function') setTimeout(() => toast(`已修正 ${_snapFixed} 笔 platform 归属 · 请按 Push All`), 2600);
     }
     // v7.25: P&L — 后端返回非 null 才覆盖 (兼容旧后端)
     if (!state.pnl) state.pnl = { rows: [], staff: [], config: [], employees: [], empSalary: [], empV: 0, stockCost: [] };
