@@ -3566,7 +3566,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.14</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.15</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.14</div>
+      <div class="nav-brand-version">v9.15</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -18978,7 +18978,16 @@ let _pullRetryQueued = false; // v7.91 (codex #4): 防重复排 retry
 async function gsPullSilent(isRetry) {
   if (_pullInFlight) return; // v7.91: 已有 pull 在跑 (启动/手动/restore 回拉/retry 可能撞车), 不开第二条
   _pullInFlight = true;
-  try { await _gsPullSilentInner(isRetry); } finally { _pullInFlight = false; }
+  try { await _gsPullSilentInner(isRetry); }
+  finally {
+    _pullInFlight = false;
+    // v9.15【Codex #5 P1-1】补拉 Inbox 必须放在这里, 不能放 _gsPullSilentInner 末尾。
+    //   inner 有好几条 early return: 指纹相同 (最常见!)、被空表保护挡下、鉴权失败、网路错误 ——
+    //   放在 inner 末尾等於「只有资料真的变了才补拉」, 而 Davy 抱怨的正是「资料没变那几次」。
+    //   放在 gsPullSilent 的 finally, 不管 inner 走哪条路都会执行。
+    try { if (typeof pendingRefresh === 'function') await pendingRefresh('silent'); }
+    catch (e) { console.warn('[Auto-pull] Inbox 补拉失败:', e); }
+  }
 }
 async function _gsPullSilentInner(isRetry) {
   const url = getGsUrl();
@@ -19151,12 +19160,6 @@ async function _gsPullSilentInner(isRetry) {
       else if (pageId === 'page-entry' && typeof renderEntry === 'function') renderEntry();
       if (typeof renderTopbarToday === 'function') renderTopbarToday();
     } catch (e) { console.warn('[Auto-pull] re-render failed:', e); }
-    // v9.14: 主同步成功後补拉一次 Inbox。
-    //   启动时两条请求是并行发的, Inbox 那条常卡在这条 13–15 秒的後面失败 →
-    //   Davy 得手动按好几次 Sync 才更新。现在主同步一结束、Apps Script 空出来了就自动补一次,
-    //   他不用再按。_pendingInFlightReq 会挡掉「上一条还在跑」的情况, 不会叠加。
-    try { if (typeof pendingRefresh === 'function') pendingRefresh('silent'); }
-    catch (e) { console.warn('[Auto-pull] pending refresh failed:', e); }
   } catch (e) {
     // v7.90: 分类失败原因讲人话 — Google 前门挡掉时返回 HTML, JSON.parse 会抛 "Unexpected token '<'"
     let reason = e.message || 'network error';
@@ -22224,6 +22227,11 @@ let pendingData = [];
 // v4.55: Badge updater — checks pending count every 60s, updates red dot on topbar button
 async function pendingBadgeUpdate() {
   if (document.hidden) return; // v7.91 (codex #3): 页面不可见就不打 — 后台 tab 别浪费请求额度
+  // v9.15【Codex #5 P2】共用 pendingRefresh 的 in-flight 旗标。
+  //   这里打的是**同一个** pullpending endpoint, 但原本不看那把锁 —— 於是启动阶段可能同时有
+  //   主 Pull + Inbox refresh + 这条 badge 三条请求叠在一起。为了一个数字再打一条重复请求不值得,
+  //   而且 pendingRefresh 跑完本来就会更新 badge。
+  if (_pendingInFlightReq) return;
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
   if (!url) return;
   try {
@@ -22311,9 +22319,13 @@ function _restorePendingLocal(p) {
 //   【为什么越按越糟】主同步有 _pullInFlight 挡重复, **这条没有** ——
 //     按三次就发三个请求一起排队, 用户「多按几次」的直觉反应正好让它更塞。
 let _pendingInFlightReq = false;
+// v9.15【Codex #5 P1-2】原本 in-flight 时直接 return = **把这次补拉要求丢掉**。
+//   启动时 pendingRefresh 已经在并行跑, 主同步结束再叫一次刚好被挡掉 → Inbox 永远补不到。
+//   改成记一笔「还欠一次」, 当前这条跑完再补跑一次 (只补一次, 不会滚雪球)。
+let _pendingRetryQueued = false;
 async function pendingRefresh(mode) {
   mode = mode || 'manual';
-  if (_pendingInFlightReq) return;   // v9.14: 已经有一条在跑, 不开第二条
+  if (_pendingInFlightReq) { _pendingRetryQueued = true; return; }   // v9.15: 不丢掉, 记著待会补
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
   if (!url) {
     if (typeof toast === 'function') toast('⚠️ Apps Script URL not set, configure in Settings');
@@ -22381,6 +22393,8 @@ async function pendingRefresh(mode) {
     if (freshEl) freshEl.innerHTML = '<span style="color:var(--red);">⚠ Sync failed (' + escapeHTML(String(_why)) + ') — using cached data</span>';
   } finally {
     _pendingInFlightReq = false;   // v9.14: 一定要在 finally 放, 不然失败一次就再也拉不动
+    // v9.15: 跑的期间有人要过 → 补跑一次。旗标先清掉再排, 所以最多只补一次, 不会连锁。
+    if (_pendingRetryQueued) { _pendingRetryQueued = false; setTimeout(() => pendingRefresh('silent'), 300); }
     // v5.06: Reset spinner
     if (refreshBtn) {
       setTimeout(() => { refreshBtn.style.transform = ''; }, 50);
