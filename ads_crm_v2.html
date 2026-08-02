@@ -490,6 +490,18 @@ table.data .total-row td:first-child { color: var(--purple-deep); }
 #storeContent .wk-c.nil { background:var(--surface); border-color:var(--border-light); }
 #storeContent .wk-in { position:relative; }
 #storeContent .wk-c .k { font-size:9.5px; font-weight:700; letter-spacing:.7px; color:var(--gray); text-transform:uppercase; }
+/* v9.27: 天数徽章 —— Davy 说「5D 太小了」, 所以字级拉到 10.5px、加粗、内距放宽。
+   中文「5 天」而不是 5d (Davy 指定)。不满 7 天用琥珀色, 满 7 天灰色。 */
+#storeContent .wk-c .wk-days { display:inline-block; margin-left:6px; padding:2px 7px; border-radius:99px;
+  font-size:10.5px; font-weight:700; letter-spacing:0; text-transform:none; vertical-align:1px;
+  background:var(--surface-2); color:var(--gray); }
+#storeContent .wk-c .wk-days.part { background:rgba(217,119,6,.14); color:#8a5200; }
+/* 跨月被切一半的週用虚线框, 扫一眼就知道哪几张要小心比较 */
+#storeContent .wk-c.part { border-style:dashed; }
+/* 每日平均 —— 真正让「5 天的週」跟「7 天的週」公平比较的那一行 */
+#storeContent .wk-c .wk-perday { font-size:10.5px; color:var(--gray); font-variant-numeric:tabular-nums;
+  margin:-5px 0 8px; }
+#storeContent .wk-c .wk-perday b { color:var(--black); font-weight:600; }
 #storeContent .wk-c .v { font-size:17px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.4px;
   margin:4px 0 9px; color:var(--black); line-height:1.2; }
 #storeContent .wk-c.on .v { color:var(--purple-deep); }
@@ -3687,7 +3699,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.26</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.28</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3738,7 +3750,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.26</div>
+      <div class="nav-brand-version">v9.28</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -10962,6 +10974,13 @@ function toggleWeekMonth(m) {
   const mo = document.querySelector(`.wk-mo[data-wm="${m}"]`);
   if (!exp) return;
   const willOpen = exp.style.display === 'none';
+  // v9.28【Davy】手风琴: 展开一个月就把其他月收起来。
+  //   理由是展开区很高 (五张卡 + 平台表), 同时开两三个月要一直卷才找得到东西。
+  if (willOpen) {
+    document.querySelectorAll('#storeContent tr.wk-exp').forEach(e => { e.style.display = 'none'; });
+    document.querySelectorAll('#storeContent tr.wk-mo.on').forEach(r => r.classList.remove('on'));
+    if (_wkOpen) _wkOpen.clear();
+  }
   exp.style.display = willOpen ? '' : 'none';
   if (mo) mo.classList.toggle('on', willOpen);
   // v9.23【Davy: 换 channel 就跳回 8 月】记住展开了哪几个月。
@@ -10972,6 +10991,27 @@ function toggleWeekMonth(m) {
   //   状态由 DOM 实际情形算, 不自己记 —— 免得同时开两个月时算错。
   const tbl = document.querySelector('table.wk-t');
   if (tbl) tbl.classList.toggle('has-open', !!tbl.querySelector('tr.wk-mo.on'));
+  if (willOpen && mo) _wkScrollTo(mo);   // v9.28: 展开後自动卷到位
+}
+
+// v9.28【Davy: 加上自动滑动调整界面】展开後把那个月份行卷到表格顶端,
+//   这样月份行 + 底下整块展开内容一次看得到, 不用自己找。
+//   ⚠️ 三个细节:
+//    ① 卷的是 .wk-wrap (表格自己的卷动容器), 不是整页 —— 卷整页会把上面的筛选列推走。
+//    ② 要扣掉 sticky 表头的高度, 否则月份行会被压在表头下面看不到。
+//    ③ 要等 requestAnimationFrame —— 展开那一刻浏览器还没重新排版, 当下量到的位置是旧的。
+function _wkScrollTo(moRow) {
+  const wrap = document.querySelector('#storeContent .wk-wrap');
+  if (!wrap || !moRow) return;
+  requestAnimationFrame(() => {
+    const thead = wrap.querySelector('table.wk-t thead');
+    const headH = thead ? thead.getBoundingClientRect().height : 0;
+    // 用 getBoundingClientRect 相减, 不用 offsetTop —— offsetTop 会因为 offsetParent
+    // 是谁而算错 (table / tbody / 容器 在不同浏览器不一样)。
+    const delta = moRow.getBoundingClientRect().top - wrap.getBoundingClientRect().top - headH;
+    if (Math.abs(delta) < 2) return;                    // 已经在位置上就别抖
+    wrap.scrollTo({ top: Math.max(0, wrap.scrollTop + delta), behavior: 'smooth' });
+  });
 }
 
 function switchStoreTab(key) {
@@ -11755,14 +11795,23 @@ function renderStore() {
         //   v9.22: 整个月的每一週都要画 (Davy: 只有一张卡会撑满整排, 很怪; 要有无资料的卡片)。
         //      v9.20 曾经砍掉「当月还没到的週」, 但那让 8 月只剩一张卡撑满全宽 —— 改回来。
         //      不过未来的週会标成 upcoming 而不是 no sales, 因为那不是掛零, 是还没发生。
-        const _mw = [], _seenW = {};
+        const _mw = [], _seenW = {}, _wDays = {};
         const _yy = +m.slice(0, 4), _mm = +m.slice(5, 7);
         const _days = new Date(_yy, _mm, 0).getDate();
         const _today = (typeof localDate === 'function') ? localDate() : new Date().toISOString().slice(0, 10);
         const _curW = isoWeek(_today), _curM = _today.slice(0, 7);
+        const _lastDay = (m === _curM) ? Math.min(_days, +_today.slice(8, 10)) : _days;
         for (let d = 1; d <= _days; d++) {
           const w = isoWeek(`${m}-${String(d).padStart(2, '0')}`);
           if (!_seenW[w]) { _seenW[w] = 1; _mw.push(w); }
+          // v9.27【Davy】一週不一定整整 7 天落在这个月 —— 跨月时会被切成两半
+          //   (实测 2026: W27 在 6 月只有 2 天、7 月有 5 天; W31 在 7 月 5 天、8 月 2 天)。
+          //   不标出来的话, 5 天的週跟 7 天的週摆一起比, **跨月那两週永远被低估**。
+          //   实例: 7 月 W29 = RM 20,908 (7天) 看起来赢 W27 = RM 17,122 (5天),
+          //         但换算每天 W27 (3,424) 反而比 W29 (2,987) 强 —— 结论是反过来的。
+          //   ⚠️ 只数「已经过完」的天: 当月那一週如果只过了 2 天, 分母就是 2,
+          //      否则本週平均会被还没发生的日子稀释。徽章和分母用同一个数, 才不会对不上。
+          if (d <= _lastDay) _wDays[w] = (_wDays[w] || 0) + 1;
         }
         // 这一週是不是「还没到」: 只有当月才可能, 而且要排在本週之後
         const _future = w => m > _curM || (m === _curM && _mw.indexOf(w) > _mw.indexOf(_curW) && _mw.indexOf(_curW) >= 0);
@@ -11812,9 +11861,17 @@ function renderStore() {
         const cards = sorted.map(w => {
           const dead = w.total === 0 && w.appt === 0;
           const cells = (showLeadCols ? [[w.total, 'Lead']] : []).concat([[w.appt, 'Appt'], [w.show, 'Show']]);
-          return `<div class="wk-c${dead ? ' nil' : (w.spend > 0 ? ' on' : '')}">`
-            + `<div class="wk-in"><div class="k">W${w.week}</div>`
+          // v9.27: 这一週在这个月实际有几天 (已过完的)。不满 7 天 = 跨月被切一半 → 标出来 + 虚线框
+          const nd = _wDays[w.week] || 0;
+          const partial = nd > 0 && nd < 7;
+          const perDay = (nd > 0 && w.spend > 0) ? Math.round(w.spend / nd) : 0;
+          return `<div class="wk-c${dead ? ' nil' : (w.spend > 0 ? ' on' : '')}${partial ? ' part' : ''}">`
+            + `<div class="wk-in"><div class="k">W${w.week}`
+            // 只有不满 7 天才标 (Davy 选的 C) —— 满 7 天是常态, 标了等於废话
+            + (partial ? `<span class="wk-days part">${nd} 天</span>` : '')
+            + `</div>`
             + `<div class="v">${w.spend > 0 ? wkMoney(w.spend) : (_future(w.week) ? 'upcoming' : 'no sales')}</div>`
+            + (perDay > 0 ? `<div class="wk-perday">RM <b>${perDay.toLocaleString('en-MY')}</b> / 天</div>` : '')
             + `<div class="wk-tri">`
             + cells.map(c => `<div><div class="wk-tv">${c[0]}</div><div class="wk-tk">${c[1]}</div></div>`).join('')
             + `</div></div></div>`;
