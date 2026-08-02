@@ -3566,7 +3566,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.11</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.13</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.11</div>
+      <div class="nav-brand-version">v9.13</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -16523,6 +16523,7 @@ function _buildSettingsModalBody(kind) {
           <button class="btn btn-ghost" onclick="modalGSheetTest()">Test</button>
         </div>
         <div id="modal_gs_log" style="font-size:12px;color:var(--gray);margin-top:10px;min-height:16px;"></div>
+        ${_syncTimingHtml()}<!-- v9.12: 上次同步每张表花多久 (常驻, 每次打开 Settings 重算) -->
         <!-- v6.66 codex P1 #3: Auth Mode status display, info-only -->
         <div id="modal_gs_authstatus" style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:12px;display:none;">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
@@ -18209,6 +18210,14 @@ async function cloudBackupRestore(backupId, backupName) {
     <div style="background:rgba(220,38,38,0.06);border-left:3px solid var(--red);border-radius: 8px;padding:10px 12px;margin-bottom:14px;">
       <div style="font-size:13px;color:var(--red);font-weight:600;margin-bottom:4px;">⚠️ This will REPLACE current data</div>
       <div style="font-size:12px;color:var(--gray);">A safety snapshot of the current state will be taken first, so you can roll back if needed.</div>
+      <!-- v9.12【Codex 复核 P1 — Davy 选流程挡, 不补统一锁】还原期间 upsert/deleteById/pushAll 没拿锁,
+           同事这时存的资料会被盖掉, 而且发生在安全快照之後 → 回滚也救不回。
+           自动进线 (ghlSavePending/ghlConfirmPending) 已经拿同一把锁, 挡得住; 剩下没挡的都是「人主动按」的,
+           所以用一句提示比动每天几十次的存档路径可靠。 -->
+      <div style="font-size:12px;color:var(--red);margin-top:8px;padding-top:8px;border-top:1px solid rgba(212,21,59,.15);">
+        <b>还原期间请确认没有同事在使用 CRM</b>（约需 1 分钟）。<br>
+        <span style="color:var(--gray);">这段时间别人存的客户会被盖掉，而且回滚也救不回来。</span>
+      </div>
     </div>
     ${degraded ? `<div style="background:rgba(217,119,6,0.08);border-left:3px solid var(--amber);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
       <div style="font-size:13px;color:#633806;font-weight:600;margin-bottom:4px;">⚠️ Showing the old fixed list only</div>
@@ -18379,7 +18388,9 @@ async function gsTest() {
     const r = await fetch(gsGetUrl(url, 'pull'));
     const d = await r.json();
     if (d.success) {
-      const counts = Object.entries(d.data).map(([k,v]) => `${k}: ${v.length}`).join(', ');
+      // v9.13【Codex FINAL P3】只列阵列 —— d.data 里混著 stockVer(字串) 和 _timing(物件),
+      //   原本一律取 .length 会印出「stockVer: undefined, _timing: undefined」。
+      const counts = Object.entries(d.data).filter(([, v]) => Array.isArray(v)).map(([k, v]) => `${k}: ${v.length}`).join(', ');
       gsLog('✅ Connected! Sheet data: ' + counts);
     } else {
       gsLog('❌ Error: ' + (d.error || 'Unknown'), true);
@@ -18916,8 +18927,52 @@ async function checkAuthStatusForSettings() {
   }
 }
 
+// ══ v9.12: 同步耗时明细 (配後端 v3.76 的 out._timing) ═══════════════════
+// 【为什么】2026-08-02 两次实测 pull 都 13–15 秒, 资料却只有 148 KB —— 时间全在後端读表。
+//   但「哪一张表最慢」没人知道, 不量就只能猜 (已经猜错两次)。
+// 【为什么常驻】Davy 要求「以後看也容易」—— 临时端点量完就删, 下次又要重做。
+//   成本只有每张表两个 Date.now(), 所以直接留著。
+function _syncTimingSave(t) {
+  if (!t || !t.tabs) return;
+  try { localStorage.setItem('ads_crm_sync_timing', JSON.stringify({ ts: Date.now(), t: t })); } catch (e) {}
+}
+function _syncTimingHtml() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem('ads_crm_sync_timing') || 'null'); } catch (e) {}
+  if (!d || !d.t || !d.t.tabs) {
+    return `<div style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:12px;color:var(--gray);">
+      <b>Sync timing</b> — 还没有资料。後端要 v3.76 以上，部署後同步一次就会出现。</div>`;
+  }
+  const t = d.t;
+  const mins = Math.round((Date.now() - d.ts) / 60000);
+  // 後端已经依耗时排序, 前端不重排 —— 最慢的在最上面
+  const rows = t.tabs.map(x => {
+    const pct = t.totalMs > 0 ? Math.round(x.ms / t.totalMs * 100) : 0;
+    const hot = x.ms >= 1000;   // 超过 1 秒的标紫, 一眼看出谁在吃时间
+    return `<tr>
+      <td style="padding:3px 0;color:${hot ? 'var(--purple-deep)' : 'var(--gray)'};font-weight:${hot ? '600' : '400'};">${escapeHTML(x.tab)}</td>
+      <td style="padding:3px 0;text-align:right;color:var(--gray);font-variant-numeric:tabular-nums;">${x.rows}</td>
+      <td style="padding:3px 0;text-align:right;font-variant-numeric:tabular-nums;color:${hot ? 'var(--purple-deep)' : 'var(--gray)'};font-weight:${hot ? '600' : '400'};">${(x.ms / 1000).toFixed(2)}s</td>
+      <td style="padding:3px 0;text-align:right;color:var(--silver);font-variant-numeric:tabular-nums;">${pct}%</td>
+    </tr>`;
+  }).join('');
+  return `<div style="margin-top:12px;padding:10px 12px;background:var(--surface-2);border-radius:8px;font-size:12px;">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+      <b>Sync timing</b>
+      <span style="color:var(--silver);font-size:11px;">${mins < 1 ? '刚刚' : mins + ' 分钟前'}${t.skippedStock ? ' · 已跳过库存 3 表' : ' · 含库存 3 表'}</span>
+    </div>
+    <div style="color:var(--gray);margin-bottom:6px;">後端读表合计 <b style="color:var(--black);">${(t.totalMs / 1000).toFixed(2)} 秒</b>（不含网路传输）</div>
+    <table style="width:100%;border-collapse:collapse;">
+      <tr style="font-size:10px;color:var(--silver);text-transform:uppercase;letter-spacing:.4px;">
+        <td>Tab</td><td style="text-align:right;">Rows</td><td style="text-align:right;">Time</td><td style="text-align:right;">%</td>
+      </tr>${rows}
+    </table></div>`;
+}
+
 // Silent auto-pull on app open. No confirm, no page reload, no toast on failure.
-let _lastPullText = '';  // ponytail: fingerprint of last clean pull — skip redundant re-process when nothing changed
+// v9.13: 改名 _lastPullText → _lastPullSig。存的不再是整包 response 文字, 而是**剔除 _timing 之後**
+//   的纯资料指纹 —— 诊断资料每次都在变, 混进来会让这条短路永远不成立 (Codex FINAL P2 抓到)。
+let _lastPullSig = '';   // 上次成功套用的资料指纹; 一样就跳过 normalize / saveState / 重画
 let _pullInFlight = false;   // v7.91 (codex #1): in-flight 防重 — 同一时间只跑一条 pull
 let _pullRetryQueued = false; // v7.91 (codex #4): 防重复排 retry
 async function gsPullSilent(isRetry) {
@@ -18965,9 +19020,17 @@ async function _gsPullSilentInner(isRetry) {
     //   ⚠️ 根治是「减少 pullAll 的 Sheet 往返次数」, 不是减少传输量。别往缩短 adName 的方向修。
     const r = await fetch(gsGetUrl(url, 'pull', _stockVer ? { stockver: _stockVer } : null), { signal: AbortSignal.timeout(150000) }); // v7.71: 版本没变后端就不送库存 3 表
     const text = await r.text();
-    if (text === _lastPullText) { if (typeof toast === 'function') toast('✅ Synced — already up to date'); return; }  // ponytail: byte-identical to last clean pull → skip parse/normalize/double-stringify/re-render (most auto-pulls)
     const d = JSON.parse(text);
     if (!d.success) { failSync(d.error || 'server error'); return; }
+    // v9.13【Codex FINAL P2 — 我 v9.12 自己造成的倒退】原本直接比对整包 response 文字,
+    //   但 v3.76 起後端每次都塞不一样的耗时数字进来 (totalMs / 各表 ms), 文字**永远不可能相同**
+    //   → 那条「资料没变就跳过重画」的短路等於被我废掉, 每次自动 pull 都走完整套用 + 重画。
+    //   讽刺的是我加计时正是为了查同步慢。改成: 先把诊断资料拆出来, 再拿**纯资料**算指纹。
+    const _timing = d.data && d.data._timing;
+    if (_timing) delete d.data._timing;
+    _syncTimingSave(_timing);                    // 旧後端没这栏 → _syncTimingSave 自己会跳过
+    const _sig = JSON.stringify(d.data);
+    if (_sig === _lastPullSig) { if (typeof toast === 'function') toast('✅ Synced — already up to date'); return; }
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPull 共享, 避免代码漂移)
     // v6.69: 同时拿 channels + locations
@@ -19066,7 +19129,7 @@ async function _gsPullSilentInner(isRetry) {
       console.log('[Auto-pull] Sheet pull success — cleared version mismatch flag, upgraded to ' + DATA_VERSION);
     }
     saveState();
-    _lastPullText = text;  // ponytail: set only after a clean apply, so a failed/protected pull retries next time
+    _lastPullSig = _sig;   // v9.13: 只有乾净套用完才记, 失败/被保护的下次会重试
     const msg = skipped.length > 0
       ? `⚠️ Synced (${skipped.length} table(s) protected)`
       : '✅ Synced from Sheet (' + state.leads.length + ' leads)';
@@ -19137,6 +19200,7 @@ async function gsPull() {
     const r = await fetch(gsGetUrl(url, 'pull', _stockVer ? { stockver: _stockVer } : null)); // v7.71: 版本没变后端就不送库存 3 表
     const d = await r.json();
     if (!d.success) { gsLog('❌ Pull failed: ' + (d.error || 'Unknown'), true); return; }
+    _syncTimingSave(d.data && d.data._timing);   // v9.12
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPullSilent 共享, 避免代码漂移)
     // v6.69: 同时拿 channels + locations (codex P1 #1 同步)
