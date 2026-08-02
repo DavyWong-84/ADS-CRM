@@ -489,10 +489,22 @@ table.data .total-row td:first-child { color: var(--purple-deep); }
   background:var(--purple); }
 #storeContent .wk-c.nil { background:var(--surface); border-color:var(--border-light); }
 #storeContent .wk-in { position:relative; }
-#storeContent .wk-c .k { font-size:9.5px; font-weight:700; letter-spacing:.7px; color:var(--gray); text-transform:uppercase; }
+/* ⚠️ v9.31【Davy: 放大 day 徽章後卡片内容高低不一样】
+   徽章那行变高 → 有徽章的卡片整块内容被往下推, 跟没徽章的对不齐。
+   grid 本来就让每张卡等高, 歪掉的是**卡片内部**。三道一起处理:
+    ① 标题行给固定 min-height (不管有没有徽章都一样高) → 金额那行对齐
+    ② 卡片内部改 flex 直排, 让内容可以撑满
+    ③ 底下 LEAD/APPT/SHOW 那行 margin-top:auto 钉在底部
+       → 就算某张少了「每日平均」那行 (没营业额的週), 底排照样对齐 */
+#storeContent .wk-c { display:flex; }
+#storeContent .wk-in { flex:1; display:flex; flex-direction:column; width:100%; }
+#storeContent .wk-c .k { font-size:9.5px; font-weight:700; letter-spacing:.7px; color:var(--gray); text-transform:uppercase;
+  min-height:21px; display:flex; align-items:center; justify-content:center; gap:6px; }
+#storeContent .wk-c .wk-tri { margin-top:auto; }
 /* v9.27: 天数徽章 —— Davy 说「5D 太小了」, 所以字级拉到 10.5px、加粗、内距放宽。
-   中文「5 天」而不是 5d (Davy 指定)。不满 7 天用琥珀色, 满 7 天灰色。 */
-#storeContent .wk-c .wk-days { display:inline-block; margin-left:6px; padding:2px 7px; border-radius:99px;
+   用 "5 days" 不用 "5d" —— 缩写太隐晦, 但整个面板是英文所以不用中文。不满 7 天用琥珀色, 满 7 天灰色。 */
+/* margin-left 拿掉了 —— 上面 .k 改成 flex 之後由 gap:6px 负责间距, 两个都留会变 12px */
+#storeContent .wk-c .wk-days { display:inline-block; padding:2px 7px; border-radius:99px;
   font-size:10.5px; font-weight:700; letter-spacing:0; text-transform:none; vertical-align:1px;
   background:var(--surface-2); color:var(--gray); }
 #storeContent .wk-c .wk-days.part { background:rgba(217,119,6,.14); color:#8a5200; }
@@ -3699,7 +3711,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.28</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.31</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3750,7 +3762,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.28</div>
+      <div class="nav-brand-version">v9.31</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -11868,10 +11880,10 @@ function renderStore() {
           return `<div class="wk-c${dead ? ' nil' : (w.spend > 0 ? ' on' : '')}${partial ? ' part' : ''}">`
             + `<div class="wk-in"><div class="k">W${w.week}`
             // 只有不满 7 天才标 (Davy 选的 C) —— 满 7 天是常态, 标了等於废话
-            + (partial ? `<span class="wk-days part">${nd} 天</span>` : '')
+            + (partial ? `<span class="wk-days part">${nd} days</span>` : '')
             + `</div>`
             + `<div class="v">${w.spend > 0 ? wkMoney(w.spend) : (_future(w.week) ? 'upcoming' : 'no sales')}</div>`
-            + (perDay > 0 ? `<div class="wk-perday">RM <b>${perDay.toLocaleString('en-MY')}</b> / 天</div>` : '')
+            + (perDay > 0 ? `<div class="wk-perday">RM <b>${perDay.toLocaleString('en-MY')}</b> / day</div>` : '')
             + `<div class="wk-tri">`
             + cells.map(c => `<div><div class="wk-tv">${c[0]}</div><div class="wk-tk">${c[1]}</div></div>`).join('')
             + `</div></div></div>`;
@@ -11909,7 +11921,9 @@ function renderStore() {
             + `<td>${(b.show > 0 && b.spend > 0) ? fmt.money(b.spend / b.show) : '<span class="wk-nil">·</span>'}</td></tr>`;
         }).join('')
         + (hasOrphan
-            ? `<tr title="这些资料的 platform 是空的, 或指向已停用/已删除的 platform"><td><span class="wk-pn"><i class="wk-dot" style="background:#d3d4dc"></i><span style="color:var(--gray);font-weight:500;">Unassigned</span></span></td>`
+            // ⚠️ 刻意不用 title= 原生提示 —— Davy 说过那个黑框很丑 (见记忆 ui-english-and-design-system)。
+            //   Unassigned 的意思改写在表格底下的说明里。
+            ? `<tr><td><span class="wk-pn"><i class="wk-dot" style="background:#d3d4dc"></i><span style="color:var(--gray);font-weight:500;">Unassigned</span></span></td>`
               + (showLeadCols ? `<td>${tc(orphan.leads)}</td><td><span class="wk-mix"><span class="wk-bar"><i style="background:#c9cad4;width:${mTotal > 0 ? Math.round(orphan.leads / mTotal * 100) : 0}%"></i></span>${mTotal > 0 ? Math.round(orphan.leads / mTotal * 100) : 0}%</span></td>` : '')
               + `<td>${tc(orphan.appt)}</td>`
               + (showLeadCols ? `<td>${pctc(orphan.appt, orphan.leads)}</td>` : '')
@@ -11937,7 +11951,7 @@ function renderStore() {
                 + `<td>${costCell(mCost)}</td>`
                 + `<td>${rm(mSpend)}</td>`
                 + `<td>${(mShow > 0 && mSpend > 0) ? fmt.money(mSpend / mShow) : '<span class="wk-nil">·</span>'}</td></tr></tfoot></table></div>`
-              : `<div class="wk-note">这个月没有可归类的平台资料。</div>`)
+              : `<div class="wk-note">No platform data for this month.</div>`)
           + `</td></tr>`;
 
         gTotal+=mTotal; gAppt+=mAppt; gShow+=mShow; gSpend+=mSpend; gCost+=mCost;
@@ -11965,14 +11979,16 @@ function renderStore() {
         </table></div>
         <div class="wk-note" style="padding:0 2px;">
           * Appt % = Appt ÷ Lead　·　Show % = Show ÷ Appt　·　Avg Spend = Ads Sales ÷ Show　·
-          <b>全部跟 By Platform 那页同一套算法</b><br>
-          Ads Spend = 广告花费（Ads Spend 表）　·　Ads Sales = 成交金额，只算 show 掉的　·
-          Weekly = 该月各週的${showLeadCols ? ' lead ' : ' appt '}分布，最高的一週为满格　·　MoM 比的是 Ads Sales<br>
-          ⚠️ Lead 看进线日、Appt 看预约日，两边不是同一批人 —— 所以 Appt % 是<b>当月活动比</b>，
-          不是同一批客人的转换率（By Platform 那页也是这个口径）
-          ${costOK ? '' : '<br>⚠️ <b>Ads Spend 显示「—」是因为选了单一门店</b> —— 广告花费没有分店维度，'
-            + '拆不出「这间店花了多少」。硬放全公司的总花费会跟单店的 Ads Sales 凑出一个假的 ROAS，宁可不给。'
-            + '要看广告花费请把门店切回 All outlets。'}</div>`;
+          <b>same formulas as the By Platform page</b><br>
+          Ads Spend = ad cost　·　Ads Sales = closed amount, shows only　·
+          Weekly = each week's ${showLeadCols ? 'lead' : 'appt'} split, tallest week is full height　·　MoM compares Ads Sales　·
+          A week split across two months shows a <b>day count</b> and a dashed border　·
+          <b>Unassigned</b> = records whose platform is blank, or points to a platform that was disabled or deleted<br>
+          ⚠️ Lead counts by enquiry date, Appt by appointment date, so they are not the same people.
+          Appt % is a <b>monthly activity ratio</b>, not a cohort conversion rate (the By Platform page uses the same basis).
+          ${costOK ? '' : '<br>⚠️ <b>Ads Spend shows “—” because a single outlet is selected.</b> Ad cost has no outlet '
+            + 'dimension, so it cannot be split per outlet. Showing the company total next to one outlet’s Ads Sales '
+            + 'would produce a false ROAS. Switch back to All outlets to see ad cost.'}</div>`;
       // v7.13: Monthly Leads — {year} 图表删除 (保留 Weekly Report 表格)
     }
 
