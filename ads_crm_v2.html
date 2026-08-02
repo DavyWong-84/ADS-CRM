@@ -502,15 +502,29 @@ table.data .total-row td:first-child { color: var(--purple-deep); }
 /* ⚠️ v9.22 修「Show 那栏被切掉」: 原本 grid-auto-columns:1fr —— 1fr 的下限是 min-content,
    所以格子不肯缩到比内容还窄, 三格加起来撑爆卡片, 第三格被切掉。
    minmax(0,1fr) 才允许缩到 0 以下限, 是 grid 溢出的标准解。子元素也要 min-width:0。 */
-#storeContent .wk-c .tri { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:2px;
+#storeContent .wk-c .wk-tri { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:2px;
   border-top:1px solid rgba(16,17,20,.08); padding-top:8px; }
-#storeContent .wk-c .tri > div { min-width:0; overflow:hidden; }
-#storeContent .wk-c .tv { font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.2; color:var(--black); }
+#storeContent .wk-c .wk-tri > div { min-width:0; overflow:hidden; }
+/* ⚠️ v9.25【Davy 回报「卡片有问题」的真凶】原本这三个 class 叫 .tri / .tv / .tk ——
+   而这个档案第 3142 行早就有一个 .tk (某个树状清单用的):
+     .tk { display:flex; padding:11px 16px 11px 44px; }
+     .tk::before / ::after  → 画出「└」形状的两条线
+   一个撞名同时造成两个症状: 那几条莫名的竖线, 以及 padding-left:44px 把内容撑爆
+   让 SHOW 那栏被切掉。【修】全部加 wk- 前缀。
+   【教训】1.3 MB 的单档 app 里, .tv/.tk/.tri 这种两三个字母的 class 名迟早撞。一律加前缀。
+   下面再补一道保险: 就算以後又撞到, 也不让别人的伪元素画进我的卡片。 */
+#storeContent .wk-c .wk-tri > div::before,
+#storeContent .wk-c .wk-tri > div::after,
+#storeContent .wk-c .wk-tv::before, #storeContent .wk-c .wk-tv::after,
+#storeContent .wk-c .wk-tk::before, #storeContent .wk-c .wk-tk::after { content:none !important; }
+#storeContent .wk-c .wk-tv, #storeContent .wk-c .wk-tk {
+  display:block !important; padding:0 !important; margin:0 !important; position:static !important; }
+#storeContent .wk-c .wk-tv { font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.2; color:var(--black); }
 /* Davy: Lead/Appt/Show 那几个字太浅 → 改成黑色 (原本是 --silver) */
-#storeContent .wk-c .tk { font-size:8.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
+#storeContent .wk-c .wk-tk { font-size:8.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
   color:var(--black); margin-top:2px; }
-#storeContent .wk-c.nil .tv { color:var(--silver); font-weight:500; }
-#storeContent .wk-c.nil .tk { color:var(--gray); }
+#storeContent .wk-c.nil .wk-tv { color:var(--silver); font-weight:500; }
+#storeContent .wk-c.nil .wk-tk { color:var(--gray); }
 /* 系统开了「减少透明」→ 退回实心, 否则对比度不够看不清字 */
 @media (prefers-reduced-transparency: reduce) {
   #storeContent .wk-c { backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(255,255,255,.97); }
@@ -3682,7 +3696,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.23</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.25</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3733,7 +3747,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.23</div>
+      <div class="nav-brand-version">v9.25</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -11677,15 +11691,19 @@ function renderStore() {
         if (getPlatform(_wCf)) return pid === _wCf;
         return a.channelId === _wCf;
       };
-      const costOK = !locFilter;      // 单一门店 → 不显示广告花费 (拆不出来)
+      // v9.24 (Davy): 单一门店时**栏位留着、值显示「—」** —— 不要整栏消失,
+      //   否则切换门店时表格栏数会跳动, 反而难对照。用「—」跟 By Platform 那页的 No Show 同一个写法。
+      const costOK = !locFilter;      // 单一门店 → 拆不出该店的广告花费
+      const costCell = v => costOK ? rm(v) : '<span class="wk-nil">—</span>';
       const tc = v => v === 0 ? '<span class="wk-nil">·</span>' : v.toLocaleString('en-MY');
       const rm = v => v > 0 ? fmt.money(v) : '<span class="wk-nil">·</span>';
       const pctc = (a, b) => b > 0 ? `<span class="${(a / b) >= 0.5 ? 'wk-up' : 'wk-dn'}">${Math.round(a / b * 100)}%</span>` : '<span class="wk-nil">·</span>';
       // 全部门店: Month·Weekly·Leads·Appt·Appt%·Show·Show%·Avg/Show·Sales·MoM = 10
       // 单一门店: 少掉 Leads 和 Appt% 两栏 = 8 (lead 身上没有门店, 所以单店时不显示 lead 相关)
       // 全部门店: Month·Weekly·Leads·Appt·Appt%·Show·Show%·AdsSpend·AdsSales·AvgSpend·MoM = 11
-      // 单一门店: 少掉 Leads / Appt% / AdsSpend 三栏 = 8
-      const colSpan = showLeadCols ? 11 : 8;
+      // 单一门店: 少掉 Leads / Appt% 两栏 = 9
+      //   (v9.24: AdsSpend 那栏**不再拿掉**, 改成显示「—」, 所以单店是 9 不是 8)
+      const colSpan = showLeadCols ? 11 : 9;
 
       let rows = '';
       let gTotal=0, gAppt=0, gShow=0, gSpend=0, gCost=0;
@@ -11788,7 +11806,7 @@ function renderStore() {
           + `<td>${tc(mAppt)}</td>`
           + (showLeadCols ? `<td>${pctc(mAppt, mTotal)}</td>` : '')
           + `<td>${tc(mShow)}</td><td>${pctc(mShow, mAppt)}</td>`
-          + (costOK ? `<td>${rm(mCost)}</td>` : '')
+          + `<td>${costCell(mCost)}</td>`
           + `<td style="font-weight:600;">${rm(mSpend)}</td>`
           + `<td>${(mShow > 0 && mSpend > 0) ? fmt.money(mSpend / mShow) : '<span class="wk-nil">·</span>'}</td>`
           + `<td>${mom}</td></tr>`;
@@ -11808,8 +11826,8 @@ function renderStore() {
             + (w.spend > 0 && w.spend === peakSpend && sorted.length > 1 ? `<span class="wk-best">BEST</span>` : '')
             + `<div class="wk-in"><div class="k">W${w.week}</div>`
             + `<div class="v">${w.spend > 0 ? wkMoney(w.spend) : (_future(w.week) ? 'upcoming' : 'no sales')}</div>`
-            + `<div class="tri">`
-            + cells.map(c => `<div><div class="tv">${c[0]}</div><div class="tk">${c[1]}</div></div>`).join('')
+            + `<div class="wk-tri">`
+            + cells.map(c => `<div><div class="wk-tv">${c[0]}</div><div class="wk-tk">${c[1]}</div></div>`).join('')
             + `</div></div></div>`;
         }).join('');
 
@@ -11840,7 +11858,7 @@ function renderStore() {
             + `<td>${tc(b.appt)}</td>`
             + (showLeadCols ? `<td>${pctc(b.appt, b.leads)}</td>` : '')
             + `<td>${tc(b.show)}</td>`
-            + (costOK ? `<td>${rm(b.cost)}</td>` : '')
+            + `<td>${costCell(b.cost)}</td>`
             + `<td style="font-weight:600;">${rm(b.spend)}</td>`
             + `<td>${(b.show > 0 && b.spend > 0) ? fmt.money(b.spend / b.show) : '<span class="wk-nil">·</span>'}</td></tr>`;
         }).join('')
@@ -11850,7 +11868,7 @@ function renderStore() {
               + `<td>${tc(orphan.appt)}</td>`
               + (showLeadCols ? `<td>${pctc(orphan.appt, orphan.leads)}</td>` : '')
               + `<td>${tc(orphan.show)}</td>`
-              + (costOK ? `<td>${rm(orphan.cost)}</td>` : '')
+              + `<td>${costCell(orphan.cost)}</td>`
               + `<td style="font-weight:600;">${rm(orphan.spend)}</td>`
               + `<td>${(orphan.show > 0 && orphan.spend > 0) ? fmt.money(orphan.spend / orphan.show) : '<span class="wk-nil">·</span>'}</td></tr>`
             : '');
@@ -11863,14 +11881,14 @@ function renderStore() {
               ? `<div class="wk-pwrap"><table class="wk-p"><thead><tr><th>Platform</th>`
                 + (showLeadCols ? `<th>Leads</th><th>% of Leads</th>` : '')
                 + `<th>Appt</th>` + (showLeadCols ? `<th>Appt %</th>` : '')
-                + `<th>Show</th>` + (costOK ? `<th>Ads Spend</th>` : '')
+                + `<th>Show</th>` + `<th>Ads Spend</th>`
                 + `<th>Ads Sales</th><th>Avg Spend</th></tr></thead>`
                 + `<tbody>${platRows}</tbody>`
                 + `<tfoot><tr><td>All platforms</td>`
                 + (showLeadCols ? `<td>${tc(mTotal)}</td><td>100%</td>` : '')
                 + `<td>${tc(mAppt)}</td>` + (showLeadCols ? `<td>${pctc(mAppt, mTotal)}</td>` : '')
                 + `<td>${tc(mShow)}</td>`
-                + (costOK ? `<td>${rm(mCost)}</td>` : '')
+                + `<td>${costCell(mCost)}</td>`
                 + `<td>${rm(mSpend)}</td>`
                 + `<td>${(mShow > 0 && mSpend > 0) ? fmt.money(mSpend / mShow) : '<span class="wk-nil">·</span>'}</td></tr></tfoot></table></div>`
               : `<div class="wk-note">这个月没有可归类的平台资料。</div>`)
@@ -11888,7 +11906,7 @@ function renderStore() {
           + `<td style="font-weight:700;">${tc(gAppt)}</td>`
           + (showLeadCols ? `<td>${pctc(gAppt, gTotal)}</td>` : '')
           + `<td style="font-weight:700;">${tc(gShow)}</td><td>${pctc(gShow, gAppt)}</td>`
-          + (costOK ? `<td style="font-weight:700;">${rm(gCost)}</td>` : '')
+          + `<td style="font-weight:700;">${costCell(gCost)}</td>`
           + `<td style="font-weight:700;">${rm(gSpend)}</td>`
           + `<td>${(gShow > 0 && gSpend > 0) ? fmt.money(gSpend / gShow) : '<span class="wk-nil">·</span>'}</td>`
           + `<td></td></tr>`;
@@ -11896,7 +11914,7 @@ function renderStore() {
 
       html += `<div class="section-title"><h3>${wTitle}</h3></div>
         <div class="table-wrap wk-wrap"><table class="data wk-t">
-          <thead><tr><th>Month</th><th>Weekly</th>${showLeadCols ? '<th>Leads</th>' : ''}<th>Appt</th>${showLeadCols ? '<th>Appt %</th>' : ''}<th>Show</th><th>Show %</th>${costOK ? '<th>Ads Spend</th>' : ''}<th>Ads Sales</th><th>Avg Spend</th><th>MoM</th></tr></thead>
+          <thead><tr><th>Month</th><th>Weekly</th>${showLeadCols ? '<th>Leads</th>' : ''}<th>Appt</th>${showLeadCols ? '<th>Appt %</th>' : ''}<th>Show</th><th>Show %</th><th>Ads Spend</th><th>Ads Sales</th><th>Avg Spend</th><th>MoM</th></tr></thead>
           <tbody>${rows || `<tr><td colspan="${colSpan}" style="text-align:center;padding:20px;color:var(--gray);">No data</td></tr>`}</tbody>
         </table></div>
         <div class="wk-note" style="padding:0 2px;">
@@ -11906,12 +11924,30 @@ function renderStore() {
           Weekly = 该月各週的${showLeadCols ? ' lead ' : ' appt '}分布，最高的一週为满格　·　MoM 比的是 Ads Sales<br>
           ⚠️ Lead 看进线日、Appt 看预约日，两边不是同一批人 —— 所以 Appt % 是<b>当月活动比</b>，
           不是同一批客人的转换率（By Platform 那页也是这个口径）
-          ${costOK ? '' : '<br>⚠️ <b>选了单一门店，所以不显示 Ads Spend</b> —— 广告花费没有分店维度，'
-            + '拆不出「这间店花了多少」。硬放全公司的总花费会跟单店的 Ads Sales 凑出一个假的 ROAS，宁可不给。'}</div>`;
+          ${costOK ? '' : '<br>⚠️ <b>Ads Spend 显示「—」是因为选了单一门店</b> —— 广告花费没有分店维度，'
+            + '拆不出「这间店花了多少」。硬放全公司的总花费会跟单店的 Ads Sales 凑出一个假的 ROAS，宁可不给。'
+            + '要看广告花费请把门店切回 All outlets。'}</div>`;
       // v7.13: Monthly Leads — {year} 图表删除 (保留 Weekly Report 表格)
     }
 
+    // v9.25【Davy: 选 channel 或 outlet 的时候不要跳】
+    //   renderStore 是整块 innerHTML 重画, DOM 全部重建 → 页面卷动位置和表格内部的
+    //   卷动位置都会归零, 换个筛选就被弹回最上面。先记下来, 画完再放回去。
+    //   ⚠️ 要用 requestAnimationFrame: innerHTML 之後浏览器还没排版完,
+    //      当下设 scrollTop 会被之後的 layout 洗掉。
+    const _keepY = window.scrollY || document.documentElement.scrollTop || 0;
+    const _oldWrap = container.querySelector('.wk-wrap');
+    const _keepWrapY = _oldWrap ? _oldWrap.scrollTop : 0;
+
     container.innerHTML = html;
+
+    if (_keepY || _keepWrapY) {
+      requestAnimationFrame(() => {
+        if (_keepY) window.scrollTo({ top: _keepY, behavior: 'instant' });
+        const w = container.querySelector('.wk-wrap');
+        if (w && _keepWrapY) w.scrollTop = _keepWrapY;
+      });
+    }
 
     // Default: collapse all months except current
     if (tab === 'weekly') {
