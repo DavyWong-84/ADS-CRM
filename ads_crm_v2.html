@@ -3655,6 +3655,16 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
 @media (max-width: 520px) { .rv-kpis { grid-template-columns: 1fr 1fr; } .rv-kpi-val { font-size: 18px; } }
 
 /* v8.53: 今日统计 — 独立一行, 位在 sticky 筛选下面 / 卡片上面 (跟 sync 提示同款), 上下留白 */
+/* v9.32: 同步状态挂在这条 Today 後面 —— Davy: 「Sync」灰字、时间橘色, 简短就好。
+   margin-left:auto 让它在桌面顶到最右边; 手机窄的时候 .ct-today 本来就 flex-wrap,
+   而整串只有「Sync 2m ago」很短, 实测不会把这条挤成两行。 */
+.ct-today .sync-chip { display: inline-flex; align-items: baseline; gap: 5px; margin-left: auto;
+  white-space: nowrap; }
+.ct-today .sync-chip .ss-l { color: var(--gray); font-weight: 600; }
+.ct-today .sync-chip .ss-t { color: var(--amber); font-weight: 700; font-variant-numeric: tabular-nums; }
+.ct-today .sync-chip .ss-t.bad { color: var(--red); }
+.ct-today .sync-chip .ss-t.idle,
+.ct-today .sync-chip .ss-t.busy { color: var(--silver); font-weight: 500; }
 .ct-today {
   align-items: center; gap: 6px; flex-wrap: wrap;
   font-size: 11.5px; color: var(--gray);
@@ -3711,7 +3721,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.31</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.32</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3762,7 +3772,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.31</div>
+      <div class="nav-brand-version">v9.32</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3877,7 +3887,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
         <!-- v4.23: Filters moved here from unified-header -->
         
         <!-- v8.53: 今日统计移出 sticky 区 — 独立一行, 在筛选下面 / 卡片上面 (跟 sync 提示同款位置) -->
-        <div id="autoTodayHint" class="ct-today" style="display:none;"><b style="color:var(--black);font-weight:600;">Today</b><span style="margin-left:10px;">Lead <b style="color:var(--purple-deep);font-weight:700;">+0</b></span><span style="margin-left:10px;">Appt <b style="color:var(--green-dark);font-weight:700;">+0</b></span></div>
+        <div id="autoTodayHint" class="ct-today" style="display:none;"><b style="color:var(--black);font-weight:600;">Today</b><span style="margin-left:10px;">Lead <b style="color:var(--purple-deep);font-weight:700;">+0</b></span><span style="margin-left:10px;">Appt <b style="color:var(--green-dark);font-weight:700;">+0</b></span><span id="syncStatusBar" class="sync-chip"><span class="ss-l">Sync</span><b class="ss-t idle">never</b></span></div>
         <div class="lead-list" id="leadList"><div class="empty"><div>No leads found</div></div></div>
         <!-- v4.20: Mobile-only "Load More" button (hidden on desktop via CSS) -->
         <div id="loadMoreWrap"></div>
@@ -4318,7 +4328,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -4328,11 +4338,11 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -4341,11 +4351,60 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+      <th class="num">New (RM)</th>
+      <th class="num">Total (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Oct 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2026</td>
+    <td class="num">—</td>
+    <td class="num" style="font-weight:700;">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4355,15 +4414,55 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
+          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Oct 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2026</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4380,7 +4479,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -9657,6 +9756,45 @@ function renderListAsTableHTML(slice) {
   </div>`;
 }
 
+// ══ v9.32: 同步状态 (Davy: 「每次刷新我都不知道刷新成功了没有」) ══════════
+// toast 会消失, 所以事後完全查不到「刚刚那次到底成功没」。这里把最後一次同步的
+// 结果记下来 (成功/失败/进行中 + 时间 + 失败原因), 让画面上一直看得到。
+//   刻意存 localStorage: 关掉分页再打开也还在, 才能回答「上次是什么时候」。
+const SYNC_STATE_KEY = 'ads_crm_last_sync';
+let _syncBusy = false;
+function _setSyncState(st, msg) {
+  _syncBusy = (st === 'busy');
+  if (st !== 'busy') {
+    try { localStorage.setItem(SYNC_STATE_KEY, JSON.stringify({ ts: Date.now(), ok: st === 'ok', msg: msg || '' })); } catch (e) {}
+  }
+  _renderSyncStatus();
+}
+function _syncAgoText(ts) {
+  const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  if (s < 45) return 'just now';
+  const mi = Math.round(s / 60);
+  if (mi < 60) return mi + 'm ago';
+  const h = Math.round(mi / 60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+// Davy 指定的样子: 「Sync」灰字 + 时间橘色, 简短。
+//   失败时时间换成红色的 failed —— 那是他真正想知道的 (「刷新成功了没」)。
+function _renderSyncStatus() {
+  const el = document.getElementById('syncStatusBar');
+  if (!el) return;                       // 不在有这块的页面就算了
+  const L = '<span class="ss-l">Sync</span>';
+  if (_syncBusy) { el.innerHTML = L + `<b class="ss-t busy">syncing…</b>`; return; }
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(SYNC_STATE_KEY) || 'null'); } catch (e) {}
+  if (!d || !d.ts) { el.innerHTML = L + `<b class="ss-t idle">never</b>`; return; }
+  el.innerHTML = d.ok
+    ? L + `<b class="ss-t">${_syncAgoText(d.ts)}</b>`
+    : L + `<b class="ss-t bad">failed</b><span class="ss-t idle">· ${_syncAgoText(d.ts)}</span>`;
+}
+// 相对时间会过期, 每 30 秒重画一次 (只改字, 不打网路)
+setInterval(_renderSyncStatus, 30000);
+
 function renderList() {
   updateSearchActiveBar();
   renderQuickChips();
@@ -9857,10 +9995,17 @@ function renderList() {
       && (typeof _apptReceivedAt === 'function' ? _apptReceivedAt(l) : false)).length;
     const _ah = document.getElementById('autoTodayHint');
     if (_ah) {
+      // v9.32【Davy: 每次刷新我都不知道刷新成功了没有】接在 Appt 後面一个同步状态。
+      //   只放「Sync + 时间」(Davy: 简短的就好), 失败才多讲一个 failed。
+      //   ⚠️ 这条本来「今天没 lead 也没 appt 就整条隐藏」—— 那样同步状态在冷清的日子也看不到,
+      //      而那正是最想确认「到底同步了没」的时候。改成只要有同步纪录就显示。
       _ah.innerHTML = `<b style="color:var(--black);font-weight:600;">Today</b>`
         + `<span style="margin-left:10px;">Lead <b style="color:var(--purple-deep);font-weight:700;">+${_nLead}</b></span>`
-        + `<span style="margin-left:10px;">Appt <b style="color:var(--green-dark);font-weight:700;">+${_nAppt}</b></span>`;
-      _ah.style.display = (_nLead > 0 || _nAppt > 0) ? 'flex' : 'none';
+        + `<span style="margin-left:10px;">Appt <b style="color:var(--green-dark);font-weight:700;">+${_nAppt}</b></span>`
+        + `<span id="syncStatusBar" class="sync-chip"></span>`;
+      _renderSyncStatus();
+      const _hasSync = !!localStorage.getItem(SYNC_STATE_KEY);
+      _ah.style.display = (_nLead > 0 || _nAppt > 0 || _hasSync) ? 'flex' : 'none';
     }
   } catch (e) {}
 
@@ -19432,6 +19577,7 @@ function _syncTimingHtml() {
     </table></div>`;
 }
 
+
 // Silent auto-pull on app open. No confirm, no page reload, no toast on failure.
 // v9.13: 改名 _lastPullText → _lastPullSig。存的不再是整包 response 文字, 而是**剔除 _timing 之後**
 //   的纯资料指纹 —— 诊断资料每次都在变, 混进来会让这条短路永远不成立 (Codex FINAL P2 抓到)。
@@ -19458,8 +19604,10 @@ async function _gsPullSilentInner(isRetry) {
   // v7.90: 同步开口讲话 — 开始/失败都有 toast, 失败自动重试 1 次.
   //   之前全静默: pull 在跑或挂掉, 用户都以为"刷新没反应" (2026-07-04 bug 排查结论).
   if (typeof toast === 'function') toast(isRetry ? '🔄 Retrying sync…' : '🔄 Syncing from Sheet…');
+  _setSyncState('busy');                                   // v9.32
   const failSync = (reason) => {
     console.warn('[Auto-pull] failed:', reason);
+    _setSyncState('fail', reason);                         // v9.32: toast 会消失, 这个留着
     if (!isRetry) {
       // v7.91 (codex #4): 5s→30s 退避 — Google 已在限流/挂起时, 急 retry 只会加压; 且不重复排
       if (typeof toast === 'function') toast('⚠️ Sync failed (' + reason + ') — retrying in 30s…');
@@ -19481,6 +19629,7 @@ async function _gsPullSilentInner(isRetry) {
   }
   if (!flushOk) {
     console.warn('[Auto-pull] BLOCKED: pending queue still has items — pull would overwrite local changes');
+    _setSyncState('fail', 'blocked: unsynced local changes');   // v9.32: 不能留在 busy
     if (typeof toast === 'function') toast('⚠️ 有未同步数据,自动同步暂停 — 点击右上角同步按钮重试');
     return;
   }
@@ -19502,7 +19651,8 @@ async function _gsPullSilentInner(isRetry) {
     if (_timing) delete d.data._timing;
     _syncTimingSave(_timing);                    // 旧後端没这栏 → _syncTimingSave 自己会跳过
     const _sig = JSON.stringify(d.data);
-    if (_sig === _lastPullSig) { if (typeof toast === 'function') toast('✅ Synced — already up to date'); return; }
+    // v9.32: 「资料没变」也是同步成功 —— 这条早退路径以前什么都没记, 状态会一直停在 busy
+    if (_sig === _lastPullSig) { _setSyncState('ok'); if (typeof toast === 'function') toast('✅ Synced — already up to date'); return; }
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPull 共享, 避免代码漂移)
     // v6.69: 同时拿 channels + locations
@@ -19510,6 +19660,7 @@ async function _gsPullSilentInner(isRetry) {
 
     if (suspiciousLead) {
       console.warn('[Auto-pull] BLOCKED: suspicious lead columns:', Object.keys(suspiciousLead));
+      _setSyncState('fail', 'blocked: unexpected Sheet columns');   // v9.32
       if (typeof toast === 'function') toast('⚠️ Sync blocked: unexpected Sheet columns'); // v7.90: 不再静默
       return;
     }
@@ -19602,6 +19753,7 @@ async function _gsPullSilentInner(isRetry) {
     }
     saveState();
     _lastPullSig = _sig;   // v9.13: 只有乾净套用完才记, 失败/被保护的下次会重试
+    _setSyncState('ok');   // v9.32
     const msg = skipped.length > 0
       ? `⚠️ Synced (${skipped.length} table(s) protected)`
       : '✅ Synced from Sheet (' + state.leads.length + ' leads)';
@@ -19671,7 +19823,7 @@ async function gsPull() {
   try {
     const r = await fetch(gsGetUrl(url, 'pull', _stockVer ? { stockver: _stockVer } : null)); // v7.71: 版本没变后端就不送库存 3 表
     const d = await r.json();
-    if (!d.success) { gsLog('❌ Pull failed: ' + (d.error || 'Unknown'), true); return; }
+    if (!d.success) { _setSyncState('fail', d.error || 'server error'); gsLog('❌ Pull failed: ' + (d.error || 'Unknown'), true); return; }
     _syncTimingSave(d.data && d.data._timing);   // v9.12
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPullSilent 共享, 避免代码漂移)
@@ -19789,9 +19941,10 @@ async function gsPull() {
     try { _pnlSavedSnapshot = _pnlSavableJson(); } catch (e) {} // 刚 pull 的 = 已保存基线
     saveState();
     const skippedMsg = skipped.length > 0 ? ` (保护了: ${skipped.join(', ')})` : '';
+    _setSyncState('ok');   // v9.32
     gsLog('✅ Pulled!' + skippedMsg + ' ' + counts);
     setTimeout(() => location.reload(), 1500);
-  } catch (e) { gsLog('❌ Pull failed: ' + e.message, true); }
+  } catch (e) { _setSyncState('fail', e.message || 'network error'); gsLog('❌ Pull failed: ' + e.message, true); }
 }
 
 // Restore pre-pull backup (manual recovery — call from console)
