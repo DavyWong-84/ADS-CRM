@@ -499,8 +499,12 @@ table.data .total-row td:first-child { color: var(--purple-deep); }
 #storeContent .wk-c .v { font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.6px;
   margin:5px 0 10px; color:var(--black); line-height:1.15; }
 #storeContent .wk-c.nil .v { color:var(--silver); font-weight:500; }
-#storeContent .wk-c .tri { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; gap:2px;
+/* ⚠️ v9.22 修「Show 那栏被切掉」: 原本 grid-auto-columns:1fr —— 1fr 的下限是 min-content,
+   所以格子不肯缩到比内容还窄, 三格加起来撑爆卡片, 第三格被切掉。
+   minmax(0,1fr) 才允许缩到 0 以下限, 是 grid 溢出的标准解。子元素也要 min-width:0。 */
+#storeContent .wk-c .tri { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:2px;
   border-top:1px solid rgba(16,17,20,.08); padding-top:8px; }
+#storeContent .wk-c .tri > div { min-width:0; overflow:hidden; }
 #storeContent .wk-c .tv { font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.2; color:var(--black); }
 /* Davy: Lead/Appt/Show 那几个字太浅 → 改成黑色 (原本是 --silver) */
 #storeContent .wk-c .tk { font-size:8.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
@@ -3678,7 +3682,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.20</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.23</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3729,7 +3733,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.20</div>
+      <div class="nav-brand-version">v9.23</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -10944,6 +10948,8 @@ function calcStoreMetrics(storeId, period, channelFilter) {
 
 let _storeTab = 'platform';
 
+// v9.23: 记住 Weekly Report 展开了哪几个月 (null = 还没初始化, 由第一次渲染填当月)
+let _wkOpen = null;
 function toggleWeekMonth(m) {
   // v9.16: 展开区从「每週各一 tr + 一个 gap tr」改成「整个月一个 .wk-exp tr」,
   //   所以这里只要开关那一列。箭头方向改用 .wk-mo.on 的 CSS 控制, 不再手动设 transform。
@@ -10953,6 +10959,10 @@ function toggleWeekMonth(m) {
   const willOpen = exp.style.display === 'none';
   exp.style.display = willOpen ? '' : 'none';
   if (mo) mo.classList.toggle('on', willOpen);
+  // v9.23【Davy: 换 channel 就跳回 8 月】记住展开了哪几个月。
+  //   renderStore 每次重画都会重跑「除了当月全部收合」, 所以换 channel / 换门店 / 换年份
+  //   都会把用户展开的月份重置成当月。记在这里, 重画後再套回去。
+  if (typeof _wkOpen !== 'undefined' && _wkOpen) { willOpen ? _wkOpen.add(m) : _wkOpen.delete(m); }
   // v9.18: 有月份展开时给表格挂 .has-open → CSS 把没展开的月份淡掉 (Davy 要求「其他月份虚影」)。
   //   状态由 DOM 实际情形算, 不自己记 —— 免得同时开两个月时算错。
   const tbl = document.querySelector('table.wk-t');
@@ -11649,17 +11659,38 @@ function renderStore() {
         if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c)) return c;
         return WK_FALLBACK[p && p.id] || '#9497a9';
       };
+      // ══ v9.23: 广告花费 (Davy 要求加 Ads Spend / Avg Spend, Sales 改名 Ads Sales) ══
+      // ⚠️ 两个必须知道的限制:
+      //  ① adsSpend **没有 outlet 维度** (代码 6955 行早就注明) —— 选单一门店时无法拆出该店花了多少。
+      //     若照旧显示「全公司总花费」, 会跟单店的 Ads Sales 凑出一个假的 ROAS。所以单店模式
+      //     这两栏显示「·」并在表下说明, 宁可不给也不给错的。
+      //  ② state.adsSpend **不在 renderStore 的 channel 劫持範围内** (那只换了 state.leads),
+      //     所以这里要自己套 channel 筛选, 否则换 channel 时花费不会跟着变。
+      //  ③ 平台归属用 getChannel(a.channelId).platform 而不是 a.platform ——
+      //     a.platform 是建立当下抄的快照, channel 後来改归属它不会跟着走 (v8.85 踩过)。channel 才是权威。
+      const _wCf = state.storeChannelFilter || 'all';
+      const adsMatch = (a) => {
+        if (_wCf === 'all') return true;
+        const ch = getChannel(a.channelId);
+        const pid = ch ? ch.platform : a.platform;
+        if (_wCf === 'ofu') return pid === 'organic' || pid === 'followup';
+        if (getPlatform(_wCf)) return pid === _wCf;
+        return a.channelId === _wCf;
+      };
+      const costOK = !locFilter;      // 单一门店 → 不显示广告花费 (拆不出来)
       const tc = v => v === 0 ? '<span class="wk-nil">·</span>' : v.toLocaleString('en-MY');
       const rm = v => v > 0 ? fmt.money(v) : '<span class="wk-nil">·</span>';
       const pctc = (a, b) => b > 0 ? `<span class="${(a / b) >= 0.5 ? 'wk-up' : 'wk-dn'}">${Math.round(a / b * 100)}%</span>` : '<span class="wk-nil">·</span>';
       // 全部门店: Month·Weekly·Leads·Appt·Appt%·Show·Show%·Avg/Show·Sales·MoM = 10
       // 单一门店: 少掉 Leads 和 Appt% 两栏 = 8 (lead 身上没有门店, 所以单店时不显示 lead 相关)
-      const colSpan = showLeadCols ? 10 : 8;
+      // 全部门店: Month·Weekly·Leads·Appt·Appt%·Show·Show%·AdsSpend·AdsSales·AvgSpend·MoM = 11
+      // 单一门店: 少掉 Leads / Appt% / AdsSpend 三栏 = 8
+      const colSpan = showLeadCols ? 11 : 8;
 
       let rows = '';
-      let gTotal=0, gAppt=0, gShow=0, gSpend=0;
-      const gPlat = {};                       // 平台 → {leads, appt, show, spend} 全年累计
-      wPlats.forEach(p => { gPlat[p.id] = { leads:0, appt:0, show:0, spend:0 }; });
+      let gTotal=0, gAppt=0, gShow=0, gSpend=0, gCost=0;
+      const gPlat = {};                       // 平台 → {leads, appt, show, spend, cost} 全年累计
+      wPlats.forEach(p => { gPlat[p.id] = { leads:0, appt:0, show:0, spend:0, cost:0 }; });
       let prevSpend = null;                   // 给 MoM 用
 
       wMonths.forEach((m, mi) => {
@@ -11677,7 +11708,19 @@ function renderStore() {
         const weeks = {};
         const mkW = w => (weeks[w] = weeks[w] || { week: w, total:0, appt:0, show:0, spend:0 });
         const mPlat = {};
-        wPlats.forEach(p => { mPlat[p.id] = { leads:0, appt:0, show:0, spend:0 }; });
+        wPlats.forEach(p => { mPlat[p.id] = { leads:0, appt:0, show:0, spend:0, cost:0 }; });
+        // 广告花费: 按 channel 的当前 platform 归户 (不用 a.platform 快照), 并套 channel 筛选
+        let mCost = 0;
+        if (costOK) {
+          (state.adsSpend || []).forEach(a => {
+            if (a.month !== m || !adsMatch(a)) return;
+            const amt = Number(a.amount) || 0;
+            mCost += amt;
+            const ch = getChannel(a.channelId);
+            const b = mPlat[(ch && ch.platform) || a.platform];
+            if (b) b.cost += amt;
+          });
+        }
         // 平台归属: lead.platform 找不到对应的 active platform 就不进桶 (不再默默倒进 OFU)
         const bucket = pid => (pid && mPlat[pid]) ? mPlat[pid] : null;
         if (showLeadCols) {
@@ -11700,17 +11743,20 @@ function renderStore() {
         //   【修】先把该月涵盖的每一週都建出来, 再把资料填进去。
         //   ⚠️ 不能写死 5 週: 有些月份跨 4 週、有些 6 週。用「逐日扫过整个月」来收集,
         //      而且**按日期先後 push, 不用数字排序** —— 跨年时 W52 → W1 数字会倒过来。
-        //   ⚠️ 当月的「还没到的週」不要画出来 —— 那不是断档, 是根本还没发生。
-        //      画成灰卡片会让人以为「这几週掛零」, 那是误导。所以扫到今天为止。
+        //   v9.22: 整个月的每一週都要画 (Davy: 只有一张卡会撑满整排, 很怪; 要有无资料的卡片)。
+        //      v9.20 曾经砍掉「当月还没到的週」, 但那让 8 月只剩一张卡撑满全宽 —— 改回来。
+        //      不过未来的週会标成 upcoming 而不是 no sales, 因为那不是掛零, 是还没发生。
         const _mw = [], _seenW = {};
         const _yy = +m.slice(0, 4), _mm = +m.slice(5, 7);
-        let _days = new Date(_yy, _mm, 0).getDate();
+        const _days = new Date(_yy, _mm, 0).getDate();
         const _today = (typeof localDate === 'function') ? localDate() : new Date().toISOString().slice(0, 10);
-        if (m === _today.slice(0, 7)) _days = Math.min(_days, +_today.slice(8, 10));
+        const _curW = isoWeek(_today), _curM = _today.slice(0, 7);
         for (let d = 1; d <= _days; d++) {
           const w = isoWeek(`${m}-${String(d).padStart(2, '0')}`);
           if (!_seenW[w]) { _seenW[w] = 1; _mw.push(w); }
         }
+        // 这一週是不是「还没到」: 只有当月才可能, 而且要排在本週之後
+        const _future = w => m > _curM || (m === _curM && _mw.indexOf(w) > _mw.indexOf(_curW) && _mw.indexOf(_curW) >= 0);
         _mw.forEach(w => mkW(w));
         const sorted = _mw.map(w => weeks[w]);
         // 整个月完全没资料 → 这一行不出现 (跟旧行为一致)
@@ -11742,8 +11788,10 @@ function renderStore() {
           + `<td>${tc(mAppt)}</td>`
           + (showLeadCols ? `<td>${pctc(mAppt, mTotal)}</td>` : '')
           + `<td>${tc(mShow)}</td><td>${pctc(mShow, mAppt)}</td>`
+          + (costOK ? `<td>${rm(mCost)}</td>` : '')
+          + `<td style="font-weight:600;">${rm(mSpend)}</td>`
           + `<td>${(mShow > 0 && mSpend > 0) ? fmt.money(mSpend / mShow) : '<span class="wk-nil">·</span>'}</td>`
-          + `<td style="font-weight:600;">${rm(mSpend)}</td><td>${mom}</td></tr>`;
+          + `<td>${mom}</td></tr>`;
 
         // ── 展开区: 整个月只占一列, 不管几週
         // v9.20: 卡片改成「营业额当主角, 底下一行 Lead / Appt / Show」(Davy 指定)。
@@ -11759,7 +11807,7 @@ function renderStore() {
             + (pct > 0 ? `<div class="wk-fill" style="height:${pct}%"></div>` : '')
             + (w.spend > 0 && w.spend === peakSpend && sorted.length > 1 ? `<span class="wk-best">BEST</span>` : '')
             + `<div class="wk-in"><div class="k">W${w.week}</div>`
-            + `<div class="v">${w.spend > 0 ? wkMoney(w.spend) : 'no sales'}</div>`
+            + `<div class="v">${w.spend > 0 ? wkMoney(w.spend) : (_future(w.week) ? 'upcoming' : 'no sales')}</div>`
             + `<div class="tri">`
             + cells.map(c => `<div><div class="tv">${c[0]}</div><div class="tk">${c[1]}</div></div>`).join('')
             + `</div></div></div>`;
@@ -11771,10 +11819,12 @@ function renderStore() {
         //   看起来像算错。这里把差额独立成一行「Unassigned」讲出来, 不藏 (顺便当资料品质警报)。
         const bSum = wPlats.reduce((a, p) => {
           const b = mPlat[p.id];
-          return { leads:a.leads+b.leads, appt:a.appt+b.appt, show:a.show+b.show, spend:a.spend+b.spend };
-        }, { leads:0, appt:0, show:0, spend:0 });
-        const orphan = { leads: mTotal - bSum.leads, appt: mAppt - bSum.appt, show: mShow - bSum.show, spend: mSpend - bSum.spend };
-        const hasOrphan = orphan.leads > 0 || orphan.appt > 0 || orphan.show > 0 || Math.abs(orphan.spend) > 0.005;
+          return { leads:a.leads+b.leads, appt:a.appt+b.appt, show:a.show+b.show, spend:a.spend+b.spend, cost:a.cost+b.cost };
+        }, { leads:0, appt:0, show:0, spend:0, cost:0 });
+        const orphan = { leads: mTotal - bSum.leads, appt: mAppt - bSum.appt, show: mShow - bSum.show,
+                         spend: mSpend - bSum.spend, cost: mCost - bSum.cost };
+        const hasOrphan = orphan.leads > 0 || orphan.appt > 0 || orphan.show > 0
+                       || Math.abs(orphan.spend) > 0.005 || Math.abs(orphan.cost) > 0.005;
 
         const platRows = wPlats.map(p => {
           const b = mPlat[p.id];
@@ -11789,14 +11839,20 @@ function renderStore() {
             + (showLeadCols ? `<td>${tc(b.leads)}</td><td><span class="wk-mix"><span class="wk-bar"><i style="background:${col};width:${share}%"></i></span>${share}%</span></td>` : '')
             + `<td>${tc(b.appt)}</td>`
             + (showLeadCols ? `<td>${pctc(b.appt, b.leads)}</td>` : '')
-            + `<td>${tc(b.show)}</td><td style="font-weight:600;">${rm(b.spend)}</td></tr>`;
+            + `<td>${tc(b.show)}</td>`
+            + (costOK ? `<td>${rm(b.cost)}</td>` : '')
+            + `<td style="font-weight:600;">${rm(b.spend)}</td>`
+            + `<td>${(b.show > 0 && b.spend > 0) ? fmt.money(b.spend / b.show) : '<span class="wk-nil">·</span>'}</td></tr>`;
         }).join('')
         + (hasOrphan
             ? `<tr title="这些资料的 platform 是空的, 或指向已停用/已删除的 platform"><td><span class="wk-pn"><i class="wk-dot" style="background:#d3d4dc"></i><span style="color:var(--gray);font-weight:500;">Unassigned</span></span></td>`
               + (showLeadCols ? `<td>${tc(orphan.leads)}</td><td><span class="wk-mix"><span class="wk-bar"><i style="background:#c9cad4;width:${mTotal > 0 ? Math.round(orphan.leads / mTotal * 100) : 0}%"></i></span>${mTotal > 0 ? Math.round(orphan.leads / mTotal * 100) : 0}%</span></td>` : '')
               + `<td>${tc(orphan.appt)}</td>`
               + (showLeadCols ? `<td>${pctc(orphan.appt, orphan.leads)}</td>` : '')
-              + `<td>${tc(orphan.show)}</td><td style="font-weight:600;">${rm(orphan.spend)}</td></tr>`
+              + `<td>${tc(orphan.show)}</td>`
+              + (costOK ? `<td>${rm(orphan.cost)}</td>` : '')
+              + `<td style="font-weight:600;">${rm(orphan.spend)}</td>`
+              + `<td>${(orphan.show > 0 && orphan.spend > 0) ? fmt.money(orphan.spend / orphan.show) : '<span class="wk-nil">·</span>'}</td></tr>`
             : '');
 
         rows += `<tr class="wk-exp" data-wm="${m}"><td colspan="${colSpan}" style="padding:0 0 14px;">`
@@ -11807,18 +11863,22 @@ function renderStore() {
               ? `<div class="wk-pwrap"><table class="wk-p"><thead><tr><th>Platform</th>`
                 + (showLeadCols ? `<th>Leads</th><th>% of Leads</th>` : '')
                 + `<th>Appt</th>` + (showLeadCols ? `<th>Appt %</th>` : '')
-                + `<th>Show</th><th>Sales</th></tr></thead>`
+                + `<th>Show</th>` + (costOK ? `<th>Ads Spend</th>` : '')
+                + `<th>Ads Sales</th><th>Avg Spend</th></tr></thead>`
                 + `<tbody>${platRows}</tbody>`
                 + `<tfoot><tr><td>All platforms</td>`
                 + (showLeadCols ? `<td>${tc(mTotal)}</td><td>100%</td>` : '')
                 + `<td>${tc(mAppt)}</td>` + (showLeadCols ? `<td>${pctc(mAppt, mTotal)}</td>` : '')
-                + `<td>${tc(mShow)}</td><td>${rm(mSpend)}</td></tr></tfoot></table></div>`
+                + `<td>${tc(mShow)}</td>`
+                + (costOK ? `<td>${rm(mCost)}</td>` : '')
+                + `<td>${rm(mSpend)}</td>`
+                + `<td>${(mShow > 0 && mSpend > 0) ? fmt.money(mSpend / mShow) : '<span class="wk-nil">·</span>'}</td></tr></tfoot></table></div>`
               : `<div class="wk-note">这个月没有可归类的平台资料。</div>`)
           + `</td></tr>`;
 
-        gTotal+=mTotal; gAppt+=mAppt; gShow+=mShow; gSpend+=mSpend;
+        gTotal+=mTotal; gAppt+=mAppt; gShow+=mShow; gSpend+=mSpend; gCost+=mCost;
         wPlats.forEach(p => { const a = gPlat[p.id], b = mPlat[p.id];
-          a.leads+=b.leads; a.appt+=b.appt; a.show+=b.show; a.spend+=b.spend; });
+          a.leads+=b.leads; a.appt+=b.appt; a.show+=b.show; a.spend+=b.spend; a.cost+=b.cost; });
       });
 
       if (gTotal > 0 || gAppt > 0) {
@@ -11828,21 +11888,26 @@ function renderStore() {
           + `<td style="font-weight:700;">${tc(gAppt)}</td>`
           + (showLeadCols ? `<td>${pctc(gAppt, gTotal)}</td>` : '')
           + `<td style="font-weight:700;">${tc(gShow)}</td><td>${pctc(gShow, gAppt)}</td>`
+          + (costOK ? `<td style="font-weight:700;">${rm(gCost)}</td>` : '')
+          + `<td style="font-weight:700;">${rm(gSpend)}</td>`
           + `<td>${(gShow > 0 && gSpend > 0) ? fmt.money(gSpend / gShow) : '<span class="wk-nil">·</span>'}</td>`
-          + `<td style="font-weight:700;">${rm(gSpend)}</td><td></td></tr>`;
+          + `<td></td></tr>`;
       }
 
       html += `<div class="section-title"><h3>${wTitle}</h3></div>
         <div class="table-wrap wk-wrap"><table class="data wk-t">
-          <thead><tr><th>Month</th><th>Weekly</th>${showLeadCols ? '<th>Leads</th>' : ''}<th>Appt</th>${showLeadCols ? '<th>Appt %</th>' : ''}<th>Show</th><th>Show %</th><th>Avg / Show</th><th>Sales</th><th>MoM</th></tr></thead>
+          <thead><tr><th>Month</th><th>Weekly</th>${showLeadCols ? '<th>Leads</th>' : ''}<th>Appt</th>${showLeadCols ? '<th>Appt %</th>' : ''}<th>Show</th><th>Show %</th>${costOK ? '<th>Ads Spend</th>' : ''}<th>Ads Sales</th><th>Avg Spend</th><th>MoM</th></tr></thead>
           <tbody>${rows || `<tr><td colspan="${colSpan}" style="text-align:center;padding:20px;color:var(--gray);">No data</td></tr>`}</tbody>
         </table></div>
         <div class="wk-note" style="padding:0 2px;">
-          * Appt % = Appt ÷ Lead　·　Show % = Show ÷ Appt　·　<b>跟 By Platform 那页同一套算法</b><br>
-          Weekly = 该月各週的${showLeadCols ? ' lead ' : ' appt '}分布，最高的一週为满格　·　MoM 比的是 Sales　·
-          Sales 只算 show 掉的（跟 By Platform 一致）<br>
+          * Appt % = Appt ÷ Lead　·　Show % = Show ÷ Appt　·　Avg Spend = Ads Sales ÷ Show　·
+          <b>全部跟 By Platform 那页同一套算法</b><br>
+          Ads Spend = 广告花费（Ads Spend 表）　·　Ads Sales = 成交金额，只算 show 掉的　·
+          Weekly = 该月各週的${showLeadCols ? ' lead ' : ' appt '}分布，最高的一週为满格　·　MoM 比的是 Ads Sales<br>
           ⚠️ Lead 看进线日、Appt 看预约日，两边不是同一批人 —— 所以 Appt % 是<b>当月活动比</b>，
-          不是同一批客人的转换率（By Platform 那页也是这个口径）</div>`;
+          不是同一批客人的转换率（By Platform 那页也是这个口径）
+          ${costOK ? '' : '<br>⚠️ <b>选了单一门店，所以不显示 Ads Spend</b> —— 广告花费没有分店维度，'
+            + '拆不出「这间店花了多少」。硬放全公司的总花费会跟单店的 Ads Sales 凑出一个假的 ROAS，宁可不给。'}</div>`;
       // v7.13: Monthly Leads — {year} 图表删除 (保留 Weekly Report 表格)
     }
 
@@ -11853,10 +11918,16 @@ function renderStore() {
       const curMonth = localMonth();
       const yr = document.getElementById('storeYear').value || String(new Date().getFullYear());
       const allM = Array.from({length:12}, (_, i) => `${yr}-${String(i+1).padStart(2,'0')}`);
-      allM.forEach(m => { if (m !== curMonth) toggleWeekMonth(m); });
-      // v9.16: 当月预设是展开的, 但它没被 toggle 过 → 补上 .on, 否则箭头和底色对不上状态
-      const curMo = document.querySelector(`.wk-mo[data-wm="${curMonth}"]`);
-      if (curMo && document.querySelector(`.wk-exp[data-wm="${curMonth}"]`)) curMo.classList.add('on');
+      // v9.23: 第一次进来预设只开当月; 之後照用户实际展开的那几个月 (换 channel/门店/年份都不重置)
+      if (!_wkOpen) { _wkOpen = new Set([curMonth]); }
+      allM.forEach(m => {
+        const exp = document.querySelector(`.wk-exp[data-wm="${m}"]`);
+        if (!exp) return;                       // 这个月没资料, 根本没渲染出来
+        const want = _wkOpen.has(m);
+        exp.style.display = want ? '' : 'none';
+        const mo = document.querySelector(`.wk-mo[data-wm="${m}"]`);
+        if (mo) mo.classList.toggle('on', want);
+      });
       const wkTbl = document.querySelector('table.wk-t');   // v9.18: 初始状态也要挂 .has-open
       if (wkTbl) wkTbl.classList.toggle('has-open', !!wkTbl.querySelector('tr.wk-mo.on'));
     }
@@ -22388,10 +22459,13 @@ function init() {
   // v5.07: Removed 800ms artificial delay — pull immediately on page load
   // Also kick off pending pull in parallel (was waiting until gsPullSilent finished)
   try { gsPullSilent(); } catch (e) { console.warn('[Auto-pull] outer error:', e); }
-  // v5.07: Pull pending in parallel — was running silent fetch on Inbox visit only
-  if (typeof pendingRefresh === 'function') {
-    try { pendingRefresh('silent'); } catch (e) { console.warn('[Pending pre-pull] error:', e); }
-  }
+  // v9.21【Codex #6 P2】这里原本有一条 pendingRefresh('silent') 想跟主 Pull 并行拉 Inbox。
+  //   **它从来没有执行过** —— init() 在前一个 <script> 里就跑了, 而 pendingRefresh 定义在
+  //   下一个 <script>, 所以 `typeof pendingRefresh === 'function'` 当下恒为 false, 整段被静默跳过。
+  //   所以 v9.14/v9.15 注解写的「启动时两条并行」根本不是真实执行路径。已删除死码。
+  //   真正的路径是: 主 Pull 结束 → gsPullSilent 的 finally 补拉一次 Inbox (v9.15 加的)。
+  //   ⚠️ 教训: 跨 <script> 区块的 `typeof fn === 'function'` 防呆会把「时序错误」变成「静默不执行」,
+  //      看起来像有做, 其实没有。要嘛确定定义顺序, 要嘛别用这种防呆掩盖问题。
   // v6.25: 关掉启动时的自动鉴权检测 banner — Davy 决定暂不启用 token, banner 太烦.
   //   想查鉴权状态的话, Settings → Google Sheet Sync 区域有按钮 (手动触发).
   // setTimeout(() => { try { checkAuthStatusBanner(); } catch (e) { console.warn('[Auth banner] error:', e); } }, 2000);
@@ -22521,30 +22595,42 @@ let pendingData = [];
 // v4.55: Badge updater — checks pending count every 60s, updates red dot on topbar button
 async function pendingBadgeUpdate() {
   if (document.hidden) return; // v7.91 (codex #3): 页面不可见就不打 — 后台 tab 别浪费请求额度
-  // v9.15【Codex #5 P2】共用 pendingRefresh 的 in-flight 旗标。
-  //   这里打的是**同一个** pullpending endpoint, 但原本不看那把锁 —— 於是启动阶段可能同时有
-  //   主 Pull + Inbox refresh + 这条 badge 三条请求叠在一起。为了一个数字再打一条重复请求不值得,
-  //   而且 pendingRefresh 跑完本来就会更新 badge。
+  // v9.21【Codex #6 P2】v9.15 只挡了单向 —— 只有「完整 refresh 已经在跑」时这里才让路,
+  //   反过来「badge 先跑」时 pendingRefresh 看到旗标是 false, 还是会再打一条同 endpoint 请求。
+  //   现在两边共用同一把旗标 + 同一个 badge 写入口, 谁先跑都只会有一条请求。
+  //   而且原本这条**没有 timeout** —— 挂住的话没人知道, 三分钟後下一轮也不知道上一条还没结束。
   if (_pendingInFlightReq) return;
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
   if (!url) return;
+  _pendingInFlightReq = true;
   try {
     const r = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(gsPostBody({ action: 'pullpending' })),
-      headers: { 'Content-Type': 'text/plain' }
+      headers: { 'Content-Type': 'text/plain' },
+      signal: AbortSignal.timeout(45000)
     });
     const d = await r.json();
-    const count = (d.pending || []).length;
-    const badge = document.getElementById('pendingTopbarBadge');
-    if (!badge) return;
-    if (count > 0) {
-      badge.textContent = count > 99 ? '99+' : String(count);
-      badge.style.display = 'flex';
-    } else {
-      badge.style.display = 'none';
-    }
-  } catch (e) { /* silent */ }
+    _setPendingBadge((d.pending || []).length);
+  } catch (e) { /* silent — badge 拉不到就维持上一次的数字, 不要清成 0 骗人 */ }
+  finally {
+    _pendingInFlightReq = false;
+    // 跟 pendingRefresh 同一套: 跑的期间有人要过就补一次
+    if (_pendingRetryQueued) { _pendingRetryQueued = false; setTimeout(() => pendingRefresh('silent'), 300); }
+  }
+}
+
+// v9.21: badge 写入口只留这一个 —— pendingRefresh 和 pendingBadgeUpdate 都用它,
+//   免得两边各写一份、哪天改了一边忘了另一边。
+function _setPendingBadge(count) {
+  const badge = document.getElementById('pendingTopbarBadge');
+  if (!badge) return;
+  if (count > 0) {
+    badge.textContent = count > 99 ? '99+' : String(count);
+    badge.style.display = 'flex';
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
 // v5.07 原设计: 立即跑 + 45s keep-alive 保温 Apps Script.
@@ -22667,6 +22753,9 @@ async function pendingRefresh(mode) {
     const d = await r.json();
     if (!d.success) throw new Error(d.error || 'pull failed');
     const fresh = d.pending || [];
+    // v9.21: 顺手更新顶栏 badge —— 这条请求本来就拿到了数量, 不用再让 badge 自己打一条。
+    //   (以前 badge 只由 pendingBadgeUpdate 更新, 所以两边各打各的。)
+    if (typeof _setPendingBadge === 'function') _setPendingBadge(fresh.length);
 
     // Only re-render if data changed (avoid flicker)
     if (!_pendingDataEqual(pendingData, fresh)) {
