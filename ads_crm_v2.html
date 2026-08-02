@@ -3566,7 +3566,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.13</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.14</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.13</div>
+      <div class="nav-brand-version">v9.14</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -19151,6 +19151,12 @@ async function _gsPullSilentInner(isRetry) {
       else if (pageId === 'page-entry' && typeof renderEntry === 'function') renderEntry();
       if (typeof renderTopbarToday === 'function') renderTopbarToday();
     } catch (e) { console.warn('[Auto-pull] re-render failed:', e); }
+    // v9.14: 主同步成功後补拉一次 Inbox。
+    //   启动时两条请求是并行发的, Inbox 那条常卡在这条 13–15 秒的後面失败 →
+    //   Davy 得手动按好几次 Sync 才更新。现在主同步一结束、Apps Script 空出来了就自动补一次,
+    //   他不用再按。_pendingInFlightReq 会挡掉「上一条还在跑」的情况, 不会叠加。
+    try { if (typeof pendingRefresh === 'function') pendingRefresh('silent'); }
+    catch (e) { console.warn('[Auto-pull] pending refresh failed:', e); }
   } catch (e) {
     // v7.90: 分类失败原因讲人话 — Google 前门挡掉时返回 HTML, JSON.parse 会抛 "Unexpected token '<'"
     let reason = e.message || 'network error';
@@ -22297,8 +22303,17 @@ function _restorePendingLocal(p) {
 //   - 'manual' (user clicked Refresh button) — show loading state, full reload
 //   - 'silent' (auto-call when entering page) — render cache instantly, fetch in background
 // v5.06: Added spinner animation on refresh button + freshness indicator update
+// v9.14: Inbox 拉取的防重锁。
+//   【症状】Davy 回报「点 Sync 要按好几次 Inbox 才更新」。
+//   【原因】开页面 / 按 Sync 时, 主同步 (13–15 秒) 和这条 Inbox 请求**同时发出**,
+//     而 Apps Script 同一个脚本不太能并行处理 → 这条卡在後面排队, 超时或失败,
+//     Inbox 只好继续显示快取的旧时间「Synced 1h ago」。
+//   【为什么越按越糟】主同步有 _pullInFlight 挡重复, **这条没有** ——
+//     按三次就发三个请求一起排队, 用户「多按几次」的直觉反应正好让它更塞。
+let _pendingInFlightReq = false;
 async function pendingRefresh(mode) {
   mode = mode || 'manual';
+  if (_pendingInFlightReq) return;   // v9.14: 已经有一条在跑, 不开第二条
   const url = (typeof getGsUrl === 'function') ? getGsUrl() : '';
   if (!url) {
     if (typeof toast === 'function') toast('⚠️ Apps Script URL not set, configure in Settings');
@@ -22329,11 +22344,19 @@ async function pendingRefresh(mode) {
   if (freshEl) freshEl.innerHTML = '<span style="color:var(--purple);">⟳ Syncing latest…</span>';
 
   // Step 2: Background fetch latest, replace if changed
+  // v9.14: 旗标刻意设在这里 (紧贴 try), 不设在函式开头 ——
+  //   上面那段渲染快取如果抛错, 旗标会永远停在 true, Inbox 就再也拉不动了。
+  //   现在「设旗标」和「finally 放旗标」中间不可能有别的东西。
+  _pendingInFlightReq = true;
   try {
+    // v9.14: 加 45 秒超时。原本完全没有超时保护 —— 请求挂住就永远停在「⟳ Syncing latest…」,
+    //   不失败、不重试、也不会告诉你出事了 (主同步早就有 150 秒超时, 这条一直漏掉)。
+    //   45 秒 = 够它排在 13–15 秒的主同步後面还有余裕, 又不会让人干等太久。
     const r = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(gsPostBody({ action: 'pullpending' })),
-      headers: { 'Content-Type': 'text/plain' }
+      headers: { 'Content-Type': 'text/plain' },
+      signal: AbortSignal.timeout(45000)
     });
     const d = await r.json();
     if (!d.success) throw new Error(d.error || 'pull failed');
@@ -22353,8 +22376,11 @@ async function pendingRefresh(mode) {
     if (mode === 'manual' && !cached && listEl) {
       listEl.innerHTML = '<div style="padding:20px; text-align:center; color:var(--red);">Load failed: ' + (e.message || e) + '</div>';
     }
-    if (freshEl) freshEl.innerHTML = '<span style="color:var(--red);">⚠ Sync failed — using cached data</span>';
+    // v9.14: 超时要讲人话 —— 「timed out」比「AbortError」看得懂
+    const _why = (e.name === 'TimeoutError' || e.name === 'AbortError') ? 'timed out (45s)' : (e.message || e);
+    if (freshEl) freshEl.innerHTML = '<span style="color:var(--red);">⚠ Sync failed (' + escapeHTML(String(_why)) + ') — using cached data</span>';
   } finally {
+    _pendingInFlightReq = false;   // v9.14: 一定要在 finally 放, 不然失败一次就再也拉不动
     // v5.06: Reset spinner
     if (refreshBtn) {
       setTimeout(() => { refreshBtn.style.transform = ''; }, 50);
