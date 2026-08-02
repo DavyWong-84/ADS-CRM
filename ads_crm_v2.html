@@ -452,6 +452,52 @@ table.data .total-row td:first-child { color: var(--purple-deep); }
 #revenueReportWrap table.data tbody td, #revenueReportWrap table.data tbody td div { font-weight: 400 !important; }
 #revenueReportWrap table.data .total-row td, #revenueReportWrap table.data .total-row td div { font-weight: 700 !important; }
 #revenueReportWrap table.data .total-row td { border-top: none !important; }
+/* ══ v9.16: Weekly Report 重新设计 ══════════════════════════════════════
+   月份一行 + 一根迷你週分布条; 点开才展开「五张週卡片 + 平台小表」。
+   为什么这样: 旧版把每一週各摊一行, 但 Davy 大多数月份只有前几週有资料 ——
+   8 月就是 W31 有 41 笔、W32~W35 全空, 展开等於四行点点。
+   Davy 指定: 表头和数字**全部置中**, 只有最左边那栏靠左。 */
+#storeContent table.data.wk-t th, #storeContent table.data.wk-t td { text-align: center; }
+#storeContent table.data.wk-t th:first-child, #storeContent table.data.wk-t td:first-child { text-align: left; }
+#storeContent .wk-mo { cursor: pointer; }
+#storeContent .wk-mo:hover td { background: #fbfaff; }
+#storeContent .wk-mo.on td { background: var(--purple-bg); }
+#storeContent .wk-mo.on td:first-child { color: var(--purple-deep); }
+#storeContent .wk-chev { display:inline-block; width:11px; font-size:9px; color:var(--purple); margin-right:6px; transition:transform .18s; }
+#storeContent .wk-mo.on .wk-chev { transform: rotate(90deg); }
+/* 迷你週分布条 —— 一眼看出这个月的量集中在哪几週、有没有断档 */
+#storeContent .wk-spark { display:inline-flex; align-items:flex-end; gap:2px; height:20px; }
+#storeContent .wk-spark i { width:7px; background:var(--purple-subtle); border-radius:1.5px 1.5px 0 0; min-height:2px; }
+#storeContent .wk-spark i.on { background:var(--purple); }
+#storeContent .wk-spark i.hi { background:var(--purple-deep); }
+/* 展开区: 五张週卡片 */
+#storeContent .wk-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:7px; padding:10px 0 0; }
+#storeContent .wk-c { border:1px solid #ececf1; border-radius:10px; padding:9px 11px; background:#fff; text-align:center; }
+#storeContent .wk-c.nil { background:var(--surface); border-style:dashed; border-color:#e6e6ee; }
+#storeContent .wk-c .k { font-size:9.5px; font-weight:600; letter-spacing:.5px; color:var(--silver); text-transform:uppercase; }
+#storeContent .wk-c .v { font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.4px; margin-top:3px; }
+#storeContent .wk-c.nil .v { color:#d3d4dc; font-weight:400; }
+#storeContent .wk-c .d { font-size:10.5px; color:var(--gray); margin-top:3px; font-variant-numeric:tabular-nums; line-height:1.45; }
+#storeContent .wk-c.nil .d { color:#d3d4dc; }
+#storeContent .wk-c .s { font-size:10.5px; font-weight:600; margin-top:2px; color:var(--green-dark); }
+#storeContent .wk-c.nil .s { color:#d3d4dc; font-weight:400; }
+/* 展开区: 平台小表 */
+#storeContent .wk-lab { font-size:9.5px; font-weight:600; letter-spacing:.6px; text-transform:uppercase; color:var(--silver); margin:16px 0 8px; }
+#storeContent table.wk-p { width:100%; border-collapse:collapse; font-size:12px; }
+#storeContent table.wk-p th { font-size:9.5px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--silver); text-align:center; padding:0 8px 8px; }
+#storeContent table.wk-p th:first-child { text-align:left; padding-left:0; }
+#storeContent table.wk-p td { text-align:center; font-variant-numeric:tabular-nums; padding:7px 8px; border-top:1px solid #f4f4f8; }
+#storeContent table.wk-p td:first-child { text-align:left; padding-left:0; }
+#storeContent table.wk-p tfoot td { border-top:1.5px solid #e4e4ec; font-weight:700; padding-top:9px; }
+#storeContent .wk-pn { display:inline-flex; align-items:center; gap:7px; font-weight:600; }
+#storeContent .wk-dot { width:6px; height:6px; border-radius:50%; display:inline-block; flex-shrink:0; }
+#storeContent .wk-mix { display:inline-flex; align-items:center; gap:8px; }
+#storeContent .wk-bar { display:inline-block; width:48px; height:5px; border-radius:99px; background:#eeedf6; overflow:hidden; }
+#storeContent .wk-bar i { display:block; height:100%; border-radius:99px; }
+#storeContent .wk-nil { color:#d3d4dc; }
+#storeContent .wk-up { color:var(--green-dark); font-weight:600; }
+#storeContent .wk-dn { color:var(--red); font-weight:600; }
+#storeContent .wk-note { font-size:11px; color:var(--silver); line-height:1.6; margin-top:10px; }
 /* v8.42: Store 页 By Race 两张表(Show up / No Show)共用同一套固定列宽 → 上下完全对齐 */
 #storeContent table.data.race-t { table-layout: fixed; width: 100%; min-width: 640px; }
 #storeContent table.data.race-t th:first-child, #storeContent table.data.race-t td:first-child { width: 92px !important; min-width: 92px !important; }
@@ -3566,7 +3612,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.15</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.17</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3617,7 +3663,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.15</div>
+      <div class="nav-brand-version">v9.17</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -10833,13 +10879,14 @@ function calcStoreMetrics(storeId, period, channelFilter) {
 let _storeTab = 'platform';
 
 function toggleWeekMonth(m) {
-  const rows = document.querySelectorAll(`.wk-row[data-wm="${m}"]`);
-  const gap = document.querySelector(`.wk-gap[data-wm="${m}"]`);
-  const chev = document.querySelector(`.wk-chev[data-wm="${m}"]`);
-  const visible = rows.length > 0 && rows[0].style.display !== 'none';
-  rows.forEach(r => r.style.display = visible ? 'none' : '');
-  if (gap) gap.style.display = visible ? 'none' : '';
-  if (chev) chev.style.transform = visible ? 'rotate(-90deg)' : '';
+  // v9.16: 展开区从「每週各一 tr + 一个 gap tr」改成「整个月一个 .wk-exp tr」,
+  //   所以这里只要开关那一列。箭头方向改用 .wk-mo.on 的 CSS 控制, 不再手动设 transform。
+  const exp = document.querySelector(`.wk-exp[data-wm="${m}"]`);
+  const mo = document.querySelector(`.wk-mo[data-wm="${m}"]`);
+  if (!exp) return;
+  const willOpen = exp.style.display === 'none';
+  exp.style.display = willOpen ? '' : 'none';
+  if (mo) mo.classList.toggle('on', willOpen);
 }
 
 function switchStoreTab(key) {
@@ -11506,54 +11553,181 @@ function renderStore() {
       const wTitle = locFilter ? `${locsToShow[0]?.name || ''} — Weekly Report ${wYear}` : `Weekly Report ${wYear}`;
       const showLeadCols = !locFilter;
 
+      // ══ v9.16 / v9.17: Weekly Report 重新设计 ══════════════════════════
+      // 【真正的错误 (已修)】平台栏原本写死三桶 (meta / google / 其他→OFU) ——
+      //   Instagram 等新平台全被算进 OFU。v8.82 把全站平台改成可配置时漏了这张表。
+      //   现在改用 activePlatforms() 动态跑。
+      //
+      // 【v9.17 更正 v9.16 一条写错的诊断 —— 留著当教训】
+      //   v9.16 我写「channel 筛选完全没接 (这段代码里出现 0 次)」——**那是错的**。
+      //   筛选本来就有接, 只是不在这一段: renderStore 开头 (v5.67) 就把 state.leads 整个换成
+      //   「已按 channel 筛过」的阵列, try/finally 保证离开时换回来。
+      //   → 教训: 「这段没出现某个字」≠「这件事没做」。要追的是资料从哪来, 不是关键字有没有出现。
+      //   所以这里直接用 state.leads 就已经是筛过的, 不要再自己筛一次 (v9.16 加的已移除)。
+      //
+      // 【版面】月份一行 + 迷你週分布条; 点开才展开「五张週卡片 + 平台小表」。
+      //   旧版每週各一行, 但多数月份只有前几週有资料 (8 月 = W31 有 41 笔、W32~35 全空),
+      //   展开等於四行点点。
+      const wPlats = activePlatforms();
+      const tc = v => v === 0 ? '<span class="wk-nil">·</span>' : v.toLocaleString('en-MY');
+      const rm = v => v > 0 ? fmt.money(v) : '<span class="wk-nil">·</span>';
+      const pctc = (a, b) => b > 0 ? `<span class="${(a / b) >= 0.5 ? 'wk-up' : 'wk-dn'}">${Math.round(a / b * 100)}%</span>` : '<span class="wk-nil">·</span>';
+      // 全部门店: Month·Weekly·Leads·Appt·Appt%·Show·Show%·Avg/Show·Sales·MoM = 10
+      // 单一门店: 少掉 Leads 和 Appt% 两栏 = 8 (lead 身上没有门店, 所以单店时不显示 lead 相关)
+      const colSpan = showLeadCols ? 10 : 8;
+
       let rows = '';
-      let gMeta=0, gGoogle=0, gOfu=0, gTotal=0, gAppt=0, gShow=0, gSpend=0;
-      const tc = v => v === 0 ? '—' : v.toLocaleString('en-MY');
-      const colSpan = showLeadCols ? 8 : 4;
-      
+      let gTotal=0, gAppt=0, gShow=0, gSpend=0;
+      const gPlat = {};                       // 平台 → {leads, appt, show, spend} 全年累计
+      wPlats.forEach(p => { gPlat[p.id] = { leads:0, appt:0, show:0, spend:0 }; });
+      let prevSpend = null;                   // 给 MoM 用
+
       wMonths.forEach((m, mi) => {
-        const leadsAll = state.leads.filter(l => l.leadDate && sw(l.leadDate, m));
-        const apptsM = state.leads.filter(l => l.apptDate && sw(l.apptDate, m) && l.name && (!locFilter || l.locationId === locFilter));
+        // ⚠️ 口径沿用旧版, 刻意不改: leads 看 leadDate, appt/show/sales 看 apptDate。
+        //   两边是不同 cohort —— 所以 Appt% 是「当月活动比」而不是同一批人的转换率 (表下有注)。
+        //   要改成 cohort 口径是业务决定, 不在这次范围内。
+        // v9.17【Davy 指定: Appt% 要跟 By Platform 那页同一套算法】
+        //   照抄 By Platform summary table 的两行 (见 tab==='platform' 那段):
+        //     mLeads  = leadDate 落在该月            (locFilter 时不算 lead —— lead 身上没有门店)
+        //     allAppt = apptDate 落在该月 + 门店筛选  ← **没有 l.name 条件**
+        //   ⚠️ 旧版 weekly 多了一个 `&& l.name`, 所以同一个月的 Appt 会比 By Platform 少几笔。
+        //   同一个指标两套算法是最难查的那种 bug, 现在统一。
+        const leadsAll = showLeadCols ? state.leads.filter(l => l.leadDate && sw(l.leadDate, m)) : [];
+        const apptsM = state.leads.filter(l => l.apptDate && sw(l.apptDate, m) && (!locFilter || l.locationId === locFilter));
         const weeks = {};
+        const mkW = w => (weeks[w] = weeks[w] || { week: w, total:0, appt:0, show:0, spend:0 });
+        const mPlat = {};
+        wPlats.forEach(p => { mPlat[p.id] = { leads:0, appt:0, show:0, spend:0 }; });
+        // 平台归属: lead.platform 找不到对应的 active platform 就不进桶 (不再默默倒进 OFU)
+        const bucket = pid => (pid && mPlat[pid]) ? mPlat[pid] : null;
         if (showLeadCols) {
           leadsAll.forEach(l => {
-            const w = isoWeek(l.leadDate);
-            weeks[w] = weeks[w] || { week: w, meta:0, google:0, ofu:0, total:0, appt:0, show:0, spend:0 };
-            weeks[w].total++;
-            if (l.platform === 'meta') weeks[w].meta++;
-            else if (l.platform === 'google') weeks[w].google++;
-            else weeks[w].ofu++;
+            mkW(isoWeek(l.leadDate)).total++;
+            const b = bucket(l.platform); if (b) b.leads++;
           });
         }
         apptsM.forEach(l => {
-          const w = isoWeek(l.apptDate);
-          weeks[w] = weeks[w] || { week: w, meta:0, google:0, ofu:0, total:0, appt:0, show:0, spend:0 };
-          weeks[w].appt++;
-          if (l.status === 'done') weeks[w].show++;
-          if (l.spend) weeks[w].spend += l.spend;
+          const w = mkW(isoWeek(l.apptDate));
+          w.appt++;
+          if (l.status === 'done') { w.show++; w.spend += (l.spend || 0); }
+          const b = bucket(l.platform);
+          if (b) { b.appt++; if (l.status === 'done') { b.show++; b.spend += (l.spend || 0); } }
         });
         const sorted = Object.values(weeks).sort((a,b) => a.week - b.week);
         if (sorted.length === 0) return;
-        let mMeta=0, mGoogle=0, mOfu=0, mTotal=0, mAppt=0, mShow=0, mSpend=0;
-        sorted.forEach(w => {
-          rows += `<tr class="wk-row" data-wm="${m}"><td style="text-align:center;width:36px;min-width:36px;">W${w.week}</td>${showLeadCols ? `<td class="num">${tc(w.meta)}</td><td class="num">${tc(w.google)}</td><td class="num">${tc(w.ofu)}</td><td class="num" style="font-weight:600;border-right:2px solid rgba(113,50,245,0.25);">${tc(w.total)}</td>` : ''}<td class="num">${tc(w.appt)}</td><td class="num">${tc(w.show)}</td><td class="num" style="font-weight:600;">${w.spend > 0 ? fmt.money(w.spend) : '—'}</td></tr>`;
-          mMeta+=w.meta; mGoogle+=w.google; mOfu+=w.ofu; mTotal+=w.total; mAppt+=w.appt; mShow+=w.show; mSpend+=w.spend;
-        });
-        rows += `<tr class="total-row wk-month" onclick="toggleWeekMonth('${m}')" style="cursor:pointer;"><td style="text-align:center;font-weight:700;width:36px;min-width:36px;"><span class="wk-chev" data-wm="${m}" style="display:inline-block;transition:transform 0.2s;font-size:10px;margin-right:2px;">▼</span>${fmt.monthShort(m)}</td>${showLeadCols ? `<td class="num">${tc(mMeta)}</td><td class="num">${tc(mGoogle)}</td><td class="num">${tc(mOfu)}</td><td class="num" style="font-weight:700;border-right:2px solid var(--purple);">${tc(mTotal)}</td>` : ''}<td class="num">${tc(mAppt)}</td><td class="num">${tc(mShow)}</td><td class="num" style="font-weight:700;">${mSpend > 0 ? fmt.money(mSpend) : '—'}</td></tr>`;
-        gMeta+=mMeta; gGoogle+=mGoogle; gOfu+=mOfu; gTotal+=mTotal; gAppt+=mAppt; gShow+=mShow; gSpend+=mSpend;
-        if (mi < wMonths.length - 1 && sorted.length > 0) rows += `<tr class="wk-gap" data-wm="${m}"><td colspan="${colSpan}" style="padding:4px;"></td></tr>`;
+        let mTotal=0, mAppt=0, mShow=0, mSpend=0;
+        sorted.forEach(w => { mTotal+=w.total; mAppt+=w.appt; mShow+=w.show; mSpend+=w.spend; });
+
+        // ── 迷你週分布条: 以「该月最大的一週」为满格; 没资料的週给一根 3px 矮柱
+        const sparkBase = showLeadCols ? 'total' : 'appt';
+        const peak = Math.max.apply(null, sorted.map(w => w[sparkBase]).concat([0]));
+        const spark = sorted.map(w => {
+          const v = w[sparkBase];
+          const h = (peak > 0 && v > 0) ? Math.max(4, Math.round(v / peak * 20)) : 3;
+          return '<i class="' + (v === 0 ? '' : (v === peak ? 'hi' : 'on')) + '" style="height:' + h + 'px"></i>';
+        }).join('');
+
+        // ── MoM: 跟「上一个有资料的月份」比 Sales
+        let mom = '<span class="wk-nil">·</span>';
+        if (prevSpend !== null && prevSpend > 0) {
+          const d = (mSpend - prevSpend) / prevSpend * 100;
+          mom = `<span class="${d >= 0 ? 'wk-up' : 'wk-dn'}">${d >= 0 ? '+' : ''}${d.toFixed(1)}%</span>`;
+        }
+        prevSpend = mSpend;
+
+        rows += `<tr class="wk-mo" data-wm="${m}" onclick="toggleWeekMonth('${m}')">`
+          + `<td style="font-weight:700;font-size:13.5px;"><span class="wk-chev" data-wm="${m}">▶</span>${fmt.monthShort(m)}</td>`
+          + `<td><span class="wk-spark">${spark}</span></td>`
+          + (showLeadCols ? `<td>${tc(mTotal)}</td>` : '')
+          + `<td>${tc(mAppt)}</td>`
+          + (showLeadCols ? `<td>${pctc(mAppt, mTotal)}</td>` : '')
+          + `<td>${tc(mShow)}</td><td>${pctc(mShow, mAppt)}</td>`
+          + `<td>${(mShow > 0 && mSpend > 0) ? fmt.money(mSpend / mShow) : '<span class="wk-nil">·</span>'}</td>`
+          + `<td style="font-weight:600;">${rm(mSpend)}</td><td>${mom}</td></tr>`;
+
+        // ── 展开区: 整个月只占一列, 不管几週
+        const cards = sorted.map(w => {
+          const main = showLeadCols ? w.total : w.appt;
+          return `<div class="wk-c${main === 0 ? ' nil' : ''}">`
+            + `<div class="k">W${w.week}</div>`
+            + `<div class="v">${main}</div>`
+            + `<div class="d">${showLeadCols ? (w.appt + ' appt · ' + w.show + ' show') : (w.show + ' show')}</div>`
+            + `<div class="s">${w.spend > 0 ? fmt.money(w.spend) : 'no sales'}</div></div>`;
+        }).join('');
+
+        // ⚠️ platform 空白、或指向已停用/已删除的 platform 的 lead 会掉出所有桶。
+        //   旧版是 else → 全倒进 OFU (所以永远加得起来, 但 Instagram 被算错)。
+        //   新版按 id 严格对, 对不上就不进桶 —— 如果不显示差额, 平台列加起来会比 All platforms 少,
+        //   看起来像算错。这里把差额独立成一行「Unassigned」讲出来, 不藏 (顺便当资料品质警报)。
+        const bSum = wPlats.reduce((a, p) => {
+          const b = mPlat[p.id];
+          return { leads:a.leads+b.leads, appt:a.appt+b.appt, show:a.show+b.show, spend:a.spend+b.spend };
+        }, { leads:0, appt:0, show:0, spend:0 });
+        const orphan = { leads: mTotal - bSum.leads, appt: mAppt - bSum.appt, show: mShow - bSum.show, spend: mSpend - bSum.spend };
+        const hasOrphan = orphan.leads > 0 || orphan.appt > 0 || orphan.show > 0 || Math.abs(orphan.spend) > 0.005;
+
+        const platRows = wPlats.map(p => {
+          const b = mPlat[p.id];
+          if (!b.leads && !b.appt && !b.show && !b.spend) return '';
+          const share = mTotal > 0 ? Math.round(b.leads / mTotal * 100) : 0;
+          const col = (p.color && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : 'var(--purple)';
+          return `<tr><td><span class="wk-pn"><i class="wk-dot" style="background:${col}"></i>${escapeHTML(p.name)}</span></td>`
+            + (showLeadCols ? `<td>${tc(b.leads)}</td><td><span class="wk-mix"><span class="wk-bar"><i style="background:${col};width:${share}%"></i></span>${share}%</span></td>` : '')
+            + `<td>${tc(b.appt)}</td>`
+            + (showLeadCols ? `<td>${pctc(b.appt, b.leads)}</td>` : '')
+            + `<td>${tc(b.show)}</td><td style="font-weight:600;">${rm(b.spend)}</td></tr>`;
+        }).join('')
+        + (hasOrphan
+            ? `<tr title="这些资料的 platform 是空的, 或指向已停用/已删除的 platform"><td><span class="wk-pn"><i class="wk-dot" style="background:#d3d4dc"></i><span style="color:var(--gray);font-weight:500;">Unassigned</span></span></td>`
+              + (showLeadCols ? `<td>${tc(orphan.leads)}</td><td><span class="wk-mix"><span class="wk-bar"><i style="background:#c9cad4;width:${mTotal > 0 ? Math.round(orphan.leads / mTotal * 100) : 0}%"></i></span>${mTotal > 0 ? Math.round(orphan.leads / mTotal * 100) : 0}%</span></td>` : '')
+              + `<td>${tc(orphan.appt)}</td>`
+              + (showLeadCols ? `<td>${pctc(orphan.appt, orphan.leads)}</td>` : '')
+              + `<td>${tc(orphan.show)}</td><td style="font-weight:600;">${rm(orphan.spend)}</td></tr>`
+            : '');
+
+        rows += `<tr class="wk-exp" data-wm="${m}"><td colspan="${colSpan}" style="padding:0 0 14px;">`
+          + `<div class="wk-cards">${cards}</div>`
+          + (platRows
+              ? `<div class="wk-lab">By platform · ${fmt.monthShort(m)}</div>`
+                + `<table class="wk-p"><thead><tr><th>Platform</th>`
+                + (showLeadCols ? `<th>Leads</th><th>% of Leads</th>` : '')
+                + `<th>Appt</th>` + (showLeadCols ? `<th>Appt %</th>` : '')
+                + `<th>Show</th><th>Sales</th></tr></thead>`
+                + `<tbody>${platRows}</tbody>`
+                + `<tfoot><tr><td>All platforms</td>`
+                + (showLeadCols ? `<td>${tc(mTotal)}</td><td>100%</td>` : '')
+                + `<td>${tc(mAppt)}</td>` + (showLeadCols ? `<td>${pctc(mAppt, mTotal)}</td>` : '')
+                + `<td>${tc(mShow)}</td><td>${rm(mSpend)}</td></tr></tfoot></table>`
+              : `<div class="wk-note">这个月没有可归类的平台资料。</div>`)
+          + `</td></tr>`;
+
+        gTotal+=mTotal; gAppt+=mAppt; gShow+=mShow; gSpend+=mSpend;
+        wPlats.forEach(p => { const a = gPlat[p.id], b = mPlat[p.id];
+          a.leads+=b.leads; a.appt+=b.appt; a.show+=b.show; a.spend+=b.spend; });
       });
 
       if (gTotal > 0 || gAppt > 0) {
-        rows += `<tr style="border-top:2px solid var(--purple);background:var(--purple-bg);"><td style="text-align:center;font-weight:700;color:var(--purple);width:36px;min-width:36px;">TOTAL</td>${showLeadCols ? `<td class="num" style="font-weight:700;">${tc(gMeta)}</td><td class="num" style="font-weight:700;">${tc(gGoogle)}</td><td class="num" style="font-weight:700;">${tc(gOfu)}</td><td class="num" style="font-weight:700;border-right:2px solid var(--purple);">${tc(gTotal)}</td>` : ''}<td class="num" style="font-weight:700;">${tc(gAppt)}</td><td class="num" style="font-weight:700;">${tc(gShow)}</td><td class="num" style="font-weight:700;">${gSpend > 0 ? fmt.money(gSpend) : '—'}</td></tr>`;
+        rows += `<tr class="total-row" style="border-top:2px solid var(--purple);">`
+          + `<td style="font-weight:700;color:var(--purple);">Total ${wYear}</td><td></td>`
+          + (showLeadCols ? `<td style="font-weight:700;">${tc(gTotal)}</td>` : '')
+          + `<td style="font-weight:700;">${tc(gAppt)}</td>`
+          + (showLeadCols ? `<td>${pctc(gAppt, gTotal)}</td>` : '')
+          + `<td style="font-weight:700;">${tc(gShow)}</td><td>${pctc(gShow, gAppt)}</td>`
+          + `<td>${(gShow > 0 && gSpend > 0) ? fmt.money(gSpend / gShow) : '<span class="wk-nil">·</span>'}</td>`
+          + `<td style="font-weight:700;">${rm(gSpend)}</td><td></td></tr>`;
       }
 
       html += `<div class="section-title"><h3>${wTitle}</h3></div>
-        <div class="table-wrap"><table class="data">
-          <thead><tr><th style="text-align:center;width:36px;min-width:36px;">Wk</th>${showLeadCols ? '<th class="num">Meta</th><th class="num">Google</th><th class="num">OFU</th><th class="num" style="font-weight:700;border-right:2px solid var(--purple);">Total</th>' : ''}<th class="num">Appt</th><th class="num">Show</th><th class="num" style="font-weight:700;">Sales</th></tr></thead>
+        <div class="table-wrap"><table class="data wk-t">
+          <thead><tr><th>Month</th><th>Weekly</th>${showLeadCols ? '<th>Leads</th>' : ''}<th>Appt</th>${showLeadCols ? '<th>Appt %</th>' : ''}<th>Show</th><th>Show %</th><th>Avg / Show</th><th>Sales</th><th>MoM</th></tr></thead>
           <tbody>${rows || `<tr><td colspan="${colSpan}" style="text-align:center;padding:20px;color:var(--gray);">No data</td></tr>`}</tbody>
-        </table></div>`;
-
+        </table></div>
+        <div class="wk-note" style="padding:0 2px;">
+          * Appt % = Appt ÷ Lead　·　Show % = Show ÷ Appt　·　<b>跟 By Platform 那页同一套算法</b><br>
+          Weekly = 该月各週的${showLeadCols ? ' lead ' : ' appt '}分布，最高的一週为满格　·　MoM 比的是 Sales　·
+          Sales 只算 show 掉的（跟 By Platform 一致）<br>
+          ⚠️ Lead 看进线日、Appt 看预约日，两边不是同一批人 —— 所以 Appt % 是<b>当月活动比</b>，
+          不是同一批客人的转换率（By Platform 那页也是这个口径）</div>`;
       // v7.13: Monthly Leads — {year} 图表删除 (保留 Weekly Report 表格)
     }
 
@@ -11565,6 +11739,9 @@ function renderStore() {
       const yr = document.getElementById('storeYear').value || String(new Date().getFullYear());
       const allM = Array.from({length:12}, (_, i) => `${yr}-${String(i+1).padStart(2,'0')}`);
       allM.forEach(m => { if (m !== curMonth) toggleWeekMonth(m); });
+      // v9.16: 当月预设是展开的, 但它没被 toggle 过 → 补上 .on, 否则箭头和底色对不上状态
+      const curMo = document.querySelector(`.wk-mo[data-wm="${curMonth}"]`);
+      if (curMo && document.querySelector(`.wk-exp[data-wm="${curMonth}"]`)) curMo.classList.add('on');
     }
   }
   } finally {
