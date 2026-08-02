@@ -3566,7 +3566,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.07</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.11</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3617,7 +3617,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.07</div>
+      <div class="nav-brand-version">v9.11</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13679,6 +13679,7 @@ function _pnlInjectCss() {
 .av-ads-modal .av-adrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid #eeeef3;border-radius:10px;margin-bottom:7px;}
 .av-ads-modal .av-adrow:hover{border-color:var(--purple-subtle);background:#fcfbff;}
 .av-ads-modal .av-adnm{font-size:12.5px;font-weight:500;line-height:1.4;}
+.av-ads-modal .av-addate{font-size:11px;font-weight:400;color:var(--silver);margin-top:3px;font-variant-numeric:tabular-nums;}
 .av-ads-modal .av-open{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:5px 11px;border-radius:8px;border:1px solid var(--purple-subtle);background:#fff;color:var(--purple-deep);font-size:11px;font-weight:600;text-decoration:none;transition:.13s;}
 .av-ads-modal .av-open:hover{background:var(--purple);border-color:var(--purple);color:#fff;}
 .av-ads-modal .av-nolink{font-size:10.5px;color:var(--silver);flex-shrink:0;padding-right:3px;}
@@ -13944,8 +13945,24 @@ function _avAdChannelIds() {
     .map(c => c.id);
 }
 
+// v9.08: 记住上次的筛选 (Davy 要求) —— 跟 P&L 的 _pnlPrefsSave 同一套做法。
+//   只在改动时存 (_avSet / _avSort), 不在 render 里存 —— Coverage tab 那条路会提早 return。
+let _avPrefsLoaded = false;
+function _avPrefsSave() { try { localStorage.setItem('avPrefs', JSON.stringify(_avState)); } catch (e) {} }
+
 function _avInit() {
+  // 只在第一次进这页时读回上次的选择; 之后每次 render 都读会把用户当下的改动洗掉
+  if (!_avPrefsLoaded) {
+    _avPrefsLoaded = true;
+    try {
+      const p = JSON.parse(localStorage.getItem('avPrefs') || 'null');
+      if (p && typeof p === 'object') Object.keys(_avState).forEach(k => { if (p[k] != null) _avState[k] = p[k]; });
+    } catch (e) {}
+  }
+  // 存的 channel 已经被删/停用 → 回到 All。不清掉会筛出一张空表, 而且下拉上看不出是哪里出问题。
+  if (_avState.ch && _avAdChannelIds().indexOf(_avState.ch) < 0) _avState.ch = '';
   const yrs = _avYears();
+  // 存的年份资料里已经没有了 → 回到最新年 (Data Entry 那次就是卡在 localStorage 存了个选不到的年份)
   if (!_avState.year || yrs.indexOf(_avState.year) < 0) {
     _avState.year = yrs[0] || String(new Date().getFullYear());
     // 预设 1 月 → 当月 (今年的话); 往年就整年
@@ -14069,6 +14086,62 @@ function renderAdsVideo() {
 
 function _avRoas(v) { return v.spend > 0 ? v.sales / v.spend : 0; }
 
+// ══ v9.09: 每支广告自己的投放期间 ══════════════════════════════════════
+// 【口径】Davy 指定「不管点哪个月，都要看到完整投放时间」——
+//   所以这里**刻意不套月份筛选**。筛 May–Aug 会让首投假性变成 5 月, 那是骗人的。
+//   但 channel 筛选要保留 —— Chia 和 Simply 5 共用同一套文案, 不分开算成本会串在一起。
+// 【为什么查得到】AdVideos 每个月一行, 每行的 adNames 就是「那个月有花费的广告」。
+//   所以扫全表就能还原出每支广告在哪几个月跑过, 不用动後端、不用多打 Meta API。
+//
+// 【业务前提 — 2026-08-02 Davy 确认过, 改这段之前先回去问他】
+//   这里是按**广告名称**汇总, 不是按 Meta 的 ad_id。Codex 提过「同名不同 ad_id 会被合併」,
+//   但那正是 Davy 要的行为 —— 同一支影片换 campaign 重跑 (他的 Ads Manager 里
+//   `ADULT VIDEO 3.0 - 1` 就同时有 Active 和 Campaign off 两笔), 他要看的是这支影片
+//   **完整的投放期间**, 不是被 campaign 切成两段。按 ad_id 反而会拆开。
+//   ⚠️ 而且合併的门槛比想像中高: 後端分组 key 是「月份 | 文案」, ads 挂在文案组底下 ——
+//   两支同名广告要被合併, **连文案也得一模一样**。文案不同就落在不同 videoKey, 根本碰不到。
+//   → 会出事的唯一情况: 两支真的不同的影片, 名字一样 **而且** 文案也一样。Davy 负责不这样命名。
+function _avAdMonths(videoKey) {
+  const chFilter = _avState.ch ? [_avState.ch] : _avAdChannelIds();
+  const out = {};
+  (state.adVideos || []).forEach(v => {
+    if (v.videoKey !== videoKey || !v.month) return;
+    if (chFilter.indexOf(v.channelId) < 0) return;
+    String(v.adNames || '').split(' · ').forEach(n => {
+      const nm = n.trim();
+      if (nm) (out[nm] || (out[nm] = [])).push(v.month);
+    });
+  });
+  Object.keys(out).forEach(k => { out[k] = Array.from(new Set(out[k])).sort(); });
+  return out;
+}
+// AdVideos 每次 sync 砍掉重建、只存最近 8 个月 —— 更早的资料根本不在表里。
+//   某支广告的最早月份刚好等於整张表的最早月份 → 它「可能」更早, 不能当成首投月。
+function _avDataFloor() {
+  let min = '';
+  (state.adVideos || []).forEach(v => { if (v.month && (!min || v.month < min)) min = v.month; });
+  return min;
+}
+// ['2026-03','2026-04','2026-05','2026-07','2026-08'] → 'Mar – May · Jul – Aug 2026'
+//   连续的併成一段, 断开的用 · 隔开 —— 中间停过投放会自己显示出来, 不会被藏起来。
+function _avFmtMonths(ms) {
+  if (!ms || !ms.length) return '';
+  const yr = m => m.slice(0, 4), mn = m => _AV_MN[parseInt(m.slice(5, 7), 10) - 1];
+  const lbl = m => mn(m) + ' ' + yr(m);
+  const seq = m => parseInt(yr(m), 10) * 12 + parseInt(m.slice(5, 7), 10);
+  const runs = [];
+  let s = ms[0], p = ms[0];
+  for (let i = 1; i < ms.length; i++) {
+    if (seq(ms[i]) === seq(p) + 1) { p = ms[i]; continue; }
+    runs.push([s, p]); s = p = ms[i];
+  }
+  runs.push([s, p]);
+  return runs.map(([a, b]) => {
+    if (a === b) return lbl(a);
+    return yr(a) === yr(b) ? mn(a) + ' – ' + lbl(b) : lbl(a) + ' – ' + lbl(b);
+  }).join(' · ');
+}
+
 // v9.07: 点 Ads 栏的数字 → 展开这组文案底下有哪几支广告。
 //   _avRows 由 _avTableHtml 每次重画时重存 —— 排序/筛选一变 index 就不一样, 不能缓存。
 let _avRows = [];
@@ -14078,11 +14151,25 @@ function _avOpenAds(i) {
   const rm = n => 'RM ' + Math.round(n || 0).toLocaleString('en-MY');
   const linkIcon = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   const names = Object.keys(v.ads);
-  const rows = names.map(n => `<div class="av-adrow"><div class="av-adnm">${esc(n)}</div>`
-    + (v.ads[n]
-        ? `<a class="av-open" href="${esc(v.ads[n])}" target="_blank" rel="noopener">Open ad ${linkIcon}</a>`
-        : `<span class="av-nolink">no link</span>`)
-    + `</div>`).join('');
+  // v9.09: 每支广告自己的完整投放期间 (不受月份筛选影响 —— Davy 指定)
+  const runMonths = _avAdMonths(v.key);
+  const floor = _avDataFloor();
+  let hitFloor = false;
+  const rows = names.map(n => {
+    const ms = runMonths[n] || [];
+    if (ms.length && floor && ms[0] === floor) hitFloor = true;
+    const when = ms.length ? _avFmtMonths(ms) + (ms[0] === floor ? ' †' : '') : '—';
+    return `<div class="av-adrow"><div class="av-adnm">${esc(n)}`
+      + `<div class="av-addate">${esc(when)}</div></div>`
+      + (v.ads[n]
+          ? `<a class="av-open" href="${esc(v.ads[n])}" target="_blank" rel="noopener">Open ad ${linkIcon}</a>`
+          : `<span class="av-nolink">no link</span>`)
+      + `</div>`;
+  }).join('');
+  // 只在真的有广告贴到资料下限时才讲 —— 没贴到就不用拿这句话烦人
+  const floorNote = hitFloor
+    ? `<br>† 资料只回溯到 ${esc(_avFmtMonths([floor]))}（AdVideos 只存最近 8 个月），实际开始时间可能更早。`
+    : '';
   showModal(
     `<div class="modal-header"><div class="modal-title">Ads under this video</div>`
     + `<button class="modal-close" onclick="closeModal()">✕</button></div>`
@@ -14098,7 +14185,9 @@ function _avOpenAds(i) {
     + `<div class="av-lb">${names.length} ad${names.length > 1 ? 's' : ''} using this copy</div>`
     + rows
     + `<div class="av-note">同一段文案可能被拿去跑好几支广告。上面的 Leads / Sales / ROAS 是这几支<b>合起来</b>的表现，不是单支。`
-    + `<br>「no link」= Meta 那边没给贴文连结（多半是已经关掉的旧广告）。</div>`,
+    + `<br>日期 = 那支广告<b>完整的投放期间</b>，不受上面月份筛选影响；中间停过会用 · 断开显示。`
+    + `<br>同名的广告（同一支影片换 campaign 重跑）会算成同一支，期间接起来看。`
+    + `<br>「no link」= Meta 那边没给贴文连结（多半是已经关掉的旧广告）。${floorNote}</div>`,
     { className: 'av-ads-modal' }
   );
 }
@@ -14272,12 +14361,14 @@ function _avSet(k, v) {
   // v9.00: 起月不能晚于迄月 —— 选到就把另一头跟着推, 免得选出空区间还以为没资料
   if (k === 'from' && _avState.to < v) _avState.to = v;
   if (k === 'to' && _avState.from > v) _avState.from = v;
+  _avPrefsSave();   // v9.08
   renderAdsVideo();
 }
 // 点同一栏 = 反向, 点别栏 = 换栏并从大到小 (看排行榜通常先想看最高的)
 function _avSort(key) {
   if (_avState.sort === key) _avState.dir = (_avState.dir === 'asc') ? 'desc' : 'asc';
   else { _avState.sort = key; _avState.dir = 'desc'; }
+  _avPrefsSave();   // v9.08
   renderAdsVideo();
 }
 
@@ -18044,29 +18135,70 @@ async function cloudBackupRefreshList() {
   }
 }
 
-function cloudBackupRestore(backupId, backupName) {
-  // Show modal with checkboxes for each tab
-  const tabs = [
-    { key: 'Leads', label: 'Leads', desc: 'All customer records' },
-    { key: 'AdsSpend', label: 'AdsSpend', desc: 'Ad spend records' },
-    { key: 'Revenue', label: 'Revenue', desc: 'Revenue records' },
-    { key: 'ThirdPartyFees', label: 'ThirdPartyFees', desc: '3rd-party fees' },
-    { key: 'Channels', label: 'Channels', desc: 'Marketing channels' },
-    { key: 'Locations', label: 'Locations', desc: 'Store locations' },
-    { key: 'Pending', label: 'Pending', desc: 'Inbox pending rows' }
-  ];
+// v9.08: 还原清单改成「问备份档要」, 不再写死。
+//   原本写死 7 张, Sheet 早就长到 21 张 —— AINotes (手教 AI 的笔记) 和 PnL_* 六张
+//   (员工/薪水/OT/成本, 全是手填) 根本没列出来给你勾。资料一直在备份档里,
+//   只是没有 UI 路径拿回来。以后加新表自动就在清单里, 不会再漏第二次。
+// 两类都「标注但不隐藏」—— Davy 明确要求一张都不能藏, 只是要讲清楚各自的风险。
+// ① 衍生资料: 下次 sync 真的会重建, 还原它没意义也没伤害。
+const RESTORE_REBUILDABLE = new Set(['AdVideos', 'InvUsage', 'SvcColl', 'InvBalance']);
+// ② v9.10【Codex High #1】发送记录: 这两张**不会**被 sync 重建, 它们是只增不减的「已发过」名单
+//    (MetaSent 防 Meta CAPI 重发, GhlSent 防 GHL appointment/opportunity 重复处理)。
+//    还原旧版本 = 已发名单倒退 → 下一轮 trigger 会把旧成交**再发一次**。
+//    原本我把它们跟衍生资料混在一起标成「下次 sync 会自动重建」—— 那句话是错的, 而且会害人误勾。
+const RESTORE_SENDLOG = new Set(['MetaSent', 'GhlSent']);
+// 后端 < v3.74 没有 backup_tabs → 退回旧的 7 张, 但画面上要讲明白这是退化模式,
+//   不然会以为「清单就这些」而漏掉真正想还原的表。
+const RESTORE_FALLBACK_TABS = ['Leads', 'AdsSpend', 'Revenue', 'ThirdPartyFees', 'Channels', 'Locations', 'Pending'];
 
-  const checkboxes = tabs.map(t => `
-    <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;cursor:pointer;background:#fff;">
-      <input type="checkbox" id="restore_tab_${escapeHTML(t.key)}" value="${escapeHTML(t.key)}" style="margin-top:2px;flex-shrink:0;">
-      <div style="flex:1;">
-        <div style="font-size:14px;font-weight:500;color:var(--black);">${escapeHTML(t.label)}</div>
-        <div style="font-size:12px;color:var(--gray);margin-top:2px;">${escapeHTML(t.desc)}</div>
+async function cloudBackupRestore(backupId, backupName) {
+  showModal(`
+    <div class="modal-header">
+      <div><div class="modal-title">⚠️ Restore from Backup</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:4px;">${escapeHTML(backupName)}</div></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div style="padding:36px 10px;text-align:center;color:var(--gray);font-size:13px;">Reading what's inside this backup…</div>
+  `);
+
+  let tabs = null, degraded = '';
+  try {
+    const r = await fetch(getGsUrl(), {
+      method: 'POST',
+      body: JSON.stringify(gsPostBody({ action: 'backup_tabs', backupId: backupId })),
+      headers: { 'Content-Type': 'text/plain' }
+    });
+    const d = await r.json();
+    if (d.success && d.result && d.result.success && Array.isArray(d.result.tabs)) tabs = d.result.tabs;
+    else degraded = (d.result && d.result.error) || d.error || 'backend returned no tab list';
+  } catch (e) { degraded = e.message || 'network error'; }
+  if (!tabs || !tabs.length) {
+    tabs = RESTORE_FALLBACK_TABS.map(n => ({ name: n, rows: null, inMain: true }));
+    if (!degraded) degraded = 'backend returned an empty tab list';
+  }
+
+  const checkboxes = tabs.map(t => {
+    const rebuildable = RESTORE_REBUILDABLE.has(t.name);
+    const sendlog = RESTORE_SENDLOG.has(t.name);
+    const missing = t.inMain === false;
+    const rows = t.rows != null ? `${t.rows} rows` : '';
+    let meta;
+    if (missing) meta = `<span style="color:var(--red);">Not in your Sheet anymore — restore will skip it</span>`;
+    // 发送记录要用红字警告, 不能跟「可重建」共用同一句灰字 (Codex High #1)
+    else if (sendlog) meta = `<span style="color:var(--red);font-weight:500;">⚠️ Send log — restoring an older copy can make the system re-send past conversions</span>${rows ? ` · ${rows}` : ''}`;
+    else if (rebuildable) meta = `Rebuilt automatically on next sync — usually no need to restore${rows ? ` · ${rows}` : ''}`;
+    else meta = rows;
+    return `
+    <label style="display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid ${sendlog && !missing ? 'rgba(212,21,59,.35)' : 'var(--border)'};border-radius:8px;margin-bottom:8px;cursor:${missing ? 'not-allowed' : 'pointer'};background:${missing ? 'var(--surface)' : (sendlog ? 'rgba(212,21,59,.03)' : '#fff')};opacity:${missing ? '.6' : '1'};">
+      <input type="checkbox" data-restore-tab="${escapeHTML(t.name)}"${missing ? ' disabled' : ''} style="margin-top:2px;flex-shrink:0;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:500;color:${rebuildable ? 'var(--gray)' : 'var(--black)'};">${escapeHTML(t.name)}</div>
+        ${meta ? `<div style="font-size:12px;color:var(--gray);margin-top:2px;">${meta}</div>` : ''}
       </div>
-    </label>
-  `).join('');
+    </label>`;
+  }).join('');
 
-  const html = `
+  showModal(`
     <div class="modal-header">
       <div>
         <div class="modal-title">⚠️ Restore from Backup</div>
@@ -18078,28 +18210,39 @@ function cloudBackupRestore(backupId, backupName) {
       <div style="font-size:13px;color:var(--red);font-weight:600;margin-bottom:4px;">⚠️ This will REPLACE current data</div>
       <div style="font-size:12px;color:var(--gray);">A safety snapshot of the current state will be taken first, so you can roll back if needed.</div>
     </div>
-    <div style="font-size:13px;color:var(--gray);margin-bottom:10px;">Choose what to restore:</div>
+    ${degraded ? `<div style="background:rgba(217,119,6,0.08);border-left:3px solid var(--amber);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+      <div style="font-size:13px;color:#633806;font-weight:600;margin-bottom:4px;">⚠️ Showing the old fixed list only</div>
+      <div style="font-size:12px;color:var(--gray);">Couldn't read this backup's actual tabs (${escapeHTML(degraded)}). Your Apps Script backend may be older than v3.74 — deploy the latest to see every tab.</div>
+    </div>` : ''}
+    <div style="font-size:13px;color:var(--gray);margin-bottom:10px;">Choose what to restore — ${tabs.length} tab(s) in this backup:</div>
     <div style="margin-bottom:14px;">${checkboxes}</div>
     <div style="display:flex;gap:8px;align-items:stretch;">
       <button class="btn btn-gray" style="flex:1;" onclick="closeModal()">Cancel</button>
       <button class="btn" style="flex:2;background:var(--red);color:#fff;border-color:var(--red);" onclick="cloudBackupRestoreConfirm('${escapeHTML(backupId)}','${escapeHTML(backupName)}')">Restore Selected</button>
     </div>
-  `;
-  showModal(html);
+  `);
 }
 
 async function cloudBackupRestoreConfirm(backupId, backupName) {
-  // Collect selected tabs
-  const tabs = ['Leads','AdsSpend','Revenue','ThirdPartyFees','Channels','Locations','Pending'];
-  const selected = tabs.filter(t => {
-    const cb = document.getElementById('restore_tab_' + t);
-    return cb && cb.checked;
-  });
+  // v9.08: 从画面上实际渲染出来的勾选框收集 —— 不再对着一份写死的清单比对,
+  //   否则清单一变这里就默默漏掉 (原本就是这样漏的)。
+  const selected = Array.from(document.querySelectorAll('input[data-restore-tab]'))
+    .filter(cb => cb.checked && !cb.disabled)
+    .map(cb => cb.getAttribute('data-restore-tab'));
   if (selected.length === 0) {
     toast('⚠️ Select at least one tab to restore');
     return;
   }
   if (!await showConfirm(`Restore ${selected.length} tab(s) from "${backupName}"? Current data will be REPLACED.`, { title: 'Confirm Restore', okText: 'Restore', danger: true })) return;
+  // v9.10【Codex High #1】勾到发送记录要再挡一次 —— 这不是「盖掉资料」那种可回滚的错,
+  //   而是会让系统把旧成交**再发一次**给 Meta / GHL, 发出去就收不回来了。
+  const sendlogs = selected.filter(t => RESTORE_SENDLOG.has(t));
+  if (sendlogs.length && !await showConfirm(
+      '你勾了发送记录：' + sendlogs.join('、') + '\n\n'
+    + '这两张不是普通资料 —— 它们记录「哪些成交已经回传过」。还原成旧版本之后，'
+    + '系统会以为那些还没发，下一轮自动任务会把旧成交再发一次给 Meta / GHL。\n\n'
+    + '发出去就收不回来。确定要还原这几张吗？',
+      { title: '⚠️ 可能造成重复发送', okText: '我确定，照样还原', cancelText: '取消', danger: true })) return;
 
   closeModal();
   toast('Restoring… this may take a minute');
@@ -18136,6 +18279,33 @@ async function cloudBackupRestoreConfirm(backupId, backupName) {
           The page will reload to show the restored data.
         </div>
         <button class="btn btn-primary btn-full" onclick="location.reload()">Reload Now</button>
+      `);
+      cloudBackupRefreshList();
+    } else if (d.result && d.result.partial) {
+      // v9.10【Codex High #2】还原跑到一半炸掉 —— 绝对不能只跳一个红 toast 就算了。
+      //   前面几张表已经被覆盖了, 用户现在处於「新旧混在一起」的状态, 必须马上看到
+      //   改到哪里、炸在哪张、以及怎么回滚。
+      const R = d.result;
+      const done = (R.restored || []).map(x => `${x.tab} (${x.rows} rows)`).join(', ') || '(none)';
+      const snap = R.safetySnapshot || {};
+      showModal(`
+        <div class="modal-header">
+          <div class="modal-title">🛑 Restore stopped halfway</div>
+          <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        <div style="background:rgba(220,38,38,0.08);border-left:3px solid var(--red);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+          <div style="font-size:13px;color:var(--red);font-weight:600;margin-bottom:4px;">你的资料现在是新旧混合状态</div>
+          <div style="font-size:12px;color:var(--gray);">下面这几张已经被覆盖了，其余的没动。不要继续操作，先决定要不要回滚。</div>
+        </div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:4px;">已经覆盖：</div>
+        <div style="background:var(--surface);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;">${escapeHTML(done)}</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:4px;">炸在这张：</div>
+        <div style="background:var(--surface);border-radius:8px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--red);">${escapeHTML(R.failedAt || '(unknown)')} — ${escapeHTML(R.error || '')}</div>
+        <div style="background:rgba(186,117,23,0.08);border-radius:8px;padding:10px 12px;margin-bottom:14px;">
+          <div style="font-size:13px;font-weight:600;color:#633806;margin-bottom:4px;">🛟 回滚点</div>
+          <div style="font-size:12px;color:var(--purple-deep);font-weight:500;">${escapeHTML(snap.name || '(safety snapshot not created)')}</div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="closeModal()">知道了</button>
       `);
       cloudBackupRefreshList();
     } else {
@@ -18789,9 +18959,10 @@ async function _gsPullSilentInner(isRetry) {
   }
   try {
     // v7.90: 60s 超时保护 — 之前 pull 挂住就永远没下文
-    // v9.05: 60s → 150s。Leads 加了 adLink/adName 两栏之后资料量多约 4 成,
-    //   刚好推过 60 秒的线, Davy 一直 "Sync failed (timed out)"。
-    //   ⚠️ 这是救急 —— 根治要减少传输量 (adName 其实只需要前 15 字), 等 Codex 报告回来再一起改。
+    // v9.05: 60s → 150s (救急, 防 "Sync failed (timed out)")。
+    // v9.10 修正上一版这里写错的方向: 原注解说「根治要减少传输量 (adName 只需前 15 字)」——
+    //   2026-08-02 实测推翻了: 整包资料只有 150 KB、下载 0.79 秒, 13 秒全部花在後端读表。
+    //   ⚠️ 根治是「减少 pullAll 的 Sheet 往返次数」, 不是减少传输量。别往缩短 adName 的方向修。
     const r = await fetch(gsGetUrl(url, 'pull', _stockVer ? { stockver: _stockVer } : null), { signal: AbortSignal.timeout(150000) }); // v7.71: 版本没变后端就不送库存 3 表
     const text = await r.text();
     if (text === _lastPullText) { if (typeof toast === 'function') toast('✅ Synced — already up to date'); return; }  // ponytail: byte-identical to last clean pull → skip parse/normalize/double-stringify/re-render (most auto-pulls)
