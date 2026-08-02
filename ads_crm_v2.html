@@ -470,25 +470,52 @@ table.data .total-row td:first-child { color: var(--purple-deep); }
 #storeContent .wk-spark i { width:7px; background:var(--purple-subtle); border-radius:1.5px 1.5px 0 0; min-height:2px; }
 #storeContent .wk-spark i.on { background:var(--purple); }
 #storeContent .wk-spark i.hi { background:var(--purple-deep); }
-/* 展开区: 五张週卡片 */
-#storeContent .wk-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:7px; padding:10px 0 0; }
-#storeContent .wk-c { border:1px solid #ececf1; border-radius:10px; padding:9px 11px; background:#fff; text-align:center; }
-#storeContent .wk-c.nil { background:var(--surface); border-style:dashed; border-color:#e6e6ee; }
-#storeContent .wk-c .k { font-size:9.5px; font-weight:600; letter-spacing:.5px; color:var(--silver); text-transform:uppercase; }
-#storeContent .wk-c .v { font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.4px; margin-top:3px; }
-#storeContent .wk-c.nil .v { color:#d3d4dc; font-weight:400; }
-#storeContent .wk-c .d { font-size:10.5px; color:var(--gray); margin-top:3px; font-variant-numeric:tabular-nums; line-height:1.45; }
-#storeContent .wk-c.nil .d { color:#d3d4dc; }
-#storeContent .wk-c .s { font-size:10.5px; font-weight:600; margin-top:2px; color:var(--green-dark); }
-#storeContent .wk-c.nil .s { color:#d3d4dc; font-weight:400; }
-/* 展开区: 平台小表 */
-#storeContent .wk-lab { font-size:9.5px; font-weight:600; letter-spacing:.6px; text-transform:uppercase; color:var(--silver); margin:16px 0 8px; }
+/* 展开区: 週卡片 —— v9.18 加深对比 (Davy: 卡片很浅看不清楚) */
+#storeContent .wk-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; padding:12px 0 0; }
+#storeContent .wk-c { border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:#fff; text-align:center;
+  box-shadow:0 1px 2px rgba(16,24,40,.04); }
+#storeContent .wk-c.nil { background:var(--surface-2); border-style:dashed; border-color:#dcdce6; box-shadow:none; }
+#storeContent .wk-c .k { font-size:10px; font-weight:700; letter-spacing:.6px; color:var(--gray); text-transform:uppercase; }
+#storeContent .wk-c .v { font-size:21px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.5px; margin-top:4px; color:var(--black); line-height:1.1; }
+#storeContent .wk-c.nil .v { color:var(--silver); font-weight:500; }
+#storeContent .wk-c .d { font-size:11px; color:var(--gray); margin-top:4px; font-variant-numeric:tabular-nums; line-height:1.45; }
+#storeContent .wk-c.nil .d { color:var(--silver); }
+#storeContent .wk-c .s { font-size:11.5px; font-weight:700; margin-top:3px; color:var(--green-dark); }
+#storeContent .wk-c.nil .s { color:var(--silver); font-weight:400; }
+/* 展开列本身: 它是 td:first-child, 会吃到主表「sticky 第一栏 + 2px 右框」→ 左边冒出一条贴边的线 */
+#storeContent tr.wk-exp > td { position:static !important; border-right:none !important;
+  background:#fff !important; padding:0 14px 16px !important; border-bottom:1px solid var(--border-light); }
+/* 展开某个月时, 其他月份淡掉 (Davy 要求) —— 焦点只留在打开的那个月 */
+#storeContent table.wk-t.has-open tbody tr.wk-mo:not(.on) > td { opacity:.38; transition:opacity .18s; }
+#storeContent table.wk-t.has-open tbody tr.wk-mo:not(.on):hover > td { opacity:.75; }
+/* 展开区: 平台小表
+   ⚠️ 这张表是**嵌在 table.data 的 td 里面**, 所以主表的 `table.data th/td` 规则会
+   透过後代选择器漏进来 (紫底表头、12px padding、每格右框线、第一栏 sticky + 2px 粗框)。
+   v9.18 逐条把它们清掉 —— 这就是 Davy 看到「表头很奇怪 / 左边有条贴边的线」的原因。 */
 #storeContent table.wk-p { width:100%; border-collapse:collapse; font-size:12px; }
-#storeContent table.wk-p th { font-size:9.5px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--silver); text-align:center; padding:0 8px 8px; }
-#storeContent table.wk-p th:first-child { text-align:left; padding-left:0; }
-#storeContent table.wk-p td { text-align:center; font-variant-numeric:tabular-nums; padding:7px 8px; border-top:1px solid #f4f4f8; }
-#storeContent table.wk-p td:first-child { text-align:left; padding-left:0; }
-#storeContent table.wk-p tfoot td { border-top:1.5px solid #e4e4ec; font-weight:700; padding-top:9px; }
+#storeContent table.wk-p th,
+#storeContent table.wk-p td { border-right:none !important; position:static !important; }
+#storeContent table.wk-p th {
+  font-size:9.5px; font-weight:600; letter-spacing:.5px; text-transform:uppercase;
+  color:var(--gray); text-align:center; padding:7px 10px;
+  background:var(--surface-2) !important;      /* 盖掉主表的紫底 */
+  border-bottom:1px solid #e6e6ee !important; border-top:none !important;
+}
+#storeContent table.wk-p th:first-child { text-align:left; }
+#storeContent table.wk-p td { text-align:center; font-variant-numeric:tabular-nums;
+  padding:8px 10px; border-bottom:1px solid #f4f4f8 !important; border-top:none !important; background:transparent !important; }
+#storeContent table.wk-p td:first-child { text-align:left; }
+#storeContent table.wk-p tbody tr:last-child td { border-bottom:none !important; }
+#storeContent table.wk-p tfoot td { border-top:1.5px solid #e4e4ec !important; font-weight:700; }
+/* 整块包一个框, 视觉上跟主表分开 —— 不然它看起来像主表的一部分 */
+#storeContent .wk-pwrap { border:1px solid #e6e6ee; border-radius:10px; overflow:hidden; margin-top:12px; }
+/* v9.18: 表头固定 —— 卷下去还看得到栏名。
+   跟 Ads Video 那页同一套做法 (自己当卷动容器 + thead sticky), 不靠页面卷动,
+   这样不管外面有没有别的固定列都不会打架。 */
+#storeContent .wk-wrap { max-height:calc(100vh - 230px); min-height:280px; overflow:auto; }
+#storeContent table.wk-t thead th { position:sticky !important; top:0; z-index:6;
+  background:var(--purple-bg) !important; }
+#storeContent table.wk-t thead th:first-child { z-index:7; }
 #storeContent .wk-pn { display:inline-flex; align-items:center; gap:7px; font-weight:600; }
 #storeContent .wk-dot { width:6px; height:6px; border-radius:50%; display:inline-block; flex-shrink:0; }
 #storeContent .wk-mix { display:inline-flex; align-items:center; gap:8px; }
@@ -3612,7 +3639,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.17</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.18</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3663,7 +3690,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.17</div>
+      <div class="nav-brand-version">v9.18</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -10887,6 +10914,10 @@ function toggleWeekMonth(m) {
   const willOpen = exp.style.display === 'none';
   exp.style.display = willOpen ? '' : 'none';
   if (mo) mo.classList.toggle('on', willOpen);
+  // v9.18: 有月份展开时给表格挂 .has-open → CSS 把没展开的月份淡掉 (Davy 要求「其他月份虚影」)。
+  //   状态由 DOM 实际情形算, 不自己记 —— 免得同时开两个月时算错。
+  const tbl = document.querySelector('table.wk-t');
+  if (tbl) tbl.classList.toggle('has-open', !!tbl.querySelector('tr.wk-mo.on'));
 }
 
 function switchStoreTab(key) {
@@ -11569,6 +11600,16 @@ function renderStore() {
       //   旧版每週各一行, 但多数月份只有前几週有资料 (8 月 = W31 有 41 笔、W32~35 全空),
       //   展开等於四行点点。
       const wPlats = activePlatforms();
+      // v9.18: 圆点颜色。Davy 回报 Organic 和 Instagram 都是紫的 —— 那是 fallback 色,
+      //   代表它们的 color 在 Platforms 表里是空的 / 或存成 CSS 变数 (channel 那边踩过同样的坑, 见 v8.86)。
+      //   ① 先认 #RGB / #RRGGBB ② 认不出来就按内建预设色 ③ 再不行才灰色 —— 刻意不用紫色 fallback,
+      //   否则会跟真的紫色平台混淆, 看起来像「两个平台同一个颜色」。
+      const WK_FALLBACK = { meta:'#1877F2', google:'#CA8A04', organic:'#10B981', followup:'#F59E0B', instagram:'#C13584' };
+      const wkColor = (p) => {
+        const c = String(p && p.color || '').trim();
+        if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c)) return c;
+        return WK_FALLBACK[p && p.id] || '#9497a9';
+      };
       const tc = v => v === 0 ? '<span class="wk-nil">·</span>' : v.toLocaleString('en-MY');
       const rm = v => v > 0 ? fmt.money(v) : '<span class="wk-nil">·</span>';
       const pctc = (a, b) => b > 0 ? `<span class="${(a / b) >= 0.5 ? 'wk-up' : 'wk-dn'}">${Math.round(a / b * 100)}%</span>` : '<span class="wk-nil">·</span>';
@@ -11670,7 +11711,7 @@ function renderStore() {
           const b = mPlat[p.id];
           if (!b.leads && !b.appt && !b.show && !b.spend) return '';
           const share = mTotal > 0 ? Math.round(b.leads / mTotal * 100) : 0;
-          const col = (p.color && /^#[0-9a-f]{6}$/i.test(p.color)) ? p.color : 'var(--purple)';
+          const col = wkColor(p);
           return `<tr><td><span class="wk-pn"><i class="wk-dot" style="background:${col}"></i>${escapeHTML(p.name)}</span></td>`
             + (showLeadCols ? `<td>${tc(b.leads)}</td><td><span class="wk-mix"><span class="wk-bar"><i style="background:${col};width:${share}%"></i></span>${share}%</span></td>` : '')
             + `<td>${tc(b.appt)}</td>`
@@ -11688,8 +11729,9 @@ function renderStore() {
         rows += `<tr class="wk-exp" data-wm="${m}"><td colspan="${colSpan}" style="padding:0 0 14px;">`
           + `<div class="wk-cards">${cards}</div>`
           + (platRows
-              ? `<div class="wk-lab">By platform · ${fmt.monthShort(m)}</div>`
-                + `<table class="wk-p"><thead><tr><th>Platform</th>`
+              // v9.18: 拿掉「By platform · Jul」标题 (Davy: 不需要) —— 月份在上面那行已经讲了。
+              //   改成用一个框把平台表包起来, 视觉上跟主表分开就够, 不用再写一次标题。
+              ? `<div class="wk-pwrap"><table class="wk-p"><thead><tr><th>Platform</th>`
                 + (showLeadCols ? `<th>Leads</th><th>% of Leads</th>` : '')
                 + `<th>Appt</th>` + (showLeadCols ? `<th>Appt %</th>` : '')
                 + `<th>Show</th><th>Sales</th></tr></thead>`
@@ -11697,7 +11739,7 @@ function renderStore() {
                 + `<tfoot><tr><td>All platforms</td>`
                 + (showLeadCols ? `<td>${tc(mTotal)}</td><td>100%</td>` : '')
                 + `<td>${tc(mAppt)}</td>` + (showLeadCols ? `<td>${pctc(mAppt, mTotal)}</td>` : '')
-                + `<td>${tc(mShow)}</td><td>${rm(mSpend)}</td></tr></tfoot></table>`
+                + `<td>${tc(mShow)}</td><td>${rm(mSpend)}</td></tr></tfoot></table></div>`
               : `<div class="wk-note">这个月没有可归类的平台资料。</div>`)
           + `</td></tr>`;
 
@@ -11718,7 +11760,7 @@ function renderStore() {
       }
 
       html += `<div class="section-title"><h3>${wTitle}</h3></div>
-        <div class="table-wrap"><table class="data wk-t">
+        <div class="table-wrap wk-wrap"><table class="data wk-t">
           <thead><tr><th>Month</th><th>Weekly</th>${showLeadCols ? '<th>Leads</th>' : ''}<th>Appt</th>${showLeadCols ? '<th>Appt %</th>' : ''}<th>Show</th><th>Show %</th><th>Avg / Show</th><th>Sales</th><th>MoM</th></tr></thead>
           <tbody>${rows || `<tr><td colspan="${colSpan}" style="text-align:center;padding:20px;color:var(--gray);">No data</td></tr>`}</tbody>
         </table></div>
@@ -11742,6 +11784,8 @@ function renderStore() {
       // v9.16: 当月预设是展开的, 但它没被 toggle 过 → 补上 .on, 否则箭头和底色对不上状态
       const curMo = document.querySelector(`.wk-mo[data-wm="${curMonth}"]`);
       if (curMo && document.querySelector(`.wk-exp[data-wm="${curMonth}"]`)) curMo.classList.add('on');
+      const wkTbl = document.querySelector('table.wk-t');   // v9.18: 初始状态也要挂 .has-open
+      if (wkTbl) wkTbl.classList.toggle('has-open', !!wkTbl.querySelector('tr.wk-mo.on'));
     }
   }
   } finally {
