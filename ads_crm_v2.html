@@ -470,40 +470,35 @@ table.data .total-row td:first-child { color: var(--purple-deep); }
 #storeContent .wk-spark i { width:7px; background:var(--purple-subtle); border-radius:1.5px 1.5px 0 0; min-height:2px; }
 #storeContent .wk-spark i.on { background:var(--purple); }
 #storeContent .wk-spark i.hi { background:var(--purple-deep); }
-/* ══ v9.20: 週卡片 — 浅色雾面玻璃 (Davy 选的 01) ═══════════════════════
-   【玻璃的原理】backdrop-filter 是「把背後的东西糊掉」。CRM 是纯白底,
-   背後一片白 → 糊了等於没变。所以 .wk-stage 背後铺一层很淡的光晕,
-   卡片才真的有东西可以糊。少了 stage 这层, 玻璃效果就只是白上加白。
-   【填色】高度 = 那一週占全月营业额的比例。用绿色 (= 钱, 跟金额同色系),
-   Davy 明确说不要紫 —— 紫是全站的品牌／导览色, 分工要清楚。 */
-#storeContent .wk-stage { border-radius:12px; padding:13px; margin-top:12px;
-  background:
-    radial-gradient(680px 200px at 12% 0%, rgba(2,107,63,.10), transparent 62%),
-    radial-gradient(520px 200px at 88% 100%, rgba(113,50,245,.09), transparent 60%),
-    linear-gradient(160deg,#f7f8fa,#eef0f4); }
-#storeContent .wk-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:9px; }
-#storeContent .wk-c { position:relative; overflow:hidden; border-radius:12px; padding:12px 13px; text-align:center;
-  background:linear-gradient(160deg, rgba(255,255,255,.86), rgba(255,255,255,.58));
-  border:1px solid rgba(255,255,255,.9);
-  backdrop-filter:blur(16px) saturate(1.4); -webkit-backdrop-filter:blur(16px) saturate(1.4);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.95), 0 4px 16px rgba(16,24,40,.07); }
-#storeContent .wk-c.nil { background:linear-gradient(160deg, rgba(255,255,255,.5), rgba(255,255,255,.28));
-  border-color:rgba(255,255,255,.6); box-shadow:inset 0 1px 0 rgba(255,255,255,.7); }
-#storeContent .wk-fill { position:absolute; left:0; right:0; bottom:0; z-index:1; pointer-events:none;
-  background:linear-gradient(180deg,rgba(2,107,63,.14),rgba(2,107,63,.26)); }
-#storeContent .wk-in { position:relative; z-index:2; }
-#storeContent .wk-best { position:absolute; top:8px; right:9px; z-index:3; font-size:8.5px; font-weight:700;
-  letter-spacing:.5px; padding:2px 7px; border-radius:99px;
-  background:rgba(255,255,255,.9); color:#026b3f; border:1px solid rgba(2,107,63,.3); }
-#storeContent .wk-c .k { font-size:10px; font-weight:700; letter-spacing:.7px; color:var(--gray); text-transform:uppercase; }
-#storeContent .wk-c .v { font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.6px;
-  margin:5px 0 10px; color:var(--black); line-height:1.15; }
-#storeContent .wk-c.nil .v { color:var(--silver); font-weight:500; }
+/* ══ v9.26: 週卡片 — 方向 C「紫色一致」(Davy 定案) ══════════════════════
+   【为什么最後是这样】v9.20 曾经做成「浅色雾面玻璃 + 绿色装水」, Davy 看了说
+   「不好看, 配不上」。原因不是做得不够精, 是**引进了这个 app 本来没有的语言** ——
+   玻璃质感和绿色。这个 CRM 从头到尾就是「白底 + 紫 + 细线 + 大写小标签」,
+   中间突然一块磨砂绿卡片, 再好看也像贴上去的。
+   【所以】只用既有的紫: 有营业额的週左边一道紫轨 + 底部极淡紫 (跟月份行的紫呼应);
+   没营业额的维持素白; 完全没资料的走 .nil 灰底虚线。
+   ⚠️ 以後要改这块之前先想: 新加的颜色/材质, 这个 app 别的地方有没有用过? */
+#storeContent .wk-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  gap:8px; padding-top:12px; }
+#storeContent .wk-c { position:relative; overflow:hidden; border-radius:8px; padding:10px 11px; text-align:center;
+  background:#fff; border:1px solid var(--border); }
+/* 有营业额的週: 左边一道紫轨 + 底部极淡紫 —— 跟月份行的紫呼应 */
+#storeContent .wk-c.on { border-color:var(--purple-subtle);
+  background:linear-gradient(180deg,#fff,var(--purple-bg)); }
+#storeContent .wk-c.on::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:var(--purple); }
+#storeContent .wk-c.nil { background:var(--surface); border-color:var(--border-light); }
+#storeContent .wk-in { position:relative; }
+#storeContent .wk-c .k { font-size:9.5px; font-weight:700; letter-spacing:.7px; color:var(--gray); text-transform:uppercase; }
+#storeContent .wk-c .v { font-size:17px; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-.4px;
+  margin:4px 0 9px; color:var(--black); line-height:1.2; }
+#storeContent .wk-c.on .v { color:var(--purple-deep); }
+#storeContent .wk-c.nil .v { color:var(--silver); font-weight:500; font-size:13px; }
 /* ⚠️ v9.22 修「Show 那栏被切掉」: 原本 grid-auto-columns:1fr —— 1fr 的下限是 min-content,
    所以格子不肯缩到比内容还窄, 三格加起来撑爆卡片, 第三格被切掉。
    minmax(0,1fr) 才允许缩到 0 以下限, 是 grid 溢出的标准解。子元素也要 min-width:0。 */
 #storeContent .wk-c .wk-tri { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:2px;
-  border-top:1px solid rgba(16,17,20,.08); padding-top:8px; }
+  border-top:1px solid var(--border-light); padding-top:7px; }
 #storeContent .wk-c .wk-tri > div { min-width:0; overflow:hidden; }
 /* ⚠️ v9.25【Davy 回报「卡片有问题」的真凶】原本这三个 class 叫 .tri / .tv / .tk ——
    而这个档案第 3142 行早就有一个 .tk (某个树状清单用的):
@@ -519,16 +514,12 @@ table.data .total-row td:first-child { color: var(--purple-deep); }
 #storeContent .wk-c .wk-tk::before, #storeContent .wk-c .wk-tk::after { content:none !important; }
 #storeContent .wk-c .wk-tv, #storeContent .wk-c .wk-tk {
   display:block !important; padding:0 !important; margin:0 !important; position:static !important; }
-#storeContent .wk-c .wk-tv { font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.2; color:var(--black); }
+#storeContent .wk-c .wk-tv { font-size:13px; font-weight:600; font-variant-numeric:tabular-nums; line-height:1.2; color:var(--black); }
 /* Davy: Lead/Appt/Show 那几个字太浅 → 改成黑色 (原本是 --silver) */
-#storeContent .wk-c .wk-tk { font-size:8.5px; font-weight:700; letter-spacing:.5px; text-transform:uppercase;
-  color:var(--black); margin-top:2px; }
+#storeContent .wk-c .wk-tk { font-size:8px; font-weight:700; letter-spacing:.4px; text-transform:uppercase;
+  color:var(--black); margin-top:1px; }
 #storeContent .wk-c.nil .wk-tv { color:var(--silver); font-weight:500; }
 #storeContent .wk-c.nil .wk-tk { color:var(--gray); }
-/* 系统开了「减少透明」→ 退回实心, 否则对比度不够看不清字 */
-@media (prefers-reduced-transparency: reduce) {
-  #storeContent .wk-c { backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(255,255,255,.97); }
-}
 /* 展开列本身: 它是 td:first-child, 会吃到主表「sticky 第一栏 + 2px 右框」→ 左边冒出一条贴边的线 */
 #storeContent tr.wk-exp > td { position:static !important; border-right:none !important;
   background:#fff !important; padding:0 14px 16px !important; border-bottom:1px solid var(--border-light); }
@@ -3696,7 +3687,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.25</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.26</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3747,7 +3738,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.25</div>
+      <div class="nav-brand-version">v9.26</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -11814,16 +11805,14 @@ function renderStore() {
         // ── 展开区: 整个月只占一列, 不管几週
         // v9.20: 卡片改成「营业额当主角, 底下一行 Lead / Appt / Show」(Davy 指定)。
         //   金额刻意四舍五入到整数 —— 週层级看趋势不需要到分, 而且短一截才排得下。
+        // v9.26 (Davy 选方向 C): 拿掉玻璃质感和绿色装水 —— 那两样是这个 app 本来没有的语言,
+        //   放进来再好看也像贴上去的。改成只用既有的紫: 有营业额的週左边一道紫轨 + 底部极淡紫,
+        //   跟月份行的紫呼应; 没营业额的维持素白。
         const wkMoney = v => 'RM ' + Math.round(v || 0).toLocaleString('en-MY');
-        const peakSpend = Math.max.apply(null, sorted.map(w => w.spend).concat([0]));
         const cards = sorted.map(w => {
           const dead = w.total === 0 && w.appt === 0;
-          // 填色高度 = 这一週占全月营业额的比例; 有钱但比例极小的至少给 6% 才看得见
-          const pct = mSpend > 0 && w.spend > 0 ? Math.max(6, Math.round(w.spend / mSpend * 100)) : 0;
           const cells = (showLeadCols ? [[w.total, 'Lead']] : []).concat([[w.appt, 'Appt'], [w.show, 'Show']]);
-          return `<div class="wk-c${dead ? ' nil' : ''}">`
-            + (pct > 0 ? `<div class="wk-fill" style="height:${pct}%"></div>` : '')
-            + (w.spend > 0 && w.spend === peakSpend && sorted.length > 1 ? `<span class="wk-best">BEST</span>` : '')
+          return `<div class="wk-c${dead ? ' nil' : (w.spend > 0 ? ' on' : '')}">`
             + `<div class="wk-in"><div class="k">W${w.week}</div>`
             + `<div class="v">${w.spend > 0 ? wkMoney(w.spend) : (_future(w.week) ? 'upcoming' : 'no sales')}</div>`
             + `<div class="wk-tri">`
@@ -11874,7 +11863,7 @@ function renderStore() {
             : '');
 
         rows += `<tr class="wk-exp" data-wm="${m}"><td colspan="${colSpan}" style="padding:0 0 14px;">`
-          + `<div class="wk-stage"><div class="wk-cards">${cards}</div></div>`
+          + `<div class="wk-cards">${cards}</div>`
           + (platRows
               // v9.18: 拿掉「By platform · Jul」标题 (Davy: 不需要) —— 月份在上面那行已经讲了。
               //   改成用一个框把平台表包起来, 视觉上跟主表分开就够, 不用再写一次标题。
