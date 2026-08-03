@@ -3721,7 +3721,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.37</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.38</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +3772,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.37</div>
+      <div class="nav-brand-version">v9.38</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3801,7 +3801,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
 
 <main class="main">
   <!-- CONTACT PAGE (merged Lead + List) -->
-  <section class="page" id="page-contact">
+  <section class="page active" id="page-contact">
     <!-- v4.23: Unified header now only contains page title + "+ New Lead" button (spans full width).
          Filter/search/status-tab rows moved INSIDE .contact-list-panel to occupy left half only.
          v4.30: On mobile, JS moves .contact-filters-inline INTO #contactFiltersMobileSlot below
@@ -4447,7 +4447,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
   <div id="avRoot"></div>
 </section>
 
-<section class="page active" id="page-settings">
+<section class="page" id="page-settings">
     <div class="unified-header unified-header-single">
       <h1 class="page-title" style="margin:0;">Settings</h1>
     </div>
@@ -4797,7 +4797,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
       <input type="text" id="gh_repo">
       <input type="text" id="gh_branch" value="main">
       <input type="hidden" id="gh_path" value="data.json">
-      <div id="html_deploy_log"><span style="color:var(--gray);">📖 Reading current HTML...</span></div>
+      <div id="html_deploy_log"><span style="color:var(--gray);">📖 Reading source…</span></div>
       <div id="gh_log" style="display:none;"></div>
       <input type="text" id="gs_url">
       <input type="text" id="gs_token">
@@ -18200,9 +18200,32 @@ async function pushHTMLToGitHub() {
   logEl.innerHTML = '<span style="color:var(--gray);">📖 Reading current HTML...</span>';
   
   try {
-    // Get the full HTML of the current page
-    const htmlContent = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-    
+    // ══ v9.38【根因修复】部署内容不能用 document.documentElement.outerHTML ═══════
+    // 【Davy 2026-08-03 的症状】手机拉下刷新, 画面「先出现 Settings 再跳到 Contact」。
+    // 【根因】旧码存的是「浏览器当下的 DOM」, 不是原始档案 —— 所以按 Push 时停留在哪一页,
+    //   那个 `class="page active"` 就被烙进哪一个 <section>。实测线上档案 active 在 page-settings,
+    //   载入时浏览器照 HTML 先画 Settings, 直到 init() 跑到 nav('contact') 才跳回来。
+    //   连带还把 JS 渲染的东西烙进去 (实测多 52 个 <option>、82 个 inline style、共 +23 KB)。
+    // 【修法】优先 fetch 目前这个档案的**原始文字**(没有任何 runtime 状态);
+    //   file:// 开档时 fetch 会被 CORS 挡 → 退回序列化 DOM, 但**先在複本上把 active 正规化**
+    //   (用複本才不会让画面闪一下)。
+    logEl.innerHTML = '<span style="color:var(--gray);">📖 Reading source…</span>';
+    let htmlContent = '';
+    try {
+      const srcRes = await fetch(location.href, { cache: 'no-store' });
+      if (!srcRes.ok) throw new Error('HTTP ' + srcRes.status);
+      const srcText = await srcRes.text();
+      if (!/<html/i.test(srcText) || srcText.length < 100000) throw new Error('source looks wrong');
+      htmlContent = srcText;
+    } catch (srcErr) {
+      console.warn('[deploy] 抓不到原始档案, 退回正规化 DOM:', srcErr.message);
+      const clone = document.documentElement.cloneNode(true);
+      clone.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      const homeEl = clone.querySelector('#page-contact');
+      if (homeEl) homeEl.classList.add('active');
+      htmlContent = '<!DOCTYPE html>\n' + clone.outerHTML;
+    }
+
     logEl.innerHTML = '<span style="color:var(--gray);">⬆️ Pushing to GitHub...</span>';
     
     const htmlPath = 'ads_crm_v2.html';
