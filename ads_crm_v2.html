@@ -3721,7 +3721,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.36</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.37</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +3772,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.36</div>
+      <div class="nav-brand-version">v9.37</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -9672,15 +9672,25 @@ function renderListAsTableHTML(slice) {
 // 结果记下来 (成功/失败/进行中 + 时间 + 失败原因), 让画面上一直看得到。
 //   刻意存 localStorage: 关掉分页再打开也还在, 才能回答「上次是什么时候」。
 const SYNC_STATE_KEY = 'ads_crm_last_sync';
+const SYNC_SUCCESS_KEY = 'ads_crm_last_sync_success';
 let _syncBusy = false;
-// v9.36: 多了 'retry' 状态 —— 存 retrying:true, 画面显示进度而不是红字 failed。
+let _syncBusyMsg = '';
 function _setSyncState(st, msg) {
   _syncBusy = (st === 'busy');
+  _syncBusyMsg = _syncBusy ? (msg || '') : '';
   if (st !== 'busy') {
-    // v9.36: retrying 旗标让状态条知道「还在自动处理中」, 显示 retry 2/5 而不是红色 failed。
-    try { localStorage.setItem(SYNC_STATE_KEY, JSON.stringify({
-      ts: Date.now(), ok: st === 'ok', msg: msg || '', retrying: st === 'retry'
-    })); } catch (e) {}
+    const rec = { ts: Date.now(), ok: st === 'ok', msg: msg || '', retrying: st === 'retry' };
+    try {
+      // 首次从 v9.36 升级时，旧 key 可能仍保存着最后一次成功；先迁移，再写入本轮失败／retry。
+      if (!localStorage.getItem(SYNC_SUCCESS_KEY)) {
+        let prev = null;
+        try { prev = JSON.parse(localStorage.getItem(SYNC_STATE_KEY) || 'null'); } catch (e) {}
+        if (prev && prev.ok && prev.ts) localStorage.setItem(SYNC_SUCCESS_KEY, JSON.stringify(prev));
+      }
+      localStorage.setItem(SYNC_STATE_KEY, JSON.stringify(rec));
+      // v9.37: 失败 / retry 只能记录「本轮结果」, 不得擦掉上次成功时间。
+      if (rec.ok) localStorage.setItem(SYNC_SUCCESS_KEY, JSON.stringify(rec));
+    } catch (e) {}
   }
   _renderSyncStatus();
 }
@@ -9699,22 +9709,31 @@ function _renderSyncStatus() {
   const el = document.getElementById('syncStatusBar');
   if (!el) return;                       // 不在有这块的页面就算了
   const L = '<span class="ss-l">Sync</span>';
-  if (_syncBusy) { el.innerHTML = L + `<b class="ss-t busy">syncing…</b>`; return; }
   let d = null;
+  let lastOk = null;
   try { d = JSON.parse(localStorage.getItem(SYNC_STATE_KEY) || 'null'); } catch (e) {}
+  try { lastOk = JSON.parse(localStorage.getItem(SYNC_SUCCESS_KEY) || 'null'); } catch (e) {}
+  // 旧版只有一个 key: 若最后记录刚好是成功, 直接拿来当迁移后的 last success。
+  if ((!lastOk || !lastOk.ts) && d && d.ok && d.ts) lastOk = d;
+  const lastOkText = lastOk && lastOk.ts
+    ? `<span class="ss-t idle">· data ${_syncAgoText(lastOk.ts)}</span>` : '';
+  if (_syncBusy) {
+    const p = String(_syncBusyMsg || '').match(/retry (\d+\/\d+)/);
+    el.innerHTML = L + `<b class="ss-t busy">${p ? 'retry ' + p[1] : 'syncing…'}</b>${lastOkText}`;
+    return;
+  }
   if (!d || !d.ts) { el.innerHTML = L + `<b class="ss-t idle">never</b>`; return; }
   if (d.ok) { el.innerHTML = L + `<b class="ss-t">${_syncAgoText(d.ts)}</b>`; return; }
   // v9.34【Codex #8 P2-1】只写 failed 的话 Davy 看不出是 404、timeout 还是 queue 被挡 ——
   //   而这三种的处理方式完全不同 (等一下 / 重试 / 去看未同步资料)。原因早就存在 msg 里了, 拿出来用。
   const _m = String(d.msg || '');
-  // v9.36: 还在重试中 → 显示 retry 进度而不是红色 failed。Davy 才知道「系统在处理」不是「死了」。
   const _retry = _m.match(/retry (\d+\/\d+)/);
   if (d.retrying && _retry) {
-    el.innerHTML = L + `<b class="ss-t busy">retry ${_retry[1]}</b>`;
+    el.innerHTML = L + `<b class="ss-t busy">retry ${_retry[1]}</b>${lastOkText}`;
     return;
   }
   const _short = /404/.test(_m) ? '404' : /timed out/.test(_m) ? 'timeout' : /blocked/.test(_m) ? 'blocked' : /non-JSON/.test(_m) ? 'bad reply' : 'failed';
-  el.innerHTML = L + `<b class="ss-t bad">${_short}</b><span class="ss-t idle">· ${_syncAgoText(d.ts)}</span>`;
+  el.innerHTML = L + `<b class="ss-t bad">${_short}</b><span class="ss-t idle">· ${_syncAgoText(d.ts)}</span>${lastOkText}`;
 }
 // 相对时间会过期, 每 30 秒重画一次 (只改字, 不打网路)
 setInterval(_renderSyncStatus, 30000);
@@ -19523,24 +19542,26 @@ let _syncGen = 0;            // v9.34: 世代号 — 旧 retry timer 到点时�
 let _pullRetryQueued = false; // v7.91 (codex #4): 防重复排 retry
 let _pullRetryTimer = null;   // v9.34【Codex #8 P1-2】要存 timer id 才取消得掉
 function _syncBusyNow() { return _syncPromise !== null; }
-// ══ v9.36【实测驱动】背景重试到成功 ══════════════════════════════════════════
-// 【为什么改】Davy: 「版本 8 之前几乎没有失败，可能时间比较久一点」「再修不好我就把你卸载了」。
-// 【实测 2026-08-03 晚, 从另一台机器连打 5 次同一个 pull】
-//     79.7s→404 / 17.8s→200 / 26.0s→404 / 43.4s→200 / 61.5s→200
-//   → 失败率约 40%, 而且**跟耗时完全无关** (26 秒失败、61 秒成功)。
-//   → 所以「後端慢 → Google 取件码过期 → 404」这个推论**是错的, 已撤回**。
-//     这是 Google Web App 交付层的随机故障, 我们改不掉它发生, 只能让它自动恢复。
-// 【数学】单次失败 40%: 重试 1 次 → 最终失败 16% (Davy 撞到的就是这个, 然後「就不动了」);
-//   重试 4 次 → 1%。这就是「经常失败」变「几乎不失败」的差别。
-// ⚠️ 这条**有意违反 Codex REVIEW #7「最多一次退避 retry」**。它当时的理由是
-//   「别给已经在挣扎/限流的 Google 加压」—— 但实测显示不是限流 (连续请求交替成功失败),
-//   是随机故障。对随机故障, 重试是正确且唯一的解。已在 handoff 说明并请 Codex 复核这个判断。
-// 【体验】重试全在背景跑, 画面一直显示快取资料, Davy 不用干等也不用手动重刷;
-//   状态条显示 retry 2/5 让他知道系统在处理, 不是死了。
-const SYNC_MAX_ATTEMPTS = 5;                       // 1 次 + 最多 4 次重试
-const SYNC_BACKOFF_MS = [4000, 8000, 16000, 30000]; // 第 2/3/4/5 发之前各等多久
-function gsPullSilent(attempt) {
+// ══ v9.37【交付包变小 + 有界重试】══════════════════════════════════════════
+// v9.36 的 5 × 75 秒会把一次 Google 404 放大成 3–7 分钟。现在只对临时交付故障重试，
+// 最多 3 发且整轮不超过 180 秒；权限、资料保护、後端业务错误不会盲重试。
+const SYNC_MAX_ATTEMPTS = 3;
+const SYNC_BACKOFF_MS = [5000, 15000];
+const SYNC_TOTAL_BUDGET_MS = 180000;
+
+async function _decodePullPayload(text) {
+  if (!String(text).startsWith('GZ1:')) return JSON.parse(text);
+  if (typeof DecompressionStream !== 'function') throw new Error('gzip unsupported');
+  const bin = atob(text.slice(4));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return JSON.parse(await new Response(stream).text());
+}
+
+function gsPullSilent(attempt, roundStartedAt) {
   attempt = attempt || 0;
+  roundStartedAt = roundStartedAt || Date.now();
   // v9.34【Codex #8 P1-1 修正】上一版在 Inbox 阶段前就把 _syncPromise 清空 ——
   //   Inbox POST 最多 45 秒期间任何新呼叫都会开第二条 full GET (Codex 动态测试: innerCalls 1→2)。
   //   现在整轮 (pull + inbox) 都握着同一个 promise, 直到全部结束才放。
@@ -19556,7 +19577,7 @@ function gsPullSilent(attempt) {
       // v9.34【Codex #8 P1-1 反向互斥】Inbox POST 先在跑的话, 等它结束再开主 GET —— 两个方向都不重叠
       if (_pendingPromise) { try { await _pendingPromise; } catch (e) {} }
       _syncPhase = 'pull';
-      try { ok = (await _gsPullSilentInner(attempt, rid, gen)) === true; }
+      try { ok = (await _gsPullSilentInner(attempt, rid, gen, roundStartedAt)) === true; }
       catch (e) { console.warn('[sync ' + rid + '] inner threw:', e); }
       // v9.35【Davy 拍板 + Codex #9】一次 Sync 拿完 —— Inbox 资料现在跟主资料同一个回应来的
       //   (後端 v3.83 的 out.Pending), 所以这里**不再打第二条请求**, 只是套用同一份 snapshot。
@@ -19577,21 +19598,21 @@ function gsPullSilent(attempt) {
   })();
   return _syncPromise;
 }
-async function _gsPullSilentInner(attempt, rid, gen) {
+async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
   const isRetry = attempt > 0;
   const url = getGsUrl();
   if (!url) return false; // No URL configured — skip silently
   // v7.90: 同步开口讲话 — 开始/失败都有 toast, 失败自动重试 1 次.
   //   之前全静默: pull 在跑或挂掉, 用户都以为"刷新没反应" (2026-07-04 bug 排查结论).
   if (typeof toast === 'function') toast(isRetry ? ('🔄 Retrying sync (' + (attempt + 1) + '/' + SYNC_MAX_ATTEMPTS + ')…') : '🔄 Syncing from Sheet…');
-  _setSyncState('busy', isRetry ? ('retry ' + (attempt + 1) + '/' + SYNC_MAX_ATTEMPTS) : '');   // v9.36: 状态条显示进度
-  const failSync = (reason) => {
+  _setSyncState('busy', isRetry ? ('retry ' + (attempt + 1) + '/' + SYNC_MAX_ATTEMPTS) : '');
+  const failSync = (reason, retryable) => {
     console.warn('[sync ' + (rid || '?') + '] failed:', reason);
-    // v9.36: 状态由下面的分支决定 —— 还有重试机会就记 'retry' (不吓人), 用完才记 'fail'。
     const nextAttempt = attempt + 1;
-    if (nextAttempt < SYNC_MAX_ATTEMPTS) {
-      // v9.36: 背景重试, 指数退避。画面继续显示快取资料 —— 用户不用干等也不用手动重刷。
-      const delay = SYNC_BACKOFF_MS[Math.min(attempt, SYNC_BACKOFF_MS.length - 1)];
+    const delay = SYNC_BACKOFF_MS[Math.min(attempt, SYNC_BACKOFF_MS.length - 1)] || 0;
+    const deadline = roundStartedAt + SYNC_TOTAL_BUDGET_MS;
+    const withinBudget = Date.now() + delay + 5000 < deadline;
+    if (retryable && nextAttempt < SYNC_MAX_ATTEMPTS && withinBudget) {
       _setSyncState('retry', reason + ' · retry ' + (nextAttempt + 1) + '/' + SYNC_MAX_ATTEMPTS);
       if (typeof toast === 'function') toast('⚠️ ' + reason + ' — retrying (' + (nextAttempt + 1) + '/' + SYNC_MAX_ATTEMPTS + ') in ' + Math.round(delay / 1000) + 's…');
       // v9.34【Codex #8 P1-2】timer 要存 id (新一轮开始时取消), 到点还要验世代 ——
@@ -19601,13 +19622,13 @@ async function _gsPullSilentInner(attempt, rid, gen) {
         _pullRetryTimer = setTimeout(() => {
           _pullRetryTimer = null; _pullRetryQueued = false;
           if (gen !== _syncGen) { console.info('[sync] stale retry skipped (gen ' + gen + ' vs ' + _syncGen + ')'); return; }
-          gsPullSilent(nextAttempt);
+          gsPullSilent(nextAttempt, roundStartedAt);
         }, delay);
       }
     } else {
-      // 5 发全挂 (实测机率约 1%) —— 这时才真的算失败, 并明确讲下一步
-      _setSyncState('fail', reason + ' · gave up after ' + SYNC_MAX_ATTEMPTS);
-      if (typeof toast === 'function') toast('⚠️ Sync failed ' + SYNC_MAX_ATTEMPTS + '× (' + reason + ') — tap Sync to retry');
+      const suffix = retryable ? (' · stopped after ' + (attempt + 1) + ' attempt(s)') : '';
+      _setSyncState('fail', reason + suffix);
+      if (typeof toast === 'function') toast('⚠️ Sync failed (' + reason + ') — showing your last saved data');
     }
     return false;
   };
@@ -19627,21 +19648,31 @@ async function _gsPullSilentInner(attempt, rid, gen) {
     return false;
   }
   try {
-    // v9.33【Codex #7-5】超时 150s → 75s。150 是 v9.05 被「误诊成资料太大」时加的救急值;
-    //   实测失败形态是 Google 交付层 404 (61 秒内就回来了), 不是要等更久 —— 等 150 秒只是把
-    //   一次失败拖成 6 分钟链的第一环。75s 足够涵盖冷态成功案例 (实测冷态成功 ~25-43s)。
-    //   ⚠️ 根治是「减少 pullAll 的 Sheet 往返次数」(Codex 提案 B, 第二阶段), 不是减少传输量。
     const _rq = { rid: rid || '', ...(_stockVer ? { stockver: _stockVer } : {}) };
-    const r = await fetch(gsGetUrl(url, 'pull', _rq), { signal: AbortSignal.timeout(75000) }); // v7.71: 版本没变后端就不送库存 3 表
+    // v9.37 + 後端 v3.84: 支援时请求 gzip-base64 小包；旧後端会忽略 enc, 仍返回普通 JSON。
+    if (typeof DecompressionStream === 'function') _rq.enc = 'gzip';
+    const remaining = SYNC_TOTAL_BUDGET_MS - (Date.now() - roundStartedAt);
+    if (remaining < 5000) return failSync('sync time limit reached', false);
+    const requestTimeoutMs = Math.min(75000, remaining);
+    const r = await fetch(gsGetUrl(url, 'pull', _rq), { signal: AbortSignal.timeout(requestTimeoutMs) }); // v7.71: 版本没变后端就不送库存 3 表
     // v9.33【Codex #7-5】错误分类: 以前 404/HTML 全被 JSON.parse 炸掉再笼统叫「Google blocked」。
     //   404 是实测确认的「ContentService 最终交付失败」形态 (Davy 截图 + Codex 复现), 单独讲。
-    if (r.status === 404) return failSync('delivery 404 (Google)');
-    if (!r.ok) return failSync('HTTP ' + r.status);
+    if (r.status === 404) return failSync('delivery 404 (Google)', true);
+    if (!r.ok) {
+      const transientHttp = r.status === 408 || r.status === 425 || r.status === 429 || r.status >= 500;
+      return failSync('HTTP ' + r.status, transientHttp);
+    }
     const text = await r.text();
     let d;
-    try { d = JSON.parse(text); }
-    catch (e) { return failSync('non-JSON response (Google front door)'); }
-    if (!d.success) return failSync(d.error || 'server error');
+    try { d = await _decodePullPayload(text); }
+    catch (e) {
+      return failSync(String(text).startsWith('GZ1:') ? 'compressed reply damaged' : 'non-JSON response (Google front door)', true);
+    }
+    if (!d.success) {
+      const serverReason = String(d.error || 'server error');
+      const transientServer = /system busy|temporar|try again|service unavailable|timed? out|quota/i.test(serverReason);
+      return failSync(serverReason, transientServer);
+    }
     // v9.13【Codex FINAL P2 — 我 v9.12 自己造成的倒退】原本直接比对整包 response 文字,
     //   但 v3.76 起後端每次都塞不一样的耗时数字进来 (totalMs / 各表 ms), 文字**永远不可能相同**
     //   → 那条「资料没变就跳过重画」的短路等於被我废掉, 每次自动 pull 都走完整套用 + 重画。
@@ -19776,7 +19807,7 @@ async function _gsPullSilentInner(attempt, rid, gen) {
         if (typeof _updatePendingFreshness === 'function') _updatePendingFreshness();
       } catch (e) {
         console.warn('[sync] apply Pending failed:', e);
-        return failSync('inbox apply failed');   // 一部分失败 → 整轮不算 Synced
+        return failSync('inbox apply failed', false);   // 一部分失败 → 整轮不算 Synced
       }
     }
     _lastPullSig = _sig;   // v9.13: 只有乾净套用完才记, 失败/被保护的下次会重试
@@ -19806,8 +19837,8 @@ async function _gsPullSilentInner(attempt, rid, gen) {
   } catch (e) {
     // v9.33: JSON parse 已在上面单独分类, 这里剩 timeout / 网路错误
     let reason = e.message || 'network error';
-    if (e.name === 'TimeoutError' || e.name === 'AbortError') reason = 'timed out (75s)';   // v9.33: 跟上面的上限一致
-    return failSync(reason);
+    if (e.name === 'TimeoutError' || e.name === 'AbortError') reason = 'timed out';
+    return failSync(reason, true);
   }
 }
 
@@ -24691,7 +24722,6 @@ function syncTopbarToNavBadges() {
 setInterval(syncTopbarToNavBadges, 2000);
 setTimeout(syncTopbarToNavBadges, 500);
 </script>
-
 
 <div id="modalBackdrop" class="modal-backdrop"><div class="modal" id="modalInner">
       <div class="modal-header">
