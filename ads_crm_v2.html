@@ -3721,7 +3721,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.38</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.39</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +3772,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.38</div>
+      <div class="nav-brand-version">v9.39</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3935,10 +3935,10 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-08-03</span>
+                      <span id="f_leadDate_label">2026-08-05</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-08-03">
+                    <input type="hidden" id="f_leadDate" value="2026-08-05">
                   </div>
                 </div>
               </div>
@@ -14219,6 +14219,46 @@ function _pnlInjectCss() {
 #avRoot .adsbtn svg{opacity:.55;}
 #avRoot .adsbtn:hover svg{opacity:1;}
 /* modal 挂在 #modalInner 上, 不在 #avRoot 里面 → 这几条不能加 #avRoot 前缀 */
+/* ══ v9.39: 点「不是广告来的 lead」的数字 → 名单 modal ══════════════════════ */
+/* 表格里的可点数字 —— 用 app 现有的紫色, 虚线底线表示可点 (跟 adsbtn 同一个语气) */
+#avRoot .ntbtn{background:none;border:none;padding:0;font:inherit;color:var(--purple);font-weight:700;
+  cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;
+  font-variant-numeric:tabular-nums;}
+#avRoot .ntbtn:hover{color:var(--purple-deep);}
+/* modal 挂在 #modalInner 上, 不在 #avRoot 里面 → 这几条不能加 #avRoot 前缀 */
+.nt-modal{max-width:660px;width:calc(100vw - 32px);}
+.nt-modal .nt-body{padding:0;max-height:60vh;overflow:auto;}
+.nt-modal .nt-foot{padding:10px 18px;font-size:11.5px;color:var(--silver);}
+.nt-modal .nt-band{background:var(--purple-bg);padding:8px 14px;font-size:10px;font-weight:600;
+  color:var(--purple-deep);text-transform:uppercase;letter-spacing:.7px;border-top:1px solid var(--border);}
+.nt-modal .nt-band:first-child{border-top:none;}
+.nt-modal .nt-band.warn{background:#fdf4e7;color:#b45309;}
+.nt-modal .nt-band small{text-transform:none;letter-spacing:0;font-weight:400;color:var(--gray);margin-left:6px;}
+.nt-modal table.nt-list{width:100%;border-collapse:collapse;font-size:12.5px;}
+.nt-modal table.nt-list th{font-size:9.5px;font-weight:600;color:var(--silver);text-transform:uppercase;
+  letter-spacing:.6px;text-align:left;padding:7px 14px;background:#F5F1FE;border-bottom:1px solid var(--border);}
+.nt-modal table.nt-list th.c,.nt-modal table.nt-list td.c{text-align:center;}
+.nt-modal table.nt-list th.r,.nt-modal table.nt-list td.r{text-align:right;}
+.nt-modal table.nt-list td{padding:10px 14px;border-top:1px solid #ececef;vertical-align:middle;}
+.nt-modal table.nt-list tbody tr{cursor:pointer;}
+.nt-modal table.nt-list tbody tr:hover td{background:#fafaff;}
+.nt-modal .nt-who{font-weight:500;}
+.nt-modal .nt-noname{color:var(--silver);font-weight:400;}
+.nt-modal .nt-ph{display:block;font-size:11px;color:var(--silver);font-variant-numeric:tabular-nums;margin-top:1px;}
+.nt-modal .nt-copy{font-size:11px;color:var(--gray);}
+.nt-modal .nt-zero{color:var(--silver);}
+.nt-modal .nt-pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;}
+.nt-modal .nt-pill.lead{background:#eef0f4;color:var(--gray);}
+.nt-modal .nt-pill.done{background:#e3f5ec;color:var(--green-dark, #026b3f);}
+.nt-modal .nt-pill.booked{background:#ede7fd;color:var(--purple-deep);}
+.nt-modal .nt-pill.noshow{background:#fdecec;color:#c02626;}
+/* 手机: 电话和文案会挤 → 收窄字级, 表格自己横向捲 */
+@media (max-width: 640px){
+  .nt-modal table.nt-list{font-size:11.5px;}
+  .nt-modal table.nt-list th,.nt-modal table.nt-list td{padding:8px 10px;}
+  .nt-modal .nt-copy{display:none;}
+  .nt-modal table.nt-list th:last-child{display:none;}
+}
 .av-ads-modal .av-copy{font-size:12.5px;line-height:1.75;color:var(--black);background:var(--surface);border:1px solid #eeeef3;border-radius:10px;padding:11px 13px;margin-bottom:16px;}
 .av-ads-modal .av-copy-lb{display:block;font-size:9.5px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--silver);margin-bottom:5px;}
 .av-ads-modal .av-stats{display:flex;border:1px solid #eeeef3;border-radius:10px;overflow:hidden;margin-bottom:18px;}
@@ -14571,13 +14611,17 @@ function renderAdsVideo() {
   //   混用的后果: 1 月点广告、2 月成交的客人, 成本算 1 月、成交算 2 月
    //   → 1 月 ROAS 被低估、2 月被高估, 而广告费明明是 1 月花的。
   // 另注: Appt 看 status (booked/done/noshow), 不是看 apptDate 有没有值 —— 跟 Ads Spend 页一致。
+  // v9.39【Davy 要求】点数字要看得到是谁 → 不能只留计数, 要把 lead 本体收起来。
+  //   查资料发现那 24 笔其实是两回事: adName 空白 (真的不是广告来的) vs
+  //   有广告文案但对不到影片 (影片被删 / 文案改过 —— 这些**是**广告来的, Davy 可以去查)。
   let noLinkLeads = 0, noLinkAppts = 0, noLinkShows = 0, noLinkSales = 0;
+  const noLinkRows = [];
   (state.leads || []).forEach(l => {
     if (chFilter.indexOf(l.channelId) < 0) return;
     if (!_avInScope(l.leadDate)) return;
     const k = _avKey(l.adName);
     const bucket = (k && vids[k]) ? vids[k] : null;
-    if (bucket) bucket.leads++; else noLinkLeads++;
+    if (bucket) bucket.leads++; else { noLinkLeads++; noLinkRows.push(l); }
     const st = l.status;
     if (st === 'booked' || st === 'done' || st === 'noshow') {
       if (bucket) bucket.appts++; else noLinkAppts++;
@@ -14627,7 +14671,7 @@ function renderAdsVideo() {
   }
 
   root.innerHTML = _avBarHtml() + (list.length
-    ? _avTableHtml(list, unmatched, totalSpend, { leads: noLinkLeads, appts: noLinkAppts, shows: noLinkShows, sales: noLinkSales })
+    ? _avTableHtml(list, unmatched, totalSpend, { leads: noLinkLeads, appts: noLinkAppts, shows: noLinkShows, sales: noLinkSales, rows: noLinkRows })
     : `<div class="av-empty">还没有影片资料。<br><br>去 Apps Script 跑一次 <b>syncAdVideos</b>，再回来按同步。</div>`);
 
   // v8.97: 每次重画都要重新升级下拉 —— nav() 只在切页时叫一次,
@@ -14666,7 +14710,8 @@ function _avAdMonths(videoKey) {
   Object.keys(out).forEach(k => { out[k] = Array.from(new Set(out[k])).sort(); });
   return out;
 }
-// AdVideos 每次 sync 砍掉重建、只存最近 8 个月 —— 更早的资料根本不在表里。
+// v9.39 更正: 後端 v3.85 起改成「每次只重抓最近 3 个月, 更早的月份原样保留」——
+//   不再是「砍掉重建、只存最近 8 个月」。表里能有多早, 取决於历史上跑过哪些回溯范围。
 //   某支广告的最早月份刚好等於整张表的最早月份 → 它「可能」更早, 不能当成首投月。
 function _avDataFloor() {
   let min = '';
@@ -14719,7 +14764,7 @@ function _avOpenAds(i) {
   }).join('');
   // 只在真的有广告贴到资料下限时才讲 —— 没贴到就不用拿这句话烦人
   const floorNote = hitFloor
-    ? `<br>† 资料只回溯到 ${esc(_avFmtMonths([floor]))}（AdVideos 只存最近 8 个月），实际开始时间可能更早。`
+    ? `<br>† 资料只回溯到 ${esc(_avFmtMonths([floor]))}（AdVideos 目前存到这里为止），实际开始时间可能更早。`
     : '';
   showModal(
     `<div class="modal-header"><div class="modal-title">Ads under this video</div>`
@@ -14829,6 +14874,78 @@ function _avBarHtml() {
     + `</div>`;   // v8.97: 排序下拉拿掉了 —— 改成直接点表头, 两套并存只会互相打架
 }
 
+// ══ v9.39【Davy 要求】点「不是广告来的 lead」的数字 → 看到是谁 ═══════════════
+//   Davy 指定: 全名 + 完整电话 (不遮罩, 这是他自己的 CRM), 分两组, 有名字的排上面。
+let _ntStash = [];
+function _ntOpen(mode) {
+  const APPT = ['booked', 'done', 'noshow'];
+  let rows = (_ntStash || []).slice();
+  if (mode === 'appt') rows = rows.filter(l => APPT.indexOf(l.status) >= 0);
+  else if (mode === 'show') rows = rows.filter(l => l.status === 'done');
+  if (!rows.length) { if (typeof toast === 'function') toast('Nothing to show'); return; }
+
+  // 分两组: 有广告文案但对不到影片 (= 广告来的, 值得去查) vs 完全没有广告资料
+  //   adName 开头是 '-' 代表「查过了, 确认不是广告来的」(後端 v3.65/3.68 的约定), 算没资料。
+  const hasCopy = l => { const a = String(l.adName || '').trim(); return a && a.charAt(0) !== '-'; };
+  // Davy 指定: 有名字的排上面; 其次按进线日期
+  const srt = (a, b) => {
+    const an = String(a.name || '').trim() ? 0 : 1, bn = String(b.name || '').trim() ? 0 : 1;
+    if (an !== bn) return an - bn;
+    return String(a.leadDate || '').localeCompare(String(b.leadDate || ''));
+  };
+  const gAd = rows.filter(hasCopy).sort(srt);
+  const gNo = rows.filter(l => !hasCopy(l)).sort(srt);
+
+  const esc = v => (typeof escapeHTML === 'function' ? escapeHTML(String(v == null ? '' : v)) : String(v == null ? '' : v));
+  const money = v => (typeof rm === 'function' ? rm(v) : Number(v || 0).toFixed(2));
+  const pill = st => {
+    const m = { done: ['done', 'Show up'], booked: ['booked', 'Booked'], noshow: ['noshow', 'No show'] };
+    const x = m[st] || ['lead', 'Lead'];
+    return `<span class="nt-pill ${x[0]}">${x[1]}</span>`;
+  };
+  const line = l => {
+    const nm = String(l.name || '').trim();
+    const ph = String(l.contact || '').trim();
+    const sales = l.status === 'done' ? Number(l.spend) || 0 : 0;
+    return `<tr onclick="_ntGo('${esc(l.id)}')">`
+      + `<td class="nt-who">${nm ? esc(nm) : '<span class="nt-noname">(no name)</span>'}`
+      + (ph ? `<span class="nt-ph">${esc(ph)}</span>` : '') + `</td>`
+      + `<td>${esc(String(l.leadDate || '').slice(0, 10))}</td>`
+      + `<td class="c">${pill(l.status)}</td>`
+      + `<td class="r">${sales ? money(sales) : '<span class="nt-zero">—</span>'}</td>`
+      + `<td class="nt-copy">${esc(String(l.adName || '').slice(0, 34))}</td></tr>`;
+  };
+  const head = '<thead><tr><th style="width:30%">Who</th><th style="width:14%">Lead date</th>'
+    + '<th class="c" style="width:13%">Status</th><th class="r" style="width:13%">Sales</th>'
+    + '<th style="width:30%">Ad copy</th></tr></thead>';
+  let b = '';
+  if (gAd.length) {
+    b += `<div class="nt-band warn">⚠️ From ads, but video not matched · ${gAd.length}`
+       + `<small>video deleted or copy edited — worth checking in Meta</small></div>`
+       + `<table class="nt-list">${head}<tbody>${gAd.map(line).join('')}</tbody></table>`;
+  }
+  if (gNo.length) {
+    b += `<div class="nt-band">No ad info · ${gNo.length}`
+       + `<small>walk-ins, referrals, and old records with no source</small></div>`
+       + `<table class="nt-list">${head}<tbody>${gNo.map(line).join('')}</tbody></table>`;
+  }
+  const totSales = rows.filter(l => l.status === 'done').reduce((x, l) => x + (Number(l.spend) || 0), 0);
+  const label = mode === 'appt' ? 'appointments' : (mode === 'show' ? 'show-ups' : 'leads');
+  // ⚠️ showModal 会把 html 塞进 #modalInner (它本身就是 .modal), 所以这里不能再包一层 .modal ——
+  //   跟 _avOpenAds 同一个写法。
+  showModal(
+    `<div class="modal-header"><div class="modal-title">Not tracked · ${rows.length} ${label}</div>
+       <button class="modal-close" onclick="closeModal()">✕</button></div>
+     <div class="modal-body nt-body">${b}</div>
+     <div class="modal-footer nt-foot">Tap a row to open that lead · Sales ${money(totSales)} total</div>`,
+    { className: 'nt-modal' });
+}
+function _ntGo(id) {
+  if (typeof closeModal === 'function') closeModal();
+  if (typeof nav === 'function') nav('contact');
+  setTimeout(() => { if (typeof editLead === 'function') editLead(id); }, 120);
+}
+
 function _avTableHtml(list, unmatched, totalSpend, noLink) {
   // 不用 fmt.num —— 它把 0 显示成「—」, 这里 RM 0 要看得见
   const rm = n => 'RM ' + Math.round(n || 0).toLocaleString('en-MY');
@@ -14872,9 +14989,13 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
       + `<td class="sep">—</td><td${_neg ? ' class="neg"' : ''}>${unmatched < 0 ? '−' : ''}${rm(Math.abs(unmatched))}</td>`
       + `<td class="sep">—</td><td>—</td><td>—</td><td class="sep">—</td></tr>`;
   }
+  // v9.39: 三个数字都可点 —— 点 lead 看全部, 点 appt/show 只看那一批。
+  _ntStash = noLink.rows || [];
+  const _ntBtn = (val, mode) => (val > 0 && _ntStash.length)
+    ? `<button class="ntbtn" onclick="_ntOpen('${mode}')">${val}</button>` : String(val);
   body += `<tr class="ref"><td class="l"><span class="nm">不是广告来的 lead</span>`
     + `<div class="adnames">走进来的、朋友介绍的、以及补不回广告来源的旧资料</div></td>`
-    + `<td>—</td><td class="sep">${noLink.leads}</td><td>${noLink.appts}</td><td>${noLink.shows}</td>`
+    + `<td>—</td><td class="sep">${_ntBtn(noLink.leads, 'all')}</td><td>${_ntBtn(noLink.appts, 'appt')}</td><td>${_ntBtn(noLink.shows, 'show')}</td>`
     + `<td class="sep">${rm(noLink.sales)}</td><td>—</td>`
     + `<td class="sep">—</td><td>—</td><td>—</td><td class="sep">—</td></tr>`;
 
