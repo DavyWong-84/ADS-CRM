@@ -3721,7 +3721,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.39</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.40</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +3772,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.39</div>
+      <div class="nav-brand-version">v9.40</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3935,10 +3935,10 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-08-05</span>
+                      <span id="f_leadDate_label">2026-08-08</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-08-05">
+                    <input type="hidden" id="f_leadDate" value="2026-08-08">
                   </div>
                 </div>
               </div>
@@ -14970,9 +14970,9 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
           ? `<button class="adsbtn" onclick="_avOpenAds(${i})">${names.length} <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></button>`
           : '—'}</td>`
       + `<td class="sep">${v.leads}</td><td>${v.appts}</td><td>${v.shows}</td>`
-      + `<td class="sep">${rm(v.sales)}</td><td>${rm(v.spend)}</td>`
-      + `<td class="sep">${per(v.spend, v.leads)}</td><td>${per(v.spend, v.appts)}</td><td>${per(v.spend, v.shows)}</td>`
-      + `<td class="sep ${cls}">${v.spend > 0 ? roas.toFixed(2) : '—'}</td></tr>`;
+      + `<td class="sep">${rm(v.spend)}</td>`
+      + `<td>${per(v.spend, v.leads)}</td><td>${per(v.spend, v.appts)}</td><td>${per(v.spend, v.shows)}</td>`
+      + `<td class="sep">${rm(v.sales)}</td><td class="${cls}">${v.spend > 0 ? roas.toFixed(2) : '—'}</td></tr>`;
   });
 
   body += `<tr class="grp"><td colspan="11"><span class="glabel">Not tracked</span></td></tr>`;
@@ -14981,32 +14981,30 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
   //   差额被静静吞掉, 明细加起来比 Total 大, 变成一张兜不拢的表。
   if (Math.abs(unmatched) > 0.5) {
     const _neg = unmatched < 0;
-    body += `<tr class="ref"><td class="l"><span class="nm">${_neg ? '⚠️ 影片花费比总额多' : '配不到影片的广告费'}</span>`
-      + `<div class="adnames">${_neg
-          ? '影片花费加起来比 Ads Spend 页的总额还多，通常是两边同步时间不同步（去跑一次 syncAdVideos 就会对上）'
-          : '这些钱确实花了，但对不到是哪支影片带来的 —— 多半是已经关掉的旧广告、改过文案的、或不是 Click-to-WhatsApp 的广告'}</div></td>`
+    body += `<tr class="ref"><td class="l"><span class="nm">${_neg ? '⚠️ Video spend exceeds total' : 'Ad spend not matched to a video'}</span>`
+      + `</td>`
       + `<td>—</td><td class="sep">—</td><td>—</td><td>—</td>`
-      + `<td class="sep">—</td><td${_neg ? ' class="neg"' : ''}>${unmatched < 0 ? '−' : ''}${rm(Math.abs(unmatched))}</td>`
-      + `<td class="sep">—</td><td>—</td><td>—</td><td class="sep">—</td></tr>`;
+      + `<td class="sep${_neg ? ' neg' : ''}">${unmatched < 0 ? '−' : ''}${rm(Math.abs(unmatched))}</td>`
+      + `<td>—</td><td>—</td><td>—</td>`
+      + `<td class="sep">—</td><td>—</td></tr>`;
   }
   // v9.39: 三个数字都可点 —— 点 lead 看全部, 点 appt/show 只看那一批。
   _ntStash = noLink.rows || [];
   const _ntBtn = (val, mode) => (val > 0 && _ntStash.length)
     ? `<button class="ntbtn" onclick="_ntOpen('${mode}')">${val}</button>` : String(val);
-  body += `<tr class="ref"><td class="l"><span class="nm">不是广告来的 lead</span>`
-    + `<div class="adnames">走进来的、朋友介绍的、以及补不回广告来源的旧资料</div></td>`
+  body += `<tr class="ref"><td class="l"><span class="nm">Leads not from ads</span></td>`
     + `<td>—</td><td class="sep">${_ntBtn(noLink.leads, 'all')}</td><td>${_ntBtn(noLink.appts, 'appt')}</td><td>${_ntBtn(noLink.shows, 'show')}</td>`
-    + `<td class="sep">${rm(noLink.sales)}</td><td>—</td>`
-    + `<td class="sep">—</td><td>—</td><td>—</td><td class="sep">—</td></tr>`;
+    + `<td class="sep">—</td><td>—</td><td>—</td><td>—</td>`
+    + `<td class="sep">${rm(noLink.sales)}</td><td>—</td></tr>`;
 
   const aLeads = tLeads + noLink.leads, aAppts = tAppts + noLink.appts;
   const aShows = tShows + noLink.shows, aSales = tSales + noLink.sales;
   body += `<tr class="big"><td class="l"><span class="nm">Total · ${list.length} videos</span></td>`
     + `<td>${tAds}</td>`
     + `<td class="sep">${aLeads}</td><td>${aAppts}</td><td>${aShows}</td>`
-    + `<td class="sep">${rm(aSales)}</td><td>${rm(totalSpend)}</td>`
-    + `<td class="sep">${per(totalSpend, aLeads)}</td><td>${per(totalSpend, aAppts)}</td><td>${per(totalSpend, aShows)}</td>`
-    + `<td class="sep">${totalSpend > 0 ? (aSales / totalSpend).toFixed(2) : '—'}</td></tr>`;
+    + `<td class="sep">${rm(totalSpend)}</td>`
+    + `<td>${per(totalSpend, aLeads)}</td><td>${per(totalSpend, aAppts)}</td><td>${per(totalSpend, aShows)}</td>`
+    + `<td class="sep">${rm(aSales)}</td><td>${totalSpend > 0 ? (aSales / totalSpend).toFixed(2) : '—'}</td></tr>`;
 
   const tracked = tLeads, all = aLeads;
   const th = (key, label, sep) => {
@@ -15017,14 +15015,13 @@ function _avTableHtml(list, unmatched, totalSpend, noLink) {
   return `<div class="pnl-scroll"><table class="pnl-t"><thead><tr>`
     + `<th class="l">Video</th>` + th('ads', 'Ads')
     + th('leads', 'Leads', 1) + th('appts', 'Appt') + th('shows', 'Show')
-    + th('sales', 'Sales', 1) + th('cost', 'Cost')
-    + th('cpl', 'CPL', 1) + th('cpa', 'CPA') + th('cps', 'CPS')
-    + th('roas', 'ROAS', 1)
+    + th('cost', 'Cost', 1) + th('cpl', 'CPL') + th('cpa', 'CPA') + th('cps', 'CPS')
+    + th('sales', 'Sales', 1) + th('roas', 'ROAS')
     + `</tr></thead><tbody>${body}</tbody></table></div>`
-    + `<div class="pnl-foot-note">Sales / Cost / CPL / CPA / CPS 单位 RM　·　`
-    + `<b>Cost 总计 = Ads Spend 页的数字</b>　·　`
-    + `追踪到 <b>${tracked} / ${all}</b> 个 lead 的来源影片${all > 0 ? '（' + Math.round(tracked / all * 100) + '%）' : ''}　·　`
-    + `点影片名字开那支影片　·　点表头排序</div>`;
+    + `<div class="pnl-foot-note">Sales / Cost / CPL / CPA / CPS in RM　·　`
+    + `<b>Cost total = Ads Spend page</b>　·　`
+    + `Source video tracked for <b>${tracked} / ${all}</b> leads${all > 0 ? ' (' + Math.round(tracked / all * 100) + '%)' : ''}　·　`
+    + `Tap a video name to open it　·　Tap a header to sort</div>`;
 }
 
 function _avSet(k, v) {
