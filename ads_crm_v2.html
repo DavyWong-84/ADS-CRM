@@ -3935,10 +3935,10 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-08-08</span>
+                      <span id="f_leadDate_label">2026-08-10</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-08-08">
+                    <input type="hidden" id="f_leadDate" value="2026-08-10">
                   </div>
                 </div>
               </div>
@@ -18406,6 +18406,8 @@ function exportAllData() {
 //   v7.19: redesigned UI (English, chip selectors, matches CRM design system). Fixed: dedup by phone,
 //          MY phones only, value = cumulative Show Up spend, format phone,first_name,country,value.
 //          Status: only Show Up(done) carries spend; Lead/No Show have value 0. Race 'blank' = no race.
+//   v9.41: race 只对 Show Up 生效 (Lead/No Show 没登记种族, 以前选了 Lead 永远是 0 人);
+//          且真成交过的电话不再进 Lead/No Show 名单 —— 两份名单互不重叠, 可各自当 Meta exclude 用.
 function exportMetaAudience() {
   const chip = (g, k, label, on) => '<button class="ma-chip' + (on ? ' on' : '') + '" data-g="' + g + '" data-k="' + k + '" onclick="_metaChipToggle(this)">' + label + '</button>';
   const html =
@@ -18416,7 +18418,7 @@ function exportMetaAudience() {
       chip('status', 'done', 'Show Up', true) + chip('status', 'lead', 'Lead', false) + chip('status', 'noshow', 'No Show', false) + '</div>' +
     '<div class="ma-sec">Channel</div><div class="ma-chips">' +
       chip('channel', 'meta', 'Meta', true) + chip('channel', 'google', 'Google', true) + chip('channel', 'organic', 'Organic', true) + chip('channel', 'followup', 'Follow Up', true) + '</div>' +
-    '<div class="ma-sec">Race</div><div class="ma-chips">' +
+    '<div class="ma-sec">Race <span style="text-transform:none;letter-spacing:0;font-weight:500;">· Show Up only</span></div><div class="ma-chips">' +
       chip('race', 'Chinese', 'Chinese', true) + chip('race', 'Malay', 'Malay', false) + chip('race', 'Indian', 'Indian', false) +
       chip('race', 'Foreigner', 'Foreigner', false) + chip('race', 'Others', 'Others', false) + chip('race', 'blank', 'No race', false) + '</div>' +
     '<div class="ma-sec">Min spend <span style="text-transform:none;letter-spacing:0;font-weight:500;">· Show Up only</span></div>' +
@@ -18441,16 +18443,25 @@ function _metaChipToggle(el) {
 
 // 读弹窗里的勾选 → 过滤 + 去重, 返回 [{phone,first_name,value}]. 给实时人数 + 下载共用.
 function _metaAudienceRows(f) {
+  // 先扫一遍: 曾经真成交过的电话 (不受弹窗筛选影响). 用来把成交客户挡出 Lead/No Show 名单.
+  const donePhones = {};
+  (state.leads || []).forEach(l => {
+    if (String(l.status).toLowerCase().trim() !== 'done') return;
+    if ((Number(l.spend) || 0) <= 0) return;
+    const p = normalizePhone(l.contact);
+    if (p) donePhones[p] = true;
+  });
   const byPhone = {};
   (state.leads || []).forEach(l => {
     const st = String(l.status).toLowerCase().trim();
     if (!f.status[st]) return;                                    // 状态
     if (!f.platform[String(l.platform || '').toLowerCase().trim()]) return;  // 渠道
-    if (!f.race[String(l.race || '').trim() || 'blank']) return;  // 种族 (空→blank)
+    if (st === 'done' && !f.race[String(l.race || '').trim() || 'blank']) return;  // 种族只对 Show Up 生效 (Lead/No Show 没登记)
     const spend = Number(l.spend) || 0;
     if (st === 'done' && spend <= 0) return;                      // Show Up 没消费的不算 (非真成交)
     const phone = normalizePhone(l.contact);
     if (!phone || phone.indexOf('60') !== 0) return;              // 只留 60 开头马来号码
+    if (st !== 'done' && donePhones[phone]) return;               // 成交过的人不算 Lead/No Show, 两份名单不重叠
     if (!byPhone[phone]) byPhone[phone] = { phone: phone, first_name: String(l.name || '').trim().split(/\s+/)[0] || '', value: 0, hasDone: false };
     if (st === 'done') { byPhone[phone].value += spend; byPhone[phone].hasDone = true; }  // value 累计 Show Up 消费
   });
@@ -18484,7 +18495,8 @@ function _metaAudienceRecalc() {
 }
 
 function _metaAudienceDownload() {
-  const rows = _metaAudienceRows(_metaAudienceFilters());
+  const f = _metaAudienceFilters();
+  const rows = _metaAudienceRows(f);
   if (rows.length === 0) { toast('No matching customers'); return; }
   const esc = s => '"' + String(s).replace(/"/g, '""') + '"';
   let csv = 'phone,first_name,country,value\n';
@@ -18492,7 +18504,7 @@ function _metaAudienceDownload() {
   const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });  // BOM keeps names clean
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'meta-audience-' + todayStr() + '.csv';
+  a.href = url; a.download = (f.status.done ? 'meta-audience-' : 'meta-exclude-') + todayStr() + '.csv';
   a.click(); URL.revokeObjectURL(url);
   toast('Exported ' + rows.length + ' customers');
   closeModal();
