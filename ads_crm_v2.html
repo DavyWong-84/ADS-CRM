@@ -3721,7 +3721,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.40</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.41</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +3772,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.40</div>
+      <div class="nav-brand-version">v9.41</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -3935,10 +3935,10 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
                   <div>
                     <label>Lead Date <span style="color:var(--red)">*</span></label>
                     <button type="button" class="date-btn" id="f_leadDate_btn" onclick="openDatePicker('f_leadDate')">
-                      <span id="f_leadDate_label">2026-08-14</span>
+                      <span id="f_leadDate_label">2026-08-16</span>
                       <span class="date-btn-icon">📅</span>
                     </button>
-                    <input type="hidden" id="f_leadDate" value="2026-08-14">
+                    <input type="hidden" id="f_leadDate" value="2026-08-16">
                   </div>
                 </div>
               </div>
@@ -16234,6 +16234,28 @@ function renderForecast(root) {
   if (_fcState.to == null || _fcState.to > 11) _fcState.to = lastM;
   const from = Math.min(_fcState.from, _fcState.to), to = Math.max(_fcState.from, _fcState.to);
   const nMonths = to - from + 1;
+  // ══ v9.41【Davy 抓到】nMonths 会把「还没过完的当月」当成整月 ═══════════════════
+  // 【症状】8/16 选 Jun–Aug, Monthly avg 直接 ÷3 —— 但八月只过了 16/31 天。
+  //   每月用量被低估约 19% → Forecast qty / To order 一起低估 → **少订货**。
+  // 【Davy 的规则】「应该跟着本日的天数，除非已经过了，比如选 4-7 月就可以直接 /4」
+  // 【算法】过完的月 = 1 · 当月 = 已过天数 ÷ 当月天数 · 还没到的月 = 0
+  //   → Jun–Aug (8/16) = 1 + 1 + 16/31 = 2.52 个月
+  //   → Apr–Jul       = 1 + 1 + 1 + 1  = 4     个月 (跟旧行为一样)
+  // ⚠️ 三处都要用同一个除数 (Monthly avg / Supports revenue / Months 等值),
+  //   只改显示那一处会让画面上的数字互相矛盾。
+  const _fcNow = new Date();
+  const _fcCY = _fcNow.getFullYear(), _fcCM = _fcNow.getMonth();
+  const _fcWeight = mIdx => {
+    if (year < _fcCY || (year === _fcCY && mIdx < _fcCM)) return 1;                  // 已过完
+    if (year > _fcCY || (year === _fcCY && mIdx > _fcCM)) return 0;                  // 还没到
+    const dim = new Date(year, mIdx + 1, 0).getDate();                               // 当月天数
+    return Math.min(1, _fcNow.getDate() / dim);
+  };
+  let _eff = 0; for (let i = from; i <= to; i++) _eff += _fcWeight(i);
+  const effMonths = Math.round(_eff * 100) / 100;
+  // 整段都还没到 (effMonths = 0) → 退回 nMonths, 免得除以 0 变 Infinity
+  const divMonths = effMonths > 0 ? effMonths : nMonths;
+  const divLabel = Number.isInteger(divMonths) ? String(divMonths) : divMonths.toFixed(2);
   const rangeRev = sales.slice(from, to + 1).reduce((a, b) => a + b, 0);
   const byMonths = _fcState.by === 'months';
   const N = Number(_fcState.months) || 0, V = Number(_fcState.revenue) || 0;
@@ -16245,7 +16267,7 @@ function renderForecast(root) {
     : (balMap[store + '|' + code] || 0);
   const items = rows.map(r => {
     const rangeQty = r.m.slice(from, to + 1).reduce((a, b) => a + b, 0);
-    const avg = nMonths ? rangeQty / nMonths : 0;
+    const avg = divMonths ? rangeQty / divMonths : 0;   // v9.41: 用有效月数, 不是月份格数
     const ratio = rangeRev ? rangeQty * 1000 / rangeRev : 0;
     const uc = _stockCostOf('inv', r.code);
     const price = _stockPriceOf('inv', r.code), pct = _stockPctOf('inv', r.code); // 售价 + 每产品 cost%
@@ -16299,7 +16321,7 @@ function renderForecast(root) {
   const _sub = t => '<br><span style="font-weight:400;color:#c4c4cf;font-size:9px">' + t + '</span>';
   const bHead = '<thead><tr><th class="l">Product</th>'
     + '<th>Qty used' + _sub(_PNL_MONTHS[from] + '–' + _PNL_MONTHS[to]) + '</th>'
-    + '<th>Monthly' + _sub('avg') + '</th>'
+    + '<th>Monthly' + _sub('÷ ' + divLabel + ' mo') + '</th>'
     + '<th>per' + _sub('RM1,000') + '</th>'
     + '<th style="color:var(--purple)">Forecast' + _sub('qty') + '</th>'
     + '<th>Sell price</th>'
@@ -16315,8 +16337,9 @@ function renderForecast(root) {
     ? '<input type="number" min="0" value="' + N + '" onchange="_fcSetMonths(this.value)" style="width:56px;text-align:center;' + inpStyle + '"> <span style="font-size:13px">months ahead</span>'
     : '<span style="font-size:12px;color:var(--gray)">RM</span> <input type="text" inputmode="numeric" value="' + (V ? V.toLocaleString('en-US') : '') + '" placeholder="0" oninput="_fcFmtInput(this)" onchange="_fcSetRevenue(this.value)" style="width:130px;' + inpStyle + '">';
   // 反推(全行答案一致 → 给一个): by months → 能撑营业额; by revenue → 能撑几个月
-  const revEquiv = nMonths ? (N / nMonths) * rangeRev : 0;
-  const monthsEquiv = rangeRev ? (V / rangeRev) * nMonths : 0;
+  // v9.41: 这两个也要用有效月数 —— rangeRev 是 2.52 个月赚的, 除以 3 会低估月营业额
+  const revEquiv = divMonths ? (N / divMonths) * rangeRev : 0;
+  const monthsEquiv = rangeRev ? (V / rangeRev) * divMonths : 0;
   const equivChip = '<div style="background:var(--purple-bg);border:1px solid #d9cffb;border-radius:10px;padding:7px 14px">'
     + (byMonths
       ? '<div style="font-size:11px;color:var(--purple);font-weight:600">Supports revenue</div><div style="font-size:16px;font-weight:700;color:var(--purple);margin-top:1px">RM ' + _pnlFmt(revEquiv) + '</div>'
@@ -18406,8 +18429,6 @@ function exportAllData() {
 //   v7.19: redesigned UI (English, chip selectors, matches CRM design system). Fixed: dedup by phone,
 //          MY phones only, value = cumulative Show Up spend, format phone,first_name,country,value.
 //          Status: only Show Up(done) carries spend; Lead/No Show have value 0. Race 'blank' = no race.
-//   v9.41: race 只对 Show Up 生效 (Lead/No Show 没登记种族, 以前选了 Lead 永远是 0 人);
-//          且真成交过的电话不再进 Lead/No Show 名单 —— 两份名单互不重叠, 可各自当 Meta exclude 用.
 function exportMetaAudience() {
   const chip = (g, k, label, on) => '<button class="ma-chip' + (on ? ' on' : '') + '" data-g="' + g + '" data-k="' + k + '" onclick="_metaChipToggle(this)">' + label + '</button>';
   const html =
@@ -18418,7 +18439,7 @@ function exportMetaAudience() {
       chip('status', 'done', 'Show Up', true) + chip('status', 'lead', 'Lead', false) + chip('status', 'noshow', 'No Show', false) + '</div>' +
     '<div class="ma-sec">Channel</div><div class="ma-chips">' +
       chip('channel', 'meta', 'Meta', true) + chip('channel', 'google', 'Google', true) + chip('channel', 'organic', 'Organic', true) + chip('channel', 'followup', 'Follow Up', true) + '</div>' +
-    '<div class="ma-sec">Race <span style="text-transform:none;letter-spacing:0;font-weight:500;">· Show Up only</span></div><div class="ma-chips">' +
+    '<div class="ma-sec">Race</div><div class="ma-chips">' +
       chip('race', 'Chinese', 'Chinese', true) + chip('race', 'Malay', 'Malay', false) + chip('race', 'Indian', 'Indian', false) +
       chip('race', 'Foreigner', 'Foreigner', false) + chip('race', 'Others', 'Others', false) + chip('race', 'blank', 'No race', false) + '</div>' +
     '<div class="ma-sec">Min spend <span style="text-transform:none;letter-spacing:0;font-weight:500;">· Show Up only</span></div>' +
@@ -18443,25 +18464,16 @@ function _metaChipToggle(el) {
 
 // 读弹窗里的勾选 → 过滤 + 去重, 返回 [{phone,first_name,value}]. 给实时人数 + 下载共用.
 function _metaAudienceRows(f) {
-  // 先扫一遍: 曾经真成交过的电话 (不受弹窗筛选影响). 用来把成交客户挡出 Lead/No Show 名单.
-  const donePhones = {};
-  (state.leads || []).forEach(l => {
-    if (String(l.status).toLowerCase().trim() !== 'done') return;
-    if ((Number(l.spend) || 0) <= 0) return;
-    const p = normalizePhone(l.contact);
-    if (p) donePhones[p] = true;
-  });
   const byPhone = {};
   (state.leads || []).forEach(l => {
     const st = String(l.status).toLowerCase().trim();
     if (!f.status[st]) return;                                    // 状态
     if (!f.platform[String(l.platform || '').toLowerCase().trim()]) return;  // 渠道
-    if (st === 'done' && !f.race[String(l.race || '').trim() || 'blank']) return;  // 种族只对 Show Up 生效 (Lead/No Show 没登记)
+    if (!f.race[String(l.race || '').trim() || 'blank']) return;  // 种族 (空→blank)
     const spend = Number(l.spend) || 0;
     if (st === 'done' && spend <= 0) return;                      // Show Up 没消费的不算 (非真成交)
     const phone = normalizePhone(l.contact);
     if (!phone || phone.indexOf('60') !== 0) return;              // 只留 60 开头马来号码
-    if (st !== 'done' && donePhones[phone]) return;               // 成交过的人不算 Lead/No Show, 两份名单不重叠
     if (!byPhone[phone]) byPhone[phone] = { phone: phone, first_name: String(l.name || '').trim().split(/\s+/)[0] || '', value: 0, hasDone: false };
     if (st === 'done') { byPhone[phone].value += spend; byPhone[phone].hasDone = true; }  // value 累计 Show Up 消费
   });
@@ -18495,8 +18507,7 @@ function _metaAudienceRecalc() {
 }
 
 function _metaAudienceDownload() {
-  const f = _metaAudienceFilters();
-  const rows = _metaAudienceRows(f);
+  const rows = _metaAudienceRows(_metaAudienceFilters());
   if (rows.length === 0) { toast('No matching customers'); return; }
   const esc = s => '"' + String(s).replace(/"/g, '""') + '"';
   let csv = 'phone,first_name,country,value\n';
@@ -18504,7 +18515,7 @@ function _metaAudienceDownload() {
   const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });  // BOM keeps names clean
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = (f.status.done ? 'meta-audience-' : 'meta-exclude-') + todayStr() + '.csv';
+  a.href = url; a.download = 'meta-audience-' + todayStr() + '.csv';
   a.click(); URL.revokeObjectURL(url);
   toast('Exported ' + rows.length + ' customers');
   closeModal();
