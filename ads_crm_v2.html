@@ -3713,7 +3713,328 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
 <meta name="application-name" content="Ads CRM">
 <meta name="theme-color" content="var(--purple)">
 <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQWRzIENSTSDigJQgVG9iaWIgTGVlIiwic2hvcnRfbmFtZSI6IkFkcyBDUk0iLCJkZXNjcmlwdGlvbiI6IkFkcyBkYXRhICYgbGVhZCBtYW5hZ2VtZW50Iiwic3RhcnRfdXJsIjoiYWRzX2NybV92Mi5odG1sIiwic2NvcGUiOiIuLyIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiM3MTMyZjUiLCJ0aGVtZV9jb2xvciI6IiM3MTMyZjUiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhkcFpIUm9QU0l4T1RJaUlHaGxhV2RvZEQwaU1Ua3lJaUIyYVdWM1FtOTRQU0l3SURBZ01Ua3lJREU1TWlJK0NpQWdQSEpsWTNRZ2QybGtkR2c5SWpFNU1pSWdhR1ZwWjJoMFBTSXhPVElpSUhKNFBTSTBNaUlnY25rOUlqUXlJaUJtYVd4c1BTSWpOekV6TW1ZMUlpOCtDaUFnUEhCaGRHZ2daRDBpVFRZeExqUWdORGt1TUNCTU9UWXVNQ0F5Tmk0MUlFd3hNekF1TmlBME9TNHdJRXd4TURrdU9DQTBPUzR3SUV3eE1Ea3VPQ0EyT1M0M0lFdzRNaTR5SURZNUxqY2dURGd5TGpJZ05Ea3VNQ0JhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU9ESXVNaUlnZVQwaU5UY3VOaUlnZDJsa2RHZzlJakkzTGpZaUlHaGxhV2RvZEQwaU1pNDFPU0lnY25nOUlqRXVNRFFpSUdacGJHdzlJaU0zTVRNeVpqVWlMejRLSUNBOGNtVmpkQ0I0UFNJNE1pNHlJaUI1UFNJMk1pNDRJaUIzYVdSMGFEMGlNamN1TmlJZ2FHVnBaMmgwUFNJeUxqVTVJaUJ5ZUQwaU1TNHdOQ0lnWm1sc2JEMGlJemN4TXpKbU5TSWdiM0JoWTJsMGVUMGlNQzQxSWk4K0NpQWdQSFJsZUhRZ2VEMGlPVFl1TUNJZ2VUMGlNVEU0TGpBNElpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqTTJMamtpSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0l4TGpVMElqNUJSRk04TDNSbGVIUStDaUFnUEhSbGVIUWdlRDBpT1RZdU1DSWdlVDBpTVRZd0xqTXlJaUJtYjI1MExXWmhiV2xzZVQwaUxXRndjR3hsTFhONWMzUmxiU3dnUW14cGJtdE5ZV05UZVhOMFpXMUdiMjUwTENBblUyVm5iMlVnVlVrbkxDQlNiMkp2ZEc4c0lDZElaV3gyWlhScFkyRWdUbVYxWlNjc0lFRnlhV0ZzTENCellXNXpMWE5sY21sbUlpQm1iMjUwTFhkbGFXZG9kRDBpT0RBd0lpQm1iMjUwTFhOcGVtVTlJak0yTGpraUlHWnBiR3c5SWlObVptWm1abVlpSUhSbGVIUXRZVzVqYUc5eVBTSnRhV1JrYkdVaUlHeGxkSFJsY2kxemNHRmphVzVuUFNJeExqVTBJajVEVWswOEwzUmxlSFErQ2p3dmMzWm5QZz09Iiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNakF3TUM5emRtY2lJSGRwWkhSb1BTSTFNVElpSUdobGFXZG9kRDBpTlRFeUlpQjJhV1YzUW05NFBTSXdJREFnTlRFeUlEVXhNaUkrQ2lBZ1BISmxZM1FnZDJsa2RHZzlJalV4TWlJZ2FHVnBaMmgwUFNJMU1USWlJSEo0UFNJeE1USWlJSEo1UFNJeE1USWlJR1pwYkd3OUlpTTNNVE15WmpVaUx6NEtJQ0E4Y0dGMGFDQmtQU0pOTVRZekxqZ2dNVE13TGpZZ1RESTFOaTR3SURjd0xqY2dURE0wT0M0eUlERXpNQzQySUV3eU9USXVPU0F4TXpBdU5pQk1Namt5TGprZ01UZzFMamtnVERJeE9TNHhJREU0TlM0NUlFd3lNVGt1TVNBeE16QXVOaUJhSWlCbWFXeHNQU0lqWm1abVptWm1JaTgrQ2lBZ1BISmxZM1FnZUQwaU1qRTVMakVpSUhrOUlqRTFNeTQySWlCM2FXUjBhRDBpTnpNdU55SWdhR1ZwWjJoMFBTSTJMamt4SWlCeWVEMGlNaTQzTmlJZ1ptbHNiRDBpSXpjeE16Sm1OU0l2UGdvZ0lEeHlaV04wSUhnOUlqSXhPUzR4SWlCNVBTSXhOamN1TkNJZ2QybGtkR2c5SWpjekxqY2lJR2hsYVdkb2REMGlOaTQ1TVNJZ2NuZzlJakl1TnpZaUlHWnBiR3c5SWlNM01UTXlaalVpSUc5d1lXTnBkSGs5SWpBdU5TSXZQZ29nSUR4MFpYaDBJSGc5SWpJMU5pNHdJaUI1UFNJek1UUXVPRGdpSUdadmJuUXRabUZ0YVd4NVBTSXRZWEJ3YkdVdGMzbHpkR1Z0TENCQ2JHbHVhMDFoWTFONWMzUmxiVVp2Ym5Rc0lDZFRaV2R2WlNCVlNTY3NJRkp2WW05MGJ5d2dKMGhsYkhabGRHbGpZU0JPWlhWbEp5d2dRWEpwWVd3c0lITmhibk10YzJWeWFXWWlJR1p2Ym5RdGQyVnBaMmgwUFNJNE1EQWlJR1p2Ym5RdGMybDZaVDBpT1RndU15SWdabWxzYkQwaUkyWm1abVptWmlJZ2RHVjRkQzFoYm1Ob2IzSTlJbTFwWkdSc1pTSWdiR1YwZEdWeUxYTndZV05wYm1jOUlqUXVNVEFpUGtGRVV6d3ZkR1Y0ZEQ0S0lDQThkR1Y0ZENCNFBTSXlOVFl1TUNJZ2VUMGlOREkzTGpVeUlpQm1iMjUwTFdaaGJXbHNlVDBpTFdGd2NHeGxMWE41YzNSbGJTd2dRbXhwYm10TllXTlRlWE4wWlcxR2IyNTBMQ0FuVTJWbmIyVWdWVWtuTENCU2IySnZkRzhzSUNkSVpXeDJaWFJwWTJFZ1RtVjFaU2NzSUVGeWFXRnNMQ0J6WVc1ekxYTmxjbWxtSWlCbWIyNTBMWGRsYVdkb2REMGlPREF3SWlCbWIyNTBMWE5wZW1VOUlqazRMak1pSUdacGJHdzlJaU5tWm1abVptWWlJSFJsZUhRdFlXNWphRzl5UFNKdGFXUmtiR1VpSUd4bGRIUmxjaTF6Y0dGamFXNW5QU0kwTGpFd0lqNURVazA4TDNSbGVIUStDand2YzNablBnPT0iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCIsInB1cnBvc2UiOiJhbnkifV19">
-</head>
+<style id="pnlCss">
+#pnlRoot{font-family:'IBM Plex Sans',Helvetica,Arial,sans-serif;color:var(--black);}
+#pnlRoot .pnl-tabs{display:flex;gap:6px;margin:4px 0 14px;flex-wrap:wrap;}
+#pnlRoot .pnl-tab{font-size:13px;font-weight:500;padding:7px 14px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-tab.on{background:var(--purple);border-color:var(--purple);color:#fff;}
+#pnlRoot .pnl-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 14px;}
+#pnlRoot .pnl-chips{display:inline-flex;gap:6px;flex-wrap:wrap;}
+#pnlRoot .pnl-chip{font-size:12.5px;font-weight:500;padding:7px 15px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-chip.on{background:#19143a;border-color:#19143a;color:#fff;}
+#pnlRoot .pnl-right{display:inline-flex;gap:8px;align-items:center;}
+#pnlRoot .pnl-seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:9px;padding:3px;}
+#pnlRoot .pnl-seg button{font-family:inherit;font-size:12px;font-weight:500;padding:6px 16px;border:0;background:transparent;color:var(--gray);border-radius:7px;cursor:pointer;}
+#pnlRoot .pnl-seg button.on{background:#fff;color:var(--black);box-shadow:0 0 0 1px var(--border),0 1px 3px rgba(0,0,0,.14);}
+#pnlRoot .pnl-yr{font-size:13px;width:auto;padding:7px 30px 7px 11px;border:1px solid var(--border);border-radius:9px;background-color:#fff;font-family:inherit;}
+#pnlRoot .pnl-savebtn{padding:8px 18px;font-size:13px;white-space:nowrap;}
+#pnlRoot .pnl-savebtn:disabled{opacity:.7;}
+#pnlRoot .pnl-dirty{box-shadow:0 0 0 3px rgba(255,184,0,.35);}
+#pnlRoot .pnl-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#ffb800;margin-right:7px;vertical-align:middle;}
+/* ===== v8.94: META Ads Video Performance =====
+   表格样式整套沿用 P&L 的 (#pnlRoot .pnl-t / .pnl-scroll) —— Davy 指定要跟那页一样,
+   所以下面只写这页独有的东西, 共用的部分靠选择器一起挂在 #avRoot 上。 */
+#avRoot .av-title{font-size:20px;font-weight:700;letter-spacing:-.3px;color:var(--black);margin-bottom:12px;}
+#avRoot .av-title span{color:var(--purple);}
+#avRoot .compact-filter{margin-bottom:14px;}
+#avRoot .pnl-scroll{overflow:auto;max-height:calc(100vh - 190px);min-height:300px;border:1px solid #ececf1;border-radius:12px;}
+#avRoot table.pnl-t{border-collapse:separate;border-spacing:0;font-size:11.5px;white-space:nowrap;width:100%;}
+#avRoot .pnl-t th,#avRoot .pnl-t td{padding:7px 10px;text-align:center;border-bottom:.5px solid #f3f3f7;font-variant-numeric:tabular-nums;}
+#avRoot .pnl-t thead th{height:32px;box-sizing:border-box;font-size:9.5px;font-weight:500;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;background:var(--surface);border-bottom:1px solid #e6e6ee;position:sticky;top:0;z-index:6;text-align:center;}
+#avRoot .pnl-t th.l,#avRoot .pnl-t td.l{text-align:left;position:sticky;left:0;background:#fff;z-index:2;min-width:280px;border-right:1px solid #f0f0f5;}
+#avRoot .pnl-t thead th.l{z-index:7;background:var(--surface);}
+#avRoot .pnl-t tr.grp td{background:#f0ecfa;padding:0;text-align:left;position:sticky;top:32px;z-index:4;border-top:1px solid #e7e2f7;border-bottom:1px solid #e7e2f7;}
+#avRoot .pnl-t .glabel{position:sticky;left:0;display:inline-block;color:var(--purple-deep);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:7px 10px;}
+/* v9.02: Total 钉在底部 —— 影片多的时候要一直滚到最下面才看得到总计, 很难用。
+   背景一定要写死不透明色, 不然滚过去的资料会从底下透出来。 */
+#avRoot .pnl-t tr.big td{font-size:13.5px;font-weight:700;border-top:1px solid #e7e7ee;
+  position:sticky;bottom:0;z-index:5;background:#fff;}
+#avRoot .pnl-t tr.big td.l{z-index:6;background:#fff;}
+#avRoot .pnl-t tr.big td.l .nm{font-size:13px;font-weight:700;}
+/* v9.02: 滑到哪一行就整行打亮 — 11 栏很宽, 眼睛容易看错行。Total 那行不参与 */
+#avRoot .pnl-t tbody tr:not(.big):not(.grp):hover td{background:#faf8ff;}
+#avRoot .pnl-t tbody tr:not(.big):not(.grp):hover td.l{background:#f5f1ff;}
+#avRoot .pnl-t tr.ref td{color:var(--gray);}
+#avRoot .pnl-t tr.ref td.l .nm{font-weight:400;color:var(--gray);}
+#avRoot .pnl-t td.l .nm{font-weight:500;}
+#avRoot .pnl-foot-note{color:var(--gray);font-size:12px;margin-top:10px;}
+#avRoot .vid{display:inline-flex;align-items:center;gap:5px;color:var(--black);text-decoration:none;font-weight:500;}
+#avRoot .vid:hover{color:var(--purple-deep);}
+#avRoot .vid svg{color:#c4c4cf;flex-shrink:0;}
+#avRoot .vid:hover svg{color:var(--purple);}
+/* v9.02: 每支广告各自可点 (Davy 选的 A 方案)。字级 9.5 → 10.5、分隔符前后留 7px,
+   不然几支挤在一起看不出边界 —— 他明确要求「区分明显点」。 */
+#avRoot .adnames{font-size:10.5px;color:#b6b8c6;margin-top:4px;white-space:normal;max-width:300px;line-height:1.6;}
+/* v9.07: Ads 栏改成可点的胶囊 —— 连结收进 modal。
+   原本每支广告的连结平铺在影片名字底下 (.adlink/.adnoLink/.adsep, 已删),
+   广告一多那一行就撑成三行高, 上下扫 ROAS 会一直跳行。 */
+#avRoot .adsbtn{display:inline-flex;align-items:center;gap:4px;min-width:34px;justify-content:center;padding:3px 9px;border-radius:99px;border:1px solid var(--purple-subtle);background:var(--purple-bg);color:var(--purple-deep);font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer;font-family:inherit;transition:.13s;}
+#avRoot .adsbtn:hover{background:var(--purple);border-color:var(--purple);color:#fff;}
+#avRoot .adsbtn svg{opacity:.55;}
+#avRoot .adsbtn:hover svg{opacity:1;}
+/* modal 挂在 #modalInner 上, 不在 #avRoot 里面 → 这几条不能加 #avRoot 前缀 */
+/* ══ v9.39: 点「不是广告来的 lead」的数字 → 名单 modal ══════════════════════ */
+/* 表格里的可点数字 —— 用 app 现有的紫色, 虚线底线表示可点 (跟 adsbtn 同一个语气) */
+#avRoot .ntbtn{background:none;border:none;padding:0;font:inherit;color:var(--purple);font-weight:700;
+  cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;
+  font-variant-numeric:tabular-nums;}
+#avRoot .ntbtn:hover{color:var(--purple-deep);}
+/* modal 挂在 #modalInner 上, 不在 #avRoot 里面 → 这几条不能加 #avRoot 前缀 */
+.nt-modal{max-width:660px;width:calc(100vw - 32px);}
+.nt-modal .nt-body{padding:0;max-height:60vh;overflow:auto;}
+.nt-modal .nt-foot{padding:10px 18px;font-size:11.5px;color:var(--silver);}
+.nt-modal .nt-band{background:var(--purple-bg);padding:8px 14px;font-size:10px;font-weight:600;
+  color:var(--purple-deep);text-transform:uppercase;letter-spacing:.7px;border-top:1px solid var(--border);}
+.nt-modal .nt-band:first-child{border-top:none;}
+.nt-modal .nt-band.warn{background:#fdf4e7;color:#b45309;}
+.nt-modal .nt-band small{text-transform:none;letter-spacing:0;font-weight:400;color:var(--gray);margin-left:6px;}
+.nt-modal table.nt-list{width:100%;border-collapse:collapse;font-size:12.5px;}
+.nt-modal table.nt-list th{font-size:9.5px;font-weight:600;color:var(--silver);text-transform:uppercase;
+  letter-spacing:.6px;text-align:left;padding:7px 14px;background:#F5F1FE;border-bottom:1px solid var(--border);}
+.nt-modal table.nt-list th.c,.nt-modal table.nt-list td.c{text-align:center;}
+.nt-modal table.nt-list th.r,.nt-modal table.nt-list td.r{text-align:right;}
+.nt-modal table.nt-list td{padding:10px 14px;border-top:1px solid #ececef;vertical-align:middle;}
+.nt-modal table.nt-list tbody tr{cursor:pointer;}
+.nt-modal table.nt-list tbody tr:hover td{background:#fafaff;}
+.nt-modal .nt-who{font-weight:500;}
+.nt-modal .nt-noname{color:var(--silver);font-weight:400;}
+.nt-modal .nt-ph{display:block;font-size:11px;color:var(--silver);font-variant-numeric:tabular-nums;margin-top:1px;}
+.nt-modal .nt-copy{font-size:11px;color:var(--gray);}
+.nt-modal .nt-zero{color:var(--silver);}
+.nt-modal .nt-pill{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;}
+.nt-modal .nt-pill.lead{background:#eef0f4;color:var(--gray);}
+.nt-modal .nt-pill.done{background:#e3f5ec;color:var(--green-dark, #026b3f);}
+.nt-modal .nt-pill.booked{background:#ede7fd;color:var(--purple-deep);}
+.nt-modal .nt-pill.noshow{background:#fdecec;color:#c02626;}
+/* 手机: 电话和文案会挤 → 收窄字级, 表格自己横向捲 */
+@media (max-width: 640px){
+  .nt-modal table.nt-list{font-size:11.5px;}
+  .nt-modal table.nt-list th,.nt-modal table.nt-list td{padding:8px 10px;}
+  .nt-modal .nt-copy{display:none;}
+  .nt-modal table.nt-list th:last-child{display:none;}
+}
+.av-ads-modal .av-copy{font-size:12.5px;line-height:1.75;color:var(--black);background:var(--surface);border:1px solid #eeeef3;border-radius:10px;padding:11px 13px;margin-bottom:16px;}
+.av-ads-modal .av-copy-lb{display:block;font-size:9.5px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--silver);margin-bottom:5px;}
+.av-ads-modal .av-stats{display:flex;border:1px solid #eeeef3;border-radius:10px;overflow:hidden;margin-bottom:18px;}
+.av-ads-modal .av-stat{flex:1;padding:9px 4px;text-align:center;border-right:1px solid #f2f2f6;}
+.av-ads-modal .av-stat:last-child{border-right:none;}
+.av-ads-modal .av-stat b{display:block;font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;}
+.av-ads-modal .av-stat span{display:block;font-size:9px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;color:var(--silver);margin-top:2px;}
+.av-ads-modal .av-lb{font-size:9.5px;font-weight:600;letter-spacing:.7px;text-transform:uppercase;color:var(--silver);margin-bottom:8px;}
+.av-ads-modal .av-adrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid #eeeef3;border-radius:10px;margin-bottom:7px;}
+.av-ads-modal .av-adrow:hover{border-color:var(--purple-subtle);background:#fcfbff;}
+.av-ads-modal .av-adnm{font-size:12.5px;font-weight:500;line-height:1.4;}
+.av-ads-modal .av-addate{font-size:11px;font-weight:400;color:var(--silver);margin-top:3px;font-variant-numeric:tabular-nums;}
+.av-ads-modal .av-open{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;padding:5px 11px;border-radius:8px;border:1px solid var(--purple-subtle);background:#fff;color:var(--purple-deep);font-size:11px;font-weight:600;text-decoration:none;transition:.13s;}
+.av-ads-modal .av-open:hover{background:var(--purple);border-color:var(--purple);color:#fff;}
+.av-ads-modal .av-nolink{font-size:10.5px;color:var(--silver);flex-shrink:0;padding-right:3px;}
+.av-ads-modal .av-note{font-size:11px;color:var(--silver);line-height:1.65;margin-top:12px;padding-top:12px;border-top:1px solid #f0f0f4;}
+#avRoot .warn-dot{color:var(--amber);}
+#avRoot td.pos{color:var(--green-dark);font-weight:600;}
+#avRoot td.neg{color:var(--red);font-weight:600;}
+#avRoot .av-empty{padding:60px 20px;text-align:center;color:var(--gray);font-size:13px;}
+#avRoot .av-dash{color:var(--silver);font-size:13px;padding:0 1px;}
+/* v9.02: Coverage tab 的长条 */
+/* v9.03: 这张表第一列不用像 Videos 那样宽 (那边要塞影片文案), 月份 120px 就够 */
+#avRoot .pnl-t.av-cov th.l,#avRoot .pnl-t.av-cov td.l{min-width:120px;}
+#avRoot .cov-barcell{min-width:200px;}
+#avRoot .cov-bar{height:7px;border-radius:99px;background:#eeedf6;overflow:hidden;width:180px;}
+#avRoot .cov-bar>i{display:block;height:100%;border-radius:99px;background:var(--purple);}
+/* 分区竖线 — 漏斗 / 金额 / 单位成本 / 效率 四组各自分开, 眼睛才不会在 11 栏里迷路 */
+#avRoot .pnl-t th.sep,#avRoot .pnl-t td.sep{border-left:1px solid #e9e9f0;}
+/* 可排序表头 */
+#avRoot .pnl-t th.av-sort{cursor:pointer;user-select:none;}
+#avRoot .pnl-t th.av-sort:hover{color:var(--purple);background:#f2eeff;}
+#avRoot .pnl-t th.av-sort.on{color:var(--purple-deep);font-weight:700;background:#f0e9ff;}
+/* 手机: 这页不做 (Davy 指定只在电脑看) */
+@media screen and (max-width:767px){
+  #avRoot .pnl-scroll,#avRoot .compact-filter,#avRoot .pnl-foot-note{display:none!important;}
+  #avRoot::after{content:'Desktop only';display:block;text-align:center;color:#9497a9;font-size:12px;padding:24px 0;}
+}
+
+#pnlRoot .pnl-cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:18px;}
+@media(max-width:820px){#pnlRoot .pnl-cards{grid-template-columns:repeat(2,1fr);}}
+#pnlRoot .pnl-card{position:relative;background:#fff;border:1px solid #ececf1;border-radius:14px;padding:13px 14px 13px 16px;box-shadow:0 1px 2px rgba(16,24,40,.04);overflow:hidden;}
+#pnlRoot .pnl-card .acc{position:absolute;left:0;top:0;bottom:0;width:4px;}
+#pnlRoot .pnl-card .pd{font-size:9px;color:#b6b8c6;text-transform:uppercase;letter-spacing:.5px;}
+#pnlRoot .pnl-card .lbl{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+#pnlRoot .pnl-card .val{font-size:18px;font-weight:600;line-height:1.1;margin-top:4px;letter-spacing:-.3px;white-space:nowrap;}
+#pnlRoot .pnl-card .sub{font-size:11px;color:var(--gray);margin-top:4px;}
+#pnlRoot .pnl-card .pbar{height:6px;border-radius:99px;background:#eeedf6;margin-top:9px;overflow:hidden;}
+#pnlRoot .pnl-card .pbar>i{display:block;height:100%;border-radius:99px;background:var(--purple);}
+#pnlRoot .pnl-scroll{overflow:auto;max-height:calc(100vh - 230px);min-height:300px;border:1px solid #ececf1;border-radius:12px;}
+@media(min-width:768px){
+  body:has(#page-pnl.active) .main{padding-bottom:16px!important;}
+  #pnlRoot{height:calc(100vh - 32px);display:flex;flex-direction:column;}
+  #pnlRoot .pnl-scroll{flex:1 1 auto;max-height:none;min-height:120px;}
+  /* Forecast: fc-secA/fc-secB 包装(PDF 分页用)要把 flex 传下去, 两张表才能像 Product/Service 一样内部滚 */
+  #pnlRoot .fc-secA,#pnlRoot .fc-secB{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;}
+  #pnlRoot .fc-secA .pnl-scroll,#pnlRoot .fc-secB .pnl-scroll{flex:1 1 auto;max-height:none;min-height:120px;}
+}
+@media screen and (max-width:767px){ /* 手机版(5个 view 统一): tab/branch/卡片/Forecast 控件照常, 宽表格全藏 (限 screen, 别影响 PDF print) */
+  #pnlRoot .pnl-scroll,#pnlRoot .pnl-foot-note{display:none!important;}
+  #pnlRoot .pnl-toptabs{margin-top:8px;} /* 别被固定 topbar 压到 */
+  /* 手机 tab 塞不下别折行(Profit & Loss 会折成两行超高) → 一行排, 左右滑 */
+  #pnlRoot .pnl-toptabs{display:flex;flex-wrap:nowrap;overflow-x:auto;width:100%;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  #pnlRoot .pnl-toptabs::-webkit-scrollbar{display:none;}
+  #pnlRoot .pnl-toptab{white-space:nowrap;flex:none;}
+  #pnlRoot .pnl-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}
+  #pnlRoot .pnl-tabs::-webkit-scrollbar{display:none;}
+  #pnlRoot .pnl-tab{white-space:nowrap;flex:none;}
+  #pnlRoot .pnl-cards{grid-template-columns:1fr!important;} /* 卡片一张一行(!important 盖过 inline 的 auto-fit/repeat) */
+  #pnlRoot::after{content:'Full table on desktop';display:block;text-align:center;color:#9497a9;font-size:12px;padding:14px 0;}
+}
+#pnlRoot table.pnl-t{border-collapse:separate;border-spacing:0;font-size:11.5px;white-space:nowrap;width:100%;}
+#pnlRoot .pnl-t th,#pnlRoot .pnl-t td{padding:7px 10px;text-align:right;border-bottom:.5px solid #f3f3f7;font-variant-numeric:tabular-nums;}
+#pnlRoot .pnl-t thead th{height:32px;box-sizing:border-box;font-size:9.5px;font-weight:500;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;background:var(--surface);border-bottom:1px solid #e6e6ee;position:sticky;top:0;z-index:6;text-align:center;}
+#pnlRoot .pnl-t th.l,#pnlRoot .pnl-t td.l{text-align:left;position:sticky;left:0;background:#fff;z-index:2;min-width:220px;border-right:1px solid #f0f0f5;}
+#pnlRoot .pnl-t thead th.l{z-index:7;background:var(--surface);}
+#pnlRoot .pnl-t th.sub,#pnlRoot .pnl-t td.sub{background:#f7f3ff;}
+#pnlRoot .pnl-t thead th.sub{background:#f0e9ff;color:var(--purple-deep);}
+#pnlRoot .pnl-t tr.grp td{background:#f0ecfa;padding:0;text-align:left;position:sticky;top:32px;z-index:4;border-top:1px solid #e7e2f7;border-bottom:1px solid #e7e2f7;}
+#pnlRoot .pnl-t .glabel{position:sticky;left:0;display:inline-block;color:var(--purple-deep);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:7px 10px;}
+#pnlRoot .pnl-t tr.big td{font-size:13.5px;font-weight:700;border-top:1px solid #e7e7ee;}
+#pnlRoot .pnl-t tr.big td.l .nm{font-size:13px;font-weight:700;}
+#pnlRoot .pnl-t tr.ref td{color:var(--gray);}
+#pnlRoot .pnl-t tr.ref td.l .nm{font-weight:400;color:var(--gray);}
+#pnlRoot .pnl-t tr.sugg td{color:#0e7c8b;}
+#pnlRoot .pnl-t tr.sugg td.l .nm{color:#0e7c8b;font-weight:500;}
+#pnlRoot .pnl-foot-note{color:var(--gray);font-size:12px;margin-top:10px;}
+#pnlRoot .pnl-t td.l .nm{font-weight:500;}
+#pnlRoot .pnl-t td.l .nm[contenteditable]{outline:none;border-bottom:1px dashed transparent;cursor:text;}
+#pnlRoot .pnl-t td.l .nm[contenteditable]:focus{border-bottom-color:var(--purple);}
+#pnlRoot .pnl-t td.l .rgear{display:inline-flex;align-items:center;background:transparent;border:0;color:#b9b9c2;cursor:pointer;margin-left:6px;padding:2px;vertical-align:middle;border-radius:5px;}
+#pnlRoot .pnl-t td.l .rgear:hover{color:var(--purple);background:var(--surface-2);}
+#pnlRoot .pnl-t td.l .rdrag{display:inline-flex;align-items:center;color:#c4c4cf;cursor:grab;margin-right:6px;vertical-align:middle;}
+#pnlRoot .pnl-t td.l .rdrag:active{cursor:grabbing;}
+#pnlRoot .pnl-t tr.dragover td{box-shadow:inset 0 2px 0 var(--purple);}
+.pnl-emp-list{max-height:300px;overflow-y:auto;}
+.pnl-emp-wrap{border-top:0.5px solid var(--border);}
+.pnl-emp-warn{color:var(--red);font-size:11px;padding:0 0 8px 2px;}
+.pnl-emp-warn:empty{display:none;}
+.pnl-emp{display:flex;align-items:center;gap:8px;padding:9px 0;}
+.pnl-emp-in{padding:8px 10px;font-size:13px;}
+.pnl-emp-name{flex:1;min-width:90px;}
+.pnl-emp-basic{width:84px;}
+.pnl-emp-c{display:flex;flex-direction:column;font-size:9px;color:var(--gray);text-transform:uppercase;letter-spacing:.3px;text-align:right;min-width:46px;}
+.pnl-emp-c b{font-size:12px;color:var(--black);font-weight:600;font-variant-numeric:tabular-nums;}
+.pnl-emp-tot b{color:var(--purple-deep);}
+.pnl-emp-x{background:transparent;border:0;color:#c2c2cc;cursor:pointer;font-size:14px;padding:2px 4px;width:auto;}
+.pnl-emp-x:hover{color:var(--red);}
+/* v7.25: P&L/Employees top tabs */
+#pnlRoot .pnl-stick{position:sticky;z-index:20;background:var(--white);padding:6px 0 2px;margin-bottom:10px;box-shadow:0 6px 8px -6px rgba(0,0,0,.06);}
+#pnlRoot .pnl-stick .pnl-toptabs{margin-bottom:10px;}
+#pnlRoot .pnl-stick .pnl-bar2{margin-bottom:4px;}
+#pnlRoot .pnl-toptabs{display:inline-flex;gap:6px;margin-bottom:16px;}
+#pnlRoot .pnl-toptab{font-size:14px;font-weight:600;padding:8px 18px;border-radius:9px;border:1px solid var(--border);background:#fff;color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-toptab.on{background:var(--purple);border-color:var(--purple);color:#fff;}
+#pnlRoot .pnl-bar2{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin-bottom:16px;}
+#pnlRoot .pnl-bar2 .pnl-tabs,#pnlRoot .pnl-bar2 .pnl-chips{margin:0;}
+#pnlRoot .pnl-bar2 .pnl-right{margin-left:auto;}
+#pnlRoot .pnl-bar .btn.pnl-savebtn{padding:8px 16px;}
+/* Employees 花名册 */
+#pnlRoot .emp-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;font-size:11px;color:var(--gray);}
+#pnlRoot .emp-legend span{display:inline-flex;align-items:center;gap:5px;}
+#pnlRoot .bdot{width:9px;height:9px;border-radius:3px;display:inline-block;}
+#pnlRoot .emp-t th,#pnlRoot .emp-t td{text-align:center;}
+#pnlRoot .emp-t th.l,#pnlRoot .emp-t td.l{text-align:left;width:200px;max-width:200px;}
+#pnlRoot .emp-t th.r,#pnlRoot .emp-t td.r{text-align:center;font-variant-numeric:tabular-nums;}
+#pnlRoot .emp-t .ot-info{display:inline-flex;align-items:center;color:var(--silver);cursor:help;vertical-align:middle;margin-left:4px;}
+#pnlRoot .emp-t .ot-info:hover{color:var(--purple);}
+#otPop{position:fixed;z-index:200;display:none;width:238px;background:var(--white);border-radius:12px;box-shadow:0 8px 30px rgba(16,17,20,.2);overflow:hidden;font-size:12px;}
+#otPop .oph{background:var(--purple);color:#fff;padding:10px 14px;}
+#otPop .oph b{font-size:13px;font-weight:600;display:block;}
+#otPop .oph span{font-size:10.5px;opacity:.85;}
+#otPop .opb{padding:4px 14px;}
+#otPop .opr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:.5px solid var(--border);color:var(--gray);}
+#otPop .opr b{color:var(--black);font-weight:600;}
+#otPop .opr i{display:block;font-style:normal;font-size:10px;color:var(--silver);}
+#otPop .optot{border-bottom:0;}
+#otPop .optot b{color:var(--purple-deep);font-size:15px;}
+#otPop .opf{padding:8px 14px;background:var(--surface-2);color:var(--gray);font-size:10.5px;}
+#pnlRoot .emp-t td.l .nmrow{display:flex;align-items:center;gap:6px;}
+#pnlRoot .emp-t td.l .nm{font-weight:600;font-size:13px;}
+#pnlRoot .emp-t td.l .erole{font-size:10.5px;color:var(--gray);margin-top:1px;}
+#pnlRoot .emp-t td.l .rgear{background:transparent;border:0;color:#c4c4cf;cursor:pointer;padding:2px;display:inline-flex;}
+#pnlRoot .emp-t td.l .rgear:hover{color:var(--purple);}
+#pnlRoot .emp-t .bchip{display:inline-block;min-width:36px;padding:3px 6px;border-radius:6px;font-size:10px;font-weight:600;}
+#pnlRoot .emp-t .bnone{color:#cfcfd6;}
+#pnlRoot .emp-t tr.emp-inactive td{opacity:.5;}
+#pnlRoot .emp-t .emp-resigned{font-size:8.5px;font-weight:600;color:var(--gray);background:var(--surface-2);border-radius:5px;padding:1px 5px;text-transform:uppercase;letter-spacing:.3px;}
+#pnlRoot .emp-t tfoot td{font-weight:700;background:#fbfafe;border-top:1px solid #ececf1;position:sticky;bottom:0;}
+#pnlRoot .emp-t tfoot td.l{background:#fbfafe;}
+/* Manpower 挑人 list (modal on body) */
+.pnl-pick-list{max-height:340px;overflow-y:auto;}
+.pnl-pick{display:flex;align-items:center;gap:10px;padding:10px 4px;border-top:0.5px solid var(--border);cursor:pointer;}
+.pnl-pick input{width:18px;height:18px;flex:none;}
+.pnl-pick .pp-nm{flex:1;font-size:13px;font-weight:500;}
+.pnl-pick .pp-role{font-size:10.5px;color:var(--gray);margin-left:8px;font-weight:400;}
+.pnl-pick .pp-cost{font-size:13px;font-variant-numeric:tabular-nums;color:var(--black);text-align:right;}
+.pnl-pick .pp-conf{display:block;font-size:10px;color:var(--red);}
+.pnl-pick.dis{opacity:.55;cursor:not-allowed;}
+#pnlRoot .pnl-t tr.indent td.l{padding-left:18px;}
+#pnlRoot .pnl-t.fc-t th,#pnlRoot .pnl-t.fc-t td{text-align:center;}
+#pnlRoot .pnl-t.fc-t th.l,#pnlRoot .pnl-t.fc-t td.l{text-align:left;width:260px;min-width:260px;max-width:260px;white-space:normal;}
+#pnlRoot .pnl-t.fc-t tbody td{border-bottom:1px solid #e4e4ec;}
+#pnlRoot .pnl-t.fc-t tbody tr.big td{position:sticky;bottom:0;background:#fff;z-index:3;border-top:1px solid #d7d7e0;}
+#pnlRoot .pnl-t.fc-t tbody tr.big td.l{z-index:4;}
+#pnlRoot .pnl-t .cin{width:78px;text-align:right;border:1px solid #e3e3ea;border-radius:6px;padding:4px 6px;font-family:inherit;font-size:11.5px;font-variant-numeric:tabular-nums;background:#fff;color:var(--black);}
+#pnlRoot .pnl-t .cin:hover{border-color:#cdb9fb;}
+#pnlRoot .pnl-t .cin:focus{outline:none;border-color:var(--purple);box-shadow:0 0 0 2px var(--purple-bg);}
+#pnlRoot .pnl-t .cin.cins{width:52px;}  /* Product/Service 成本/售价格压窄(不动 P&L 月份格) */
+#pnlRoot .pnl-t.stk tbody td{border-bottom:1px solid #dcdce4;}  /* Product/Service 行分割线加深 */
+#pnlRoot .pnl-t.stk .stkin{padding-left:5px;padding-right:5px;}  /* Cost/RRP 横向凑紧 */
+#pnlRoot .pnl-t.stk .stkin .cinwrap{gap:3px;}
+#pnlRoot .pnl-t.stk .dvr{}  /* v8.30: 移除 Cost/月份 分割线（Davy 要求） */
+/* v8.16→v8.30: 冻结三列，顺序改成 RRP | Cost | 名字 (rrp left:0 / cost left:84 / name left:168) */
+#pnlRoot .pnl-t.stk th.l,#pnlRoot .pnl-t.stk td.l{width:260px;min-width:260px;max-width:260px;left:168px;}
+#pnlRoot .pnl-t.stk .c-rrp{position:sticky;left:0;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
+#pnlRoot .pnl-t.stk .c-cost{position:sticky;left:84px;z-index:2;background:#fff;width:84px;min-width:84px;max-width:84px;}
+#pnlRoot .pnl-t.stk thead th.c-rrp,#pnlRoot .pnl-t.stk thead th.c-cost{z-index:7;background:var(--surface);}
+#pnlRoot .pnl-t.stk tr.big td.c-rrp,#pnlRoot .pnl-t.stk tr.big td.c-cost{background:#fff;}
+#pnlRoot .pnl-t.stk .stkin input.cin{text-align:center;}  /* v8.20: RRP/Cost 数字居中 */
+#pnlRoot .pnl-t.stk td.l,#pnlRoot .pnl-t.stk td.l .nm{white-space:normal;overflow-wrap:anywhere;}  /* v8.20: 长名字换行不被遮 */
+#pnlRoot .pnl-t.stk th,#pnlRoot .pnl-t.stk td{text-align:center;}  /* v8.24: 月份数字居中 */
+#pnlRoot .pnl-t.stk th.l,#pnlRoot .pnl-t.stk td.l{text-align:left;}  /* 名字列保持靠左 */
+/* v8.32: Top Cost 成本排名（左 Product / 右 Service） */
+#pnlRoot .ts-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:768px){#pnlRoot .ts-grid{grid-template-columns:1fr;}}
+#pnlRoot .ts-card{border:1px solid #ececf1;border-radius:14px;padding:14px 14px 6px;background:#fff;}
+#pnlRoot .ts-chd{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #f0f0f5;}
+#pnlRoot .ts-lbl{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--purple-deep);}
+#pnlRoot .ts-tot{font-size:12px;color:var(--gray);}
+#pnlRoot .ts-tot b{color:var(--black);font-size:14px;}
+#pnlRoot .ts-row{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #f6f6f9;}
+#pnlRoot .ts-row:last-child{border-bottom:0;}
+#pnlRoot .ts-rk{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:#f0edfb;color:var(--purple);}
+#pnlRoot .ts-rk.top{background:var(--purple);color:#fff;}
+#pnlRoot .ts-mid{min-width:0;}
+#pnlRoot .ts-nm{font-size:13px;font-weight:500;color:#22242e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#pnlRoot .ts-track{height:5px;border-radius:3px;background:#f0f0f5;margin-top:5px;overflow:hidden;}
+#pnlRoot .ts-fill{height:100%;border-radius:3px;}
+#pnlRoot .ts-r{text-align:right;white-space:nowrap;}
+#pnlRoot .ts-rm{font-size:13px;font-weight:600;color:var(--black);}
+#pnlRoot .ts-pct{font-size:11px;color:var(--silver);font-weight:600;}
+#pnlRoot .ts-empty{color:var(--gray);font-size:13px;padding:16px 2px;}
+#pnlRoot .ts-foot{font-size:11.5px;color:var(--silver);margin-top:14px;text-align:center;}
+#pnlRoot .pnl-t .cinwrap{display:inline-flex;align-items:center;gap:4px;}
+#pnlRoot .pnl-t .cinbtn{flex:none;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border:1px solid #e3e3ea;border-radius:6px;background:#fff;color:var(--gray);cursor:pointer;}
+#pnlRoot .pnl-t .cinbtn svg{width:13px;height:13px;}
+#pnlRoot .pnl-t .cinbtn:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-bg);}
+.calc-disp{background:var(--surface-2);border-radius:10px;padding:12px 14px;text-align:right;margin-top:6px;}
+.calc-disp .ex{font-size:14px;color:var(--gray);min-height:18px;word-break:break-all;font-variant-numeric:tabular-nums;}
+.calc-disp .rs{font-size:26px;font-weight:700;color:var(--black);font-variant-numeric:tabular-nums;margin-top:2px;}
+.calc-pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px;}
+.calc-pad button{font-family:inherit;font-size:17px;font-weight:600;padding:14px 0;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--black);cursor:pointer;}
+.calc-pad button:hover{background:var(--surface-2);}
+.calc-pad button.op{color:var(--purple);}
+.calc-pad button.clr{color:var(--red,#d64545);}
+#pnlRoot .pnl-t .staffcell{cursor:pointer;color:var(--purple-deep);}
+#pnlRoot .pnl-t .delx{color:#d2d2da;margin-right:7px;cursor:pointer;}
+#pnlRoot .pnl-t tr.addrow td{color:var(--purple);font-weight:500;text-align:left;padding:9px 10px 9px 18px;cursor:pointer;position:sticky;left:0;background:#fff;}
+#pnlRoot .pnl-save{display:flex;justify-content:flex-end;margin-top:12px;}
+#pnlRoot .pnl-empty{color:var(--gray);font-size:13px;padding:24px;text-align:center;}
+</style></head>
 <body class="contact-view-table">
 
 <header class="topbar">
@@ -3721,7 +4042,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.41</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.42</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +4093,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.41</div>
+      <div class="nav-brand-version">v9.42</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4328,7 +4649,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="unified-header-spacer"></div>
 
     <!-- Mobile: pill tabs (hidden on desktop) -->
-    <div id="entryPillBar" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;">
+    <div id="entryPillBar" style="display: none; gap: 6px; margin-bottom: 16px; flex-wrap: wrap;">
       <button type="button" id="entryPill_rv" onclick="switchEntryTab('rv')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Revenue</button>
       <button type="button" id="entryPill_as" onclick="switchEntryTab('as')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">Ads Cost</button>
       <button type="button" id="entryPill_fee" onclick="switchEntryTab('fee')" style="padding:8px 18px;border-radius: 16px;border:1.5px solid var(--border);background:#fff;color:var(--gray);font-size:13px;font-weight:500;cursor:pointer;">3rd Party Fee</button>
@@ -4338,11 +4659,11 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div id="entryDesktopGrid" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:stretch;">
 
       <!-- Revenue panel (col 1) -->
-      <div id="rv_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="rv_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Revenue</div>
         <div style="margin-bottom:10px;">
-          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
-    <span class="pop-trigger-label"><span>Select outlet</span></span>
+          <span id="popWrap_popSel_rv_entryOutlet" data-pop-wrap-for="rv_entryOutlet" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_rv_entryOutlet" class="pop-trigger" onclick="openPopover(event, 'popSel_rv_entryOutlet')" aria-haspopup="listbox">
+    <span class="pop-trigger-label"><span class="chip-initial" style="background:#6366F1;">S</span><span>Sunway</span></span>
     <span class="pop-trigger-chevron">▾</span>
   </button></span><select id="rv_entryOutlet" data-pop="1" data-pop-icon="location" style="width: 100%; font-size: 13px; display: none;" data-pop-placeholder="Select outlet" data-pop-orig-display="" data-pop-hidden="0" data-pop-upgraded="1" data-pop-id="popSel_rv_entryOutlet"><option value=""></option><option value="st-sunway">Sunway</option><option value="st-cheras">Cheras</option><option value="st-eco">ECO</option><option value="__add_new__" style="color:var(--purple-deep);font-weight:600;">+ Add outlet...</option></select>
           <input type="hidden" id="rv_entryYear" value="2026">
@@ -4351,11 +4672,60 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
           <div style="font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from 33CRM (read-only)</div>
           <div id="rvEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="rv_entryTable" class="entry-card-table"></div>
+        <div id="rv_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+    <thead><tr>
+      <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+      <th class="num">New (RM)</th>
+      <th class="num">Total (RM)</th>
+    </tr></thead><tbody><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr><tr style="background:rgba(0,0,0,0.02);">
+      <td><strong>Oct 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+      <td class="num" style="padding:4px 8px;font-weight:700;"><span style="color:var(--gray);font-weight:400;">—</span></td>
+    </tr></tbody><tfoot><tr class="total-row">
+    <td>TOTAL 2026</td>
+    <td class="num">—</td>
+    <td class="num" style="font-weight:700;">—</td>
+  </tr></tfoot></table></div></div>
       </div>
 
       <!-- Ads Cost panel (col 2) -->
-      <div id="as_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="as_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">Ads Cost</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_as_entryChannel" data-pop-wrap-for="as_entryChannel" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_as_entryChannel" class="pop-trigger" onclick="openPopover(event, 'popSel_as_entryChannel')" aria-haspopup="listbox">
@@ -4365,15 +4735,55 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
           <input type="hidden" id="as_entryYear" value="2026">
         </div>
         <div class="entry-info-zone" style="min-height:48px;">
-          <div id="as_autoSyncHint" style="display:none;font-size:11px;color:var(--gray);margin-bottom:8px;">🔄 Auto-synced from Google Ads (read-only)</div>
+          <div id="as_autoSyncHint" style="display: block; font-size: 11px; color: var(--gray); margin-bottom: 8px;">🔄 Auto-synced from Meta (read-only)</div>
           <span id="as_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
           <div id="asEntrySyncStatus" style="display:none;font-size:11px;margin-bottom:8px;"></div>
         </div>
-        <div id="as_entryTable" class="entry-card-table"></div>
+        <div id="as_entryTable" class="entry-card-table"><div class="table-wrap"><table class="data">
+      <thead><tr>
+        <th style="width:80px;min-width:80px;white-space:nowrap;">Month</th>
+        <th class="num">Amount (RM)</th>
+      </tr></thead>
+      <tbody><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jan 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Feb 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Mar 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Apr 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>May 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jun 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Jul 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Aug 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Sep 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr><tr style="background:var(--bg-muted, #f8f6fc);">
+      <td><strong>Oct 2026</strong></td>
+      <td class="num" style="padding:4px 8px;"><span style="color:var(--gray);">—</span></td>
+    </tr></tbody>
+      <tfoot><tr class="total-row">
+        <td>TOTAL 2026</td>
+        <td class="num">—</td>
+      </tr></tfoot>
+    </table></div></div>
       </div>
 
       <!-- 3rd Party Fee panel (col 3) -->
-      <div id="fee_entryBody" class="card entry-card" style="padding:16px;">
+      <div id="fee_entryBody" class="card entry-card" style="padding: 16px; display: block;">
         <div style="font-size:13px;font-weight:700;color:var(--purple-deep);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.4px;">3rd Party Fee</div>
         <div style="margin-bottom:10px;">
           <span id="popWrap_popSel_fee_entryName" data-pop-wrap-for="fee_entryName" style="display: inline-block; width: auto;"><button type="button" id="pop-popSel_fee_entryName" class="pop-trigger is-empty" onclick="openPopover(event, 'popSel_fee_entryName')" aria-haspopup="listbox">
@@ -4390,7 +4800,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
           <div id="fee_nameTag" style="display:none;font-size:12px;color:var(--gray);margin-bottom:8px;"></div>
           <span id="fee_entryLastSaved" style="font-size:11px;color:var(--gray);display:block;margin-bottom:6px;"></span>
         </div>
-        <div id="fee_entryTable" class="entry-card-table"></div>
+        <div id="fee_entryTable" class="entry-card-table"><div style="padding:20px;text-align:center;color:var(--gray);font-size:13px;">请选一个 Fee Name 开始填金额</div></div>
       </div>
 
     </div>
@@ -4439,7 +4849,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
 
 <!-- v7.25: PROFIT & LOSS PAGE -->
 <section class="page" id="page-pnl">
-  <div id="pnlRoot"></div>
+  <div id="pnlRoot"><div class="pnl-stick" style="top: 0px;"><div class="pnl-toptabs"><div class="pnl-toptab on" onclick="_pnlSetView('pnl')">Profit &amp; Loss</div><div class="pnl-toptab" onclick="_pnlSetView('employees')">Employees</div><div style="display:inline-flex;align-items:center;gap:10px;padding:7px 8px 7px 16px;border-radius:9px;border:1px solid var(--border);background:#fff"><span style="font-size:14px;font-weight:600;color:var(--gray)">Inventory</span><div style="display:inline-flex;gap:2px"><div onclick="_pnlSetFramework('crm')" style="padding:3px 11px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--gray);">Cost · CRM</div><div onclick="_pnlSetFramework('pct')" style="padding:3px 11px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--gray);">Cost · %</div></div></div></div><div class="pnl-bar2"><div class="pnl-tabs"><div class="pnl-tab" onclick="_pnlSetStore('all')">All outlets</div><div class="pnl-tab" onclick="_pnlSetStore('st-sunway')">Sunway</div><div class="pnl-tab" onclick="_pnlSetStore('st-cheras')">Cheras</div><div class="pnl-tab" onclick="_pnlSetStore('st-eco')">ECO</div><div class="pnl-tab on" onclick="_pnlSetStore('mgmt')">Mgmt Office</div></div><div class="pnl-chips"><button class="pnl-chip on" onclick="_pnlSetPeriod('full')">Full year</button><button class="pnl-chip" onclick="_pnlSetPeriod('Q1')">Q1</button><button class="pnl-chip" onclick="_pnlSetPeriod('Q2')">Q2</button><button class="pnl-chip" onclick="_pnlSetPeriod('Q3')">Q3</button><button class="pnl-chip" onclick="_pnlSetPeriod('Q4')">Q4</button></div><div class="pnl-right"><select class="pnl-yr" onchange="_pnlSetYear(this.value)"><option value="2027">2027</option><option value="2026" selected="">2026</option><option value="2025">2025</option></select><div class="pnl-seg"><button class="on" onclick="_pnlSetMode('showAmt')">RM</button><button class="" onclick="_pnlSetMode('showPct')">%</button></div><button class="btn btn-outline pnl-savebtn" onclick="_pnlExportPdf()">PDF</button><button class="btn btn-primary pnl-savebtn pnl-dirty" id="pnlSaveBtn" onclick="_savePnL()"><span class="pnl-dot"></span>Save changes</button></div></div></div><div class="pnl-cards"><div class="pnl-card"><div class="acc" style="background:#1ea672"></div><div class="pd">Full year</div><div class="lbl">Net profit</div><div class="val"><span style="color:#1763d6">RM 0.00</span></div><div class="sub">0% margin<br>Revenue RM 0.00</div></div><div class="pnl-card"><div class="acc" style="background:#7132f5"></div><div class="pd">Full year</div><div class="lbl">Sales vs target</div><div class="val">0%</div><div class="pbar"><i style="width:0%"></i></div><div class="sub">RM 0.00 / 0.00</div></div><div class="pnl-card"><div class="acc" style="background:#e08a1e"></div><div class="pd">Full year</div><div class="lbl">Manpower + Commission</div><div class="val">RM 0.00</div><div class="sub">0% of sales</div></div><div class="pnl-card"><div class="acc" style="background:#1098ad"></div><div class="pd">Full year</div><div class="lbl">Management expenses</div><div class="val">RM 0.00</div><div class="sub">0% of total sales</div></div><div class="pnl-card"><div class="acc" style="background:#c2531a"></div><div class="pd">Full year</div><div class="lbl">Total expenses</div><div class="val">RM 0.00</div><div class="sub">0% of sales</div></div></div><div class="pnl-scroll pnl-scroll-main"><table class="pnl-t"><thead><tr><th class="l">Mgmt Office · 2026</th><th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th><th class="sub">YTD</th></tr></thead><tbody><tr class="grp"><td colspan="14"><div class="glabel">Revenue</div></td></tr><tr class="big"><td class="l"><span class="nm">Sales</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr><tr class="grp"><td colspan="14"><div class="glabel">Gross profit</div></td></tr><tr class="indent"><td class="l"><span class="nm">Total Product &amp; Service Cost</span><button class="rgear" onclick="_pnlTypeModal('cost')" title="Row settings"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg></button></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr><tr class="big"><td class="l"><span class="nm">Gross profit</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr><tr class="grp"><td colspan="14"><div class="glabel">Expenses</div></td></tr><tr class="indent" ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'mgmt-staff')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'mgmt-staff')" title="Drag to reorder"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.7"></circle><circle cx="15" cy="5" r="1.7"></circle><circle cx="9" cy="12" r="1.7"></circle><circle cx="15" cy="12" r="1.7"></circle><circle cx="9" cy="19" r="1.7"></circle><circle cx="15" cy="19" r="1.7"></circle></svg></span><span class="nm">HQ salaries</span></td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',1)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',2)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',3)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',4)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',5)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',6)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',7)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',8)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',9)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',10)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',11)">—</td><td class="staffcell" onclick="_pnlOpenStaff('mgmt-staff',12)">—</td><td class="sub">—</td></tr><tr class="indent" ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'mgmt-rent')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'mgmt-rent')" title="Drag to reorder"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.7"></circle><circle cx="15" cy="5" r="1.7"></circle><circle cx="9" cy="12" r="1.7"></circle><circle cx="15" cy="12" r="1.7"></circle><circle cx="9" cy="19" r="1.7"></circle><circle cx="15" cy="19" r="1.7"></circle></svg></span><span class="nm">Office rent</span></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',1,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',2,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',3,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',4,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',5,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',6,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',7,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',8,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',9,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',10,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',11,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('mgmt-rent',12,this.value)"></td><td class="sub">—</td></tr><tr class="indent" ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'electric')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'electric')" title="Drag to reorder"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.7"></circle><circle cx="15" cy="5" r="1.7"></circle><circle cx="9" cy="12" r="1.7"></circle><circle cx="15" cy="12" r="1.7"></circle><circle cx="9" cy="19" r="1.7"></circle><circle cx="15" cy="19" r="1.7"></circle></svg></span><span class="nm">Electric</span></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',1,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',2,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',3,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',4,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',5,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',6,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',7,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',8,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',9,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',10,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',11,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('electric',12,this.value)"></td><td class="sub">—</td></tr><tr class="indent" ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'water')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'water')" title="Drag to reorder"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.7"></circle><circle cx="15" cy="5" r="1.7"></circle><circle cx="9" cy="12" r="1.7"></circle><circle cx="15" cy="12" r="1.7"></circle><circle cx="9" cy="19" r="1.7"></circle><circle cx="15" cy="19" r="1.7"></circle></svg></span><span class="nm">Water</span></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',1,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',2,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',3,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',4,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',5,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',6,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',7,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',8,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',9,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',10,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',11,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('water',12,this.value)"></td><td class="sub">—</td></tr><tr class="indent" ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'unifi')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'unifi')" title="Drag to reorder"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.7"></circle><circle cx="15" cy="5" r="1.7"></circle><circle cx="9" cy="12" r="1.7"></circle><circle cx="15" cy="12" r="1.7"></circle><circle cx="9" cy="19" r="1.7"></circle><circle cx="15" cy="19" r="1.7"></circle></svg></span><span class="nm">Unifi</span></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',1,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',2,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',3,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',4,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',5,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',6,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',7,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',8,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',9,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',10,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',11,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('unifi',12,this.value)"></td><td class="sub">—</td></tr><tr class="indent" ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'insurance')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'insurance')" title="Drag to reorder"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.7"></circle><circle cx="15" cy="5" r="1.7"></circle><circle cx="9" cy="12" r="1.7"></circle><circle cx="15" cy="12" r="1.7"></circle><circle cx="9" cy="19" r="1.7"></circle><circle cx="15" cy="19" r="1.7"></circle></svg></span><span class="nm">Insurance</span></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',1,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',2,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',3,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',4,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',5,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',6,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',7,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',8,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',9,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',10,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',11,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('insurance',12,this.value)"></td><td class="sub">—</td></tr><tr class="indent" ondragover="_pnlDragOver(event)" ondragleave="_pnlDragLeave(event)" ondrop="_pnlDrop(event,'crm')"><td class="l"><span class="rdrag" draggable="true" ondragstart="_pnlDragStart(event,'crm')" title="Drag to reorder"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="5" r="1.7"></circle><circle cx="15" cy="5" r="1.7"></circle><circle cx="9" cy="12" r="1.7"></circle><circle cx="15" cy="12" r="1.7"></circle><circle cx="9" cy="19" r="1.7"></circle><circle cx="15" cy="19" r="1.7"></circle></svg></span><span class="nm">CRM system</span></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',1,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',2,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',3,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',4,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',5,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',6,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',7,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',8,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',9,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',10,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',11,this.value)"></td><td><input class="cin" type="number" step="any" value="0" onchange="_pnlSetCell('crm',12,this.value)"></td><td class="sub">—</td></tr><tr class="indent"><td class="l"><span class="nm">Ad spend (shared)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr><tr class="indent"><td class="l"><span class="nm">3rd party fees (shared)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr><tr class="addrow"><td colspan="14" onclick="_pnlAddExpense()">＋ Add expense</td></tr><tr class="big"><td class="l"><span class="nm">Total expenses</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr><tr class="grp"><td colspan="14"><div class="glabel">Net profit</div></td></tr><tr class="big"><td class="l"><span class="nm">Net profit</span></td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td style="color:#1763d6">—</td><td class="sub" style="color:#1763d6">—</td></tr><tr class="grp"><td colspan="14"><div class="glabel">Targets &amp; break-even</div></td></tr><tr class="ref"><td class="l"><span class="nm">Target sales</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr><tr class="ref sugg"><td class="l"><span class="nm">Suggested target sales</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr><tr class="ref"><td class="l"><span class="nm">Break-even (without renovation)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr><tr class="ref"><td class="l"><span class="nm">Break-even (with renovation)</span></td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="sub">—</td></tr></tbody></table></div><div class="pnl-foot-note">Suggested target sales = total break-even × (outlet expenses ÷ total outlet expenses)</div></div>
 </section>
 
 <!-- v8.94: META ADS VIDEO PERFORMANCE — 哪支影片赚钱。只做桌面版 (Davy 指定) -->
@@ -16245,10 +16655,16 @@ function renderForecast(root) {
   //   只改显示那一处会让画面上的数字互相矛盾。
   const _fcNow = new Date();
   const _fcCY = _fcNow.getFullYear(), _fcCM = _fcNow.getMonth();
+  // ⚠️ v9.41a【Davy 抓到, 我第一版写错】year 是从 <select>.value 来的**字串** '2026'
+  //   (`_pnlSetYear` 明确写 `_pnlState.year = String(y)`), 所以 `year === _fcCY` 拿字串比数字
+  //   → 永远 false → 底下两个 if 全部进不去 → **每个月都掉到最後一行**, 都变成 16/当月天数:
+  //   Jun 16/30 + Jul 16/31 + Aug 16/31 = 1.57 (Davy 画面上看到的就是这个)。
+  //   必须先转成数字再比。
+  const _fcY = Number(year);
   const _fcWeight = mIdx => {
-    if (year < _fcCY || (year === _fcCY && mIdx < _fcCM)) return 1;                  // 已过完
-    if (year > _fcCY || (year === _fcCY && mIdx > _fcCM)) return 0;                  // 还没到
-    const dim = new Date(year, mIdx + 1, 0).getDate();                               // 当月天数
+    if (_fcY < _fcCY || (_fcY === _fcCY && mIdx < _fcCM)) return 1;                  // 已过完
+    if (_fcY > _fcCY || (_fcY === _fcCY && mIdx > _fcCM)) return 0;                  // 还没到
+    const dim = new Date(_fcY, mIdx + 1, 0).getDate();                               // 当月天数
     return Math.min(1, _fcNow.getDate() / dim);
   };
   let _eff = 0; for (let i = from; i <= to; i++) _eff += _fcWeight(i);
