@@ -3721,7 +3721,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.44</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.45</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +3772,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.44</div>
+      <div class="nav-brand-version">v9.45</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -13819,12 +13819,13 @@ function _fmtSyncStamp(ms) {
   const pad = n => String(n).padStart(2, '0');
   const dd = pad(d.getDate());
   const mm = pad(d.getMonth() + 1);
-  const yyyy = d.getFullYear();
   let h = d.getHours();
   const min = pad(d.getMinutes());
   const ampm = h >= 12 ? 'PM' : 'AM';
   h = h % 12; if (h === 0) h = 12;
-  return `${dd}-${mm}-${yyyy} ${h}:${min} ${ampm}`;
+  // v9.45【Davy 定稿】不要年份 —— 这是「最近一次同步」的时间, 永远是最近几天的事; 省下的宽度手机上才放得下一行。
+  //   Ads 页和 Revenue 页两条同步行都走这里, 一起改。
+  return `${dd}-${mm} ${h}:${min} ${ampm}`;
 }
 
 // v7.04: Ads Spend 同步提示 — 显示自动同步渠道最新 updatedAt.
@@ -13867,11 +13868,14 @@ function _renderAdsSyncStatus(elId, channelId) {
   const stamp = _fmtSyncStamp(maxTs);
 
   let dot, text, color;
+  // v9.45【Davy 手机抓到 + 定稿】拿掉前面的渠道名 —— 上面 filter 已经选了渠道, 重复; 而且「Google + Meta ·
+  //   Last synced · 13-09-2026 9:39 AM」量到 295px, 跟 123/% (67px) 加起来在手机放不下, 会掉成两行。
+  //   红色那条保留渠道名在句尾 (告诉他去查哪个), 那是警报, 长一点可以。
   if (hoursAgo <= 2) {
-    dot = '🟢'; text = `${label} · Last synced · ${stamp}`; color = '#10B981';
+    dot = '🟢'; text = `Last synced · ${stamp}`; color = '#10B981';
   } else if (hoursAgo <= 24) {
     const h = Math.round(hoursAgo);
-    dot = '🟡'; text = `${label} · Last synced ${h}h ago · ${stamp}`; color = '#D97706';
+    dot = '🟡'; text = `Last synced ${h}h ago · ${stamp}`; color = '#D97706';
   } else {
     const days = Math.floor(hoursAgo / 24);
     dot = '🔴'; text = `${label} · Not synced for ${days} day${days > 1 ? 's' : ''} · ${stamp} — check ${label}`; color = '#DC2626';
@@ -16840,7 +16844,9 @@ function renderRevenueSummary(mArr) {
       { label: 'Existing',          html: buildCmpTable('Existing Customer Revenue', '% = share of that outlet revenue',  '#D97706',       getOld,    getOutletBase, false) },
       { label: 'Ads Sales',         html: buildCmpTable('Ads Sales (paid leads)',    '% = share of that outlet revenue',  '#3B82F6',       getAds,    getOutletBase, false) },
     ];
-    const revDef = 1; // 默认 Total Revenue
+    // v9.45【Davy 手机抓到】点 123/% 会整页重画, 之前这里写死 1 → 不管在哪个 tab 都跳回 Total Revenue。
+    //   现在记住上次切到哪个 (只在记忆体: 换页再回来仍是它, 重新载入才回默认 Total Revenue)。
+    const revDef = (_revTabIdx >= 0 && _revTabIdx < revPanes.length) ? _revTabIdx : 1;
     const revTabsH = revPanes.map((p, i) => `<button class="pill-tab${i === revDef ? ' active' : ''}" onclick="revSwitchTab(${i})">${esc(p.label)}</button>`).join('');
     const revPanesH = revPanes.map((p, i) => `<div class="rev-tabpane" data-rev-pane="${i}"${i === revDef ? '' : ' style="display:none;"'}>${p.html}</div>`).join('');
     html += `<div class="card" style="margin-top:14px;">
@@ -16854,7 +16860,9 @@ function renderRevenueSummary(mArr) {
   // v8.38: All Outlets 折线图已移除（原 setTimeout 绘制块删除）
 }
 // v8.38: Revenue 6 表切 tab（全站 pill-tab 样式）
+let _revTabIdx = -1;   // v9.45: 当前 Outlet Comparison tab (-1 = 还没切过 → 默认 Total Revenue)
 function revSwitchTab(idx) {
+  _revTabIdx = idx;
   const wrap = document.getElementById('revenueReportWrap'); if (!wrap) return;
   wrap.querySelectorAll('.rev-tabpane').forEach(p => { p.style.display = (Number(p.dataset.revPane) === idx) ? 'block' : 'none'; });
   wrap.querySelectorAll('.pill-tabs-inheader .pill-tab').forEach((b, i) => b.classList.toggle('active', i === idx));
