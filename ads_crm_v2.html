@@ -2170,6 +2170,21 @@ body.contact-view-table .modal-backdrop.open {
 /* Toast */
 .toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: var(--black); color: white; padding: 12px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; z-index: 200; box-shadow: var(--shadow-lg); animation: toastin 0.2s ease; }
 @keyframes toastin { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+/* v9.47【Davy 选的第 5 版】Sync 专用弹窗: 双行卡片 (标题 + 说明), 同一个元素原地换状态、不叠加、不用 emoji。
+   只管「Sync from Sheet」; 其他 .toast 一律不动。位置跟 .toast 一样 (bottom 100px 居中)。 */
+.sync-toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 11px; max-width: calc(100vw - 24px); background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px 10px 12px; font-size: 13px; color: var(--black); z-index: 200; box-shadow: var(--shadow-lg); animation: toastin 0.2s ease; }
+.sync-toast .st-txt { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.sync-toast .st-txt b { font-weight: 600; white-space: nowrap; }
+.sync-toast .st-txt span { font-size: 11.5px; color: var(--gray); }
+.sync-toast .st-ic { width: 18px; height: 18px; border-radius: 50%; flex: none; display: grid; place-items: center; }
+.sync-toast .st-ic svg { width: 11px; height: 11px; stroke: #fff; stroke-width: 2.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.sync-toast .st-ic.ok { background: var(--green); }
+.sync-toast .st-ic.fail { background: var(--red); }
+.sync-toast .st-spin { width: 12px; height: 12px; margin: 0 3px; border: 2px solid var(--purple); border-right-color: transparent; border-radius: 50%; flex: none; animation: stspin .8s linear infinite; }
+.sync-toast .st-spin.amber { border-color: var(--amber); border-right-color: transparent; }
+.sync-toast .st-act { margin-left: 4px; padding: 5px 10px; border-radius: 8px; background: var(--purple-bg); color: var(--purple-deep); font-weight: 700; font-size: 12px; flex: none; }
+@keyframes stspin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .sync-toast, .sync-toast .st-spin { animation: none; } }
 
 /* Stats */
 .stat-bar { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 8px; }
@@ -3721,7 +3736,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.46</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.47</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +3787,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.46</div>
+      <div class="nav-brand-version">v9.47</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5887,6 +5902,37 @@ function toast(msg) {
   t.className = 'toast'; t.textContent = msg;
   document.body.appendChild(t);
   setTimeout(() => t.remove(), 2000);
+}
+// v9.47【Davy 选的第 5 版】Sync 专用弹窗。kind: busy / warn(重试中) / ok / fail。
+//   同一个 #syncToast 原地换内容 (不叠加); ttl 到了自己消失; busy 给 240s 上限 (> flush 150s + fetch 75s), 免得 inner 意外抛错後卡着不走。
+//   只给「Sync from Sheet」那几个出口用, 其他 toast() 不动。
+let _syncToastTimer = null;
+function _syncToast(kind, title, detail, opts) {
+  opts = opts || {};
+  let el = document.getElementById('syncToast');
+  if (!el) { el = document.createElement('div'); el.id = 'syncToast'; document.body.appendChild(el); }
+  const ICONS = {
+    busy: '<i class="st-spin"></i>',
+    warn: '<i class="st-spin amber"></i>',
+    ok:   '<span class="st-ic ok"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>',
+    fail: '<span class="st-ic fail"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></span>'
+  };
+  el.className = 'sync-toast ' + kind;
+  el.innerHTML = (ICONS[kind] || '') + '<div class="st-txt"><b>' + escapeHTML(String(title)) + '</b>'
+    + (detail ? '<span>' + escapeHTML(String(detail)) + '</span>' : '') + '</div>'
+    + (opts.retry ? '<button type="button" class="st-act" onclick="_syncToastHide(); gsPullSilent();">Retry</button>' : '');
+  if (_syncToastTimer) { clearTimeout(_syncToastTimer); _syncToastTimer = null; }
+  _syncToastTimer = setTimeout(_syncToastHide, opts.ttl || 2200);
+}
+function _syncToastHide() {
+  const el = document.getElementById('syncToast'); if (el) el.remove();
+  if (_syncToastTimer) { clearTimeout(_syncToastTimer); _syncToastTimer = null; }
+}
+// 失败原因 → 人话标题。Google 那边的 (404 / timeout / 前门回 HTML / 5xx / 断网) 一律「Couldn't reach Google」。
+function _syncFailTitle(reason) {
+  // 断网时浏览器给的字: Chrome「Failed to fetch」/ Safari「Load failed」/ Firefox「NetworkError…」(第 1 轮审核 P2 抓到 Chrome 那个没吃到)
+  // HTTP 408 / 429 也是 Google 那边的暂时性问题, 一样归这边
+  return /404|timed out|non-JSON|compressed reply|HTTP (5|408|429)|network|Failed to fetch|Load failed|time limit/i.test(String(reason || '')) ? "Couldn't reach Google" : 'Sync failed';
 }
 function todayStr() {
   // v4.68 fix: use LOCAL date not UTC — otherwise after midnight local,
@@ -19806,7 +19852,8 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
   if (!url) return false; // No URL configured — skip silently
   // v7.90: 同步开口讲话 — 开始/失败都有 toast, 失败自动重试 1 次.
   //   之前全静默: pull 在跑或挂掉, 用户都以为"刷新没反应" (2026-07-04 bug 排查结论).
-  if (typeof toast === 'function') toast(isRetry ? ('🔄 Retrying sync (' + (attempt + 1) + '/' + SYNC_MAX_ATTEMPTS + ')…') : '🔄 Syncing from Sheet…');
+  _syncToast(isRetry ? 'warn' : 'busy', isRetry ? 'Google is slow' : 'Syncing',
+             isRetry ? ('Retrying ' + (attempt + 1) + ' of ' + SYNC_MAX_ATTEMPTS) : 'Fetching latest from Sheet', { ttl: 240000 });   // v9.47 (上限 > flush 150s + fetch 75s, 审核 P3)
   _setSyncState('busy', isRetry ? ('retry ' + (attempt + 1) + '/' + SYNC_MAX_ATTEMPTS) : '');
   const failSync = (reason, retryable) => {
     console.warn('[sync ' + (rid || '?') + '] failed:', reason);
@@ -19816,7 +19863,7 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     const withinBudget = Date.now() + delay + 5000 < deadline;
     if (retryable && nextAttempt < SYNC_MAX_ATTEMPTS && withinBudget) {
       _setSyncState('retry', reason + ' · retry ' + (nextAttempt + 1) + '/' + SYNC_MAX_ATTEMPTS);
-      if (typeof toast === 'function') toast('⚠️ ' + reason + ' — retrying (' + (nextAttempt + 1) + '/' + SYNC_MAX_ATTEMPTS + ') in ' + Math.round(delay / 1000) + 's…');
+      _syncToast('warn', 'Google is slow', 'Retrying ' + (nextAttempt + 1) + ' of ' + SYNC_MAX_ATTEMPTS + ' in ' + Math.round(delay / 1000) + 's', { ttl: delay + 3000 });   // v9.47
       // v9.34【Codex #8 P1-2】timer 要存 id (新一轮开始时取消), 到点还要验世代 ——
       //   中途手动 Pull 成功过的话 _syncGen 已变, 这颗旧 timer 一律不执行。双保险。
       if (!_pullRetryQueued) {
@@ -19830,7 +19877,8 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     } else {
       const suffix = retryable ? (' · stopped after ' + (attempt + 1) + ' attempt(s)') : '';
       _setSyncState('fail', reason + suffix);
-      if (typeof toast === 'function') toast('⚠️ Sync failed (' + reason + ') — showing your last saved data');
+      // v9.47: Google 那边的原因不印原文 (「delivery 404 (Google)」那种字给人看没意义); 别的原因才带上
+      _syncToast('fail', _syncFailTitle(reason), _syncFailTitle(reason) === 'Sync failed' ? (reason + ' · showing last saved data') : 'Showing last saved data', { retry: true, ttl: 8000 });
     }
     return false;
   };
@@ -19852,7 +19900,7 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     console.warn('[Auto-pull] BLOCKED: pending queue still has items — pull would overwrite local changes');
     // v9.33【Codex #7-4】讯息要分清楚: 这是「本地待写资料推不上去」, 不是 Sheet Pull 失败 —— 两回事。
     _setSyncState('fail', 'blocked: a local write failed to sync');
-    if (typeof toast === 'function') toast('⚠️ A local change failed to sync — pull paused to protect your data. Tap Sync to retry');
+    _syncToast('fail', 'Unsent changes', 'Pull paused to protect your data', { retry: true, ttl: 8000 });   // v9.47
     return false;
   }
   try {
@@ -19908,7 +19956,7 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
         if (typeof _updatePendingFreshness === 'function') _updatePendingFreshness();
       }
       _seg.apply = Date.now() - _tApply0; _syncTimingSave(_timing, _seg);
-      _setSyncState('ok'); if (typeof toast === 'function') toast('✅ Synced — already up to date'); return true;
+      _setSyncState('ok'); _syncToast('ok', 'Synced', 'Already up to date'); return true;   // v9.47
     }
 
     // v6.63: 用统一 helper 处理 normalize (与 gsPull 共享, 避免代码漂移)
@@ -19918,7 +19966,7 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     if (suspiciousLead) {
       console.warn('[Auto-pull] BLOCKED: suspicious lead columns:', Object.keys(suspiciousLead));
       _setSyncState('fail', 'blocked: unexpected Sheet columns');   // v9.32
-      if (typeof toast === 'function') toast('⚠️ Sync blocked: unexpected Sheet columns'); // v7.90: 不再静默
+      _syncToast('fail', 'Unexpected Sheet columns', 'Pull blocked to protect your data', { ttl: 8000 }); // v7.90: 不再静默; v9.47 换新弹窗
       return false;
     }
 
@@ -20031,10 +20079,10 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     }
     _lastPullSig = _sig;   // v9.13: 只有乾净套用完才记, 失败/被保护的下次会重试
     _setSyncState('ok');   // v9.32 —— v9.35: 走到这里代表主资料 + Inbox + badge 都好了
-    const msg = skipped.length > 0
-      ? `⚠️ Synced (${skipped.length} table(s) protected)`
-      : '✅ Synced from Sheet (' + state.leads.length + ' leads)';
-    if (typeof toast === 'function') toast(msg);
+    // v9.47: 新弹窗。被保护的表数只在说明那行讲, 标题一样是 Synced (资料确实进来了)
+    _syncToast('ok', 'Synced', skipped.length > 0
+      ? (state.leads.length.toLocaleString('en-MY') + ' leads · ' + skipped.length + ' table(s) protected')
+      : (state.leads.length.toLocaleString('en-MY') + ' leads · just now'));
     // Refresh select dropdowns (year, month, store, channel) based on new data
     try {
       if (typeof refreshSelects === 'function') refreshSelects();
@@ -23171,7 +23219,8 @@ async function pendingRefresh(mode) {
   mode = mode || 'manual';
   // 主 Sync 已经在跑 → 等它 (它会带回 Inbox 资料); 没在跑 → 起一轮
   if (typeof gsPullSilent === 'function') {
-    if (mode === 'manual' && typeof toast === 'function') toast('🔄 Syncing…');
+    // v9.47: 没设 URL 时 inner 会静默 return, 弹了就没人换掉 (第 1 轮审核 P2) → 有 URL 才弹
+    if (mode === 'manual' && typeof getGsUrl === 'function' && getGsUrl()) _syncToast('busy', 'Syncing', 'Fetching latest from Sheet', { ttl: 240000 });
     const btn = document.getElementById('pendingRefreshBtn');
     if (btn) btn.style.transform = 'rotate(360deg)';
     try { await gsPullSilent(); }
