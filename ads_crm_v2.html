@@ -3721,7 +3721,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.45</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.46</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +3772,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.45</div>
+      <div class="nav-brand-version">v9.46</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -19885,7 +19885,9 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     const _tApply0 = Date.now();
     if (!d.success) {
       const serverReason = String(d.error || 'server error');
-      const transientServer = /system busy|temporar|try again|service unavailable|timed? out|quota/i.test(serverReason);
+      // v9.46 配後端 v3.89: 後端读表失败不再伪装成空表, 会回 success:false + Google Sheets 服务的错误原文。
+      //   那些多半是暂时性的 (Sheets 服务抖一下), 要归入可重试, 否则会变成「不重试的红字」。
+      const transientServer = /system busy|temporar|try again|service unavailable|timed? out|quota|service (error|spreadsheets)|failed while accessing|simultaneous invocations|invoked too many times|internal error/i.test(serverReason);
       return failSync(serverReason, transientServer);
     }
     // v9.13【Codex FINAL P2 — 我 v9.12 自己造成的倒退】原本直接比对整包 response 文字,
