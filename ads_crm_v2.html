@@ -3721,7 +3721,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.43</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.44</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3772,7 +3772,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.43</div>
+      <div class="nav-brand-version">v9.44</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -19661,9 +19661,11 @@ async function checkAuthStatusForSettings() {
 //   但「哪一张表最慢」没人知道, 不量就只能猜 (已经猜错两次)。
 // 【为什么常驻】Davy 要求「以後看也容易」—— 临时端点量完就删, 下次又要重做。
 //   成本只有每张表两个 Date.now(), 所以直接留著。
-function _syncTimingSave(t) {
+// v9.44: 第二个参数 = 前端分段 (flush/ttfb/download/decode/apply, ms)。2026-09-13 实测证明「後端读表 8s 正常、
+//   但整趟 59s」这种事存在 —— 没有前端分段, 那 51s 去哪了根本看不见。
+function _syncTimingSave(t, client) {
   if (!t || !t.tabs) return;
-  try { localStorage.setItem('ads_crm_sync_timing', JSON.stringify({ ts: Date.now(), t: t })); } catch (e) {}
+  try { localStorage.setItem('ads_crm_sync_timing', JSON.stringify({ ts: Date.now(), t: t, client: client || null })); } catch (e) {}
 }
 function _syncTimingHtml() {
   let d = null;
@@ -19690,8 +19692,7 @@ function _syncTimingHtml() {
       <b>Sync timing</b>
       <span style="color:var(--silver);font-size:11px;">${mins < 1 ? '刚刚' : mins + ' 分钟前'}${t.skippedStock ? ' · 已跳过库存 3 表' : ' · 含库存 3 表'}</span>
     </div>
-    <div style="color:var(--gray);margin-bottom:6px;">後端读表合计 <b style="color:var(--black);">${(t.totalMs / 1000).toFixed(2)} 秒</b>（不含网路传输）</div>
-    <table style="width:100%;border-collapse:collapse;">
+    <div style="color:var(--gray);margin-bottom:6px;">後端读表合计 <b style="color:var(--black);">${(t.totalMs / 1000).toFixed(2)} 秒</b>（不含网路传输）</div>    <table style="width:100%;border-collapse:collapse;">
       <tr style="font-size:10px;color:var(--silver);text-transform:uppercase;letter-spacing:.4px;">
         <td>Tab</td><td style="text-align:right;">Rows</td><td style="text-align:right;">Time</td><td style="text-align:right;">%</td>
       </tr>${rows}
@@ -19722,10 +19723,19 @@ let _pullRetryTimer = null;   // v9.34【Codex #8 P1-2】要存 timer id 才取�
 function _syncBusyNow() { return _syncPromise !== null; }
 // ══ v9.37【交付包变小 + 有界重试】══════════════════════════════════════════
 // v9.36 的 5 × 75 秒会把一次 Google 404 放大成 3–7 分钟。现在只对临时交付故障重试，
-// 最多 3 发且整轮不超过 180 秒；权限、资料保护、後端业务错误不会盲重试。
+// 最多 3 发且整轮不超过 SYNC_TOTAL_BUDGET_MS (v9.37 是 180 秒, v9.44 起 270 秒, 见下面)；权限、资料保护、後端业务错误不会盲重试。
 const SYNC_MAX_ATTEMPTS = 3;
-const SYNC_BACKOFF_MS = [5000, 15000];
-const SYNC_TOTAL_BUDGET_MS = 180000;
+// v9.44【2026-09-13 实测 20 次 pull + 30 次 ping】Google 前门的卡顿是「一波 1–2 分钟」(09:29:49 卡 51s、
+//   09:38:52 卡 57s→404、之後 7s/18s 才恢复)。旧退避 5s/15s 让三次重试全落在同一波里 → 3/3 全挂。
+//   而且旧总预算 180s: 前两次各 75s 超时後 (75+5+75+15=170) 第 3 次只剩 10 秒 —— 那一次等於假的。
+//   现在: 退避拉开跨过一波; 单次仍 75s (Codex: 有一次 59.3s 才回的成功样本, 不能砍短);
+//   总预算 = 3×75 + 10 + 30 = 265 → 270s, 算术上保证每一次都拿得到完整 75s。
+//   ⚠️ flush / Inbox POST 的时间**不计入**这个预算 (见 _roundExcludedMs) —— 它们有自己的上限 (150s / 45s)。
+const SYNC_BACKOFF_MS = [10000, 30000];
+const SYNC_ATTEMPT_TIMEOUT_MS = 75000;
+const SYNC_TOTAL_BUDGET_MS = 270000;
+let _roundExcludedMs = 0;        // 这一轮里 flush + 等 Inbox POST 花掉的时间, 从预算里扣回来
+let _syncSegLast = null;         // 最近一次 attempt 的分段计时 (给 coordinator 那行 console 用)
 
 async function _decodePullPayload(text) {
   if (!String(text).startsWith('GZ1:')) return JSON.parse(text);
@@ -19739,11 +19749,13 @@ async function _decodePullPayload(text) {
 
 function gsPullSilent(attempt, roundStartedAt) {
   attempt = attempt || 0;
-  roundStartedAt = roundStartedAt || Date.now();
   // v9.34【Codex #8 P1-1 修正】上一版在 Inbox 阶段前就把 _syncPromise 清空 ——
   //   Inbox POST 最多 45 秒期间任何新呼叫都会开第二条 full GET (Codex 动态测试: innerCalls 1→2)。
   //   现在整轮 (pull + inbox) 都握着同一个 promise, 直到全部结束才放。
   if (_syncPromise) return _syncPromise;
+  // v9.44: 新的一轮 → 扣除额归零。⚠️ 一定要放在上面那行 return 之後 —— 第 1 轮审核抓到: 放前面的话,
+  //   同步跑到一半 Davy 按 Sync (无参数呼叫) 会把**进行中那一轮**已扣的 flush 时间归零, 第 3 次又变短。
+  if (!roundStartedAt) { roundStartedAt = Date.now(); _roundExcludedMs = 0; }
   // v9.34【Codex #8 P1-2】新的一轮开始 = 旧的 retry 作废 (手动成功後旧 timer 不得再拉)
   if (_pullRetryTimer) { clearTimeout(_pullRetryTimer); _pullRetryTimer = null; _pullRetryQueued = false; }
   const gen = ++_syncGen;
@@ -19753,7 +19765,7 @@ function gsPullSilent(attempt, roundStartedAt) {
     const t0 = Date.now();
     try {
       // v9.34【Codex #8 P1-1 反向互斥】Inbox POST 先在跑的话, 等它结束再开主 GET —— 两个方向都不重叠
-      if (_pendingPromise) { try { await _pendingPromise; } catch (e) {} }
+      if (_pendingPromise) { const _w0 = Date.now(); try { await _pendingPromise; } catch (e) {} _roundExcludedMs += Date.now() - _w0; }   // v9.44: 等别人的时间不算我的
       _syncPhase = 'pull';
       try { ok = (await _gsPullSilentInner(attempt, rid, gen, roundStartedAt)) === true; }
       catch (e) { console.warn('[sync ' + rid + '] inner threw:', e); }
@@ -19770,7 +19782,10 @@ function gsPullSilent(attempt, roundStartedAt) {
     } finally {
       _syncPhase = null;
       _syncPromise = null;
-      console.info('[sync ' + rid + '] ' + (ok ? 'OK' : 'FAIL') + ' in ' + (Date.now() - t0) + 'ms');
+      // v9.44: 分段计时 —— 以前只有总耗时一行, 「後端读表 vs Google 前门 vs 下载 vs 套用」分不开, 只能猜。
+      const _sg = _syncSegLast;
+      console.info('[sync ' + rid + '] ' + (ok ? 'OK' : 'FAIL') + ' in ' + (Date.now() - t0) + 'ms'
+        + (_sg ? (' · flush ' + _sg.flush + ' · ttfb ' + _sg.ttfb + ' · download ' + _sg.download + ' · decode ' + _sg.decode + ' · apply ' + _sg.apply + ' · backend ' + (_sg.backend == null ? '?' : _sg.backend)) : ''));
     }
     return ok;
   })();
@@ -19778,6 +19793,7 @@ function gsPullSilent(attempt, roundStartedAt) {
 }
 async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
   const isRetry = attempt > 0;
+  _syncSegLast = null;   // v9.44: 没跑到分段计时就 return 的话, coordinator 不准印上一轮的数字
   const url = getGsUrl();
   if (!url) return false; // No URL configured — skip silently
   // v7.90: 同步开口讲话 — 开始/失败都有 toast, 失败自动重试 1 次.
@@ -19788,7 +19804,7 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     console.warn('[sync ' + (rid || '?') + '] failed:', reason);
     const nextAttempt = attempt + 1;
     const delay = SYNC_BACKOFF_MS[Math.min(attempt, SYNC_BACKOFF_MS.length - 1)] || 0;
-    const deadline = roundStartedAt + SYNC_TOTAL_BUDGET_MS;
+    const deadline = roundStartedAt + SYNC_TOTAL_BUDGET_MS + _roundExcludedMs;   // v9.44: flush 时间扣回来
     const withinBudget = Date.now() + delay + 5000 < deadline;
     if (retryable && nextAttempt < SYNC_MAX_ATTEMPTS && withinBudget) {
       _setSyncState('retry', reason + ' · retry ' + (nextAttempt + 1) + '/' + SYNC_MAX_ATTEMPTS);
@@ -19813,11 +19829,17 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
   // v3.69: CRITICAL — flush pending local writes BEFORE pulling, otherwise
   // this pull would overwrite leads/revenue that haven't made it to Sheet yet.
   // v6.15 P1-3 修复: flush 失败时停止 pull (返回 false = 还有未同步项)
+  const _seg = { flush: 0, ttfb: 0, download: 0, decode: 0, apply: 0, backend: null };   // v9.44 分段计时 (ms)
+  _syncSegLast = _seg;
+  let _tFetch0 = 0, _tText0 = 0;   // 宣告在 try 外面, 超时/断线时 catch 才补得上「等了多久」
   let flushOk = true;
+  const _tFlush0 = Date.now();
   try { flushOk = await flushPendingQueue(); } catch (e) {
     console.warn('[Auto-pull] flush pending failed:', e);
     flushOk = false;
   }
+  _seg.flush = Date.now() - _tFlush0;
+  _roundExcludedMs += _seg.flush;   // v9.44: flush 有自己的 150s 上限, 不准吃 pull 的预算
   if (!flushOk) {
     console.warn('[Auto-pull] BLOCKED: pending queue still has items — pull would overwrite local changes');
     // v9.33【Codex #7-4】讯息要分清楚: 这是「本地待写资料推不上去」, 不是 Sheet Pull 失败 —— 两回事。
@@ -19829,10 +19851,12 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     const _rq = { rid: rid || '', ...(_stockVer ? { stockver: _stockVer } : {}) };
     // v9.37 + 後端 v3.84: 支援时请求 gzip-base64 小包；旧後端会忽略 enc, 仍返回普通 JSON。
     if (typeof DecompressionStream === 'function') _rq.enc = 'gzip';
-    const remaining = SYNC_TOTAL_BUDGET_MS - (Date.now() - roundStartedAt);
+    const remaining = SYNC_TOTAL_BUDGET_MS + _roundExcludedMs - (Date.now() - roundStartedAt);
     if (remaining < 5000) return failSync('sync time limit reached', false);
-    const requestTimeoutMs = Math.min(75000, remaining);
+    const requestTimeoutMs = Math.min(SYNC_ATTEMPT_TIMEOUT_MS, remaining);
+    _tFetch0 = Date.now();
     const r = await fetch(gsGetUrl(url, 'pull', _rq), { signal: AbortSignal.timeout(requestTimeoutMs) }); // v7.71: 版本没变后端就不送库存 3 表
+    _seg.ttfb = Date.now() - _tFetch0;
     // v9.33【Codex #7-5】错误分类: 以前 404/HTML 全被 JSON.parse 炸掉再笼统叫「Google blocked」。
     //   404 是实测确认的「ContentService 最终交付失败」形态 (Davy 截图 + Codex 复现), 单独讲。
     if (r.status === 404) return failSync('delivery 404 (Google)', true);
@@ -19840,12 +19864,17 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
       const transientHttp = r.status === 408 || r.status === 425 || r.status === 429 || r.status >= 500;
       return failSync('HTTP ' + r.status, transientHttp);
     }
+    _tText0 = Date.now();
     const text = await r.text();
+    _seg.download = Date.now() - _tText0;
     let d;
+    const _tDec0 = Date.now();
     try { d = await _decodePullPayload(text); }
     catch (e) {
       return failSync(String(text).startsWith('GZ1:') ? 'compressed reply damaged' : 'non-JSON response (Google front door)', true);
     }
+    _seg.decode = Date.now() - _tDec0;
+    const _tApply0 = Date.now();
     if (!d.success) {
       const serverReason = String(d.error || 'server error');
       const transientServer = /system busy|temporar|try again|service unavailable|timed? out|quota/i.test(serverReason);
@@ -19857,7 +19886,8 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     //   讽刺的是我加计时正是为了查同步慢。改成: 先把诊断资料拆出来, 再拿**纯资料**算指纹。
     const _timing = d.data && d.data._timing;
     if (_timing) delete d.data._timing;
-    _syncTimingSave(_timing);                    // 旧後端没这栏 → _syncTimingSave 自己会跳过
+    _seg.backend = _timing ? _timing.totalMs : null;
+    _syncTimingSave(_timing, _seg);              // 旧後端没这栏 → _syncTimingSave 自己会跳过 (v9.44: 连前端分段一起存)
     const _sig = JSON.stringify(d.data);
     // v9.32: 「资料没变」也是同步成功 —— 这条早退路径以前什么都没记, 状态会一直停在 busy
     if (_sig === _lastPullSig) {
@@ -19867,6 +19897,7 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
         _savePendingToCache(d.data.Pending);
         if (typeof _updatePendingFreshness === 'function') _updatePendingFreshness();
       }
+      _seg.apply = Date.now() - _tApply0; _syncTimingSave(_timing, _seg);
       _setSyncState('ok'); if (typeof toast === 'function') toast('✅ Synced — already up to date'); return true;
     }
 
@@ -20011,8 +20042,12 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
       else if (pageId === 'page-entry' && typeof renderEntry === 'function') renderEntry();
       if (typeof renderTopbarToday === 'function') renderTopbarToday();
     } catch (e) { console.warn('[Auto-pull] re-render failed:', e); }
+    _seg.apply = Date.now() - _tApply0; _syncTimingSave(_timing, _seg);   // v9.44: 套用 + 重画的时间
     return true;   // v9.33: 完整套用成功 —— coordinator 据此决定要不要补拉 Inbox
   } catch (e) {
+    // v9.44: 超时/断线是最想看分段的场景 —— 把「等到被砍为止」的时间补进去, 不准留 0
+    if (_tText0) { if (!_seg.download) _seg.download = Date.now() - _tText0; }
+    else if (_tFetch0 && !_seg.ttfb) _seg.ttfb = Date.now() - _tFetch0;
     // v9.33: JSON parse 已在上面单独分类, 这里剩 timeout / 网路错误
     let reason = e.message || 'network error';
     if (e.name === 'TimeoutError' || e.name === 'AbortError') reason = 'timed out';
