@@ -3746,7 +3746,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.52</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.53</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3797,7 +3797,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.52</div>
+      <div class="nav-brand-version">v9.53</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -19770,7 +19770,8 @@ function _syncLogStart(at) {
 }
 function _syncLogAttempt(ok, ms, seg) {
   if (!_syncRound) return;
-  _syncRound.tries.push({ ms, ttfb: seg ? seg.ttfb : null, be: seg ? seg.backend : null, r: ok ? 'OK' : (_syncFailReason || 'stopped') });
+  _syncRound.tries.push({ ms, ttfb: seg ? seg.ttfb : null, be: seg ? seg.backend : null, r: ok ? 'OK' : (_syncFailReason || 'stopped'),
+    fl: seg ? seg.flush : null, up: seg ? seg.up : null, dl: seg ? seg.download : null, ap: seg ? seg.apply : null });   // v9.53: 上传 / 下载 / 套用也记
   _syncLogKeepOpen();
   if (ok) _syncLogFinish('OK');
   else if (!_pullRetryQueued) _syncLogFinish('Failed');   // 有排重试 → 这一轮还没完
@@ -19846,7 +19847,10 @@ function syncLogCopy() {
   const lines = log.map(e => {
     const d = new Date(e.at);
     const when = String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + _slTime(e.at);
-    const tries = (e.tries || []).map((t, i) => '#' + (i + 1) + ' ' + _slSec(t.ms) + ' ' + t.r + ' (ttfb ' + _slSec(t.ttfb) + ', be ' + _slSec(t.be) + ')').join(' · ');
+    const tries = (e.tries || []).map((t, i) => '#' + (i + 1) + ' ' + _slSec(t.ms) + ' ' + t.r + ' ('
+      + (t.up ? 'upload ' + _slSec(t.fl) + ' x' + t.up + ', ' : '')   // v9.53: 有上传本机改动才印
+      + 'ttfb ' + _slSec(t.ttfb) + ', be ' + _slSec(t.be)
+      + (t.dl != null ? ', dl ' + _slSec(t.dl) + ', apply ' + _slSec(t.ap) : '') + ')').join(' · ');
     return when + ' | gap ' + _slDur(e.gap) + ' | ' + e.net + ' | ' + _slSec(e.ms) + ' ' + e.result
       + (e.hid >= 1000 ? ' | away ' + _slDur(e.hid) : '') + ' | ' + (tries || 'no reply yet');
   });
@@ -19974,12 +19978,13 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     flushOk = false;
   }
   _seg.flush = Date.now() - _tFlush0;
+  _seg.up = _flushLastCount;   // v9.53: 这次上传了几笔本机改动
   _roundExcludedMs += _seg.flush;   // v9.44: flush 有自己的 150s 上限, 不准吃 pull 的预算
   if (!flushOk) {
     console.warn('[Auto-pull] BLOCKED: pending queue still has items — pull would overwrite local changes');
     // v9.33【Codex #7-4】讯息要分清楚: 这是「本地待写资料推不上去」, 不是 Sheet Pull 失败 —— 两回事。
     _setSyncState('fail', 'blocked: a local write failed to sync');
-    _syncFailReason = 'unsent changes';   // v9.52 Sync Log
+    _syncFailReason = 'unsent changes' + (_flushLastErr ? ': ' + _flushLastErr : '');   // v9.52 Sync Log (v9.53 带上传失败原因)
     _syncToast('fail', SYNC_WORDS.unsent, 'Pull paused to protect your data', { retry: true, ttl: 8000 });   // v9.47
     return false;
   }
@@ -20357,6 +20362,9 @@ function updatePendingBadge() {
 //     (失败多半是系统性的: 冷链/404/限流 —— 后面的打了也一样死, 还拖时间)。
 //  另: 全程共用一个 promise, 并发呼叫复用同一轮, 不会两条 flush 同时跑。
 let _flushPromise = null;
+// v9.53: 第一批真实 Sync Log 显示卡在「上传本机改动」那段 (16:25 等 49 秒 → unsent changes), 但原因只印在 console。
+//   记下最近一次上传几笔、为什么停, 给 Sync Log 用。
+let _flushLastErr = null, _flushLastCount = 0;
 function flushPendingQueue() {
   if (_flushPromise) return _flushPromise;
   _flushPromise = _flushPendingQueueInner().finally(() => { _flushPromise = null; });
@@ -20372,6 +20380,7 @@ async function _flushPendingQueueInner() {
     q = q.map(op => op._qid ? op : { ...op, _qid: Date.now().toString(36) + Math.random().toString(36).slice(2, 7) });
     setPendingQueue(q);
   }
+  _flushLastErr = null; _flushLastCount = q.length;   // v9.53 Sync Log
   if (q.length === 0) return true;
   console.log(`[Pending Queue] Flushing ${q.length} operation(s)`);
   const succeeded = new Set();
@@ -20384,7 +20393,7 @@ async function _flushPendingQueueInner() {
     //   (Codex 用假时钟实测: 4 笔各 64 秒 → 发了 3 笔、192 秒才停。)
     //   改成真正的 deadline: 每笔 timeout = min(65s, 剩余时间); 剩不到 5 秒就不开新请求。
     const _left = 150000 - (Date.now() - t0);
-    if (_left < 5000) { console.warn('[Pending Queue] round deadline reached, stopping'); break; }
+    if (_left < 5000) { console.warn('[Pending Queue] round deadline reached, stopping'); _flushLastErr = 'upload time limit'; break; }
     const _opTimeout = Math.min(65000, _left);
     try {
       const body = op.action === 'delete'
@@ -20403,6 +20412,7 @@ async function _flushPendingQueueInner() {
       //   op 留在 queue 下次重发是安全方向 (upsert 按 id 覆盖, 幂等);
       //   残余竞态「晚到的旧写入盖掉更新的」要後端版本号才能根治, 列入後端下一轮 (见 handoff)。
       console.warn('[Pending Queue] write failed, keeping item + stopping round:', op.sheet, op.id || (op.record && op.record.id), e.message);
+      _flushLastErr = (e.name === 'TimeoutError' || e.name === 'AbortError') ? 'timed out' : (e.message || 'network error');   // v9.53 Sync Log
       stopped = true;
     }
   }
