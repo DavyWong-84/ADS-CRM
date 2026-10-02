@@ -3172,6 +3172,16 @@ body.contact-view-table .modal-backdrop.open {
 .rpt-btn-row .rpt-copy { flex: 0 0 auto; padding-left: 16px; padding-right: 16px; }
 .rpt-btn-row .rpt-send { flex: 1; }
 .rpt-btn-row .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+/* ══ v9.52: Sync Log 表 (Davy 选 B 版) ══ */
+.sl-table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.sl-table th { font-size: 10px; text-transform: uppercase; letter-spacing: .03em; color: var(--silver); font-weight: 700; text-align: right; padding: 8px 2px; border-bottom: 1px solid var(--border); }
+.sl-table td { text-align: right; padding: 9px 2px; border-top: 1px solid #f0f0f4; white-space: nowrap; }
+.sl-table th:first-child, .sl-table td:first-child { text-align: left; padding-left: 6px; }
+.sl-table th:last-child, .sl-table td:last-child { padding-right: 6px; }
+.sl-table tr.slow td { background: var(--adscost-bg); }
+.sl-table tr.slow td.sl-tot { color: var(--adscost-color); font-weight: 700; }
+.sl-table tr.sl-day td { background: #fafafc; color: var(--silver); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; text-align: left; padding: 6px; }
+.sl-empty { padding: 28px 16px; text-align: center; color: var(--silver); font-size: 13px; }
 
 /* ══ v8.90: Platforms & Channels 树状 ══ */
 .tg { border-bottom: 1px solid var(--border); }
@@ -3736,7 +3746,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.51</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.52</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3787,7 +3797,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.51</div>
+      <div class="nav-brand-version">v9.52</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4481,6 +4491,14 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
                   <span class="settings-row-chevron">›</span>
                 </div>
               </div>
+              <!-- v9.52 -->
+              <div class="settings-row" onclick="openSettingsModal('synclog')">
+                <div><div class="settings-row-label">Sync Log</div></div>
+                <div class="settings-row-value">
+                  <span id="settingsSyncLogCount_m">—</span>
+                  <span class="settings-row-chevron">›</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -4583,6 +4601,11 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
             <div class="settings-md-nav-row" data-section="github" onclick="selectSettingsSection('github')">
               <span>GitHub deploy</span>
               <span class="settings-md-nav-meta" id="settingsGitHubStatus">Not configured</span>
+            </div>
+            <!-- v9.52 -->
+            <div class="settings-md-nav-row" data-section="synclog" onclick="selectSettingsSection('synclog')">
+              <span>Sync Log</span>
+              <span class="settings-md-nav-meta" id="settingsSyncLogCount">—</span>
             </div>
           </div>
         </div>
@@ -17032,7 +17055,8 @@ function openSettingsModal(kind) {
     github: 'GitHub deploy',
     backup: 'Cloud backup',
     dailyreport: 'Daily report',  // v8.77
-    ytdreport: 'YTD report'       // v8.79
+    ytdreport: 'YTD report',      // v8.79
+    synclog: 'Sync Log'           // v9.52
   };
   const body = _buildSettingsModalBody(kind);
   const modalHTML = `
@@ -17059,7 +17083,8 @@ function selectSettingsSection(kind) {
     github: 'GitHub deploy',
     backup: 'Cloud backup',
     dailyreport: 'Daily report',  // v8.77
-    ytdreport: 'YTD report'       // v8.79
+    ytdreport: 'YTD report',      // v8.79
+    synclog: 'Sync Log'           // v9.52
   };
   const detail = document.getElementById('settingsMdDetail');
   if (!detail) return;
@@ -17267,6 +17292,18 @@ function _buildSettingsModalBody(kind) {
       </div>
     `;
   }
+  // v9.52: Sync Log (Davy 选 B 版表格 + 一键复制)
+  if (kind === 'synclog') {
+    return `
+      <div class="settings-modal-section" style="padding:0"><div id="syncLogTable"></div></div>
+      <div class="settings-modal-section">
+        <div class="rpt-btn-row">
+          <button class="btn btn-outline rpt-copy" onclick="syncLogClear()">Clear</button>
+          <button class="btn btn-primary rpt-send" id="slCopyBtn" onclick="syncLogCopy()">Copy</button>
+        </div>
+      </div>
+    `;
+  }
   return '<div style="padding:20px;">Unknown setting</div>';
 }
 
@@ -17317,6 +17354,7 @@ function _initSettingsModal(kind) {
     _yrSending = false;
     const cb = document.getElementById('yrCopyBtn'); if (cb) { cb.disabled = true; cb.textContent = 'Copy'; }   // v8.89
   }
+  if (kind === 'synclog') _syncLogRender();   // v9.52
 }
 
 // Mirror the legacy lists into the modal (v5.76: 用新 cl-row 风格 + iOS toggle + color picker modal)
@@ -18637,9 +18675,12 @@ function ytdReportAction() {
 async function copyReportText(kind) {
   const text = kind === 'daily' ? _drText : _yrText;
   if (!text) { toast('先按 Build report'); return; }
-  const btn = document.getElementById(kind === 'daily' ? 'drCopyBtn' : 'yrCopyBtn');
+  await _copyWithFeedback(text, document.getElementById(kind === 'daily' ? 'drCopyBtn' : 'yrCopyBtn'), '✓ 已复制 — 可以直接贴进 WhatsApp');
+}
+// v9.52: 从 copyReportText 抽出来, Sync Log 的 Copy 共用同一支 (不另写第三份复制)
+async function _copyWithFeedback(text, btn, okMsg, failMsg) {
   const done = () => {
-    toast('✓ 已复制 — 可以直接贴进 WhatsApp');
+    toast(okMsg);
     if (btn) { const o = btn.textContent; btn.textContent = '✓ Copied'; setTimeout(() => { btn.textContent = o; }, 1500); }
   };
   try {
@@ -18651,8 +18692,10 @@ async function copyReportText(kind) {
     ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand('copy'); done(); }
-    catch (e2) { toast('⚠️ 复制失败 — 请长按上面的预览框手动选取'); }
+    // v9.52 审核 P3: execCommand 失败是回 false 不是丢错 —— 以前照样显示 Copied (失败伪装成功)
+    let copied = false;
+    try { copied = document.execCommand('copy'); } catch (e2) {}
+    if (copied) done(); else toast(failMsg || '⚠️ 复制失败 — 请长按上面的预览框手动选取');
     document.body.removeChild(ta);
   }
 }
@@ -19690,6 +19733,139 @@ const SYNC_TOTAL_BUDGET_MS = 270000;
 let _roundExcludedMs = 0;        // 这一轮里 flush + 等 Inbox POST 花掉的时间, 从预算里扣回来
 let _syncSegLast = null;         // 最近一次 attempt 的分段计时 (给 coordinator 那行 console 用)
 
+// ══ v9.52【Davy 选 B 版】Sync Log ════════════════════════════════════════════
+//   为什么: 「偶尔卡」在小爱的电脑上量不到 (Davy 一直在用, 後台一直醒着; 卡的是他手机那条网路)。
+//   所以让每台装置自己记最近 50 轮刷新, 卡的时候 Davy 一键 Copy 贴给 AI 看卡在哪一段。
+//   只存本机 localStorage, 不上传、不进 Sheet。一轮 = 第一次请求到最後结果 (含重试)。
+const SYNC_LOG_KEY = 'adscrm_syncLog';
+const SYNC_LOG_MAX = 50;
+const SYNC_LOG_SLOW_MS = 8000;   // 平常 3–4 秒; 8 秒以上整行标红 (扣掉切去别的 app 的时间)
+// 第 2 轮审核 P1: 卡住时 Davy 会下拉刷新 / 关页面 —— 那一轮只在内存里就整个消失, 偏偏是最想抓的那次。
+//   所以进行中那一轮也落地 (OPEN_KEY), 下次开档发现没结束 → 补记 Interrupted。
+const SYNC_LOG_OPEN_KEY = 'adscrm_syncLogOpen';
+const SYNC_LOG_CELL = { Replaced: 'Redo', Interrupted: 'Closed' };   // 表格 Total 栏的短字 (360px 放得下); Copy 用全名
+let _syncRound = null;           // 进行中这一轮 { at, gap, net, tries: [], hid, hidAt, upd }
+let _syncFailReason = null;      // 这一次 attempt 失败的原因 (failSync 写入)
+let _syncLogSaveFailed = false;  // 写不进去 (例如空间满) → 计数显示 Error, 不装没事
+function _syncLogRead() {        // 读不到 → null (不是空阵列 —— 「坏了」跟「还没记录」要分开)
+  try { const a = JSON.parse(localStorage.getItem(SYNC_LOG_KEY) || '[]'); return Array.isArray(a) ? a : null; } catch (e) { return null; }
+}
+function _syncNet() {
+  if (navigator.onLine === false) return 'Offline';
+  const t = navigator.connection && navigator.connection.type;   // Android Chrome 有; 电脑 Chrome 没有 → —
+  return t === 'wifi' ? 'Wi-Fi' : t === 'cellular' ? 'Mobile' : t === 'ethernet' ? 'Cable' : '—';
+}
+function _syncLogKeepOpen() {    // 进行中这一轮落地; upd = 最後还活着的时间
+  if (!_syncRound) return;
+  _syncRound.upd = Date.now();
+  try { localStorage.setItem(SYNC_LOG_OPEN_KEY, JSON.stringify(_syncRound)); } catch (e) {}
+}
+function _syncLogStart(at) {
+  if (!getGsUrl()) return;
+  if (_syncRound) _syncLogFinish('Replaced');   // 上一轮还在等重试就被新的一轮取代
+  const log = _syncLogRead();
+  const prev = log && log[0];
+  _syncRound = { at, gap: prev ? at - prev.at : null, net: _syncNet(), tries: [], hid: 0, hidAt: document.visibilityState === 'hidden' ? at : null };
+  _syncLogKeepOpen();
+}
+function _syncLogAttempt(ok, ms, seg) {
+  if (!_syncRound) return;
+  _syncRound.tries.push({ ms, ttfb: seg ? seg.ttfb : null, be: seg ? seg.backend : null, r: ok ? 'OK' : (_syncFailReason || 'stopped') });
+  _syncLogKeepOpen();
+  if (ok) _syncLogFinish('OK');
+  else if (!_pullRetryQueued) _syncLogFinish('Failed');   // 有排重试 → 这一轮还没完
+}
+function _syncLogFinish(result) {
+  const r = _syncRound; _syncRound = null;
+  if (!r) return;
+  try { localStorage.removeItem(SYNC_LOG_OPEN_KEY); } catch (e) {}
+  _syncLogWrite(r, result, Date.now());
+}
+function _syncLogWrite(r, result, endAt) {
+  if (r.hidAt != null) r.hid = (r.hid || 0) + Math.max(0, endAt - r.hidAt);
+  const last = r.tries[r.tries.length - 1];
+  const entry = { at: r.at, gap: r.gap, net: r.net, ms: endAt - r.at, hid: r.hid || 0, be: last ? last.be : null, result, tries: r.tries };
+  const log = _syncLogRead() || [];
+  log.unshift(entry);
+  try { localStorage.setItem(SYNC_LOG_KEY, JSON.stringify(log.slice(0, SYNC_LOG_MAX))); _syncLogSaveFailed = false; }
+  catch (e) { _syncLogSaveFailed = true; console.warn('[sync log] save failed:', e); }
+  _syncLogCount();
+  if (document.getElementById('syncLogTable')) _syncLogRender();
+}
+// 第 2 轮审核 P2: 刷新後切去 WhatsApp 一分钟, 那一分钟不准算成「网路卡」—— 记下在背景的时间
+document.addEventListener('visibilitychange', () => {
+  const r = _syncRound; if (!r) return;
+  if (document.visibilityState === 'hidden') { if (r.hidAt == null) r.hidAt = Date.now(); }
+  else if (r.hidAt != null) { r.hid += Date.now() - r.hidAt; r.hidAt = null; }
+  _syncLogKeepOpen();
+});
+window.addEventListener('pagehide', _syncLogKeepOpen);   // 刷新 / 关页面那一刻: 记下等了多久才放弃
+function _syncLogCount() {
+  const log = _syncLogRead();
+  const txt = (log && !_syncLogSaveFailed) ? String(log.length) : 'Error';
+  ['settingsSyncLogCount', 'settingsSyncLogCount_m'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = txt; });
+}
+function _slDur(ms) {            // 40s / 3m / 2h10m
+  if (ms == null) return '—';
+  const s = Math.round(ms / 1000);
+  if (s < 60) return s + 's';
+  const m = Math.round(s / 60);
+  if (m < 60) return m + 'm';
+  if (m < 1440) return Math.floor(m / 60) + 'h' + String(m % 60).padStart(2, '0') + 'm';
+  return Math.floor(m / 1440) + 'd' + String(Math.floor(m % 1440 / 60)).padStart(2, '0') + 'h';   // 超过一天: 2d03h (手机宽度)
+}
+function _slSec(ms) { return ms == null ? '—' : (ms / 1000).toFixed(1) + 's'; }
+function _slDay(ts) {
+  const d = new Date(ts), t = new Date();
+  const key = x => x.getFullYear() + '-' + x.getMonth() + '-' + x.getDate();
+  if (key(d) === key(t)) return 'Today';
+  t.setDate(t.getDate() - 1);
+  if (key(d) === key(t)) return 'Yesterday';
+  return d.toLocaleDateString('en-MY', { day: 'numeric', month: 'short' });
+}
+function _slTime(ts) { const d = new Date(ts); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function _syncLogRender() {
+  const box = document.getElementById('syncLogTable');
+  if (!box) return;
+  const log = _syncLogRead();
+  if (!log) { box.innerHTML = '<div class="sl-empty">Sync Log unavailable on this device</div>'; return; }
+  if (!log.length) { box.innerHTML = '<div class="sl-empty">No syncs yet</div>'; return; }
+  let day = null, rows = '';
+  log.forEach(e => {
+    const dd = _slDay(e.at);
+    if (dd !== day) { day = dd; rows += `<tr class="sl-day"><td colspan="6">${dd}</td></tr>`; }
+    const slow = e.result !== 'OK' || (e.ms - (e.hid || 0)) >= SYNC_LOG_SLOW_MS;
+    rows += `<tr class="${slow ? 'slow' : ''}"><td>${_slTime(e.at)}</td><td>${_slDur(e.gap)}</td><td>${e.net}</td><td>${_slSec(e.be)}</td><td>${(e.tries || []).length}</td><td class="sl-tot">${e.result === 'OK' ? _slSec(e.ms) : (SYNC_LOG_CELL[e.result] || e.result)}</td></tr>`;
+  });
+  box.innerHTML = `<div style="overflow-x:auto"><table class="sl-table"><tr><th>Time</th><th>Gap</th><th>Net</th><th>Backend</th><th>Tries</th><th>Total</th></tr>${rows}</table></div>`;
+}
+function syncLogCopy() {
+  const log = _syncLogRead();
+  if (!log || !log.length) { toast(log ? 'No syncs yet' : 'Sync Log unavailable'); return; }
+  const ver = (document.querySelector('.nav-brand-version') || {}).textContent || '';
+  const lines = log.map(e => {
+    const d = new Date(e.at);
+    const when = String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + _slTime(e.at);
+    const tries = (e.tries || []).map((t, i) => '#' + (i + 1) + ' ' + _slSec(t.ms) + ' ' + t.r + ' (ttfb ' + _slSec(t.ttfb) + ', be ' + _slSec(t.be) + ')').join(' · ');
+    return when + ' | gap ' + _slDur(e.gap) + ' | ' + e.net + ' | ' + _slSec(e.ms) + ' ' + e.result
+      + (e.hid >= 1000 ? ' | away ' + _slDur(e.hid) : '') + ' | ' + (tries || 'no reply yet');
+  });
+  _copyWithFeedback('Ads CRM ' + ver + ' Sync Log · ' + navigator.userAgent.replace(/^.*?\(([^)]*)\).*$/, '$1') + '\n' + lines.join('\n'),
+    document.getElementById('slCopyBtn'), '✓ Copied', 'Copy failed');
+}
+function syncLogClear() {
+  if (!confirm('Clear Sync Log on this device?')) return;
+  try { localStorage.removeItem(SYNC_LOG_KEY); } catch (e) {}
+  _syncLogCount(); _syncLogRender();
+}
+// 开档: 上一页留下没结束的一轮 (卡住时被刷新 / 关掉) → 补记 Interrupted, 时长 = 开始到最後还活着那一刻
+(function _syncLogRecover() {
+  let open = null;
+  try { open = JSON.parse(localStorage.getItem(SYNC_LOG_OPEN_KEY) || 'null'); localStorage.removeItem(SYNC_LOG_OPEN_KEY); } catch (e) {}
+  if (open && open.at && Array.isArray(open.tries)) { try { _syncLogWrite(open, 'Interrupted', open.upd || open.at); } catch (e) { console.warn('[sync log] recover failed:', e); } }
+})();
+_syncLogCount();
+
 async function _decodePullPayload(text) {
   if (!String(text).startsWith('GZ1:')) return JSON.parse(text);
   if (typeof DecompressionStream !== 'function') throw new Error('gzip unsupported');
@@ -19708,7 +19884,7 @@ function gsPullSilent(attempt, roundStartedAt) {
   if (_syncPromise) return _syncPromise;
   // v9.44: 新的一轮 → 扣除额归零。⚠️ 一定要放在上面那行 return 之後 —— 第 1 轮审核抓到: 放前面的话,
   //   同步跑到一半 Davy 按 Sync (无参数呼叫) 会把**进行中那一轮**已扣的 flush 时间归零, 第 3 次又变短。
-  if (!roundStartedAt) { roundStartedAt = Date.now(); _roundExcludedMs = 0; }
+  if (!roundStartedAt) { roundStartedAt = Date.now(); _roundExcludedMs = 0; try { _syncLogStart(roundStartedAt); } catch (e) { console.warn('[sync log]', e); } }   // v9.52 Sync Log (记录坏了不准挡住同步)
   // v9.34【Codex #8 P1-2】新的一轮开始 = 旧的 retry 作废 (手动成功後旧 timer 不得再拉)
   if (_pullRetryTimer) { clearTimeout(_pullRetryTimer); _pullRetryTimer = null; _pullRetryQueued = false; }
   const gen = ++_syncGen;
@@ -19729,6 +19905,7 @@ function gsPullSilent(attempt, roundStartedAt) {
         _syncPhase = 'inbox';
         try { if (typeof _pendingLegacyFetch === 'function') ok = await _pendingLegacyFetch(); }
         catch (e) { console.warn('[sync ' + rid + '] legacy Inbox fetch failed:', e); ok = false; }
+        if (!ok) _syncFailReason = 'inbox fetch failed';   // v9.52 Sync Log
         // 整轮成败一致: Inbox 那半失败就不算 Synced (Codex #9: 任何一部分失败都不能报整体成功)
         if (!ok && typeof _setSyncState === 'function') _setSyncState('fail', 'inbox fetch failed');
       }
@@ -19739,6 +19916,7 @@ function gsPullSilent(attempt, roundStartedAt) {
       const _sg = _syncSegLast;
       console.info('[sync ' + rid + '] ' + (ok ? 'OK' : 'FAIL') + ' in ' + (Date.now() - t0) + 'ms'
         + (_sg ? (' · flush ' + _sg.flush + ' · ttfb ' + _sg.ttfb + ' · download ' + _sg.download + ' · decode ' + _sg.decode + ' · apply ' + _sg.apply + ' · backend ' + (_sg.backend == null ? '?' : _sg.backend)) : ''));
+      try { _syncLogAttempt(ok, Date.now() - t0, _sg); } catch (e) { console.warn('[sync log]', e); }   // v9.52: 记录坏了也不准拖垮同步
     }
     return ok;
   })();
@@ -19747,6 +19925,7 @@ function gsPullSilent(attempt, roundStartedAt) {
 async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
   const isRetry = attempt > 0;
   _syncSegLast = null;   // v9.44: 没跑到分段计时就 return 的话, coordinator 不准印上一轮的数字
+  _syncFailReason = null;   // v9.52
   const url = getGsUrl();
   if (!url) return false; // No URL configured — skip silently
   // v7.90: 同步开口讲话 — 开始/失败都有 toast, 失败自动重试 1 次.
@@ -19756,6 +19935,7 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
   _setSyncState('busy', isRetry ? ('retry ' + (attempt + 1) + '/' + SYNC_MAX_ATTEMPTS) : '');
   const failSync = (reason, retryable) => {
     console.warn('[sync ' + (rid || '?') + '] failed:', reason);
+    _syncFailReason = reason;   // v9.52 Sync Log
     const nextAttempt = attempt + 1;
     const delay = SYNC_BACKOFF_MS[Math.min(attempt, SYNC_BACKOFF_MS.length - 1)] || 0;
     const deadline = roundStartedAt + SYNC_TOTAL_BUDGET_MS + _roundExcludedMs;   // v9.44: flush 时间扣回来
@@ -19799,6 +19979,7 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     console.warn('[Auto-pull] BLOCKED: pending queue still has items — pull would overwrite local changes');
     // v9.33【Codex #7-4】讯息要分清楚: 这是「本地待写资料推不上去」, 不是 Sheet Pull 失败 —— 两回事。
     _setSyncState('fail', 'blocked: a local write failed to sync');
+    _syncFailReason = 'unsent changes';   // v9.52 Sync Log
     _syncToast('fail', SYNC_WORDS.unsent, 'Pull paused to protect your data', { retry: true, ttl: 8000 });   // v9.47
     return false;
   }
@@ -19865,6 +20046,7 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
     if (suspiciousLead) {
       console.warn('[Auto-pull] BLOCKED: suspicious lead columns:', Object.keys(suspiciousLead));
       _setSyncState('fail', 'blocked: unexpected Sheet columns');   // v9.32
+      _syncFailReason = 'columns blocked';   // v9.52 Sync Log
       _syncToast('fail', SYNC_WORDS.columns, 'Pull blocked to protect your data', { ttl: 8000 }); // v7.90: 不再静默; v9.47 换新弹窗
       return false;
     }
