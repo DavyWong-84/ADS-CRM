@@ -3736,7 +3736,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.50</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.51</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3787,7 +3787,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.50</div>
+      <div class="nav-brand-version">v9.51</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -4006,7 +4006,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
               <div class="step-body">
                 <div>
                   <label>Show Up Status</label>
-                  <select id="f_showUp" data-pop="1" data-pop-placeholder="">
+                  <select id="f_showUp" data-pop="1" data-pop-placeholder="" data-pop-blank="1">
                     <option value=""></option>
                     <option value="Show up">Show up</option>
                     <option value="No Show up">No Show up</option>
@@ -4015,13 +4015,12 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
                 <div class="form-row" style="margin-top:12px;">
                   <div>
                     <label>Race</label>
-                    <select id="f_race" data-pop="1" data-pop-placeholder="">
+                    <select id="f_race" data-pop="1" data-pop-placeholder="" data-pop-blank="1">
                       <option value=""></option>
                       <option value="Chinese">Chinese</option>
                       <option value="Malay">Malay</option>
                       <option value="Indian">Indian</option>
                       <option value="Foreigner">Foreigner</option>
-                      <option value="Others">Others</option>
                     </select>
                   </div>
                   <div>
@@ -8279,9 +8278,9 @@ function renderDetailPanel(l) {
       <div class="step-card step-3">
         <div class="step-header"><span class="step-num">3</span><div><div class="step-title">After Visit</div></div></div>
         <div class="step-body">
-          <div><label>Show Up</label><select id="df_showUp" data-pop="1" data-pop-placeholder=""><option value=""></option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
+          <div><label>Show Up</label><select id="df_showUp" data-pop="1" data-pop-placeholder="" data-pop-blank="1"><option value=""></option><option value="Show up" ${l.showUp === 'Show up' ? 'selected' : ''}>Show up</option><option value="No Show up" ${l.showUp === 'No Show up' ? 'selected' : ''}>No Show up</option></select></div>
           <div class="form-row" style="margin-top:12px;">
-            <div><label>Race</label><select id="df_race" data-pop="1" data-pop-placeholder=""><option value=""></option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option><option value="Others" ${l.race === 'Others' ? 'selected' : ''}>Others</option></select></div>
+            <div><label>Race</label><select id="df_race" data-pop="1" data-pop-placeholder="" data-pop-blank="1"><option value=""></option><option value="Chinese" ${l.race === 'Chinese' ? 'selected' : ''}>Chinese</option><option value="Malay" ${l.race === 'Malay' ? 'selected' : ''}>Malay</option><option value="Indian" ${l.race === 'Indian' ? 'selected' : ''}>Indian</option><option value="Foreigner" ${l.race === 'Foreigner' ? 'selected' : ''}>Foreigner</option></select></div>
             <div><label>Spend (RM)</label><input type="number" id="df_spend" value="${l.spend == null || l.spend === '' ? '' : l.spend}" step="0.01" min="0"></div>
           </div>
           <input type="hidden" id="df_remark" value="${esc(l.remark || '')}">
@@ -9189,15 +9188,21 @@ function refreshSelectPopover(selectEl, options) {
   }
   const opts = options;
   const isField = selectEl.dataset.popField === '1';
-  const placeholder = selectEl.dataset.popPlaceholder || opts.placeholder || 'Select...';
+  // v9.51【Davy 定】可选空白的下拉 (data-pop-blank), 选了空白时按钮也完全空白, 不显示 "Select..."
+  const placeholder = selectEl.dataset.popBlank === '1' ? ' ' : (selectEl.dataset.popPlaceholder || opts.placeholder || 'Select...');
   // Build items from <option> tags; treat empty-value option as placeholder (skip from list, show in trigger when selected)
+  // v9.51【Davy】Show Up / Race 要能选回空白 —— 标了 data-pop-blank="1" 的下拉保留空白那一行
+  //   (其他下拉的空白选项是提示文字, 照旧不进选单)。空白行用 nbsp 撑出跟其他行一样的高度。
+  const keepBlank = selectEl.dataset.popBlank === '1';
   const items = Array.from(selectEl.options)
-    .filter(o => o.value !== '' || o.textContent.trim() !== '')  // drop pure placeholder options
+    .filter(o => keepBlank || o.value !== '' || o.textContent.trim() !== '')  // drop pure placeholder options
     .map(o => ({
       value: o.value,
-      label: o.textContent.trim(),
+      label: o.textContent.trim() || (keepBlank && o.value === '' ? ' ' : ''),
       disabled: o.disabled
     }));
+  // v9.51【Davy 定】空白那行放选单最下面。只在选单里挪, <option> 顺序不动 (空白要留第一个, 新 lead 才默认空白)
+  if (keepBlank) items.sort((a, b) => (a.value === '') - (b.value === ''));
   registerPopover(popId, {
     items: items,
     selected: selectEl.value,
