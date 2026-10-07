@@ -3746,7 +3746,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.53</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.54</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3797,7 +3797,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.53</div>
+      <div class="nav-brand-version">v9.54</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -5455,6 +5455,95 @@ function statusLabel(status) {
 
 const PRELOADED = {"leads": [], "adsSpend": [], "thirdPartyFees": [], "channels": [{"id": "ch-simply5", "name": "Simply 5", "platform": "meta", "addedMonth": "2026-01", "active": true}, {"id": "ch-google", "name": "Google Ads", "platform": "google", "addedMonth": "2026-01", "active": true}, {"id": "ch-organic", "name": "Organic", "platform": "organic", "addedMonth": "2026-01", "active": true}, {"id": "ch-followup", "name": "Follow Up", "platform": "followup", "addedMonth": "2026-01", "active": true}, {"id": "ch-chia", "name": "Chia FB", "platform": "meta", "addedMonth": "2026-01", "active": false}], "locations": [{"id": "st-sunway", "name": "Sunway", "addedMonth": "2026-01", "active": true}, {"id": "st-cheras", "name": "Cheras", "addedMonth": "2026-01", "active": true}, {"id": "st-eco", "name": "ECO", "addedMonth": "2026-01", "active": true}], "revenuePerStore": [], "PnL_Rows": [], "PnL_Staff": [], "PnL_Config": [], "PnL_Employees": [], "PnL_EmpSalary": []};
 const STORAGE_KEY = 'ads-crm-v2';
+// ══ v9.54【Davy 2026-10-07 定 B】主快照 + 同步前备份改存 IndexedDB ══════════════
+//   为什么: localStorage 每个网站约 5MB (Chrome 定死)。10-07 实测: 电脑用到 5,083KB 已满 (主快照 2,451K + 同步前备份 2,349K);
+//   手机 Sync Log 显示 Error、10-06 14:12 之後一笔都写不进 → saveState 也写不进 → 每次开档都先秀卡在旧日子那份
+//   (Davy:「每次刷新都跳出旧记录」)。IndexedDB 一样在浏览器本机, 电脑实测上限 10,240MB, 2.4MB 读 13ms / 写 10-13ms。
+//   只搬这两样大的; 待上传 queue / Sync Log / 库存 / 偏好都很小, 留在 localStorage 不动。
+//   IndexedDB 打不开 / 卡住:
+//     · 还没搬过家 (资料还在 localStorage) → 退回 localStorage, 跟 v9.53 一样运作。
+//     · 已经搬过家 (STORE_MARK = 'idb') → 'none' 模式: 本机快照读不到 ≠ 没有资料 —— 不准拿空 state 写回任何地方,
+//       不写同步前备份, 跳「Not saved」, 资料从 Sheet 拉回来显示。下次开档 IndexedDB 好了就照常。
+//       (第 2 轮破坏者 P2-1: 第一版这里退回 localStorage → 读到 null → 0 笔 → 还把空快照存回去)
+const PRE_PULL_BACKUP_KEY = 'ads_crm_pre_pull_backup';
+const STORE_MARK = 'ads-crm-store';   // 'idb' = 这台装置的主快照已经在 IndexedDB
+let _stateStore = 'ls';          // 'idb' | 'ls' | 'none' —— 开档时 _bootReadState 决定
+let _bootRaw = null;             // 开档读到的主快照 (JSON 字串), 给 loadState 用
+let _bootLoadMs = null;          // 开档读资料花几毫秒 (Sync Log Copy 会带, 量手机用)
+let _bootStoreErr = null;        // 'none' 模式的原因
+let _idbP = null;
+function _idb() {
+  if (!_idbP) _idbP = new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('no IndexedDB'));
+    const r = indexedDB.open('ads-crm', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => {
+      const db = r.result;
+      // 破坏者 P3-4: 浏览器关掉连线 / 别的分页要升版 → 放掉这条, 下次存档重开 (以前会一直失败到重新整理)
+      db.onclose = db.onversionchange = () => { try { db.close(); } catch (e) {} _idbP = null; };
+      res(db);
+    };
+    r.onerror = () => rej(r.error);
+  });
+  return _idbP;
+}
+// 开档每一步都要有时限 (破坏者 P2-2: 第一版只包了第一次读取, 搬家写入卡住 → init 永远不跑、app 打不开)
+const _bootStep = p => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('IndexedDB timeout')), 3000))]);
+// 写入要等交易 oncomplete 才算成功 (onsuccess 只代表排进去了, 空间满会在 commit 时才 abort)
+function _idbReq(mode, fn) {
+  return _idb().then(db => new Promise((res, rej) => {
+    const t = db.transaction('kv', mode);
+    const q = fn(t.objectStore('kv'));
+    t.oncomplete = () => res(q.result);
+    t.onerror = () => rej(t.error);
+    t.onabort = () => rej(t.error || new Error('IndexedDB aborted'));
+  }));
+}
+const _idbGet = k => _idbReq('readonly', s => s.get(k));
+const _idbSet = (k, v) => _idbReq('readwrite', s => s.put(v, k));
+const _idbDel = k => _idbReq('readwrite', s => s.delete(k));
+// 开档: IndexedDB 有 → 用它; 没有但 localStorage 有 → 搬家 (写进去、读回来逐字一样才删旧的)。
+//   主快照搬失败 → 留在 localStorage 不删, 本次照旧用 localStorage。绝不把「读不到」当成「没有资料」。
+async function _bootReadState() {
+  const t0 = performance.now();
+  let migrated = false;
+  try { migrated = localStorage.getItem(STORE_MARK) === 'idb'; } catch (e) {}
+  try {
+    let raw = await _bootStep(_idbGet(STORAGE_KEY));
+    const old = localStorage.getItem(STORAGE_KEY);
+    if (raw == null && old != null) {
+      await _bootStep(_idbSet(STORAGE_KEY, old));
+      if ((await _bootStep(_idbGet(STORAGE_KEY))) !== old) throw new Error('migration verify failed');
+      raw = old;
+    }
+    if (old != null) localStorage.removeItem(STORAGE_KEY);   // 搬完 / 或旧版分页又写回来的 → IndexedDB 才是正本
+    try { localStorage.setItem(STORE_MARK, 'idb'); } catch (e) {}
+    _stateStore = 'idb'; _bootRaw = raw;
+  } catch (e) {
+    console.warn('[storage] IndexedDB unusable:', e);
+    _bootRaw = null;
+    if (migrated) { _stateStore = 'none'; _bootStoreErr = e; }   // 资料在 IndexedDB 只是这次读不到 —— 见档头
+    else _stateStore = 'ls';
+  }
+  if (_stateStore === 'idb') {   // 同步前备份: 只搬家, 开档不读; 失败不影响主快照
+    try {
+      const oldBk = localStorage.getItem(PRE_PULL_BACKUP_KEY);
+      if (oldBk != null) { await _bootStep(_idbSet(PRE_PULL_BACKUP_KEY, oldBk)); localStorage.removeItem(PRE_PULL_BACKUP_KEY); }
+    } catch (e) { console.warn('[storage] backup migration failed:', e); }
+  }
+  _bootLoadMs = Math.round(performance.now() - t0);
+}
+// 存主快照的结果 —— 失败要讲出来 (以前只有 console.error, 手机存满好几天没人知道)
+let _stateSaveFailed = false;
+function _stateSaved(ok, e) {
+  if (ok) { _stateSaveFailed = false; return; }
+  console.error('[saveState] failed:', e);
+  if (_stateSaveFailed) return;   // 已经提醒过, 不要每存一次就跳一次
+  _stateSaveFailed = true;
+  const full = e && (e.name === 'QuotaExceededError' || /quota/i.test(String(e.message || '')));
+  // setTimeout: 破坏者 P3-1 —— localStorage 路径是同步失败, 紧接着 pull 的「Synced」会把这张盖掉; 排到後面才看得到
+  setTimeout(() => { if (typeof _syncToast === 'function') _syncToast('fail', 'Not saved on this device', full ? 'Storage full · Sheet is safe' : 'Sheet is safe', { ttl: 8000 }); }, 0);   // Davy 10-07 定字 (怕误会 lead 没进 Sheet 而重输)
+}
 const DATA_VERSION = '4.79'; // v7.25 — 门店盈亏表(P&L, 配后端 v3.15): 每店分层盈亏表(营业额→毛利→费用→净利), auto 行前端现算, 费用行可改名/增删/拖动/选类型, 时段+RM/% 切换, Manpower modal(EPF/SOCSO 自填). | v7.24 — 门店/渠道可配置 UI(配后端 v3.14): Stores/Channels 设置每行加 GHL keyword + 33CRM code 输入 + Save(确认 modal)+ 提示; pull 带回 Channels/Locations, push 合并写(不洗手填值). 加新店/渠道在界面填两栏即可, 不碰 Sheet. | v7.23 — 新 lead 自动入库(后端 v3.13): 全新电话+渠道清楚的 ghl_lead 直接进 Leads(flags='auto'), 前端显示 AUTO 标签 + "当天自动加入"计数; 疑似重复(电话已存在)留 Pending | v7.22 — gsPullSilent 加"变化检测"短路 (治刷新卡顿) | v7.21 Google 导出同意列
 
 // ---------- State ----------
@@ -5619,7 +5708,7 @@ let state = {
 // ---------- Storage ----------
 function loadState() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = _stateStore === 'idb' ? _bootRaw : localStorage.getItem(STORAGE_KEY);   // v9.54
     if (saved) {
       const parsed = JSON.parse(saved);
       // Only trust saved state if it has leads AND matches version
@@ -5727,11 +5816,20 @@ function saveState() {
   //   三个 state 的默认值本来就是 localMonth() (本月), 是 loadState 的 {...state, ...parsed} 把它盖掉.
   //   不存 → 每次开档都回本月. 跟上面 adsTab / storeChannelFilter 同一个道理.
   delete toSave.summaryMonth; delete toSave.listMonth; delete toSave.storeMonth;
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)); } catch (e) { console.error(e); }
+  // v9.54: 存 IndexedDB (写入在背景完成, 结果交给 _stateSaved); 退回模式才写 localStorage
+  //   回传 promise (存完才 resolve), 一般呼叫点不用理; restorePrePullBackup 要等结果才讲「已恢复」
+  let _saveP = Promise.resolve();
+  if (_stateStore === 'none') _stateSaved(false, _bootStoreErr);   // 本机快照读不到的这次: 不准把 (可能是空的) state 写回去
+  else {
+    const json = JSON.stringify(toSave);
+    if (_stateStore === 'idb') _saveP = _idbSet(STORAGE_KEY, json).then(() => _stateSaved(true), e => _stateSaved(false, e));
+    else { try { localStorage.setItem(STORAGE_KEY, json); _stateSaved(true); } catch (e) { _stateSaved(false, e); } }
+  }
   // v6.74: 数据可能变了, 清 calcMonthMetrics 缓存
   if (typeof _monthMetricsCache !== 'undefined') _monthMetricsCache.clear();
   // Refresh alerts badge after data changes
   if (typeof refreshAlertsBadge === 'function') refreshAlertsBadge();
+  return _saveP;   // v9.54
 }
 
 // v6.74: calcMonthMetrics 缓存. key=month string, value=metrics object.
@@ -19854,7 +19952,8 @@ function syncLogCopy() {
     return when + ' | gap ' + _slDur(e.gap) + ' | ' + e.net + ' | ' + _slSec(e.ms) + ' ' + e.result
       + (e.hid >= 1000 ? ' | away ' + _slDur(e.hid) : '') + ' | ' + (tries || 'no reply yet');
   });
-  _copyWithFeedback('Ads CRM ' + ver + ' Sync Log · ' + navigator.userAgent.replace(/^.*?\(([^)]*)\).*$/, '$1') + '\n' + lines.join('\n'),
+  _copyWithFeedback('Ads CRM ' + ver + ' Sync Log · ' + navigator.userAgent.replace(/^.*?\(([^)]*)\).*$/, '$1')
+    + ' · store ' + _stateStore + ' load ' + _bootLoadMs + 'ms' + (_stateSaveFailed ? ' · SAVE FAILED' : '') + '\n' + lines.join('\n'),   // v9.54
     document.getElementById('slCopyBtn'), '✓ Copied', 'Copy failed');
 }
 function syncLogClear() {
@@ -20058,11 +20157,15 @@ async function _gsPullSilentInner(attempt, rid, gen, roundStartedAt) {
 
     // Auto-backup before overwrite
     try {
-      localStorage.setItem('ads_crm_pre_pull_backup', JSON.stringify({
+      const _bk = JSON.stringify({
         ts: Date.now(), leads: state.leads, adsSpend: state.adsSpend,
         revenue: state.revenue, thirdPartyFees: state.thirdPartyFees,
         channels: state.channels, locations: state.locations  // v6.69: 同步备份
-      }));
+      });
+      // v9.54: 跟主快照一起搬到 IndexedDB (字串在这里先序列化好 = 覆盖前的那一份)
+      if (_stateStore === 'idb') _idbSet(PRE_PULL_BACKUP_KEY, _bk).catch(e => console.warn('[pre-pull backup] save failed:', e));
+      else if (_stateStore === 'ls') localStorage.setItem(PRE_PULL_BACKUP_KEY, _bk);
+      // 'none': 不写 —— 这时 state 可能是空的, 写了会盖掉 IndexedDB 里真正的备份 (破坏者 P2-1 连带 ①)
     } catch (e) {}
 
     // Per-table protection: only overwrite if Sheet has data OR local is also empty
@@ -20227,7 +20330,10 @@ async function gsPull() {
 // Restore pre-pull backup (manual recovery — call from console)
 async function restorePrePullBackup() {
   try {
-    const raw = localStorage.getItem('ads_crm_pre_pull_backup');
+    // v9.54: 先找 IndexedDB, 没有 (或打不开) 再找 localStorage —— 不管现在是哪种模式 (破坏者 P3-3)
+    let raw = null;
+    try { raw = await _bootStep(_idbGet(PRE_PULL_BACKUP_KEY)); } catch (e) {}
+    if (raw == null) raw = localStorage.getItem(PRE_PULL_BACKUP_KEY);
     if (!raw) { await showAlert('没有找到 pre-pull 备份', { title: 'Restore' }); return; }
     const b = JSON.parse(raw);
     const ageMin = Math.round((Date.now() - b.ts) / 60000);
@@ -20241,7 +20347,8 @@ async function restorePrePullBackup() {
     state.thirdPartyFees = b.thirdPartyFees || [];
     if (Array.isArray(b.channels) && b.channels.length > 0) state.channels = b.channels;
     if (Array.isArray(b.locations) && b.locations.length > 0) state.locations = b.locations;
-    saveState();
+    await saveState();   // v9.54: 等真的存进去才讲已恢复
+    if (_stateSaveFailed) { await showAlert('恢复失败：没存进本机', { title: 'Error' }); return; }
     await showAlert('✅ 已恢复，页面即将刷新', { title: 'Restored' });
     setTimeout(() => location.reload(), 500);
   } catch (e) { await showAlert('恢复失败：' + e.message, { title: 'Error' }); }
@@ -23081,12 +23188,16 @@ async function flushPendingQueueManual() {
 }
 
 // Start app directly (no password lock)
-init();
+// v9.54: 先等 IndexedDB 读好主快照才 init (约十几毫秒)。⚠️ 这表示 init 现在在所有 <script> 区块都跑完之後才执行
+//   (以前在 block 3 当下就跑) —— 已核对 block 4 的顶层代码: 只挂事件 / 包 nav / 计时器, 都不依赖 init 先跑过。
+_bootReadState().then(init);
 
 // --- Mobile back button handling ---
 async function clearCacheReload() {
   if (!await showConfirm('This will clear all cached data and reload from preloaded data. Continue?', { title: 'Clear Cache', okText: 'Continue', danger: true })) return;
   localStorage.removeItem(STORAGE_KEY);
+  // v9.54: 主快照在 IndexedDB —— 清不掉就讲, 不准假装清了 (重开会读回同一份旧资料)
+  if (_stateStore !== 'ls') { try { await _bootStep(_idbDel(STORAGE_KEY)); } catch (e) { toast('⚠️ Clear failed'); return; } }
   if ('caches' in window) { caches.keys().then(names => names.forEach(n => caches.delete(n))); }
   toast('Cache cleared — reloading...');
   setTimeout(() => location.reload(true), 500);
