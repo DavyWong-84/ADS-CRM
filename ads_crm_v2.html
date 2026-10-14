@@ -3746,7 +3746,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.55</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.56</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3797,7 +3797,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.55</div>
+      <div class="nav-brand-version">v9.56</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -7637,10 +7637,17 @@ function refreshSelects() {
   // Only show ACTIVE channels in Lead entry page
   const activeChannels = state.channels.filter(c => c.active !== false);
   const activeLocations = state.locations.filter(l => l.active !== false);
+  // v9.56 第 4 轮: 重建前记住表单里已选的值, 重建後放回 —— 以前同步完成 (pull 会呼叫 refreshSelects) 时正在填的 Channel / Store 会被清空
+  //   (openNewLead 自己会在 refreshSelects 之後清空, 新表单仍是空白)
+  const locSel = document.getElementById('f_location');
+  const _chCur = chSel.value, _locCur = locSel.value;
   chSel.innerHTML = '<option value=""></option>' +
     activeChannels.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
-  document.getElementById('f_location').innerHTML = '<option value=""></option>' +
+  locSel.innerHTML = '<option value=""></option>' +
     activeLocations.map(l => `<option value="${esc(l.id)}">${esc(l.name)}</option>`).join('');
+  if (_chCur && activeChannels.some(c => c.id === _chCur)) chSel.value = _chCur;
+  if (_locCur && activeLocations.some(l => l.id === _locCur)) locSel.value = _locCur;
+  [chSel, locSel].forEach(s => { if (s.dataset.popUpgraded === '1' && typeof refreshSelectPopover === 'function') refreshSelectPopover(s); });
 
   // Data Entry: Ads Cost channel dropdown (Meta/Google, both active + inactive with marker)
   const asCh = document.getElementById('as_entryChannel');
@@ -7947,6 +7954,7 @@ document.getElementById('leadForm').addEventListener('submit', e => {
       return;
     }
   }
+  if (_leadsNotReady()) return;   // v9.56 第 1 轮 P2: 号码重复检查前同一道门 (本机资料还没载入时会把旧客户当新的)
   const existing = state.leads.find(l => l.contact === contact && l.id !== currentEditingId);
   if (existing) {
     if (currentEditingId) {
@@ -10138,7 +10146,14 @@ document.addEventListener('wheel', function(e) {
 // ---------- Search (v3.79: inline desktop + mobile bottom bar) ----------
 const SEARCH_INPUT_IDS = ['searchInputDesktop', 'searchInputMobile', 'searchInputTitle'];
 
+// v9.56【Davy 选 A】搜寻开始前停在哪个页签 —— 清掉搜寻字时回去 (两条清除路径: 删到空 / ✕ 按钮 都走这支)
+let _tabBeforeSearch = null;
+function _searchTabRestore() {
+  if (_tabBeforeSearch != null) state.listFilter = _tabBeforeSearch;
+  _tabBeforeSearch = null;
+}
 function clearSearchQuery() {
+  if (String(state.listSearch || '').trim()) _searchTabRestore();
   state.listSearch = '';
   state.listPage = 1;
   SEARCH_INPUT_IDS.forEach(id => {
@@ -10207,7 +10222,10 @@ function onSearchInputChange(value) {
     }
   }
   // v9.55【Davy 选】开始搜寻的那一下自动跳 All (停在 Appt 页签搜没预约的人会 No leads found); 之後他点页签照样能缩小
-  if (!String(state.listSearch || '').trim() && String(finalValue || '').trim()) state.listFilter = 'all';
+  // v9.56【Davy 选 A】清掉搜寻字 → 回到搜寻前的页签
+  const _wasQ = String(state.listSearch || '').trim(), _nowQ = String(finalValue || '').trim();
+  if (!_wasQ && _nowQ) { _tabBeforeSearch = state.listFilter; state.listFilter = 'all'; }
+  else if (_wasQ && !_nowQ) _searchTabRestore();
   state.listSearch = finalValue;
   state.listPage = 1;
   // v6.83: debounce renderList
@@ -24162,9 +24180,24 @@ function pendingFormatTime(raw) {
 // v4.58: in-flight lock to prevent double-click
 const _pendingInFlight = new Set();
 
+// v9.56: 本机资料这次读不到 (v9.54 'none' 模式) 而且 Sheet 还没同步回来时, state.leads 是空的 →
+//   「这个号码已经有了吗?」一律答「没有」, Add 会把旧客户加成新的一笔、不跳 Duplicate。等同步完才准加。
+//   ⚠️ 号码重复检查的入口只有一道门: Inbox Add / Add All / New Lead 表单 都走这支 (铁律 2)。
+//   (10-14 Davy 手机 9:47 有 3 笔旧客户被加成新纪录 —— 是不是这个原因没证实, 但这个洞是真的)
+//   第 4 轮补: ① 条件放宽到「本机一笔 lead 都没有 + 这次还没同步成功过」—— 新手机 / 清过浏览器资料 (idb 但空的) 也是同一个洞
+//   ② 没在同步 (例如上一轮失败了) 就顺手开一轮, 不然「Wait」等不到东西
+function _leadsNotReady() {
+  if (_lastPullSig || (state.leads && state.leads.length)) return false;
+  if (typeof getGsUrl === 'function' && !getGsUrl()) return false;   // 没设 Sheet 网址 = 根本不会同步, 挡了只会永远「Wait」(第 4 轮)
+  if (typeof _syncBusyNow === 'function' && !_syncBusyNow() && typeof gsPullSilent === 'function') { try { gsPullSilent(); } catch (e) {} }
+  if (typeof toast === 'function') toast('Wait for sync to finish');
+  return true;
+}
+
 async function pendingConfirm(pendingId) {
   // Guard against double-click
   if (_pendingInFlight.has(pendingId)) return;
+  if (_leadsNotReady()) return;   // v9.56
 
   // v5.85: 移除 30 秒缓存检查 (导致 add 等 5 秒). 改成乐观更新 — 立即加到 state,
   // 后台跑 confirm 请求, 失败才回滚. 用户感知是"秒加".
@@ -24539,6 +24572,7 @@ async function pendingDelete(pendingId) {
 
 async function pendingBatchAddAll() {
   if (pendingData.length === 0) return;
+  if (_leadsNotReady()) return;   // v9.56
 
   // v4.74: Process items ONLY from active tab (user expects tab-scoped operation)
   const activeTab = _pendingActiveTab || 'lead';
