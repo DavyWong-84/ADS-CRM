@@ -3746,7 +3746,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="brand-logo">A</div>
     <div style="display:flex;flex-direction:column;line-height:1.1;">
       <span>Ads CRM</span>
-      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.54</span>
+      <span style="font-size:10px;color:var(--silver);font-weight:500;letter-spacing:0.3px;margin-top:2px;">v9.55</span>
     </div>
   </div>
   <div style="display:flex;gap:6px;align-items:center;">
@@ -3797,7 +3797,7 @@ label.fin input { width: 15px; height: 15px; accent-color: var(--purple); cursor
     <div class="nav-brand-logo">A</div>
     <div class="nav-brand-text">
       <div class="nav-brand-name">ADS CRM</div>
-      <div class="nav-brand-version">v9.54</div>
+      <div class="nav-brand-version">v9.55</div>
     </div>
   </div>
   <div class="nav-divider"></div>
@@ -9885,7 +9885,10 @@ function renderList() {
   } else {
     periodMatch = resolveListFilter();
   }
-  if (periodMatch) {
+  // v9.55【Davy 10-14 选 B】有搜寻字时不看月份 / 年份 / Lead·Appt 模式 —— 全部日期都搜。
+  //   起因: Appt 模式按预约日筛, 没预约的 lead (2026 年 3,911 笔) 搜号码也找不到, 被当成「没进 CRM」。
+  const _searchQ = String(state.listSearch || '').trim().toLowerCase();   // trim: 只打空格不算在搜 (跟 Searching 提示条同一判准, 第 1 轮 P3)
+  if (periodMatch && !_searchQ) {
     // v6.72: filter 字段逻辑 — Davy 重新定义 (codex P1 的修法不符合实际使用):
     //   Lead 模式 = 按 leadDate (看本月新进 lead)
     //   Appt 模式 = 按 apptDate (看本月预约, 包括上月进的 lead 但本月预约的)
@@ -9898,8 +9901,16 @@ function renderList() {
     };
     filteredLeads = filteredLeads.filter(l => periodMatch(getDate(l)));
   }
-  if (state.listChannelId) {
+  if (state.listChannelId && !_searchQ) {   // v9.55【Davy 选】搜寻时也不管 channel
     filteredLeads = filteredLeads.filter(l => l.channelId === state.listChannelId);
+  }
+  // v9.55【Davy 选】搜寻字先过滤, 页签数字才是「搜到几笔」(第 4 轮: 以前数字在搜寻前算, 一打字 All 跳成几千、跟列表对不上)
+  if (_searchQ) {
+    filteredLeads = filteredLeads.filter(l =>
+      String(l.name || '').toLowerCase().includes(_searchQ) ||
+      String(l.contact || '').includes(_searchQ) ||
+      String(l.remark || '').toLowerCase().includes(_searchQ)
+    );
   }
   const counts = { all: filteredLeads.length, lead: 0, booked: 0, done: 0, noshow: 0 };
   filteredLeads.forEach(l => { if (counts[l.status] !== undefined) counts[l.status]++; });
@@ -9917,14 +9928,7 @@ function renderList() {
   // Filter + sort
   let list = filteredLeads.slice();
   if (state.listFilter !== 'all') list = list.filter(l => l.status === state.listFilter);
-  if (state.listSearch) {
-    const q = state.listSearch.toLowerCase();
-    list = list.filter(l =>
-      String(l.name || '').toLowerCase().includes(q) ||
-      String(l.contact || '').includes(q) ||
-      String(l.remark || '').toLowerCase().includes(q)
-    );
-  }
+  // (搜寻过滤 v9.55 搬到上面, 页签数字之前)
   const today = todayStr();
   // v6.79: 表头点击排序 (只 Table 模式) — 优先于所有默认排序逻辑
   //   覆盖 overdue 置顶 + Show Up 默认降序 + sortMode 全部. 临时性, 不持久化.
@@ -10202,6 +10206,8 @@ function onSearchInputChange(value) {
       });
     }
   }
+  // v9.55【Davy 选】开始搜寻的那一下自动跳 All (停在 Appt 页签搜没预约的人会 No leads found); 之後他点页签照样能缩小
+  if (!String(state.listSearch || '').trim() && String(finalValue || '').trim()) state.listFilter = 'all';
   state.listSearch = finalValue;
   state.listPage = 1;
   // v6.83: debounce renderList
